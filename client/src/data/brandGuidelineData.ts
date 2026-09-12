@@ -32,6 +32,12 @@ export interface BrandData {
   difficultyLevel: 'beginner' | 'intermediate' | 'advanced'
   accentColor: string
   badgeColor: string
+  /** When set, overrides the Required/Optional + timestampFormat line in the overview. */
+  timestampSummary?: string
+  /** Link to the platform's published style guide (shown in source footer). */
+  officialSourceUrl?: string
+  /** ISO date when rules were last verified against officialSourceUrl. */
+  lastVerified?: string
 }
 
 export type BrandSlug =
@@ -149,48 +155,50 @@ const REV_DATA: BrandData = {
 const GOTRANSCRIPT_DATA: BrandData = {
   brandName: 'GoTranscript',
   shortName: 'GoTranscript',
-  tagline: 'Strict clean verbatim with mandatory timestamps',
+  tagline: 'Clean verbatim with job-specific timestamping',
   description:
-    'GoTranscript is a high-volume transcription platform popular with academic and corporate clients. Their guidelines emphasize precision timestamps and clean verbatim output with strict formatting requirements.',
+    'GoTranscript is a high-volume transcription platform popular with academic and corporate clients. Jobs specify clean or full verbatim and whether timestamping is every 2 minutes, every speaker change, or not required (including the qualification test).',
   verbatimStyle: 'clean',
   verbatimDescription:
-    'GoTranscript requires clean verbatim: remove filler words (um, uh, you know), false starts, and repeated words. Natural speech patterns are smoothed for readability while preserving the speaker\'s intent.',
-  speakerLabelFormat: 'Speaker 1:, Speaker 2: (or actual names if provided)',
-  speakerLabelExample: 'Speaker 1: The report is due on Friday.\nSpeaker 2: I\'ll have it ready by Thursday.',
-  timestampFormat: '[HH:MM:SS] — required at start of each speaker segment',
-  timestampRequired: true,
-  inaudibleNotation: '[inaudible 0:00]',
-  crossTalkNotation: '[inaudible 0:00] (simultaneous speech treated as inaudible)',
+    'GoTranscript clean verbatim: remove filler words (um, uh, you know, like), false starts, and repetitions (keep emphasis repetitions). Expand slang (gonna → going to). Keep "Oh" expressions and spoken contractions. Never use exclamation marks.',
+  speakerLabelFormat: 'Bold label, colon, space — Speaker 1:, names, or roles (Interviewer:). Prefix ? when speaker is uncertain (?David:)',
+  speakerLabelExample: 'Speaker 1: The report is due on Friday.\nSpeaker 2: I\'ll have it ready by Thursday.\n?Interviewee: I\'m not sure who said that.',
+  timestampFormat: '[00:00:00] in bold — every 2 minutes OR every speaker change when the job requires timestamping',
+  timestampRequired: false,
+  timestampSummary:
+    'Job-dependent — when required, use bold [00:00:00] every 2 minutes or at every speaker change (check job instructions). Qualification test: clean verbatim, no timestamping.',
+  inaudibleNotation: '[inaudible 00:00:00] — cannot hear; [unintelligible 00:00:00] — heard but not understood (full HH:MM:SS, bold)',
+  crossTalkNotation: '[crosstalk]',
   fillerWordsPolicy:
-    'Remove all filler words: um, uh, hmm, you know, like. Remove false starts and repeated words. Keep meaningful hesitations only.',
+    'Remove filler words (um, uh, you know, like, I mean, so, kind of, well, sort of) unless they change meaning. Remove false starts and stutters. Expand slang in clean verbatim.',
   paragraphRules:
-    'New paragraph for every speaker change, prefixed with timestamp and speaker label. Within a speaker\'s turn, break every 300–400 characters.',
-  musicSoundNotation: '[music] [background noise] [laughter]',
+    'Break long speeches into paragraphs no longer than ~500 symbols (~100 words). New paragraph for speaker changes when timestamping type requires it.',
+  musicSoundNotation: '[crosstalk] [silence] [pause 00:00:00] [laughs] [laughter] [background noise]',
   quickRules: [
     {
       category: 'Verbatim level',
-      rule: 'Clean verbatim — remove all fillers and false starts',
+      rule: 'Clean verbatim — remove fillers, false starts, and stutters',
       example: '"Um, I think, you know, we should go" → "I think we should go"',
     },
     {
       category: 'Speaker labels',
-      rule: 'Speaker 1:, Speaker 2: — colon immediately after label, then space',
-      example: 'Speaker 1: Good morning, everyone.',
+      rule: 'Bold label, colon, space — use names, roles, or ? prefix when uncertain',
+      example: 'Interviewer: Good morning.\n?Speaker 2: [unclear who spoke]',
     },
     {
       category: 'Timestamps',
-      rule: '[HH:MM:SS] required at start of every speaker segment',
+      rule: 'When job requires: bold [00:00:00] every 2 min OR every speaker change',
       example: '[00:02:15] Speaker 1: Let\'s get started.',
     },
     {
       category: 'Inaudible audio',
-      rule: '[inaudible H:MM] — include approximate timestamp',
-      example: 'The project [inaudible 3:45] was approved.',
+      rule: '[inaudible 00:00:00] or [unintelligible 00:00:00] — full HH:MM:SS, bold',
+      example: 'The project was [inaudible 00:03:45] according to the report.',
     },
     {
       category: 'Numbers',
-      rule: 'All numbers as numerals except at sentence start',
-      example: 'We have 5 options. Five options were presented.',
+      rule: 'Spell out zero through nine; numerals for 10 and above',
+      example: 'We had five participants and 12 observers.',
     },
     {
       category: 'Contractions',
@@ -199,25 +207,27 @@ const GOTRANSCRIPT_DATA: BrandData = {
     },
     {
       category: 'Punctuation',
-      rule: 'Standard punctuation; use ellipsis (...) for trailing off',
-      example: 'I was going to say... never mind.',
+      rule: 'Never use exclamation marks; use -- for false starts and incomplete sentences',
+      example: 'I was going to say-- never mind.',
     },
     {
       category: 'Paragraph length',
-      rule: 'New paragraph every speaker change or every ~300 characters',
-      example: 'Each long monologue is broken into digestible chunks.',
+      rule: 'No paragraph longer than ~500 symbols (~100 words)',
+      example: 'Long monologues are split into readable chunks.',
     },
   ],
   keyDifferences: [
-    'Timestamps are MANDATORY — required at every speaker segment start',
-    'Inaudible notation includes approximate timestamp: [inaudible 3:45]',
-    'Speaker labels use colon format: Speaker 1: (not brackets)',
-    'Numbers are numerals except at sentence start',
-    'False starts removed completely',
+    'Timestamping is job-dependent — every 2 min, every speaker change, or none (test job)',
+    'Inaudible vs unintelligible: both use full [00:00:00] timestamps, bold',
+    'Crosstalk uses [crosstalk] — not inaudible tags',
+    'Speaker labels are bold; use ? prefix when speaker is uncertain',
+    'Numbers: spell out 0–9, numerals for 10+',
   ],
   difficultyLevel: 'intermediate',
   accentColor: 'green',
   badgeColor: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
+  officialSourceUrl: 'https://gotranscript.com/transcription-guidelines',
+  lastVerified: '2026-09-12',
 }
 
 const TRANSCRIBEME_DATA: BrandData = {

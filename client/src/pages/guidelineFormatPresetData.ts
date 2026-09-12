@@ -138,20 +138,21 @@ export const PRESET_DATA = {
         category: 'Speaker Labels',
         label: 'Speaker label format',
         defaultValue:
-          "Always use a speaker label even with only one speaker. Use full name if known: 'David Butterfield:' then first name only after: 'David:'. Titles (Doctor, Pastor) can be dropped after first mention — optional. Use descriptive roles where name unknown: Interviewer: | Interviewee: | Host: | Facilitator: | Caller: | Receiver: | Participant 1:",
+          "Bold label, colon, single space (never tab). Always label even with one speaker. Names when known: 'David Butterfield:' then 'David:'. Roles when unknown: Interviewer: | Host: | Participant 1:. Prefix ? when speaker uncertain: ?David: | ?Speaker 3:.",
       },
       {
         id: 'inaudible_tag',
         category: 'Tags & Notation',
-        label: 'Inaudible tag',
-        defaultValue: '[inaudible]',
+        label: 'Inaudible & unintelligible tags',
+        defaultValue:
+          '[inaudible 00:00:00] when speech cannot be heard (noise/recording). [unintelligible 00:00:00] when heard but not understood (accent/manner). Full HH:MM:SS, bold. Do not invent other markings.',
       },
       {
         id: 'sound_events',
         category: 'Tags & Notation',
         label: 'Sound events',
         defaultValue:
-          'Speaker sounds (same line, present tense, lowercase): [laughs] [snaps fingers]. Non-speaker sounds (separate line, lowercase): [laughter] [applause] [phone ringing] [coughing].',
+          '[crosstalk] [silence] for overlaps and short pauses (4–10s). [pause 00:00:00] bold, separate line, for pauses >10s. Speaker sounds (same line): [laughs]. Non-speaker (separate line): [laughter] [applause] [background noise]. Lowercase, present tense, ≤2 words.',
       },
       {
         id: 'spelling',
@@ -165,7 +166,14 @@ export const PRESET_DATA = {
         category: 'Spelling & Numbers',
         label: 'Timestamps',
         defaultValue:
-          'Not included by default. Add only if client requests in file instructions.',
+          'Job-dependent. When required: bold [00:00:00] every 2 minutes OR every speaker change (check job instructions). File-relative time (20–30 min segment starts at 20:00:00). Qualification test: clean verbatim, no timestamping.',
+      },
+      {
+        id: 'numbers',
+        category: 'Spelling & Numbers',
+        label: 'Numbers',
+        defaultValue:
+          'Spell out zero through nine; numerals for 10 and above. Exceptions: money, years, percentages, measurements (see official guidelines).',
       },
     ],
   },

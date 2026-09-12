@@ -223,7 +223,7 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
                   </li>
                   <li className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-300">
                     <span className="text-gray-400 dark:text-gray-500 mt-0.5">•</span>
-                    <span><strong className="text-gray-900 dark:text-white">Timestamps:</strong> {brand.timestampRequired ? 'Required' : 'Optional'} — {brand.timestampFormat}</span>
+                    <span><strong className="text-gray-900 dark:text-white">Timestamps:</strong> {brand.timestampSummary ?? `${brand.timestampRequired ? 'Required' : 'Optional'} — ${brand.timestampFormat}`}</span>
                   </li>
                   <li className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-300">
                     <span className="text-gray-400 dark:text-gray-500 mt-0.5">•</span>
@@ -465,7 +465,7 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
               <tbody>
                 {[
                   { platform: 'Rev', verbatim: 'Clean verbatim', timestamps: 'Optional', speaker: '[Name]:' },
-                  { platform: 'GoTranscript', verbatim: 'Clean verbatim', timestamps: 'Required (every segment)', speaker: 'Speaker 1:' },
+                  { platform: 'GoTranscript', verbatim: 'Clean verbatim', timestamps: 'Job-dependent (2 min or speaker change)', speaker: 'Speaker 1: (bold)' },
                   { platform: 'TranscribeMe', verbatim: 'Intelligent verbatim', timestamps: 'Optional', speaker: '[Name]:' },
                   { platform: 'Scribie', verbatim: 'Full / strict verbatim', timestamps: 'Required (every paragraph)', speaker: 'Speaker 1:' },
                   { platform: 'Daily Transcripts', verbatim: 'Clean verbatim', timestamps: 'Optional', speaker: 'Name:' },
@@ -502,6 +502,30 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
                 <FaqItem key={i} q={item.q} a={item.a} />
               ))}
             </div>
+          </section>
+        )}
+
+        {/* Official source attribution */}
+        {brand.officialSourceUrl && brand.lastVerified && (
+          <section
+            aria-labelledby="source-heading"
+            className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 px-6 py-5"
+          >
+            <h2 id="source-heading" className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
+              Source &amp; verification
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+              Rules verified against{' '}
+              <a
+                href={brand.officialSourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 dark:text-blue-400 font-medium hover:underline"
+              >
+                official {brand.brandName} transcription guidelines
+              </a>
+              . Last verified: {brand.lastVerified}.
+            </p>
           </section>
         )}
 

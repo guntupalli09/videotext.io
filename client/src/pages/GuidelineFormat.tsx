@@ -2894,7 +2894,7 @@ export default function GuidelineFormat() {
                 stage: "5",
                 title: "Timestamp validation",
                 detail:
-                  "GoTranscript requires timestamps every 2 minutes; TranscribeMe requires them every paragraph. VideoText validates that required timestamps are present, correctly formatted ([00:02:00] not 00:02:00), and fall on speaker turns rather than mid-sentence. Missing or malformed timestamps are flagged before export.",
+                  "When a GoTranscript job requires timestamping, stamps are every 2 minutes or at every speaker change (per job instructions). TranscribeMe requires them every paragraph. VideoText validates that required timestamps are present, correctly formatted ([00:02:00] not 00:02:00), and fall on speaker turns rather than mid-sentence. Missing or malformed timestamps are flagged before export.",
                 label: "Automated here",
                 blue: true,
               },
@@ -2902,7 +2902,7 @@ export default function GuidelineFormat() {
                 stage: "6",
                 title: "Human reviewer QA pass",
                 detail:
-                  "A human reviewer reads through the formatted transcript against the original audio. Focus areas: proper nouns the AI may have misheard, inaudible sections that need [inaudible] tags, and any segments flagged as below the QA confidence threshold. VideoText surfaces exactly which segments need manual review — no need to scan the whole document.",
+                  "A human reviewer reads through the formatted transcript against the original audio. Focus areas: proper nouns the AI may have misheard, inaudible sections that need [inaudible 00:00:00] or [unintelligible 00:00:00] tags, and any segments flagged as below the QA confidence threshold. VideoText surfaces exactly which segments need manual review — no need to scan the whole document.",
                 label: "Manual",
                 blue: false,
               },
@@ -3254,7 +3254,7 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
             },
             {
               title: "Timestamp integrity validation",
-              body: "For formats that require timestamps (GoTranscript every 2 min, TranscribeMe every paragraph), the validator checks that: timestamps are present at required intervals, the format matches the platform spec exactly ([HH:MM:SS] vs HH:MM:SS), and timestamps fall on speaker turn boundaries rather than mid-sentence. Missing or misplaced timestamps are flagged by position in the transcript.",
+              body: "For formats that require timestamps (GoTranscript: every 2 min or speaker change when job requires; TranscribeMe: every paragraph), the validator checks that: timestamps are present at required intervals, the format matches the platform spec exactly ([HH:MM:SS] vs HH:MM:SS), and timestamps fall on speaker turn boundaries rather than mid-sentence. Missing or misplaced timestamps are flagged by position in the transcript.",
             },
             {
               title: "Formatting conflict detection",

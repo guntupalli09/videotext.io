@@ -940,7 +940,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
           name: 'What are the GoTranscript formatting rules?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'GoTranscript uses non-verbatim format: remove filler words, false starts, and repeated words unless they change meaning. Speaker labels use Speaker 1:, Speaker 2: format. Timestamps are included every 2 minutes. Inaudible sections use [inaudible]. Numbers 1–10 spelled out; 11+ use numerals. The VideoText GoTranscript preset enforces these rules automatically.',
+            text: 'GoTranscript uses clean verbatim: remove filler words, false starts, and repetitions unless they change meaning. Speaker labels are bold (Speaker 1:, names, or roles). Timestamps are job-dependent — when required, use bold [00:00:00] every 2 minutes or at speaker changes. Inaudible: [inaudible 00:00:00]; unintelligible: [unintelligible 00:00:00]. Crosstalk: [crosstalk]. Numbers: spell out 0–9, numerals 10+. The VideoText GoTranscript preset reflects these rules.',
           },
         },
         {
