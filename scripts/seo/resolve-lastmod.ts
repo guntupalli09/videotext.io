@@ -213,3 +213,30 @@ export function resolveLastmodForPath(canonicalPath: string): string | null {
 export function maxLastmodForPaths(paths: string[]): string | null {
   return maxDate(paths.map((p) => resolveLastmodForPath(p)))
 }
+
+const ZERO_SHA = '0000000000000000000000000000000000000000'
+
+/** Oldest commit date in the deploy range (Vercel/GitHub), or HEAD / today. */
+export function getDeploySinceDate(): string {
+  if (process.env.INDEXNOW_SINCE) return normalizeDate(process.env.INDEXNOW_SINCE)
+
+  const prev = process.env.VERCEL_GIT_PREVIOUS_SHA || process.env.GITHUB_EVENT_BEFORE
+  const cur = process.env.VERCEL_GIT_COMMIT_SHA || process.env.GITHUB_SHA || 'HEAD'
+
+  if (prev && prev !== ZERO_SHA) {
+    const log = runGit(`log --format=%cs ${prev}..${cur}`)
+    const dates = log?.split('\n').filter(Boolean) ?? []
+    if (dates.length > 0) return dates.sort()[0]!
+  }
+
+  return normalizeDate(runGit('log -1 --format=%cs') ?? new Date().toISOString())
+}
+
+/** Paths whose git-resolved lastmod is on or after sinceDate (YYYY-MM-DD). */
+export function getChangedPathsSince(sinceDate: string, paths: string[]): string[] {
+  const since = normalizeDate(sinceDate)
+  return paths.filter((p) => {
+    const lastmod = resolveLastmodForPath(p)
+    return Boolean(lastmod && lastmod >= since)
+  })
+}
