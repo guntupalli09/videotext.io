@@ -1,0 +1,48 @@
+# Post-deploy IndexNow: push git-changed videotext.io URLs to Bing/Yandex/Seznam/Naver.
+# Does not cover Google — resubmit sitemap.xml in Search Console for that.
+name: IndexNow Post-Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  indexnow:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install root deps
+        run: npm install
+
+      - name: Wait for key file on production
+        run: |
+          KEY="${INDEXNOW_KEY:-e1cc2e9c3c884d9789d712321c96181a}"
+          for i in $(seq 1 36); do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "https://videotext.io/${KEY}.txt" || echo "000")
+            if [ "$code" = "200" ]; then
+              echo "Key file live at https://videotext.io/${KEY}.txt"
+              exit 0
+            fi
+            echo "Waiting for deploy (${i}/36)…"
+            sleep 10
+          done
+          echo "Key file not yet reachable — submitting anyway (IndexNow may retry)"
+        env:
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+
+      - name: Submit changed URLs to IndexNow
+        run: npm run seo:indexnow
+        env:
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+          GITHUB_EVENT_BEFORE: ${{ github.event.before }}
+          GITHUB_SHA: ${{ github.sha }}
+          SITE_URL: https://videotext.io
