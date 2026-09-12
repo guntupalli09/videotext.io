@@ -16,6 +16,7 @@ import { useProPricing } from '../contexts/PricingContext';
 import { startCheckout } from '../lib/startCheckout';
 import { trackEvent } from '../lib/analytics';
 import { ArrowRight } from 'lucide-react';
+import GuidelineFormatApplyCta from '../components/GuidelineFormatApplyCta';
 
 const HIGH_INTENT_GUIDES = [
   { label: 'Video to Transcript (Primary)', path: '/video-to-transcript', desc: 'Upload MP4/MOV — transcript, SRT/VTT, summary, and chapters' },
@@ -209,6 +210,16 @@ export default function Home() {
       <Hero />
       <Features />
       <UseCases />
+      <section className="border-y border-gray-100 bg-gray-50 py-section transition-colors duration-500 dark:border-gray-800 dark:bg-gray-900/40">
+        <div className="mx-auto max-w-3xl px-6">
+          <GuidelineFormatApplyCta
+            sourcePage="/"
+            brandName="GoTranscript"
+            preset="gotranscript"
+            presetLabel="GoTranscript"
+          />
+        </div>
+      </section>
       <HowItWorks />
       <Testimonials />
       <CompetitorSection />

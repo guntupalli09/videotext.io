@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   ChevronDown,
   ChevronRight,
@@ -40,6 +40,8 @@ import {
   PRESET_DATA,
   type GuidelinePresetKey,
 } from "./guidelineFormatPresetData";
+import { captureAttributionFromUrl, getStoredAttribution } from "../lib/attribution";
+import { trackEvent } from "../lib/analytics";
 
 type EditableRule = {
   id: string;
@@ -225,6 +227,8 @@ function applyReviewEditsToOutputText(
 }
 
 export default function GuidelineFormat() {
+  const [searchParams] = useSearchParams();
+  const presetFromUrlApplied = useRef(false);
   const [transcript, setTranscript] = useState("");
   const [prefillBanner, setPrefillBanner] = useState(false);
   const [selectValue, setSelectValue] = useState<SelectValue>("");
@@ -293,6 +297,26 @@ export default function GuidelineFormat() {
       setPrefillBanner(true);
     }
   }, []);
+
+  useEffect(() => {
+    captureAttributionFromUrl();
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (presetFromUrlApplied.current) return;
+    const raw = searchParams.get("preset")?.trim();
+    if (!raw || !(raw in PRESET_DATA)) return;
+    presetFromUrlApplied.current = true;
+    const key = raw as GuidelinePresetKey;
+    setSelectValue(key);
+    setSelectedPreset(key);
+    setRules(rulesFromPreset(PRESET_DATA[key]));
+    setCustomFile(null);
+    requestAnimationFrame(() => {
+      transcriptTextareaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      transcriptTextareaRef.current?.focus();
+    });
+  }, [searchParams]);
 
   useEffect(() => {
     if (!transcript.trim()) setTranscriptLoadedFromFile(null);
@@ -530,6 +554,20 @@ export default function GuidelineFormat() {
       }
       setJobToken(data.jobToken || null);
       setJobId(data.jobId);
+      try {
+        const attribution = getStoredAttribution();
+        trackEvent("job_started", {
+          job_id: data.jobId,
+          tool_type: "guideline-format",
+          preset_id: selectedPreset,
+          utm_source: attribution?.utmSource ?? undefined,
+          utm_medium: attribution?.utmMedium ?? undefined,
+          utm_campaign: attribution?.utmCampaign ?? undefined,
+          referrer_page: attribution?.referrer ?? undefined,
+        });
+      } catch {
+        /* non-blocking */
+      }
     } catch (e) {
       setSubmitError(e instanceof Error ? e.message : "Network error");
       setIsSubmitting(false);

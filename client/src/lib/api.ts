@@ -1,7 +1,7 @@
 import { API_ORIGIN } from './apiBase'
 import { trackEvent } from './analytics'
 import { getSamplesModuleAttribution } from './samplesAttribution'
-import { getStoredAttribution } from './attribution'
+import { getSignupAttributionPayload, getStoredAttribution } from './attribution'
 
 /** True when requests hit same origin (e.g. Vite dev server) and are proxied to backend — use conservative chunking. */
 function isLikelyDevProxy(): boolean {
@@ -1579,7 +1579,7 @@ export async function completeSignup(verificationToken: string, password: string
   email: string
   referralApplied?: boolean
 }> {
-  const attribution = getStoredAttribution()
+  const attribution = getSignupAttributionPayload()
   const response = await api('/api/auth/complete-signup', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -1617,7 +1617,7 @@ export async function loginWithGoogle(credential: string, referralCode?: string 
   isNewUser: boolean
   referralApplied?: boolean
 }> {
-  const attribution = getStoredAttribution()
+  const attribution = getSignupAttributionPayload()
   const response = await api('/api/auth/google', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

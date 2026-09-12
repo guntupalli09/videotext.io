@@ -9,7 +9,6 @@ import {
   ArrowRight,
   BookOpen,
   FileText,
-  Zap,
   ChevronDown,
   ChevronRight,
   ClipboardList,
@@ -19,6 +18,8 @@ import {
 import { useState } from 'react'
 import { getBrandDataForPath, type BrandData } from '../data/brandGuidelineData'
 import type { FaqItem, SeoDeepContent } from '../lib/seoRegistry'
+import GuidelineFormatApplyCta from '../components/GuidelineFormatApplyCta'
+import { presetForGuidelinePage } from '../lib/guidelineFormatCta'
 
 interface BrandGuidelinePageProps {
   seoH1?: string
@@ -75,6 +76,9 @@ function FaqItem({ q, a }: { q: string; a: string }) {
     </div>
   )
 }
+
+/** Bing AI top citations — guideline → tool conversion test (no A/B). */
+const GUIDELINE_TOOL_CTA_PATHS = new Set(['/gotranscript-guidelines', '/gotranscript-test-guide'])
 
 const BRAND_PAGE_LINKS: { label: string; path: string; brand: string }[] = [
   { label: 'Rev Guidelines', path: '/rev-transcript-guidelines', brand: 'Rev' },
@@ -173,34 +177,7 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
           </h1>
           <p className="text-lg text-gray-500 dark:text-white/50 max-w-3xl mb-6">{intro}</p>
 
-          <div className="mb-6 rounded-2xl border-2 border-blue-400 dark:border-blue-600 bg-white/90 dark:bg-gray-900/80 p-5 max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-widest text-blue-700 dark:text-blue-300">
-              Skip the manual reformat
-            </p>
-            <p className="mt-1 text-lg font-medium text-gray-900 dark:text-white">
-              Format your file to these guidelines in one click
-            </p>
-            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-              Paste the transcript on Guideline Format and apply a {brand.shortName} preset. Free: 3 imports/mo, no card. Files deleted after processing.
-            </p>
-            <Link
-              to="/guideline-format"
-              className="mt-3 inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-lg shadow-blue-500/20 hover:shadow-xl transition-all"
-            >
-              <Zap className="w-4 h-4" />
-              Format your file to these guidelines in one click
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-            <Link
-              to="/guideline-format"
-              className="inline-flex items-center gap-2 text-blue-700 dark:text-blue-300 font-semibold text-sm hover:underline"
-            >
-              Open Guideline Format
-              <ArrowRight className="w-4 h-4" />
-            </Link>
             <a
               href="#quick-rules"
               className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 font-semibold text-sm hover:underline"
@@ -280,6 +257,15 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
             Format: <code className="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs font-mono">{brand.speakerLabelFormat}</code>
           </p>
         </section>
+
+        {GUIDELINE_TOOL_CTA_PATHS.has(pathname) && (
+          <GuidelineFormatApplyCta
+            sourcePage={pathname}
+            brandName={brand.brandName}
+            preset={presetForGuidelinePage(pathname)}
+            presetLabel={brand.shortName}
+          />
+        )}
 
         {/* Quick Rules Table */}
         <section id="quick-rules" aria-labelledby="quick-rules-heading">
