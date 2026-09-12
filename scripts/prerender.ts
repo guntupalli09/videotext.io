@@ -187,6 +187,14 @@ const STATIC_META: RouteMeta[] = [
     ],
   },
   {
+    path: '/guideline-format',
+    title: `Client Rejected Your Transcript Format? | ${SITE_NAME}`,
+    description:
+      'Apply Rev, GoTranscript, or Scribie presets — speaker labels, verbatim mode, punctuation. Paste transcript, export client-ready copy.',
+    h1: 'Format Transcripts to Client Guidelines',
+    breadcrumbLabel: 'Format to client guidelines',
+  },
+  {
     path: '/video-to-subtitles',
     title: `Video to Subtitles — Full Caption Hub | ${SITE_NAME}`,
     description:
@@ -901,7 +909,7 @@ const MONEY_TITLE_PATHS = new Set([
   '/video-to-srt',
   '/srt-generator',
   '/voice-recorder',
-  '/rev-style-guide',
+  '/guideline-format',
 ])
 
 function stripTrailingTitleStops(value: string): string {

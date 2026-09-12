@@ -821,8 +821,7 @@
       "source": "react-router",
       "indexable": false,
       "prerendered": false,
-      "ssrMode": "redirect-301",
-      "redirectTo": "/rev-style-guide",
+      "ssrMode": "seo-document",
       "ssrCovered": true
     },
     {
