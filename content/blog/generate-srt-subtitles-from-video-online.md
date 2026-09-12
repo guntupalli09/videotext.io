@@ -11,9 +11,9 @@ tags:
 
 # Generate SRT subtitles from video online (MP4 to captions that editors actually ship)
 
-High-intent searches cluster around **generate subtitles from video**, **MP4 to SRT**, **auto captions download**, and **AI subtitles for YouTube**. The commercial intent is simple: producers want a timed **SRT** or **VTT** file they can upload, tweak minimally, and publish—not a wall of text with no cues.
+**Generate SRT from video**, **MP4 to SRT**, and **auto captions download** — same high-intent cluster. Producers need timed cues for Premiere, YouTube Studio, and translation — not a text wall.
 
-This article ties those keywords to a workflow that matches how video teams actually deliver.
+> **MP4 → SRT in one step:** [Video → Subtitles →](https://videotext.io/video-to-subtitles) · [Fix timing →](https://videotext.io/fix-subtitles) · [Translate SRT →](https://videotext.io/translate-subtitles)
 
 ---
 

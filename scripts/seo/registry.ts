@@ -6,15 +6,16 @@ import * as path from 'path'
 import * as fs from 'fs'
 import { getProgrammaticSeoEntries } from '../../client/src/lib/generateSeoPages'
 import { getCanonicalPathForRoute } from '../../client/src/lib/primaryUrls'
+export { SLUG_TO_PRIMARY } from '../../client/src/lib/slugToPrimary'
 
 const SCRIPT_DIR = __dirname
 const REPO_ROOT = path.join(SCRIPT_DIR, '..', '..')
 const REGISTRY_PATH = path.join(REPO_ROOT, 'client', 'src', 'lib', 'seoRegistry.ts')
+const CONTENT_BLOG_DIR = path.join(REPO_ROOT, 'content', 'blog')
 
 /** Static routes (all indexable). Single source of truth; sync script imports from here. */
 export const STATIC_ROUTES = [
   '/',
-  '/site-index',
   '/samples',
   '/pricing',
   '/privacy',
@@ -26,18 +27,19 @@ export const STATIC_ROUTES = [
   '/fix-subtitles',
   '/burn-subtitles',
   '/compress-video',
-  '/batch-process',
+  '/guideline-format',
   '/best-transcription-tool',
   '/fastest-transcription-tool',
   '/podcast-transcription-tool',
   '/interview-transcription-tool',
   '/transcription-benchmark',
   '/accuracy-test',
+  '/research/transcription-accuracy-benchmark-2026',
   '/fastest-transcription-software',
   '/ai-transcription-tools',
   '/ai-transcription-workflow',
-  '/google-meet-transcription',
-  '/teams-meeting-transcription',
+  '/google-meet-transcript',
+  '/teams-meeting-transcript',
   '/free-captions-and-subtitles',
   '/translation',
   '/voice-recorder',
@@ -91,8 +93,8 @@ export const CORE_PATHS: string[] = [
   '/translate-subtitles',
   '/fix-subtitles',
   '/burn-subtitles',
-  '/batch-process',
   '/compress-video',
+  '/guideline-format',
   '/best-transcription-tool',
   '/fastest-transcription-tool',
   '/podcast-transcription-tool',
@@ -102,8 +104,8 @@ export const CORE_PATHS: string[] = [
   '/fastest-transcription-software',
   '/ai-transcription-tools',
   '/ai-transcription-workflow',
-  '/google-meet-transcription',
-  '/teams-meeting-transcription',
+  '/google-meet-transcript',
+  '/teams-meeting-transcript',
   '/free-captions-and-subtitles',
   '/translation',
   '/voice-recorder',
@@ -111,6 +113,7 @@ export const CORE_PATHS: string[] = [
   '/subtitle-reading-speed',
   '/subtitle-character-checker',
   '/subtitle-word-counter',
+  '/netflix-ttsc-checklist',
   // Cluster A — Platform-specific (high-intent) - moved to Sitemap 2 via seoRegistry.ts
   // Cluster B — Language-specific - moved to Sitemap 2 via seoRegistry.ts
   // Cluster C — Competitor alternatives
@@ -187,7 +190,6 @@ export const CORE_PATHS: string[] = [
  * Previously omitted from sitemaps → weaker discovery vs internal links only.
  */
 export const FREE_TOOL_AND_HUB_PATHS: string[] = [
-  '/site-index',
   '/tools',
   '/tools/srt-to-vtt',
   '/tools/vtt-to-srt',
@@ -208,8 +210,8 @@ export const FREE_TOOL_AND_HUB_PATHS: string[] = [
   '/tools/srt-to-sbv',
   '/tools/ass-to-srt',
   '/tools/ttml-to-srt',
+  '/tools/html-to-srt',
   '/subtitle-tools',
-  '/subtitle-resources',
 ]
 
 /** Programmatic-only paths (from targets × intents). Submit after core. */
@@ -231,11 +233,43 @@ export function getSitemap2Paths(): string[] {
     .filter((p, i, arr) => arr.indexOf(p) === i)
 }
 
-/** All routes (for validation). No duplicates. */
+/** Every markdown post under content/blog/ (source of truth for blog sitemap). */
+export function getAllContentBlogSlugs(): string[] {
+  if (!fs.existsSync(CONTENT_BLOG_DIR)) return []
+  return fs
+    .readdirSync(CONTENT_BLOG_DIR)
+    .filter((f) => f.endsWith('.md') && !f.startsWith('_'))
+    .map((f) => f.replace(/\.md$/, ''))
+    .sort()
+}
+
+/** Hashnode editorial posts — all content/blog slugs as /blog/{slug} paths. */
+export function getHashnodeBlogPaths(): string[] {
+  return getAllContentBlogSlugs().map((slug) => `/blog/${slug}`)
+}
+
+/** Routes that should appear in sitemap (includes Hashnode blog posts on blog.videotext.io). */
+export function getSitemapPaths(): string[] {
+  return [...new Set([...getIndexablePaths(), ...getHashnodeBlogPaths()])]
+    .map((p) => getCanonicalPathForRoute(p))
+    .filter(Boolean)
+    .filter((p) => p !== '/site-index')
+    .filter((p, i, arr) => arr.indexOf(p) === i)
+}
+
+/** Routes that 301 to blog.videotext.io (vercel.json) — no local /dist HTML is expected. */
+export function isHashnodeRedirectRoute(routePath: string): boolean {
+  const p = getCanonicalPathForRoute(routePath)
+  return p === '/blog' || p.startsWith('/blog/')
+}
+
+/** All routes (for validation). No duplicates. Excludes Hashnode-only blog posts (they redirect, not prerender). */
 export function getIndexablePaths(): string[] {
   return [...new Set([...CORE_PATHS, ...getSitemap2Paths()])]
     .map((p) => getCanonicalPathForRoute(p))
     .filter(Boolean)
+    .filter((p) => p !== '/site-index')
+    .filter((p) => !isHashnodeRedirectRoute(p))
     .filter((p, i, arr) => arr.indexOf(p) === i)
 }
 
@@ -260,67 +294,6 @@ export function getExistingIntentKeys(): Set<string> {
     if (m && m[1]) keys.add(m[1])
   }
   return keys
-}
-
-/** Slug to primary path mapping for tool clusters (canonical tool URL). */
-export const SLUG_TO_PRIMARY: Record<string, string> = {
-  'video-to-text': '/video-to-transcript',
-  'mp4-to-text': '/video-to-transcript',
-  'mp4-to-srt': '/video-to-subtitles',
-  'subtitle-generator': '/video-to-subtitles',
-  'srt-translator': '/translate-subtitles',
-  'meeting-transcript': '/video-to-transcript',
-  'speaker-diarization': '/video-to-transcript',
-  'video-summary-generator': '/video-to-transcript',
-  'video-chapters-generator': '/video-to-transcript',
-  'keyword-indexed-transcript': '/video-to-transcript',
-  'srt-to-vtt': '/video-to-subtitles',
-  'subtitle-converter': '/video-to-subtitles',
-  'subtitle-timing-fixer': '/fix-subtitles',
-  'subtitle-validation': '/fix-subtitles',
-  'subtitle-translator': '/translate-subtitles',
-  'multilingual-subtitles': '/translate-subtitles',
-  'subtitle-language-checker': '/translate-subtitles',
-  'subtitle-grammar-fixer': '/fix-subtitles',
-  'subtitle-line-break-fixer': '/fix-subtitles',
-  'hardcoded-captions': '/burn-subtitles',
-  'video-with-subtitles': '/burn-subtitles',
-  'video-compressor': '/compress-video',
-  'reduce-video-size': '/compress-video',
-  'batch-video-processing': '/batch-process',
-  'bulk-subtitle-export': '/batch-process',
-  'bulk-transcript-export': '/batch-process',
-  // Transcription variants
-  'transcribe-video': '/video-to-transcript',
-  'video-transcription': '/video-to-transcript',
-  'free-transcription': '/video-to-transcript',
-  'online-transcription': '/video-to-transcript',
-  'ai-transcription': '/video-to-transcript',
-  'audio-to-text': '/video-to-transcript',
-  'podcast-transcript': '/video-to-transcript',
-  'zoom-recording-transcript': '/video-to-transcript',
-  'interview-transcription': '/video-to-transcript',
-  'lecture-transcription': '/video-to-transcript',
-  // YouTube transcription (high SEO potential)
-  'youtube-to-transcript': '/youtube-to-transcript',
-  'youtube-transcript': '/youtube-to-transcript',
-  'youtube-video-transcript': '/youtube-to-transcript',
-  'transcribe-youtube-video': '/youtube-to-transcript',
-  'youtube-to-text': '/youtube-to-transcript',
-  // Format-specific transcription
-  'mov-to-text': '/video-to-transcript',
-  'webm-to-text': '/video-to-transcript',
-  // Subtitle/caption variants
-  'automatic-subtitles': '/video-to-subtitles',
-  'caption-generator': '/video-to-subtitles',
-  'closed-caption-generator': '/video-to-subtitles',
-  'free-subtitle-generator': '/video-to-subtitles',
-  'video-to-srt': '/video-to-subtitles',
-  'srt-generator': '/video-to-subtitles',
-  // Translation variants
-  'translate-video': '/translate-subtitles',
-  'video-translation': '/translate-subtitles',
-  'bulk-video-transcription': '/batch-process',
 }
 
 export function pathToSlug(routePath: string): string {

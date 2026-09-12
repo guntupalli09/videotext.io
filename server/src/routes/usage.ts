@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express'
 import { getUser, saveUser, User, atomicResetDailyImportIfNeeded, atomicResetDailyMinutesIfNeeded } from '../models/User'
-import { getPlanLimits, getJobPriority, isProSoftCapActive } from '../utils/limits'
+import { getMaxDailyImports, getPlanLimits, getJobPriority, isProSoftCapActive } from '../utils/limits'
 import { getAuthFromRequest, getEffectiveUserId } from '../utils/auth'
 import { resetDailyImportIfNeeded, resetDailyMinutesIfNeeded, resetUserUsageIfNeeded } from '../utils/usageReset'
 import { getPlanAndEmailForStripeCustomer, getSubscriptionPeriodEnd } from '../services/stripe'
@@ -148,16 +148,21 @@ router.get('/current', async (req: Request, res: Response) => {
       : undefined
 
   if (plan === 'free') {
-    const importCountToday = usage.importCountToday ?? 0
+    const importCount = usage.importCount ?? 0
     const limit = 3
-    const todayResetDate = usage.importCountTodayResetDate ?? new Date(now.getTime() + 24 * 60 * 60 * 1000)
+    const resetDate = usage.resetDate ?? new Date(now.getFullYear(), now.getMonth() + 1, 1)
+    const bonusImportCredits = user?.bonusImportCredits ?? 0
+    const monthlyRemaining = Math.max(0, limit - importCount)
     res.json({
       plan: 'free',
       quotaType: 'imports',
-      used: importCountToday,
+      used: importCount,
       limit,
-      remaining: Math.max(0, limit - importCountToday),
-      resetDate: todayResetDate.toISOString(),
+      remaining: monthlyRemaining + bonusImportCredits,
+      bonusImportCredits,
+      dailyRemaining: monthlyRemaining,
+      monthlyRemaining,
+      resetDate: resetDate.toISOString(),
       email: displayEmail,
       limits: {
         maxLanguages: limits.maxLanguages,
@@ -168,7 +173,8 @@ router.get('/current', async (req: Request, res: Response) => {
       usage: {
         videoCount: usage.videoCount,
         batchCount: usage.batchCount,
-        importCountToday,
+        importCount,
+        importCountToday: usage.importCountToday ?? 0,
       },
       overages: { minutes: 0, charge: 0 },
       queuePriority: getJobPriority(plan),
@@ -203,6 +209,7 @@ router.get('/current', async (req: Request, res: Response) => {
       overages: { minutes: 0, charge: 0 },
       resetDate: resetDate.toISOString(),
       billingPeriodEnd: billingPeriodEnd?.toISOString() ?? null,
+      billingPeriodStart: user!.billingPeriodStart?.toISOString() ?? null,
       queuePriority: getJobPriority(plan),
     })
     return

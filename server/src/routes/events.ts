@@ -46,6 +46,12 @@ const VALID_EVENTS = new Set([
   'stripe_redirect',
   'paywall_shown',
   'free_plan_nudge_seen',
+  'checkout_abandoned',
+  'second_job_upgrade_nudge_seen',
+  'third_job_upgrade_nudge_seen',
+  'cancellation_reason_submitted',
+  'pro_onboarding_nudge_seen',
+  'result_upgrade_card_seen',
 ])
 
 router.post('/', eventsLimit, async (req: Request, res: Response) => {

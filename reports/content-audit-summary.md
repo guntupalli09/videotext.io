@@ -6,13 +6,13 @@ Generated: local-dist-snapshot
 
 | Metric | Count |
 | --- | --- |
-| Total pages audited | 291 |
-| Missing local /dist HTML | 0 |
+| Total pages audited | 265 |
+| Missing local /dist HTML | 1 |
 | Pages with banned phrases | 0 |
-| Pages flagged thin | 0 |
-| Pages with high duplication | 273 |
+| Pages flagged thin | 2 |
+| Pages with high duplication | 251 |
 | High thin-content risk pages | 0 |
-| Critical thin-content risk pages | 0 |
+| Critical thin-content risk pages | 1 |
 
 
 ## Pages with banned phrases
@@ -22,189 +22,192 @@ _None._
 
 ## Pages flagged thin
 
-_None._
+| Path | Words | Paragraphs | H2s | FAQs | Thin risk |
+| --- | --- | --- | --- | --- | --- |
+| /blog | 0 | 0 | 0 | 0 | 100 (CRITICAL THIN-CONTENT RISK) |
+| /research/transcription-accuracy-benchmark-2026 | 268 | 6 | 4 | 4 | 8 (HEALTHY) |
 
 
 ## Pages with high duplication
 
 | Path | Unique paragraph ratio | Reused content | Max paragraph reuse | Max FAQ reuse |
 | --- | --- | --- | --- | --- |
-| /blog/how-to-transcribe-audio-to-text-free | 100% | 96% | 21 | 4 |
-| /blog/how-to-transcribe-podcast-episode | 100% | 96% | 21 | 4 |
-| /blog/how-to-transcribe-zoom-recording | 100% | 96% | 21 | 4 |
-| /blog/what-is-transcript-qa | 100% | 96% | 21 | 4 |
-| /blog/batch-subtitles-for-creators | 100% | 96% | 50 | 27 |
-| /blog/freelance-transcription-style-guide-cheatsheet | 100% | 96% | 31 | 2 |
-| /blog/how-to-add-captions-youtube-video | 100% | 96% | 6 | 2 |
-| /blog/how-to-add-subtitles-to-video-free | 100% | 96% | 50 | 27 |
-| /blog/how-to-get-youtube-transcript | 100% | 96% | 6 | 2 |
-| /blog/how-to-translate-subtitles | 100% | 96% | 50 | 27 |
-| /blog/rev-style-guide-transcript-formatter | 100% | 96% | 31 | 2 |
-| /burn-subtitles | 100% | 96% | 50 | 27 |
-| /fix-subtitles | 100% | 96% | 50 | 27 |
-| /free-captions-and-subtitles | 100% | 96% | 50 | 27 |
-| /subtitle-character-checker | 100% | 96% | 50 | 27 |
-| /subtitle-reading-speed | 100% | 96% | 50 | 27 |
-| /subtitle-resources | 100% | 96% | 50 | 27 |
-| /subtitle-tools | 100% | 96% | 50 | 27 |
-| /subtitle-validator | 100% | 96% | 50 | 27 |
-| /subtitle-word-counter | 100% | 96% | 50 | 27 |
-| /tools/ass-to-srt | 100% | 96% | 50 | 27 |
-| /tools/merge-srt-files | 100% | 96% | 50 | 27 |
-| /tools/sbv-to-srt | 100% | 96% | 50 | 27 |
-| /tools/shift-subtitle-timing | 100% | 96% | 50 | 27 |
-| /tools/srt-to-sbv | 100% | 96% | 50 | 27 |
-| /tools/srt-to-text | 100% | 96% | 50 | 27 |
-| /tools/srt-to-vtt | 100% | 96% | 50 | 27 |
-| /tools/subtitle-character-checker | 100% | 96% | 50 | 27 |
-| /tools/subtitle-reading-speed | 100% | 96% | 50 | 27 |
-| /tools/subtitle-validator | 100% | 96% | 50 | 27 |
-| /tools/subtitle-word-counter | 100% | 96% | 50 | 27 |
-| /tools/ttml-to-srt | 100% | 96% | 50 | 27 |
-| /tools/vtt-to-srt | 100% | 96% | 50 | 27 |
-| /translate-subtitles | 100% | 96% | 50 | 27 |
-| /video-to-subtitles | 100% | 96% | 50 | 27 |
+| /subtitle-character-checker | 100% | 100% | 46 | 24 |
+| /subtitle-word-counter | 100% | 100% | 46 | 24 |
+| /tools/subtitle-character-checker | 100% | 100% | 46 | 24 |
+| /tools/subtitle-word-counter | 100% | 100% | 46 | 24 |
+| /burn-subtitles | 100% | 96% | 46 | 24 |
+| /fix-subtitles | 100% | 96% | 46 | 24 |
+| /free-captions-and-subtitles | 100% | 96% | 46 | 24 |
+| /subtitle-reading-speed | 100% | 96% | 46 | 24 |
+| /subtitle-tools | 100% | 96% | 46 | 24 |
+| /subtitle-validator | 100% | 96% | 46 | 24 |
+| /tools/ass-to-srt | 100% | 96% | 46 | 24 |
+| /tools/html-to-srt | 100% | 96% | 46 | 24 |
+| /tools/merge-srt-files | 100% | 96% | 46 | 24 |
+| /tools/sbv-to-srt | 100% | 96% | 46 | 24 |
+| /tools/shift-subtitle-timing | 100% | 96% | 46 | 24 |
+| /tools/srt-to-sbv | 100% | 96% | 46 | 24 |
+| /tools/srt-to-text | 100% | 96% | 46 | 24 |
+| /tools/srt-to-vtt | 100% | 96% | 46 | 24 |
+| /tools/subtitle-reading-speed | 100% | 96% | 46 | 24 |
+| /tools/subtitle-validator | 100% | 96% | 46 | 24 |
+| /tools/ttml-to-srt | 100% | 96% | 46 | 24 |
+| /tools/vtt-to-srt | 100% | 96% | 46 | 24 |
+| /translate-subtitles | 100% | 96% | 46 | 24 |
+| /video-to-subtitles | 100% | 96% | 46 | 24 |
 | /accuracy-test | 100% | 96% | 5 | 3 |
-| /blog/clean-verbatim-vs-full-verbatim | 100% | 96% | 61 | 3 |
-| /blog/srt-vs-vtt-subtitle-formats | 100% | 96% | 61 | 3 |
-| /compare | 100% | 96% | 61 | 3 |
 | /fastest-transcription-software | 100% | 96% | 5 | 3 |
 | /transcription-benchmark | 100% | 96% | 5 | 3 |
-| /audio-to-text-converter | 100% | 91% | 26 | 0 |
-| /best-podcast-transcription-tool | 100% | 91% | 21 | 0 |
-| /add-subtitles-to-video | 100% | 90% | 50 | 0 |
-| /auto-subtitle-generator | 100% | 90% | 50 | 0 |
-| /best-youtube-transcription-tool | 100% | 90% | 6 | 0 |
-| /caption-video-online | 100% | 90% | 50 | 0 |
-| /video-caption-generator | 100% | 90% | 50 | 0 |
-| /movavi-alternative | 100% | 86% | 61 | 33 |
-| /notability-alternative | 100% | 86% | 61 | 2 |
-| /submagic-alternative | 100% | 86% | 61 | 33 |
-| /superwhisper-alternative | 100% | 86% | 61 | 33 |
-| /video-to-text-converter | 100% | 86% | 21 | 0 |
-| /videoProc-alternative | 100% | 86% | 61 | 33 |
-| /vizard-alternative | 100% | 86% | 61 | 33 |
-| /voice-to-text-converter | 100% | 86% | 21 | 0 |
-| /vomo-alternative | 100% | 86% | 61 | 33 |
-| /webinar-transcription | 100% | 86% | 21 | 0 |
-| /whisperx-alternative | 100% | 86% | 61 | 33 |
-| /zubtitle-alternative | 100% | 86% | 61 | 33 |
-| /burn-subtitles-into-video | 100% | 86% | 50 | 0 |
-| /dictation-io-alternative | 100% | 86% | 61 | 0 |
-| /elevenlabs-alternative | 100% | 86% | 61 | 0 |
-| /generate-subtitles-from-video | 100% | 86% | 50 | 0 |
-| /speechmatics-alternative | 100% | 86% | 61 | 0 |
-| /speechtexter-alternative | 100% | 86% | 61 | 0 |
-| /whispertype-alternative | 100% | 86% | 61 | 0 |
-| /youtube-subtitle-generator | 100% | 86% | 6 | 0 |
-| /adobe-premiere-captions-alternative | 100% | 83% | 61 | 5 |
-| /assembly-ai-alternative | 100% | 83% | 61 | 33 |
-| /castmagic-alternative | 100% | 83% | 61 | 33 |
-| /daily-transcripts-format-guide | 100% | 83% | 31 | 0 |
-| /daily-transcripts-style-guide | 100% | 83% | 31 | 0 |
-| /free-voice-to-text | 100% | 83% | 21 | 0 |
-| /happy-scribe-format-guide | 100% | 83% | 31 | 0 |
-| /kapwing-alternative | 100% | 83% | 61 | 33 |
-| /riverside-alternative | 100% | 83% | 61 | 33 |
-| /speechpad-format-guide | 100% | 83% | 31 | 0 |
-| /transcribio-format-guide | 100% | 83% | 31 | 0 |
-| /transcribio-style-guide | 100% | 83% | 31 | 0 |
-| /verbit-format-guide | 100% | 83% | 31 | 0 |
-| /voice-to-text-online | 100% | 83% | 21 | 0 |
+| /audio-to-text-converter | 100% | 91% | 25 | 0 |
+| /best-podcast-transcription-tool | 100% | 91% | 16 | 0 |
+| /add-subtitles-to-video | 100% | 90% | 46 | 0 |
+| /auto-subtitle-generator | 100% | 90% | 46 | 0 |
+| /caption-video-online | 100% | 90% | 46 | 0 |
+| /video-caption-generator | 100% | 90% | 46 | 0 |
+| /movavi-alternative | 100% | 86% | 59 | 33 |
+| /notability-alternative | 100% | 86% | 59 | 2 |
+| /submagic-alternative | 100% | 86% | 59 | 33 |
+| /superwhisper-alternative | 100% | 86% | 59 | 33 |
+| /video-to-text-converter | 100% | 86% | 16 | 0 |
+| /videoProc-alternative | 100% | 86% | 59 | 33 |
+| /vizard-alternative | 100% | 86% | 59 | 33 |
+| /voice-to-text-converter | 100% | 86% | 16 | 0 |
+| /vomo-alternative | 100% | 86% | 59 | 33 |
+| /webinar-transcription | 100% | 86% | 16 | 0 |
+| /whisperx-alternative | 100% | 86% | 59 | 33 |
+| /zubtitle-alternative | 100% | 86% | 59 | 33 |
+| /dictation-io-alternative | 100% | 86% | 59 | 0 |
+| /elevenlabs-alternative | 100% | 86% | 59 | 0 |
+| /generate-subtitles-from-video | 100% | 86% | 46 | 2 |
+| /speechmatics-alternative | 100% | 86% | 59 | 0 |
+| /speechtexter-alternative | 100% | 86% | 59 | 0 |
+| /whispertype-alternative | 100% | 86% | 59 | 0 |
+| /youtube-subtitle-generator | 100% | 86% | 3 | 0 |
+| /adobe-premiere-captions-alternative | 100% | 83% | 59 | 5 |
+| /assembly-ai-alternative | 100% | 83% | 59 | 33 |
+| /castmagic-alternative | 100% | 83% | 59 | 33 |
+| /daily-transcripts-format-guide | 100% | 83% | 29 | 0 |
+| /daily-transcripts-style-guide | 100% | 83% | 29 | 0 |
+| /free-voice-to-text | 100% | 83% | 16 | 0 |
+| /happy-scribe-format-guide | 100% | 83% | 29 | 0 |
+| /kapwing-alternative | 100% | 83% | 59 | 33 |
+| /riverside-alternative | 100% | 83% | 59 | 33 |
+| /speechpad-format-guide | 100% | 83% | 29 | 0 |
+| /transcribio-format-guide | 100% | 83% | 29 | 0 |
+| /transcribio-style-guide | 100% | 83% | 29 | 0 |
+| /verbit-format-guide | 100% | 83% | 29 | 0 |
+| /voice-to-text-online | 100% | 83% | 16 | 0 |
 | /youtube-auto-captions-alternative | 100% | 83% | 19 | 33 |
-| /best-caption-generator | 100% | 82% | 50 | 0 |
+| /best-caption-generator | 100% | 82% | 46 | 0 |
 | /best-transcription-tool-for-journalists | 100% | 82% | 5 | 0 |
 | /best-transcription-tool-for-students | 100% | 82% | 5 | 0 |
-| /caption-maker | 100% | 82% | 50 | 0 |
-| /deepgram-alternative | 100% | 82% | 61 | 0 |
-| /ditto-transcripts-alternative | 100% | 82% | 61 | 33 |
-| /google-docs-voice-typing-alternative | 100% | 82% | 61 | 0 |
-| /granola-alternative | 100% | 82% | 61 | 0 |
-| /krisp-alternative | 100% | 82% | 61 | 33 |
-| /maestra-alternative | 100% | 82% | 61 | 33 |
-| /microsoft-word-transcription-alternative | 100% | 82% | 61 | 0 |
-| /online-subtitle-editor | 100% | 82% | 50 | 0 |
-| /shorts-captions | 100% | 82% | 50 | 5 |
-| /speechify-alternative | 100% | 82% | 61 | 0 |
-| /speechnotes-alternative | 100% | 82% | 61 | 0 |
-| /subtitle-edit-alternative | 100% | 82% | 61 | 0 |
-| /tactiq-alternative | 100% | 82% | 61 | 0 |
+| /caption-maker | 100% | 82% | 46 | 0 |
+| /deepgram-alternative | 100% | 82% | 59 | 0 |
+| /ditto-transcripts-alternative | 100% | 82% | 59 | 33 |
+| /google-docs-voice-typing-alternative | 100% | 82% | 59 | 0 |
+| /granola-alternative | 100% | 82% | 59 | 0 |
+| /krisp-alternative | 100% | 82% | 59 | 33 |
+| /maestra-alternative | 100% | 82% | 59 | 33 |
+| /microsoft-word-transcription-alternative | 100% | 82% | 59 | 0 |
+| /online-subtitle-editor | 100% | 82% | 46 | 0 |
+| /shorts-captions | 100% | 82% | 46 | 5 |
+| /speechify-alternative | 100% | 82% | 59 | 0 |
+| /speechnotes-alternative | 100% | 82% | 59 | 0 |
+| /subtitle-edit-alternative | 100% | 82% | 59 | 0 |
+| /tactiq-alternative | 100% | 82% | 59 | 0 |
+| /video-captions | 100% | 82% | 46 | 2 |
+| /webex-alternative | 100% | 82% | 59 | 0 |
+| /instagram-reel-transcript | 100% | 80% | 25 | 5 |
+| /screen-recording-transcript | 100% | 80% | 16 | 0 |
+| /tiktok-to-transcript | 100% | 80% | 16 | 0 |
+| /3play-media-format-guide | 100% | 79% | 29 | 0 |
+| /allscribe-alternative | 100% | 79% | 59 | 33 |
+| /daily-transcripts-guidelines | 100% | 79% | 16 | 0 |
+| /fliki-alternative | 100% | 79% | 59 | 33 |
+| /free-speech-to-text | 100% | 79% | 16 | 0 |
+| /genio-alternative | 100% | 79% | 59 | 33 |
+| /gmr-transcript-format-guide | 100% | 79% | 29 | 0 |
+| /gotranscript-transcription-rules | 100% | 79% | 29 | 0 |
+| /headliner-alternative | 100% | 79% | 59 | 33 |
+| /hedy-ai-alternative | 100% | 79% | 59 | 33 |
+| /mem-ai-alternative | 100% | 79% | 59 | 33 |
 
 
 ## Top repeated paragraphs
 
-1. **85 pages** — turn media subtitles or transcript text into an output that is ready for publishing editing accessibility or team handoff
-   - Pages: /, /3play-media-transcription-guidelines, /aac-to-text, /about, /academic-transcription, /ai-captioning, /ai-transcription-tools, /ai-transcription-workflow, /alternatives, /arabic-transcription, /avi-to-text, /batch-process, +73 more
-2. **85 pages** — follow the related links to transcript subtitle translation formatting or free utility flows that match the page intent
-   - Pages: /, /3play-media-transcription-guidelines, /aac-to-text, /about, /academic-transcription, /ai-captioning, /ai-transcription-tools, /ai-transcription-workflow, /alternatives, /arabic-transcription, /avi-to-text, /batch-process, +73 more
-3. **85 pages** — start with the matching videotext tool review the output then export the asset your creator editor client or team needs
-   - Pages: /, /3play-media-transcription-guidelines, /aac-to-text, /about, /academic-transcription, /ai-captioning, /ai-transcription-tools, /ai-transcription-workflow, /alternatives, /arabic-transcription, /avi-to-text, /batch-process, +73 more
-4. **85 pages** — the page links to transcript subtitle translation formatting and export workflows that naturally fit the task
-   - Pages: /, /3play-media-transcription-guidelines, /aac-to-text, /about, /academic-transcription, /ai-captioning, /ai-transcription-tools, /ai-transcription-workflow, /alternatives, /arabic-transcription, /avi-to-text, /batch-process, +73 more
-5. **61 pages** — alternative generates a clean transcript subtitle file requires a separate captioning tool import that captioning tool re transcribes from audio losing the transcript corrections already made or requires manual srt auth…
-   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, +49 more
-6. **61 pages** — some alternatives store uploaded recordings in a project library accessible to workspace members if a recording contains client confidential content a sensitive interview or hipaa adjacent material retention behavior be…
-   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, +49 more
-7. **61 pages** — to add chapters to a youtube description the creator must manually watch the video and note timestamps a transcript based chapter generation workflow replaces that process with auto detected topic transitions eliminatin…
-   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, +49 more
-8. **61 pages** — how many speaker label corrections timestamp format fixes paragraph restructures and filler word passes does each transcript require before it is delivery ready? the tool with the lower cleanup count has lower operation…
-   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, +49 more
-9. **61 pages** — descript full video editor with team collaboration and version history otter ai shared workspace with comment threads temi download and email only videotext shareable review links for non account collaborators no additi…
-   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, +49 more
-10. **61 pages** — test with a 90 minute recording does the alternative require splitting into multiple files? if so how much time does reconnecting the output take? does the final stitched transcript have coherent speaker labels and time…
-   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, +49 more
-11. **61 pages** — does the alternative generate subtitle files? chapter markers? a summary? json export? if generating those outputs requires additional tools add the time and cost of those tools to the comparison before concluding which…
-   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, +49 more
-12. **61 pages** — otter ai 4 hour limit per recording on paid plans 40 minute on free temi file size based limits descript project based storage cap notta plan based minute limits videotext plan based minute limits with no per file split…
-   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, +49 more
-13. **61 pages** — does the alternative generate srt or vtt at all or does reaching a subtitle file require a separate captioning tool? if the alternative produces transcript text only add the time cost of the captioning step to the workf…
-   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, +49 more
-14. **61 pages** — otter ai recordings stored in project library shareable within workspace descript recordings retained in project archive videotext uploaded files deleted after processing no permanent recording storage on videotext serv…
-   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, +49 more
-15. **61 pages** — a 90 minute interview processed by a 30 minute cap tool requires 3 separate uploads 3 separate transcript downloads manual boundary stitching and speaker label reconciliation across 3 independent outputs before any edit…
-   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, +49 more
-16. **61 pages** — map where the alternative creates friction file length cap requiring splitting export format restricted to txt or docx only no subtitle file generation no chapter output slow processing or no shareable review mechanism
-   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, +49 more
-17. **61 pages** — evaluate videotext when clients require docx for transcript review srt for platform upload pdf for archiving and json for cms integration outputs that typically require separate tools in most alternative workflows
-   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, +49 more
-18. **61 pages** — upload the same file to videotext that you last transcribed with your current tool use identical settings compare the raw output formatting structure speaker label accuracy timestamp precision before any editing
-   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, +49 more
-19. **61 pages** — otter ai docx pdf txt srt paid temi docx txt descript project format export srt via subtitle track notta docx txt srt videotext docx pdf txt srt vtt json structured summary chapter markers all from one upload
-   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, +49 more
-20. **61 pages** — same 60 minute interview processed by both tools compare speaker label accuracy punctuation consistency paragraph structure and the number of correction passes required to reach delivery quality
-   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, +49 more
-21. **61 pages** — replace a two tool workflow with a single upload that outputs transcript text srt vtt chapter markers and a summary in the same pass reducing the file management overhead between separate tools
-   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, +49 more
-22. **61 pages** — switch to videotext when your current tool caps recordings at 30 or 60 minutes and requires manual file splitting for longer interviews webinars and podcast recordings
-   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, +49 more
-23. **50 pages** — permanently embedded caption text rendered directly into the video frame cannot be toggled off by the viewer required for platforms that strip external caption tracks font rendering shadow depth and vertical position al…
-   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /blog/batch-subtitles-for-creators, /blog/how-to-add-subtitles-to-video-free, /blog/how-to-translate-subtitles, /burn-subtitles, /burn-subtitles-into-video, /capcut-captions, +38 more
-24. **50 pages** — instagram does not display soft subtitle tracks during autoplay in feed or reels burned captions are the only reliable method for ensuring captions appear for silent autoplay viewers instagram s built in auto caption fe…
-   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /blog/batch-subtitles-for-creators, /blog/how-to-add-subtitles-to-video-free, /blog/how-to-translate-subtitles, /burn-subtitles, /burn-subtitles-into-video, /capcut-captions, +38 more
-25. **50 pages** — export srt for youtube vimeo and video editors export vtt for html5 web players and streaming platforms that support caption positioning choose burned caption output for instagram reels tiktok clips and any social conte…
-   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /blog/batch-subtitles-for-creators, /blog/how-to-add-subtitles-to-video-free, /blog/how-to-translate-subtitles, /burn-subtitles, /burn-subtitles-into-video, /capcut-captions, +38 more
+1. **77 pages** — turn media subtitles or transcript text into an output that is ready for publishing editing accessibility or team handoff
+   - Pages: /, /3play-media-transcription-guidelines, /aac-to-text, /about, /academic-transcription, /ai-captioning, /ai-transcription-tools, /ai-transcription-workflow, /alternatives, /arabic-transcription, /avi-to-text, /best-video-transcription-tool, +65 more
+2. **77 pages** — follow the related links to transcript subtitle translation formatting or free utility flows that match the page intent
+   - Pages: /, /3play-media-transcription-guidelines, /aac-to-text, /about, /academic-transcription, /ai-captioning, /ai-transcription-tools, /ai-transcription-workflow, /alternatives, /arabic-transcription, /avi-to-text, /best-video-transcription-tool, +65 more
+3. **77 pages** — start with the matching videotext tool review the output then export the asset your creator editor client or team needs
+   - Pages: /, /3play-media-transcription-guidelines, /aac-to-text, /about, /academic-transcription, /ai-captioning, /ai-transcription-tools, /ai-transcription-workflow, /alternatives, /arabic-transcription, /avi-to-text, /best-video-transcription-tool, +65 more
+4. **77 pages** — the page links to transcript subtitle translation formatting and export workflows that naturally fit the task
+   - Pages: /, /3play-media-transcription-guidelines, /aac-to-text, /about, /academic-transcription, /ai-captioning, /ai-transcription-tools, /ai-transcription-workflow, /alternatives, /arabic-transcription, /avi-to-text, /best-video-transcription-tool, +65 more
+5. **59 pages** — alternative generates a clean transcript subtitle file requires a separate captioning tool import that captioning tool re transcribes from audio losing the transcript corrections already made or requires manual srt auth…
+   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, /easyscribe-alternative, /elevenlabs-alternative, +47 more
+6. **59 pages** — some alternatives store uploaded recordings in a project library accessible to workspace members if a recording contains client confidential content a sensitive interview or hipaa adjacent material retention behavior be…
+   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, /easyscribe-alternative, /elevenlabs-alternative, +47 more
+7. **59 pages** — to add chapters to a youtube description the creator must manually watch the video and note timestamps a transcript based chapter generation workflow replaces that process with auto detected topic transitions eliminatin…
+   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, /easyscribe-alternative, /elevenlabs-alternative, +47 more
+8. **59 pages** — how many speaker label corrections timestamp format fixes paragraph restructures and filler word passes does each transcript require before it is delivery ready? the tool with the lower cleanup count has lower operation…
+   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, /easyscribe-alternative, /elevenlabs-alternative, +47 more
+9. **59 pages** — descript full video editor with team collaboration and version history otter ai shared workspace with comment threads temi download and email only videotext shareable review links for non account collaborators no additi…
+   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, /easyscribe-alternative, /elevenlabs-alternative, +47 more
+10. **59 pages** — test with a 90 minute recording does the alternative require splitting into multiple files? if so how much time does reconnecting the output take? does the final stitched transcript have coherent speaker labels and time…
+   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, /easyscribe-alternative, /elevenlabs-alternative, +47 more
+11. **59 pages** — does the alternative generate subtitle files? chapter markers? a summary? json export? if generating those outputs requires additional tools add the time and cost of those tools to the comparison before concluding which…
+   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, /easyscribe-alternative, /elevenlabs-alternative, +47 more
+12. **59 pages** — otter ai 4 hour limit per recording on paid plans 40 minute on free temi file size based limits descript project based storage cap notta plan based minute limits videotext plan based minute limits with no per file split…
+   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, /easyscribe-alternative, /elevenlabs-alternative, +47 more
+13. **59 pages** — does the alternative generate srt or vtt at all or does reaching a subtitle file require a separate captioning tool? if the alternative produces transcript text only add the time cost of the captioning step to the workf…
+   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, /easyscribe-alternative, /elevenlabs-alternative, +47 more
+14. **59 pages** — otter ai recordings stored in project library shareable within workspace descript recordings retained in project archive videotext uploaded files deleted after processing no permanent recording storage on videotext serv…
+   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, /easyscribe-alternative, /elevenlabs-alternative, +47 more
+15. **59 pages** — a 90 minute interview processed by a 30 minute cap tool requires 3 separate uploads 3 separate transcript downloads manual boundary stitching and speaker label reconciliation across 3 independent outputs before any edit…
+   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, /easyscribe-alternative, /elevenlabs-alternative, +47 more
+16. **59 pages** — map where the alternative creates friction file length cap requiring splitting export format restricted to txt or docx only no subtitle file generation no chapter output slow processing or no shareable review mechanism
+   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, /easyscribe-alternative, /elevenlabs-alternative, +47 more
+17. **59 pages** — evaluate videotext when clients require docx for transcript review srt for platform upload pdf for archiving and json for cms integration outputs that typically require separate tools in most alternative workflows
+   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, /easyscribe-alternative, /elevenlabs-alternative, +47 more
+18. **59 pages** — upload the same file to videotext that you last transcribed with your current tool use identical settings compare the raw output formatting structure speaker label accuracy timestamp precision before any editing
+   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, /easyscribe-alternative, /elevenlabs-alternative, +47 more
+19. **59 pages** — otter ai docx pdf txt srt paid temi docx txt descript project format export srt via subtitle track notta docx txt srt videotext docx pdf txt srt vtt json structured summary chapter markers all from one upload
+   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, /easyscribe-alternative, /elevenlabs-alternative, +47 more
+20. **59 pages** — same 60 minute interview processed by both tools compare speaker label accuracy punctuation consistency paragraph structure and the number of correction passes required to reach delivery quality
+   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, /easyscribe-alternative, /elevenlabs-alternative, +47 more
+21. **59 pages** — replace a two tool workflow with a single upload that outputs transcript text srt vtt chapter markers and a summary in the same pass reducing the file management overhead between separate tools
+   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, /easyscribe-alternative, /elevenlabs-alternative, +47 more
+22. **59 pages** — switch to videotext when your current tool caps recordings at 30 or 60 minutes and requires manual file splitting for longer interviews webinars and podcast recordings
+   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, /easyscribe-alternative, /elevenlabs-alternative, +47 more
+23. **46 pages** — permanently embedded caption text rendered directly into the video frame cannot be toggled off by the viewer required for platforms that strip external caption tracks font rendering shadow depth and vertical position al…
+   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +34 more
+24. **46 pages** — instagram does not display soft subtitle tracks during autoplay in feed or reels burned captions are the only reliable method for ensuring captions appear for silent autoplay viewers instagram s built in auto caption fe…
+   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +34 more
+25. **46 pages** — export srt for youtube vimeo and video editors export vtt for html5 web players and streaming platforms that support caption positioning choose burned caption output for instagram reels tiktok clips and any social conte…
+   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +34 more
 
 
 ## Top repeated FAQs
 
 1. **33 pages** — is videotext free?
    - Pages: /allscribe-alternative, /assembly-ai-alternative, /best-video-transcription-tool, /castmagic-alternative, /ditto-transcripts-alternative, /fireflies-alternative, /fliki-alternative, /free-video-transcription-tool, /genio-alternative, /headliner-alternative, /hedy-ai-alternative, /kapwing-alternative, +21 more
-2. **31 pages** — how should i use this workflow?
-   - Pages: /, /about, /ai-transcription-tools, /ai-transcription-workflow, /batch-process, /blog, /blog/best-free-transcription-tools-2026, /blog/best-transcription-software-2026, /blog/best-video-captioning-tools-2026, /blog/how-to-earn-more-per-hour-as-a-transcriptionist, /blog/how-we-handle-support, /blog/processing-speed-breakdown, +19 more
-3. **31 pages** — where should i start?
-   - Pages: /, /about, /ai-transcription-tools, /ai-transcription-workflow, /batch-process, /blog, /blog/best-free-transcription-tools-2026, /blog/best-transcription-software-2026, /blog/best-video-captioning-tools-2026, /blog/how-to-earn-more-per-hour-as-a-transcriptionist, /blog/how-we-handle-support, /blog/processing-speed-breakdown, +19 more
-4. **27 pages** — how do i fix subtitle timing that drifts progressively later in the video?
-   - Pages: /blog/batch-subtitles-for-creators, /blog/how-to-add-subtitles-to-video-free, /blog/how-to-translate-subtitles, /burn-subtitles, /fix-subtitles, /free-captions-and-subtitles, /subtitle-character-checker, /subtitle-reading-speed, /subtitle-resources, /subtitle-tools, /subtitle-validator, /subtitle-word-counter, +15 more
-5. **27 pages** — my burned subtitles look different after video encoding what happened?
-   - Pages: /blog/batch-subtitles-for-creators, /blog/how-to-add-subtitles-to-video-free, /blog/how-to-translate-subtitles, /burn-subtitles, /fix-subtitles, /free-captions-and-subtitles, /subtitle-character-checker, /subtitle-reading-speed, /subtitle-resources, /subtitle-tools, /subtitle-validator, /subtitle-word-counter, +15 more
-6. **27 pages** — what is the difference between srt and vtt timestamp formats?
-   - Pages: /blog/batch-subtitles-for-creators, /blog/how-to-add-subtitles-to-video-free, /blog/how-to-translate-subtitles, /burn-subtitles, /fix-subtitles, /free-captions-and-subtitles, /subtitle-character-checker, /subtitle-reading-speed, /subtitle-resources, /subtitle-tools, /subtitle-validator, /subtitle-word-counter, +15 more
-7. **27 pages** — what is cps and why does it matter for subtitle readability?
-   - Pages: /blog/batch-subtitles-for-creators, /blog/how-to-add-subtitles-to-video-free, /blog/how-to-translate-subtitles, /burn-subtitles, /fix-subtitles, /free-captions-and-subtitles, /subtitle-character-checker, /subtitle-reading-speed, /subtitle-resources, /subtitle-tools, /subtitle-validator, /subtitle-word-counter, +15 more
-8. **27 pages** — why does instagram not show my uploaded subtitle file?
-   - Pages: /blog/batch-subtitles-for-creators, /blog/how-to-add-subtitles-to-video-free, /blog/how-to-translate-subtitles, /burn-subtitles, /fix-subtitles, /free-captions-and-subtitles, /subtitle-character-checker, /subtitle-reading-speed, /subtitle-resources, /subtitle-tools, /subtitle-validator, /subtitle-word-counter, +15 more
-9. **27 pages** — what subtitle formats does videotext export?
-   - Pages: /blog/batch-subtitles-for-creators, /blog/how-to-add-subtitles-to-video-free, /blog/how-to-translate-subtitles, /burn-subtitles, /fix-subtitles, /free-captions-and-subtitles, /subtitle-character-checker, /subtitle-reading-speed, /subtitle-resources, /subtitle-tools, /subtitle-validator, /subtitle-word-counter, +15 more
+2. **24 pages** — how do i fix subtitle timing that drifts progressively later in the video?
+   - Pages: /burn-subtitles, /fix-subtitles, /free-captions-and-subtitles, /subtitle-character-checker, /subtitle-reading-speed, /subtitle-tools, /subtitle-validator, /subtitle-word-counter, /tools/ass-to-srt, /tools/html-to-srt, /tools/merge-srt-files, /tools/sbv-to-srt, +12 more
+3. **24 pages** — my burned subtitles look different after video encoding what happened?
+   - Pages: /burn-subtitles, /fix-subtitles, /free-captions-and-subtitles, /subtitle-character-checker, /subtitle-reading-speed, /subtitle-tools, /subtitle-validator, /subtitle-word-counter, /tools/ass-to-srt, /tools/html-to-srt, /tools/merge-srt-files, /tools/sbv-to-srt, +12 more
+4. **24 pages** — what is the difference between srt and vtt timestamp formats?
+   - Pages: /burn-subtitles, /fix-subtitles, /free-captions-and-subtitles, /subtitle-character-checker, /subtitle-reading-speed, /subtitle-tools, /subtitle-validator, /subtitle-word-counter, /tools/ass-to-srt, /tools/html-to-srt, /tools/merge-srt-files, /tools/sbv-to-srt, +12 more
+5. **24 pages** — what is cps and why does it matter for subtitle readability?
+   - Pages: /burn-subtitles, /fix-subtitles, /free-captions-and-subtitles, /subtitle-character-checker, /subtitle-reading-speed, /subtitle-tools, /subtitle-validator, /subtitle-word-counter, /tools/ass-to-srt, /tools/html-to-srt, /tools/merge-srt-files, /tools/sbv-to-srt, +12 more
+6. **24 pages** — why does instagram not show my uploaded subtitle file?
+   - Pages: /burn-subtitles, /fix-subtitles, /free-captions-and-subtitles, /subtitle-character-checker, /subtitle-reading-speed, /subtitle-tools, /subtitle-validator, /subtitle-word-counter, /tools/ass-to-srt, /tools/html-to-srt, /tools/merge-srt-files, /tools/sbv-to-srt, +12 more
+7. **24 pages** — what subtitle formats does videotext export?
+   - Pages: /burn-subtitles, /fix-subtitles, /free-captions-and-subtitles, /subtitle-character-checker, /subtitle-reading-speed, /subtitle-tools, /subtitle-validator, /subtitle-word-counter, /tools/ass-to-srt, /tools/html-to-srt, /tools/merge-srt-files, /tools/sbv-to-srt, +12 more
+8. **23 pages** — how should i use this workflow?
+   - Pages: /, /about, /ai-transcription-tools, /ai-transcription-workflow, /changelog, /compress-video, /faq, /guide, /netflix-ttsc-checklist, /open, /pricing, /privacy, +11 more
+9. **23 pages** — where should i start?
+   - Pages: /, /about, /ai-transcription-tools, /ai-transcription-workflow, /changelog, /compress-video, /faq, /guide, /netflix-ttsc-checklist, /open, /pricing, /privacy, +11 more
 10. **7 pages** — how do i test the workflow?
    - Pages: /google-meet-transcription, /meeting-transcription, /podcast-transcription, /teams-meeting-transcription, /video-interview-transcription, /youtube-video-transcription, /zoom-recording-transcription
 11. **7 pages** — what formats can i export?
@@ -213,82 +216,82 @@ _None._
    - Pages: /google-meet-transcription, /meeting-transcription, /podcast-transcription, /teams-meeting-transcription, /video-interview-transcription, /youtube-video-transcription, /zoom-recording-transcription
 13. **5 pages** — is this free?
    - Pages: /adobe-premiere-captions-alternative, /capcut-captions, /instagram-reel-transcript, /reels-captions, /shorts-captions
-14. **4 pages** — what is the difference between clean verbatim and full verbatim for client delivery?
-   - Pages: /blog/how-to-transcribe-audio-to-text-free, /blog/how-to-transcribe-podcast-episode, /blog/how-to-transcribe-zoom-recording, /blog/what-is-transcript-qa
-15. **4 pages** — why does my long transcript have strange sentence breaks every 30 minutes?
-   - Pages: /blog/how-to-transcribe-audio-to-text-free, /blog/how-to-transcribe-podcast-episode, /blog/how-to-transcribe-zoom-recording, /blog/what-is-transcript-qa
-16. **4 pages** — how do i handle a recording where audio quality degrades partway through?
-   - Pages: /blog/how-to-transcribe-audio-to-text-free, /blog/how-to-transcribe-podcast-episode, /blog/how-to-transcribe-zoom-recording, /blog/what-is-transcript-qa
-17. **4 pages** — can i transcribe youtube videos zoom recordings and podcast audio?
-   - Pages: /blog/how-to-transcribe-audio-to-text-free, /blog/how-to-transcribe-podcast-episode, /blog/how-to-transcribe-zoom-recording, /blog/what-is-transcript-qa
-18. **4 pages** — what happens when two speakers talk over each other?
-   - Pages: /blog/how-to-transcribe-audio-to-text-free, /blog/how-to-transcribe-podcast-episode, /blog/how-to-transcribe-zoom-recording, /blog/what-is-transcript-qa
-19. **4 pages** — can i rename speaker labels after transcription?
-   - Pages: /blog/how-to-transcribe-audio-to-text-free, /blog/how-to-transcribe-podcast-episode, /blog/how-to-transcribe-zoom-recording, /blog/what-is-transcript-qa
-20. **3 pages** — what export formats does videotext support that alternatives often lack?
-   - Pages: /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /compare
-21. **3 pages** — why do transcription accuracy numbers vary so much between vendors?
+14. **4 pages** — is it free?
+   - Pages: /compress-video, /fix-subtitles, /video-to-subtitles, /video-to-transcript
+15. **3 pages** — why do transcription accuracy numbers vary so much between vendors?
    - Pages: /accuracy-test, /fastest-transcription-software, /transcription-benchmark
-22. **3 pages** — how should i test transcription tools for my specific use case?
+16. **3 pages** — how should i test transcription tools for my specific use case?
    - Pages: /accuracy-test, /fastest-transcription-software, /transcription-benchmark
-23. **3 pages** — how do i test videotext against the tool i am currently using?
-   - Pages: /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /compare
-24. **3 pages** — how does videotext handle collaboration compared to descript?
-   - Pages: /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /compare
-25. **3 pages** — does transcription accuracy degrade for long recordings?
+17. **3 pages** — does transcription accuracy degrade for long recordings?
    - Pages: /accuracy-test, /fastest-transcription-software, /transcription-benchmark
+18. **3 pages** — how do you benchmark cleanup time fairly across tools?
+   - Pages: /accuracy-test, /fastest-transcription-software, /transcription-benchmark
+19. **3 pages** — does videotext delete my files after transcription?
+   - Pages: /easyscribe-alternative, /transcription-for-journalists, /vocallab-alternative
+20. **3 pages** — what does word error rate actually measure?
+   - Pages: /accuracy-test, /fastest-transcription-software, /transcription-benchmark
+21. **2 pages** — can videotext generate subtitles like rev?
+   - Pages: /rev-alternative, /videotext-vs-rev
+22. **2 pages** — how do i generate subtitles from a video?
+   - Pages: /generate-subtitles-from-video, /video-to-subtitles
+23. **2 pages** — why are youtube auto captions inaccurate?
+   - Pages: /youtube-auto-captions-alternative, /youtube-captions
+24. **2 pages** — which whisper model does videotext use?
+   - Pages: /whisper-online, /whisper-transcription
+25. **2 pages** — how do i add captions to a video?
+   - Pages: /add-captions-to-video, /video-captions
 
 
 ## Top repeated H2s
 
-1. **86 pages** — why teams use this workflow
-   - Pages: /, /3play-media-transcription-guidelines, /aac-to-text, /about, /academic-transcription, /ai-captioning, /ai-transcription-tools, /ai-transcription-workflow, /alternatives, /arabic-transcription, /avi-to-text, /batch-process, +74 more
-2. **86 pages** — related videotext workflows
-   - Pages: /, /3play-media-transcription-guidelines, /aac-to-text, /about, /academic-transcription, /ai-captioning, /ai-transcription-tools, /ai-transcription-workflow, /alternatives, /arabic-transcription, /avi-to-text, /batch-process, +74 more
-3. **86 pages** — how it works
-   - Pages: /, /3play-media-transcription-guidelines, /aac-to-text, /about, /academic-transcription, /ai-captioning, /ai-transcription-tools, /ai-transcription-workflow, /alternatives, /arabic-transcription, /avi-to-text, /batch-process, +74 more
-4. **85 pages** — outputs you can use immediately
-   - Pages: /, /3play-media-transcription-guidelines, /aac-to-text, /about, /academic-transcription, /ai-captioning, /ai-transcription-tools, /ai-transcription-workflow, /alternatives, /arabic-transcription, /avi-to-text, /batch-process, +73 more
-5. **84 pages** — frequently asked questions
-   - Pages: /, /3play-media-transcription-guidelines, /aac-to-text, /about, /academic-transcription, /ai-captioning, /ai-transcription-tools, /ai-transcription-workflow, /arabic-transcription, /avi-to-text, /batch-process, /best-video-transcription-tool, +72 more
-6. **68 pages** — where videotext differs from this tool operationally
-   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /buzz-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /descript-alternative, /dictation-io-alternative, +56 more
-7. **68 pages** — other videotext comparisons and alternatives
-   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /buzz-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /descript-alternative, /dictation-io-alternative, +56 more
-8. **68 pages** — export outputs teams actually compare
-   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /buzz-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /descript-alternative, /dictation-io-alternative, +56 more
-9. **68 pages** — comparison and switching questions
-   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /buzz-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /descript-alternative, /dictation-io-alternative, +56 more
-10. **67 pages** — teams that switched to videotext
-   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /descript-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, +55 more
-11. **61 pages** — where alternatives create hidden workflow friction
-   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, +49 more
-12. **61 pages** — switching your transcript workflow step by step
-   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, +49 more
-13. **61 pages** — export format and integration differences
-   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /blog/clean-verbatim-vs-full-verbatim, /blog/srt-vs-vtt-subtitle-formats, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, +49 more
-14. **50 pages** — where subtitle workflows break in real production
-   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /blog/batch-subtitles-for-creators, /blog/how-to-add-subtitles-to-video-free, /blog/how-to-translate-subtitles, /burn-subtitles, /burn-subtitles-into-video, /capcut-captions, +38 more
-15. **50 pages** — creators and teams running subtitle workflows
-   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /blog/batch-subtitles-for-creators, /blog/how-to-add-subtitles-to-video-free, /blog/how-to-translate-subtitles, /burn-subtitles, /burn-subtitles-into-video, /capcut-captions, +38 more
-16. **50 pages** — from raw video to export ready subtitle file
-   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /blog/batch-subtitles-for-creators, /blog/how-to-add-subtitles-to-video-free, /blog/how-to-translate-subtitles, /burn-subtitles, /burn-subtitles-into-video, /capcut-captions, +38 more
-17. **50 pages** — subtitle edge cases that cause qa failure
-   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /blog/batch-subtitles-for-creators, /blog/how-to-add-subtitles-to-video-free, /blog/how-to-translate-subtitles, /burn-subtitles, /burn-subtitles-into-video, /capcut-captions, +38 more
-18. **50 pages** — platform specific subtitle requirements
-   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /blog/batch-subtitles-for-creators, /blog/how-to-add-subtitles-to-video-free, /blog/how-to-translate-subtitles, /burn-subtitles, /burn-subtitles-into-video, /capcut-captions, +38 more
-19. **50 pages** — subtitle workflow questions answered
-   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /blog/batch-subtitles-for-creators, /blog/how-to-add-subtitles-to-video-free, /blog/how-to-translate-subtitles, /burn-subtitles, /burn-subtitles-into-video, /capcut-captions, +38 more
-20. **50 pages** — srt vtt and burned caption outputs
-   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /blog/batch-subtitles-for-creators, /blog/how-to-add-subtitles-to-video-free, /blog/how-to-translate-subtitles, /burn-subtitles, /burn-subtitles-into-video, /capcut-captions, +38 more
-21. **50 pages** — related caption and subtitle tools
-   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /blog/batch-subtitles-for-creators, /blog/how-to-add-subtitles-to-video-free, /blog/how-to-translate-subtitles, /burn-subtitles, /burn-subtitles-into-video, /capcut-captions, +38 more
-22. **32 pages** — transcriptionists and editors running formatting workflows
-   - Pages: /3play-media-format-guide, /blog/freelance-transcription-style-guide-cheatsheet, /blog/rev-style-guide-transcript-formatter, /daily-transcripts-format-guide, /daily-transcripts-style-guide, /gmr-transcript-format-guide, /gotranscript-guidelines, /gotranscript-style-guide, /gotranscript-test-guide, /gotranscript-transcription-format, /gotranscript-transcription-rules, /guideline-format, +20 more
-23. **32 pages** — clean verbatim and platform ready transcript outputs
-   - Pages: /3play-media-format-guide, /blog/freelance-transcription-style-guide-cheatsheet, /blog/rev-style-guide-transcript-formatter, /daily-transcripts-format-guide, /daily-transcripts-style-guide, /gmr-transcript-format-guide, /gotranscript-guidelines, /gotranscript-style-guide, /gotranscript-test-guide, /gotranscript-transcription-format, /gotranscript-transcription-rules, /guideline-format, +20 more
-24. **32 pages** — from raw transcript to client ready formatted file
-   - Pages: /3play-media-format-guide, /blog/freelance-transcription-style-guide-cheatsheet, /blog/rev-style-guide-transcript-formatter, /daily-transcripts-format-guide, /daily-transcripts-style-guide, /gmr-transcript-format-guide, /gotranscript-guidelines, /gotranscript-style-guide, /gotranscript-test-guide, /gotranscript-transcription-format, /gotranscript-transcription-rules, /guideline-format, +20 more
-25. **32 pages** — why transcript formatting affects qa acceptance
-   - Pages: /3play-media-format-guide, /blog/freelance-transcription-style-guide-cheatsheet, /blog/rev-style-guide-transcript-formatter, /daily-transcripts-format-guide, /daily-transcripts-style-guide, /gmr-transcript-format-guide, /gotranscript-guidelines, /gotranscript-style-guide, /gotranscript-test-guide, /gotranscript-transcription-format, /gotranscript-transcription-rules, /guideline-format, +20 more
+1. **77 pages** — outputs you can use immediately
+   - Pages: /, /3play-media-transcription-guidelines, /aac-to-text, /about, /academic-transcription, /ai-captioning, /ai-transcription-tools, /ai-transcription-workflow, /alternatives, /arabic-transcription, /avi-to-text, /best-video-transcription-tool, +65 more
+2. **77 pages** — why teams use this workflow
+   - Pages: /, /3play-media-transcription-guidelines, /aac-to-text, /about, /academic-transcription, /ai-captioning, /ai-transcription-tools, /ai-transcription-workflow, /alternatives, /arabic-transcription, /avi-to-text, /best-video-transcription-tool, +65 more
+3. **77 pages** — related videotext workflows
+   - Pages: /, /3play-media-transcription-guidelines, /aac-to-text, /about, /academic-transcription, /ai-captioning, /ai-transcription-tools, /ai-transcription-workflow, /alternatives, /arabic-transcription, /avi-to-text, /best-video-transcription-tool, +65 more
+4. **77 pages** — how it works
+   - Pages: /, /3play-media-transcription-guidelines, /aac-to-text, /about, /academic-transcription, /ai-captioning, /ai-transcription-tools, /ai-transcription-workflow, /alternatives, /arabic-transcription, /avi-to-text, /best-video-transcription-tool, +65 more
+5. **75 pages** — frequently asked questions
+   - Pages: /, /3play-media-transcription-guidelines, /aac-to-text, /about, /academic-transcription, /ai-captioning, /ai-transcription-tools, /ai-transcription-workflow, /arabic-transcription, /avi-to-text, /best-video-transcription-tool, /changelog, +63 more
+6. **66 pages** — where videotext differs from this tool operationally
+   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /buzz-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /descript-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, +54 more
+7. **66 pages** — other videotext comparisons and alternatives
+   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /buzz-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /descript-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, +54 more
+8. **66 pages** — export outputs teams actually compare
+   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /buzz-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /descript-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, +54 more
+9. **66 pages** — comparison and switching questions
+   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /buzz-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /descript-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, +54 more
+10. **65 pages** — teams that switched to videotext
+   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /descript-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, /easyscribe-alternative, +53 more
+11. **59 pages** — where alternatives create hidden workflow friction
+   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, /easyscribe-alternative, /elevenlabs-alternative, +47 more
+12. **59 pages** — switching your transcript workflow step by step
+   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, /easyscribe-alternative, /elevenlabs-alternative, +47 more
+13. **59 pages** — export format and integration differences
+   - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, /easyscribe-alternative, /elevenlabs-alternative, +47 more
+14. **46 pages** — where subtitle workflows break in real production
+   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +34 more
+15. **46 pages** — creators and teams running subtitle workflows
+   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +34 more
+16. **46 pages** — from raw video to export ready subtitle file
+   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +34 more
+17. **46 pages** — subtitle edge cases that cause qa failure
+   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +34 more
+18. **46 pages** — platform specific subtitle requirements
+   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +34 more
+19. **46 pages** — subtitle workflow questions answered
+   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +34 more
+20. **46 pages** — srt vtt and burned caption outputs
+   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +34 more
+21. **46 pages** — related caption and subtitle tools
+   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +34 more
+22. **30 pages** — transcriptionists and editors running formatting workflows
+   - Pages: /3play-media-format-guide, /daily-transcripts-format-guide, /daily-transcripts-style-guide, /gmr-transcript-format-guide, /gotranscript-guidelines, /gotranscript-style-guide, /gotranscript-test-guide, /gotranscript-transcription-format, /gotranscript-transcription-rules, /guideline-format, /happy-scribe-format-guide, /rev-ai-transcription-guide, +18 more
+23. **30 pages** — clean verbatim and platform ready transcript outputs
+   - Pages: /3play-media-format-guide, /daily-transcripts-format-guide, /daily-transcripts-style-guide, /gmr-transcript-format-guide, /gotranscript-guidelines, /gotranscript-style-guide, /gotranscript-test-guide, /gotranscript-transcription-format, /gotranscript-transcription-rules, /guideline-format, /happy-scribe-format-guide, /rev-ai-transcription-guide, +18 more
+24. **30 pages** — from raw transcript to client ready formatted file
+   - Pages: /3play-media-format-guide, /daily-transcripts-format-guide, /daily-transcripts-style-guide, /gmr-transcript-format-guide, /gotranscript-guidelines, /gotranscript-style-guide, /gotranscript-test-guide, /gotranscript-transcription-format, /gotranscript-transcription-rules, /guideline-format, /happy-scribe-format-guide, /rev-ai-transcription-guide, +18 more
+25. **30 pages** — why transcript formatting affects qa acceptance
+   - Pages: /3play-media-format-guide, /daily-transcripts-format-guide, /daily-transcripts-style-guide, /gmr-transcript-format-guide, /gotranscript-guidelines, /gotranscript-style-guide, /gotranscript-test-guide, /gotranscript-transcription-format, /gotranscript-transcription-rules, /guideline-format, /happy-scribe-format-guide, /rev-ai-transcription-guide, +18 more
 

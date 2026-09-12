@@ -12,6 +12,8 @@
 
 import type { Segment } from './srtExport'
 import { formatTimestamp } from './srtExport'
+import { addAnchorTimecode } from './smpteTimecode'
+import { drawPdfFreePlanWatermark, WATERMARK_DOC_FOOTER, WATERMARK_DOC_HEADER } from './watermark'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -22,9 +24,12 @@ export type SpeakerNameMap = Record<string, string>
  * - `per-speaker`: one timestamp at the start of each speaker turn (default — Adaiah feedback)
  * - `per-segment`: timestamp on every Whisper segment (old behaviour, mirrors subtitle timing)
  * - `per-interval`: a `[MM:SS]` marker is emitted every N seconds (set via `intervalSec` option)
+ * - `smpte`: one SMPTE/BITC timecode (HH:MM:SS:FF) at the start of each speaker turn, computed
+ *   from a starting timecode + frame rate (see `smpteAnchor`/`smpteFps` options) — opt-in only,
+ *   never on by default. Frame-accurate, deterministic; never touched by the guideline formatter.
  * - `none`: no timestamps; speaker names still appear when diarisation is active
  */
-export type TimestampMode = 'per-speaker' | 'per-segment' | 'per-interval' | 'none'
+export type TimestampMode = 'per-speaker' | 'per-segment' | 'per-interval' | 'smpte' | 'none'
 
 /**
  * Controls filler-word handling in text-based exports.
@@ -159,9 +164,9 @@ export function applyCleanVerbatim(text: string): string {
  */
 export function groupSegmentsBySpeakerEntry(
   resolved: ResolvedSegment[],
-  options: { paragraphGapSec?: number } = {},
+  options: { paragraphGapSec?: number; splitOnLongPause?: boolean } = {},
 ): Array<{ speaker?: string; start: number; text: string }> {
-  const { paragraphGapSec = 3.0 } = options
+  const { paragraphGapSec = 3.0, splitOnLongPause = false } = options
   type Group = { speaker?: string; start: number; end: number; text: string }
   const groups: Group[] = []
 
@@ -175,12 +180,15 @@ export function groupSegmentsBySpeakerEntry(
       // Same turn, seamless continuation
       last.text = last.text.trimEnd() + ' ' + seg.text.trim()
       last.end = seg.end
-    } else if (isSameSpeaker && isLongPause) {
+    } else if (isSameSpeaker && isLongPause && !splitOnLongPause) {
       // Same speaker but notable pause → new paragraph within same turn
       last.text = last.text.trimEnd() + '\n\n' + seg.text.trim()
       last.end = seg.end
     } else {
-      // New speaker (or first segment)
+      // New speaker, first segment, or (when splitOnLongPause) a long pause —
+      // starts a fresh group with its own header. smpte mode needs this: a BITC
+      // reference point is only useful if it doesn't go stale across a long
+      // same-speaker pause.
       groups.push({ speaker: seg.speaker, start: seg.start, end: seg.end, text: seg.text.trim() })
     }
   }
@@ -223,9 +231,23 @@ export function buildFullTranscript(segments: Segment[]): string {
 export function buildTxt(
   segments: Segment[],
   nameMap: SpeakerNameMap,
-  options: { timestampMode?: TimestampMode; verbatimMode?: VerbatimMode; intervalSec?: number } = {},
+  options: {
+    timestampMode?: TimestampMode
+    verbatimMode?: VerbatimMode
+    intervalSec?: number
+    /** Starting BITC/SMPTE timecode (HH:MM:SS:FF or HH:MM:SS;FF), only used when timestampMode is 'smpte'. */
+    smpteAnchor?: string
+    /** Video frame rate (e.g. 25, 29.97, 30), only used when timestampMode is 'smpte'. */
+    smpteFps?: number
+  } = {},
 ): string {
-  const { timestampMode = 'per-speaker', verbatimMode = 'full', intervalSec = 30 } = options
+  const {
+    timestampMode = 'per-speaker',
+    verbatimMode = 'full',
+    intervalSec = 30,
+    smpteAnchor = '00:00:00:00',
+    smpteFps = 25,
+  } = options
   const resolved = withResolvedSpeakers(segments, nameMap)
   const applyVerb = (t: string) => (verbatimMode === 'clean' ? applyCleanVerbatim(t) : t)
   const lines: string[] = []
@@ -278,14 +300,20 @@ export function buildTxt(
     }
     flushPending()
   } else {
-    // per-speaker and none: group consecutive same-speaker segments into turns
-    const groups = groupSegmentsBySpeakerEntry(resolved)
+    // per-speaker, smpte, and none: group consecutive same-speaker segments into turns.
+    // smpte mode splits on a long same-speaker pause too, so a BITC reference
+    // point never goes stale for minutes at a stretch.
+    const groups = groupSegmentsBySpeakerEntry(resolved, { splitOnLongPause: timestampMode === 'smpte' })
     for (const g of groups) {
       const text = applyVerb(g.text)
       if (!text) continue
       if (g.speaker) {
         const header =
-          timestampMode === 'none' ? g.speaker : `${g.speaker} (${formatTimestamp(g.start)})`
+          timestampMode === 'none'
+            ? g.speaker
+            : timestampMode === 'smpte'
+              ? `${g.speaker} (${addAnchorTimecode(smpteAnchor, smpteFps, g.start)})`
+              : `${g.speaker} (${formatTimestamp(g.start)})`
         lines.push(header)
         lines.push(text)
         lines.push('')
@@ -311,20 +339,32 @@ function csvCell(value: string): string {
 export function buildCsv(
   segments: Segment[],
   nameMap: SpeakerNameMap,
-  options: { timestampMode?: TimestampMode; verbatimMode?: VerbatimMode } = {},
+  options: {
+    timestampMode?: TimestampMode
+    verbatimMode?: VerbatimMode
+    smpteAnchor?: string
+    smpteFps?: number
+  } = {},
 ): string {
-  const { timestampMode = 'per-speaker', verbatimMode = 'full' } = options
+  const {
+    timestampMode = 'per-speaker',
+    verbatimMode = 'full',
+    smpteAnchor = '00:00:00:00',
+    smpteFps = 25,
+  } = options
   const resolved = withResolvedSpeakers(segments, nameMap)
   const hasSpeakers = resolved.some((s) => s.speaker)
   const includeTimestamps = timestampMode !== 'none'
   const applyVerb = (t: string) => (verbatimMode === 'clean' ? applyCleanVerbatim(t) : t)
+  const formatTc = (t: number) =>
+    timestampMode === 'smpte' ? csvCell(addAnchorTimecode(smpteAnchor, smpteFps, t)) : t.toFixed(3)
 
   const header = includeTimestamps
     ? (hasSpeakers ? 'start,end,speaker,text' : 'start,end,text')
     : (hasSpeakers ? 'speaker,text' : 'text')
   const rows = resolved.map((seg) => {
     const cols = [
-      ...(includeTimestamps ? [seg.start.toFixed(3), seg.end.toFixed(3)] : []),
+      ...(includeTimestamps ? [formatTc(seg.start), formatTc(seg.end)] : []),
       ...(hasSpeakers ? [csvCell(seg.speaker ?? '')] : []),
       csvCell(applyVerb(seg.text)),
     ]
@@ -337,7 +377,15 @@ export function buildCsv(
 
 export interface TranscriptJsonExport {
   fullTranscript: string
-  segments: Array<{ start?: number; end?: number; text: string; speaker?: string }>
+  segments: Array<{
+    start?: number
+    end?: number
+    /** SMPTE/BITC timecode, only present when timestampMode is 'smpte'. */
+    startTimecode?: string
+    endTimecode?: string
+    text: string
+    speaker?: string
+  }>
   speakers?: Array<{ speaker: string; text: string }>
   summary?: unknown
   chapters?: unknown
@@ -359,9 +407,19 @@ export function buildJson(
     highlights?: unknown
     keywords?: unknown
   } = {},
-  options: { timestampMode?: TimestampMode; verbatimMode?: VerbatimMode } = {},
+  options: {
+    timestampMode?: TimestampMode
+    verbatimMode?: VerbatimMode
+    smpteAnchor?: string
+    smpteFps?: number
+  } = {},
 ): string {
-  const { timestampMode = 'per-speaker', verbatimMode = 'full' } = options
+  const {
+    timestampMode = 'per-speaker',
+    verbatimMode = 'full',
+    smpteAnchor = '00:00:00:00',
+    smpteFps = 25,
+  } = options
   const resolved = withResolvedSpeakers(segments, nameMap)
   const hasSpeakers = resolved.some((s) => s.speaker)
 
@@ -372,6 +430,12 @@ export function buildJson(
     fullTranscript,
     segments: resolved.map((s) => ({
       ...(timestampMode !== 'none' ? { start: s.start, end: s.end } : {}),
+      ...(timestampMode === 'smpte'
+        ? {
+            startTimecode: addAnchorTimecode(smpteAnchor, smpteFps, s.start),
+            endTimecode: addAnchorTimecode(smpteAnchor, smpteFps, s.end),
+          }
+        : {}),
       text: applyVerb(s.text),
       ...(hasSpeakers && s.speaker ? { speaker: s.speaker } : {}),
     })),
@@ -396,9 +460,19 @@ export function buildJson(
 export function buildNotion(
   segments: Segment[],
   nameMap: SpeakerNameMap,
-  options: { timestampMode?: TimestampMode; verbatimMode?: VerbatimMode } = {},
+  options: {
+    timestampMode?: TimestampMode
+    verbatimMode?: VerbatimMode
+    smpteAnchor?: string
+    smpteFps?: number
+  } = {},
 ): string {
-  const { timestampMode = 'per-speaker', verbatimMode = 'full' } = options
+  const {
+    timestampMode = 'per-speaker',
+    verbatimMode = 'full',
+    smpteAnchor = '00:00:00:00',
+    smpteFps = 25,
+  } = options
   const resolved = withResolvedSpeakers(segments, nameMap)
   const applyVerb = (t: string) => (verbatimMode === 'clean' ? applyCleanVerbatim(t) : t)
   const blocks = resolved.map((seg) => ({
@@ -411,7 +485,9 @@ export function buildNotion(
             timestampMode === 'none'
               ? applyVerb(seg.text)
               : seg.speaker
-                ? `[${seg.speaker}] ${applyVerb(seg.text)}`
+                ? timestampMode === 'smpte'
+                  ? `[${seg.speaker}] (${addAnchorTimecode(smpteAnchor, smpteFps, seg.start)}) ${applyVerb(seg.text)}`
+                  : `[${seg.speaker}] ${applyVerb(seg.text)}`
                 : applyVerb(seg.text),
         },
       },
@@ -436,9 +512,21 @@ export async function exportToPdf(
   nameMap: SpeakerNameMap,
   filename: string,
   watermark?: string,
-  options: { timestampMode?: TimestampMode; verbatimMode?: VerbatimMode; intervalSec?: number } = {},
+  options: {
+    timestampMode?: TimestampMode
+    verbatimMode?: VerbatimMode
+    intervalSec?: number
+    smpteAnchor?: string
+    smpteFps?: number
+  } = {},
 ): Promise<void> {
-  const { timestampMode = 'per-speaker', verbatimMode = 'full', intervalSec = 30 } = options
+  const {
+    timestampMode = 'per-speaker',
+    verbatimMode = 'full',
+    intervalSec = 30,
+    smpteAnchor = '00:00:00:00',
+    smpteFps = 25,
+  } = options
   const { jsPDF } = await import('jspdf')
   const resolved = withResolvedSpeakers(segments, nameMap)
   const hasSpeakers = resolved.some((s) => s.speaker)
@@ -540,7 +628,7 @@ export async function exportToPdf(
     flushPendingPdf()
   } else {
     // per-speaker / none: grouped speaker turns with intra-turn paragraph breaks
-    const groups = groupSegmentsBySpeakerEntry(resolved)
+    const groups = groupSegmentsBySpeakerEntry(resolved, { splitOnLongPause: timestampMode === 'smpte' })
     for (const g of groups) {
       const paras = g.text.split('\n\n').filter(Boolean)
       const bodyText = paras.map((p) => applyVerb(p)).filter(Boolean).join('\n')
@@ -557,7 +645,9 @@ export async function exportToPdf(
         const headerText =
           timestampMode === 'none'
             ? g.speaker
-            : `${g.speaker}  (${formatTimestamp(g.start)})`
+            : timestampMode === 'smpte'
+              ? `${g.speaker}  (${addAnchorTimecode(smpteAnchor, smpteFps, g.start)})`
+              : `${g.speaker}  (${formatTimestamp(g.start)})`
         doc.text(headerText, margin, y)
         doc.setTextColor(0)
         y += lineH
@@ -569,17 +659,9 @@ export async function exportToPdf(
     }
   }
 
-  // Watermark footer on every page
+  // Watermark on every page (diagonal + footer)
   if (watermark) {
-    const totalPages = doc.getNumberOfPages()
-    for (let p = 1; p <= totalPages; p++) {
-      doc.setPage(p)
-      doc.setFontSize(8)
-      doc.setFont('helvetica', 'italic')
-      doc.setTextColor(160)
-      doc.text(watermark, margin, pageH - 8)
-      doc.setTextColor(0)
-    }
+    drawPdfFreePlanWatermark(doc)
   }
 
   doc.save(filename)
@@ -601,9 +683,21 @@ export async function exportToDocx(
   nameMap: SpeakerNameMap,
   filename: string,
   watermark?: string,
-  options: { timestampMode?: TimestampMode; verbatimMode?: VerbatimMode; intervalSec?: number } = {},
+  options: {
+    timestampMode?: TimestampMode
+    verbatimMode?: VerbatimMode
+    intervalSec?: number
+    smpteAnchor?: string
+    smpteFps?: number
+  } = {},
 ): Promise<void> {
-  const { timestampMode = 'per-speaker', verbatimMode = 'full', intervalSec = 30 } = options
+  const {
+    timestampMode = 'per-speaker',
+    verbatimMode = 'full',
+    intervalSec = 30,
+    smpteAnchor = '00:00:00:00',
+    smpteFps = 25,
+  } = options
   const { Document, Paragraph, TextRun, HeadingLevel, Packer } = await import('docx')
   const resolved = withResolvedSpeakers(segments, nameMap)
   const hasSpeakers = resolved.some((s) => s.speaker)
@@ -619,7 +713,13 @@ export async function exportToDocx(
   if (watermark) {
     children.push(
       new Paragraph({
-        children: [new TextRun({ text: watermark, italics: true, color: '888888', size: 18 })],
+        children: [
+          new TextRun({ text: WATERMARK_DOC_HEADER, bold: true, color: '666666', size: 20 }),
+        ],
+        spacing: { after: 80 },
+      }),
+      new Paragraph({
+        children: [new TextRun({ text: WATERMARK_DOC_FOOTER, italics: true, color: '888888', size: 18 })],
         spacing: { after: 240 },
       }),
     )
@@ -694,14 +794,16 @@ export async function exportToDocx(
     }
     flushPendingDocx()
   } else {
-    // per-speaker / none: grouped turns with intra-turn paragraph breaks
-    const groups = groupSegmentsBySpeakerEntry(resolved)
+    // per-speaker / smpte / none: grouped turns with intra-turn paragraph breaks
+    const groups = groupSegmentsBySpeakerEntry(resolved, { splitOnLongPause: timestampMode === 'smpte' })
     for (const g of groups) {
       if (hasSpeakers && g.speaker) {
         const headerText =
           timestampMode === 'none'
             ? g.speaker
-            : `${g.speaker}  (${formatTimestamp(g.start)})`
+            : timestampMode === 'smpte'
+              ? `${g.speaker}  (${addAnchorTimecode(smpteAnchor, smpteFps, g.start)})`
+              : `${g.speaker}  (${formatTimestamp(g.start)})`
         children.push(
           new Paragraph({
             children: [new TextRun({ text: headerText, bold: true, color: '5028A0' })],
@@ -750,10 +852,20 @@ export async function exportToDocxThreeColumn(
   segments: Segment[],
   nameMap: SpeakerNameMap,
   filename: string,
-  options: { verbatimMode?: VerbatimMode } = {},
+  options: {
+    verbatimMode?: VerbatimMode
+    timestampMode?: TimestampMode
+    smpteAnchor?: string
+    smpteFps?: number
+  } = {},
   watermark?: string,
 ): Promise<void> {
-  const { verbatimMode = 'full' } = options
+  const {
+    verbatimMode = 'full',
+    timestampMode = 'per-speaker',
+    smpteAnchor = '00:00:00:00',
+    smpteFps = 25,
+  } = options
   const {
     Document,
     Paragraph,
@@ -768,8 +880,10 @@ export async function exportToDocxThreeColumn(
   } = await import('docx')
 
   const resolved = withResolvedSpeakers(segments, nameMap)
-  const groups = groupSegmentsBySpeakerEntry(resolved)
+  const groups = groupSegmentsBySpeakerEntry(resolved, { splitOnLongPause: timestampMode === 'smpte' })
   const applyVerb = (t: string) => (verbatimMode === 'clean' ? applyCleanVerbatim(t) : t.trim())
+  const formatTc = (start: number) =>
+    timestampMode === 'smpte' ? addAnchorTimecode(smpteAnchor, smpteFps, start) : formatTimestamp(start)
 
   const cellPad = { top: 80, bottom: 80, left: 120, right: 120 }
 
@@ -814,7 +928,7 @@ export async function exportToDocxThreeColumn(
       new TableRow({
         children: [
           makeDataCell(g.speaker ?? '', !!g.speaker, g.speaker ? '5028A0' : undefined),
-          makeDataCell(formatTimestamp(g.start)),
+          makeDataCell(formatTc(g.start)),
           makeDataCell(applyVerb(g.text)),
         ],
       }),
@@ -837,7 +951,11 @@ export async function exportToDocxThreeColumn(
   if (watermark) {
     docChildren.push(
       new Paragraph({
-        children: [new TextRun({ text: watermark, italics: true, color: '888888', size: 18 })],
+        children: [new TextRun({ text: WATERMARK_DOC_HEADER, bold: true, color: '666666', size: 20 })],
+        spacing: { after: 80 },
+      }),
+      new Paragraph({
+        children: [new TextRun({ text: WATERMARK_DOC_FOOTER, italics: true, color: '888888', size: 18 })],
         spacing: { after: 240 },
         alignment: AlignmentType.LEFT,
       }),
@@ -870,14 +988,26 @@ export async function exportToPdfThreeColumn(
   segments: Segment[],
   nameMap: SpeakerNameMap,
   filename: string,
-  options: { verbatimMode?: VerbatimMode } = {},
+  options: {
+    verbatimMode?: VerbatimMode
+    timestampMode?: TimestampMode
+    smpteAnchor?: string
+    smpteFps?: number
+  } = {},
   watermark?: string,
 ): Promise<void> {
-  const { verbatimMode = 'full' } = options
+  const {
+    verbatimMode = 'full',
+    timestampMode = 'per-speaker',
+    smpteAnchor = '00:00:00:00',
+    smpteFps = 25,
+  } = options
   const { jsPDF } = await import('jspdf')
   const resolved = withResolvedSpeakers(segments, nameMap)
-  const groups = groupSegmentsBySpeakerEntry(resolved)
+  const groups = groupSegmentsBySpeakerEntry(resolved, { splitOnLongPause: timestampMode === 'smpte' })
   const applyVerb = (t: string) => (verbatimMode === 'clean' ? applyCleanVerbatim(t) : t.trim())
+  const formatTc = (start: number) =>
+    timestampMode === 'smpte' ? addAnchorTimecode(smpteAnchor, smpteFps, start) : formatTimestamp(start)
 
   const doc = new jsPDF({ unit: 'mm', format: 'a4' })
   const pageW = doc.internal.pageSize.getWidth()
@@ -914,9 +1044,13 @@ export async function exportToPdfThreeColumn(
 
   if (watermark) {
     doc.setFontSize(8)
+    doc.setFont('helvetica', 'bold')
+    doc.setTextColor(100)
+    doc.text(WATERMARK_DOC_HEADER, margin, y)
+    y += lineH * 0.9
     doc.setFont('helvetica', 'italic')
-    doc.setTextColor(160)
-    doc.text(watermark, margin, y)
+    doc.setTextColor(140)
+    doc.text(WATERMARK_DOC_FOOTER, margin, y)
     doc.setTextColor(0)
     y += lineH * 1.4
   }
@@ -957,7 +1091,7 @@ export async function exportToPdfThreeColumn(
     // Timecode
     doc.setFont('helvetica', 'normal')
     doc.setTextColor(100)
-    doc.text(formatTimestamp(g.start), col2X, y)
+    doc.text(formatTc(g.start), col2X, y)
     doc.setTextColor(0)
 
     // Dialogue
@@ -972,17 +1106,9 @@ export async function exportToPdfThreeColumn(
     doc.line(margin, y - lineH * 0.2, pageW - margin, y - lineH * 0.2)
   }
 
-  // Watermark footer on every page
+  // Watermark on every page (diagonal + footer)
   if (watermark) {
-    const totalPages = doc.getNumberOfPages()
-    for (let p = 1; p <= totalPages; p++) {
-      doc.setPage(p)
-      doc.setFontSize(8)
-      doc.setFont('helvetica', 'italic')
-      doc.setTextColor(160)
-      doc.text(watermark, margin, pageH - 8)
-      doc.setTextColor(0)
-    }
+    drawPdfFreePlanWatermark(doc)
   }
 
   doc.save(filename)

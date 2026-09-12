@@ -41,7 +41,7 @@ export const TEX_ENTRIES: TexEntry[] = [
     keywords: ['signup', 'sign up', 'account', 'register', 'free signup', 'free trial', 'try free'],
     question: 'Do I need to sign up?',
     answer:
-      "Sign up to try free (3 uploads/day, no credit card). When you're ready for continued processing or more features (batch, multi-language, no watermark), subscribe from Pricing.",
+      "Sign up to try free (3 uploads/month, no credit card). Free exports include a watermark. When you're ready for watermark-free exports and more features (batch, multi-language), subscribe from Pricing.",
     link: { path: '/pricing', label: 'See plans' },
   },
   // —— Tools ——
@@ -107,7 +107,7 @@ export const TEX_ENTRIES: TexEntry[] = [
     keywords: ['free', 'free plan', 'free tier', '3 imports', 'free limit', 'imports'],
     question: 'What’s included in the free plan?',
     answer:
-      'Free: 3 uploads per day, up to 30 min per video. Video → Transcript and Video → Subtitles, one language. No batch. Upgrade for continued processing and features.',
+      'Free: 3 uploads per month, up to 30 min per video. Video → Transcript and Video → Subtitles, one language. No batch. Upgrade for continued processing and features.',
     link: { path: '/pricing', label: 'See pricing' },
   },
   {

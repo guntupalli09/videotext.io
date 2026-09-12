@@ -1,12 +1,16 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { Film } from 'lucide-react'
 // import { useWorkflow } from '../contexts/WorkflowContext'
 import FailedState from '../components/FailedState'
+import CoreToolSeoDepth from '../components/CoreToolSeoDepth'
+import CollapsibleFaqSection from '../components/CollapsibleFaqSection'
 import SamplesModule from '../components/SamplesModule'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import PaywallModal from '../components/PaywallModal'
 import FreePlanNudge from '../components/FreePlanNudge'
+import SecondJobUpgradeNudge from '../components/SecondJobUpgradeNudge'
 import { isPaidPlan } from '../lib/plans'
 import { ToolLayout } from '../components/figma/ToolLayout'
 import { UploadZone } from '../components/figma/UploadZone'
@@ -14,14 +18,22 @@ import { ProcessingInterface } from '../components/figma/ProcessingInterface'
 import { ProcessingProgress } from '../components/figma/ProcessingProgress'
 import { ResultSkeleton } from '../components/figma/ResultSkeleton'
 import { TranslateResult } from '../components/figma/TranslateResult'
+import ResultHeader from '../components/ResultHeader'
+import { ExportsPanel, ExportSection } from '../components/figma/ExportsPanel'
+import { ProcessingStateShell } from '../components/figma/ProcessingStateShell'
+import { VideoResultPreview } from '../components/figma/VideoResultPreview'
+import ResultUpgradeCard from '../components/ResultUpgradeCard'
 import { Select } from '../components/figma/FormControls'
 import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/filePreview'
 import { incrementUsage } from '../lib/usage'
-import { uploadDualFilesWithProgress, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError } from '../lib/api'
+import { incrementJobCompletedCount } from '../lib/jobCount'
+import { uploadDualFilesWithProgress, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError, claimGuestJob, getAuthToken } from '../lib/api'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
-import { persistJobId, clearPersistedJobId } from '../lib/jobSession'
+import { persistJobId, clearPersistedJobId, getPersistedJobId, getPersistedJobToken } from '../lib/jobSession'
 import { trackEvent } from '../lib/analytics'
+import { isLoggedIn } from '../lib/auth'
+import JobAuthGateModal from '../components/JobAuthGateModal'
 // import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
 import toast from 'react-hot-toast'
 import { Minimize2, FileText, MessageSquare } from 'lucide-react'
@@ -38,13 +50,6 @@ export type BurnSubtitlesSeoProps = {
 
 export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
   const { seoH1, seoIntro, faq = [] } = props
-  const defaultFaq = [
-    { q: 'What does it mean to burn subtitles?', a: 'Burning subtitles means embedding captions directly into the video so they cannot be turned off.' },
-    { q: 'How do I hardcode subtitles into a video?', a: 'Upload your video and subtitle file, and export a version with subtitles permanently embedded.' },
-    { q: 'Can I burn subtitles without editing software?', a: 'Yes. This tool allows you to hardcode subtitles online without using video editors.' },
-    { q: 'What formats are supported?', a: 'Common formats like SRT and VTT are supported.' },
-    { q: 'Are burned subtitles permanent?', a: 'Yes. They are part of the video and cannot be removed.' },
-  ]
   const location = useLocation()
   const navigate = useNavigate()
   // const workflow = useWorkflow()
@@ -88,6 +93,9 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
   const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null)
   const [filePreview, setFilePreview] = useState<FilePreviewData | null>(null)
   const processingStartedAtRef = useRef<number | null>(null)
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [authModalMode, setAuthModalMode] = useState<'signup-combo' | 'login'>('signup-combo')
+  const pendingDownloadRef = useRef<(() => void) | null>(null)
 
   const plan = (localStorage.getItem('plan') || 'free').toLowerCase()
   const hasPaidPlan = isPaidPlan(plan)
@@ -100,6 +108,12 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
   useEffect(() => {
     if (result?.downloadUrl) setFreeExportsUsed(0)
   }, [result?.downloadUrl])
+
+  useEffect(() => {
+    if (status === 'completed' && !isLoggedIn()) {
+      setShowAuthModal(true)
+    }
+  }, [status])
 
   useEffect(() => {
     if (!videoFile) {
@@ -219,7 +233,17 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
             trackAppEvent('transcription_completed', { toolId: 'burn-subtitles' })
             // emitToolCompleted({ toolId: 'burn-subtitles', pathname: '/burn-subtitles', processingMs })
             incrementUsage('burn-subtitles')
-            // texJobCompleted(processingMs, 'burn-subtitles')
+            try {
+              const nextJobCount = incrementJobCompletedCount()
+              trackEvent('job_completed', {
+                job_id: response.jobId,
+                tool_type: BACKEND_TOOL_TYPES.BURN_SUBTITLES,
+                processing_time_ms: processingMs,
+                job_count: nextJobCount,
+              })
+            } catch {
+              /* non-blocking */
+            }
           } else if (transition === 'failed') {
             clearInterval(pollIntervalRef.current)
             setStatus('failed')
@@ -262,21 +286,51 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
     return getAbsoluteDownloadUrl(result.downloadUrl)
   }
 
+  function requireAuthForDownload(action: () => void) {
+    if (isLoggedIn()) {
+      action()
+    } else {
+      pendingDownloadRef.current = action
+      setShowAuthModal(true)
+    }
+  }
+
+  /** Fetch a download URL with the required auth header and trigger a real file save (a plain <a> click can't carry the Bearer token, so it 401s). */
+  const downloadAuthedUrl = async (url: string, filename: string) => {
+    const token = getAuthToken()
+    const res = await fetch(url, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+    if (!res.ok) throw new Error(`Download failed (${res.status})`)
+    const blob = await res.blob()
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = filename
+    a.click()
+    URL.revokeObjectURL(a.href)
+  }
+
   const breadcrumbs = [{ label: 'Burn Subtitles', href: '/burn-subtitles' }]
   const layoutProps = {
     breadcrumbs,
-    title: seoH1 ?? 'Burn Subtitles into Video (Hardcode Captions Online)',
-    subtitle: seoIntro ?? 'Add subtitles directly into your video permanently. Hardcode captions with styling, position, and perfect sync.',
-    icon: <Film className="w-8 h-8 text-blue-600 dark:text-blue-400" />,
+    title: seoH1 ?? 'Burn Subtitles into Video',
+    subtitle: seoIntro ?? 'Hardcode SRT or VTT into your video. Upload video + captions, download one file. Files deleted after processing. 3 free imports/mo.',
+    icon: <Film className="w-4 h-4 text-blue-600 dark:text-blue-400" />,
     tags: ['Hardcode', 'Burn-in', 'Permanent', 'Styling', 'Position'],
     sidebar: null,
+    compactToolHeader: true,
+    coreToolPath: '/burn-subtitles',
+    currentStepLabel:
+      status === 'completed'
+        ? 'Video ready'
+        : videoFile
+          ? 'Upload configured'
+          : 'Ready to upload',
   }
 
   return (
     <>
       <ToolLayout {...layoutProps}>
         {status === 'idle' && !videoFile && (
-          <div className="space-y-4">
+          <div className="space-y-component-sm">
             <UploadZone
               immediateSelect
               onFileSelect={handleVideoSelect}
@@ -297,9 +351,9 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
         )}
 
         {status === 'idle' && videoFile && !subtitleFile && (
-          <div className="space-y-6">
-            <div className="bg-white dark:bg-gray-900 rounded-xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
-              <div className="flex items-center justify-between gap-4 mb-4">
+          <div className="space-y-component">
+            <div className="bg-white dark:bg-gray-900 rounded-xl p-component border border-gray-200 dark:border-gray-800 shadow-sm">
+              <div className="flex items-center justify-between gap-component-sm mb-component-sm">
                 <div>
                   <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Video</p>
                   <p className="font-semibold text-gray-900 dark:text-white">{videoFile.name}</p>
@@ -357,7 +411,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
             videoSrc={videoPreviewUrl ?? undefined}
             durationSeconds={filePreview?.durationSeconds}
           >
-            <div className="space-y-6">
+            <div className="space-y-component">
               <div className="flex items-center justify-between rounded-lg bg-gray-50 dark:bg-gray-800/50 p-3">
                 <span className="text-sm text-gray-700 dark:text-gray-300">Subtitle: {subtitleFile.name}</span>
                 <button
@@ -406,8 +460,8 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
         )}
 
         {status === 'processing' && (
-          <div className="rounded-xl bg-blue-50 dark:bg-blue-950/30 p-6 sm:p-8">
-            <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+          <ProcessingStateShell>
+            <div className="mb-component-sm text-sm text-gray-600 dark:text-gray-400">
               {videoFile?.name} • {subtitleFile?.name}
             </div>
             <ProcessingProgress
@@ -423,63 +477,110 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
               onCancel={handleProcessAnother}
             />
             <ResultSkeleton variant="burn" />
-          </div>
+          </ProcessingStateShell>
         )}
 
-        {status === 'completed' && result && (
-          <div className="space-y-6">
+        {status === 'completed' && result && !isLoggedIn() && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900"
+          >
+            <ResultHeader embedded title="Video with burned subtitles ready!" />
+            <div className="space-y-component-sm px-5 py-4 text-center">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Create a free account to download your video.
+              </p>
+              <div className="flex justify-center gap-2">
+                <button
+                  onClick={() => { setAuthModalMode('signup-combo'); setShowAuthModal(true) }}
+                  className="max-w-[200px] flex-1 rounded-xl bg-blue-600 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+                >
+                  Create free account
+                </button>
+                <button
+                  onClick={() => { setAuthModalMode('login'); setShowAuthModal(true) }}
+                  className="rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-600 transition-colors hover:border-gray-300 dark:border-gray-700 dark:text-gray-300 dark:hover:border-gray-600"
+                >
+                  Log in
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {status === 'completed' && result && isLoggedIn() && (
+          <div className="space-y-component">
             <TranslateResult
               title="Video with burned subtitles ready!"
               fileName={result.fileName ?? fallbackBurnName}
               processingTime={lastProcessingMs != null ? `${(lastProcessingMs / 1000).toFixed(1)}s` : '—'}
-              downloadLabel={!hasPaidPlan ? (freeExportsUsed >= 2 ? '2/2 free downloads used' : 'Download (2 free)') : 'Download Video'}
-              onDownload={
-                !hasPaidPlan
-                  ? async () => {
-                      if (freeExportsUsed >= 2) {
-                        toast('You\'ve used your 2 free downloads. Upgrade for more.')
-                        return
-                      }
-                      try {
-                        const res = await fetch(getDownloadUrl())
-                        const blob = await res.blob()
-                        const a = document.createElement('a')
-                        a.href = URL.createObjectURL(blob)
-                        a.download = result?.fileName || fallbackBurnName
-                        a.click()
-                        URL.revokeObjectURL(a.href)
-                        try { trackEvent('result_downloaded', { tool: 'burn-subtitles', plan: 'free' }) } catch { /* non-blocking */ }
-                        setFreeExportsUsed((prev) => prev + 1)
-                        toast.success('Download started')
-                      } catch {
-                        toast.error('Download failed')
-                      }
-                    }
-                  : () => {
-                      const a = document.createElement('a')
-                      a.href = getDownloadUrl()
-                      a.download = result?.fileName || fallbackBurnName
-                      a.click()
-                      try { trackEvent('result_downloaded', { tool: 'burn-subtitles', plan: 'paid' }) } catch { /* non-blocking */ }
-                    }
-              }
+              hideDownload
               onProcessAnother={handleProcessAnother}
-              relatedTools={[
-                { path: '/compress-video', name: 'Compress Video', description: 'Reduce file size' },
-                { path: '/video-to-transcript', name: 'Video → Transcript', description: 'Get transcript' },
-                { path: '/video-to-subtitles', name: 'Video → Subtitles', description: 'Generate SRT/VTT' },
-              ]}
+              relatedTools={[]}
             />
+            <ResultUpgradeCard tool="burn" resultKey={result.downloadUrl} />
             <FreePlanNudge tool="burn-subtitles" resultKey={result.downloadUrl} />
+            <SecondJobUpgradeNudge tool="burn-subtitles" resultKey={result.downloadUrl} milestone={2} />
+            <SecondJobUpgradeNudge tool="burn-subtitles" resultKey={result.downloadUrl} milestone={3} />
 
-            <CrossToolSuggestions
-              workflowHint="Your last file is pre-filled on the next tool."
-              suggestions={[
-                { icon: Minimize2, title: 'Compress Video', path: '/compress-video', description: 'Reduce file size', state: { useWorkflowVideo: true } },
-                { icon: FileText, title: 'Video → Transcript', path: '/video-to-transcript', description: 'Get transcript', state: { useWorkflowVideo: true } },
-                { icon: MessageSquare, title: 'Video → Subtitles', path: '/video-to-subtitles', description: 'Generate SRT/VTT', state: { useWorkflowVideo: true } },
-              ]}
-            />
+            <div className="grid grid-cols-1 items-start gap-component-sm lg:grid-cols-[minmax(0,1fr)_320px]">
+              <div className="space-y-component min-w-0">
+                {videoPreviewUrl && (
+                  <VideoResultPreview
+                    videoSrc={videoPreviewUrl}
+                    durationSeconds={filePreview?.durationSeconds}
+                    fileName={videoFile?.name}
+                    label="Source video preview"
+                  />
+                )}
+                <CrossToolSuggestions
+                workflowHint="Your last file is pre-filled on the next tool."
+                suggestions={[
+                  { icon: Minimize2, title: 'Compress Video', path: '/compress-video', description: 'Reduce file size', state: { useWorkflowVideo: true } },
+                  { icon: FileText, title: 'Video → Transcript', path: '/video-to-transcript', description: 'Get transcript', state: { useWorkflowVideo: true } },
+                  { icon: MessageSquare, title: 'Video → Subtitles', path: '/video-to-subtitles', description: 'Generate SRT/VTT', state: { useWorkflowVideo: true } },
+                ]}
+              />
+              </div>
+
+              <ExportsPanel freeExportsUsed={!hasPaidPlan ? freeExportsUsed : undefined}>
+                <ExportSection title="Video">
+                  <button
+                    type="button"
+                    onClick={() => requireAuthForDownload(
+                      !hasPaidPlan
+                        ? async () => {
+                            if (freeExportsUsed >= 2) {
+                              toast('You\'ve used your 2 free downloads. Upgrade for more.')
+                              return
+                            }
+                            try {
+                              await downloadAuthedUrl(getDownloadUrl(), result?.fileName || fallbackBurnName)
+                              try { trackEvent('result_downloaded', { tool: 'burn-subtitles', plan: 'free' }) } catch { /* non-blocking */ }
+                              setFreeExportsUsed((prev) => prev + 1)
+                              toast.success('Download started')
+                            } catch {
+                              toast.error('Download failed')
+                            }
+                          }
+                        : async () => {
+                            try {
+                              await downloadAuthedUrl(getDownloadUrl(), result?.fileName || fallbackBurnName)
+                              try { trackEvent('result_downloaded', { tool: 'burn-subtitles', plan: 'paid' }) } catch { /* non-blocking */ }
+                            } catch {
+                              toast.error('Download failed')
+                            }
+                          }
+                    )}
+                    disabled={!hasPaidPlan && freeExportsUsed >= 2}
+                    className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-3 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {!hasPaidPlan && freeExportsUsed >= 2 ? '2/2 free downloads used' : 'Download Video'}
+                  </button>
+                </ExportSection>
+              </ExportsPanel>
+            </div>
           </div>
         )}
 
@@ -491,71 +592,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
 
 
       {location.pathname === '/burn-subtitles' && (
-        <section className="mt-12 max-w-4xl mx-auto px-4 space-y-8" aria-label="Burn subtitles guide">
-          <section>
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Burn Subtitles into Video Instantly</h2>
-            <p className="mt-3 text-gray-600 dark:text-gray-300">Add subtitles directly into your video so they are permanently visible.</p>
-            <ul className="mt-3 list-disc pl-5 text-gray-600 dark:text-gray-300 space-y-1">
-              <li>burn subtitles</li>
-              <li>hardcode subtitles</li>
-              <li>add subtitles to video permanently</li>
-            </ul>
-            <p className="mt-3 text-sm text-gray-700 dark:text-gray-300">Need subtitles first? <a href="/video-to-subtitles" className="text-blue-600 hover:underline">Generate subtitles automatically</a>.</p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Hardcode Subtitles (No External Files Needed)</h2>
-            <p className="mt-3 text-gray-600 dark:text-gray-300">Burned subtitles are embedded into the video itself.</p>
-            <ul className="mt-3 list-disc pl-5 text-gray-600 dark:text-gray-300 space-y-1">
-              <li>no SRT required for playback</li>
-              <li>works across all platforms</li>
-              <li>subtitles always visible</li>
-            </ul>
-            <p className="mt-3 text-sm text-gray-700 dark:text-gray-300">Need subtitle files? <a href="/video-to-subtitles" className="text-blue-600 hover:underline">Create SRT &amp; VTT subtitles</a>.</p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Add Subtitles to Video Without Editing Software</h2>
-            <p className="mt-3 text-gray-600 dark:text-gray-300">No need for complex tools like Premiere or Final Cut.</p>
-            <ul className="mt-3 list-disc pl-5 text-gray-600 dark:text-gray-300 space-y-1">
-              <li>upload video</li>
-              <li>upload subtitle file</li>
-              <li>export video with captions</li>
-            </ul>
-            <p className="mt-3 text-sm text-gray-700 dark:text-gray-300">Need full transcript first? <a href="/video-to-transcript" className="text-blue-600 hover:underline">Convert video to transcript</a>.</p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Customize Subtitle Styling and Position</h2>
-            <p className="mt-3 text-gray-600 dark:text-gray-300">Control how subtitles appear in your video:</p>
-            <ul className="mt-3 list-disc pl-5 text-gray-600 dark:text-gray-300 space-y-1">
-              <li>font size and style</li>
-              <li>position on screen</li>
-              <li>color and readability</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Who Needs Burned Subtitles?</h2>
-            <ul className="mt-3 list-disc pl-5 text-gray-600 dark:text-gray-300 space-y-1">
-              <li>Social media creators → captions always visible</li>
-              <li>YouTubers → accessibility and engagement</li>
-              <li>Agencies → deliver ready-to-publish videos</li>
-              <li>Educators → clearer learning content</li>
-            </ul>
-            <p className="mt-3 text-sm text-gray-700 dark:text-gray-300">Need translation? <a href="/translate-subtitles" className="text-blue-600 hover:underline">Translate subtitles instantly</a>.</p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Complete Subtitle &amp; Transcription Workflow</h2>
-            <ul className="mt-3 list-disc pl-5 text-gray-600 dark:text-gray-300 space-y-1">
-              <li><a href="/video-to-subtitles" className="text-blue-600 hover:underline">Generate subtitles</a></li>
-              <li><a href="/translate-subtitles" className="text-blue-600 hover:underline">Translate subtitles</a></li>
-              <li><a href="/video-to-transcript" className="text-blue-600 hover:underline">Convert video to transcript</a></li>
-              <li><a href="/youtube-transcript-generator" className="text-blue-600 hover:underline">YouTube transcript generator</a></li>
-            </ul>
-          </section>
-        </section>
+        <CoreToolSeoDepth path="/burn-subtitles" />
       )}
 
       <PaywallModal
@@ -564,18 +601,38 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
         tool="burn-subtitles"
       />
 
-      {(faq.length > 0 || location.pathname === '/burn-subtitles') && (
-        <section className="mt-12 pt-8 border-t border-gray-100/70 max-w-4xl mx-auto px-4" aria-label="FAQ">
-          <h2 className="text-2xl font-medium text-gray-800 mb-4">Frequently Asked Questions</h2>
-          <dl className="space-y-4">
-            {(faq.length > 0 ? faq : defaultFaq).map((item, i) => (
-              <div key={i}>
-                <dt className="font-medium text-gray-800">{item.q}</dt>
-                <dd className="mt-1 text-gray-600">{item.a}</dd>
-              </div>
-            ))}
-          </dl>
-        </section>
+      <JobAuthGateModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        initialMode={authModalMode}
+        jobDescription="Your video with burned-in subtitles is ready!"
+        onAuthSuccess={async () => {
+          const jobId = getPersistedJobId(location.pathname)
+          const jobToken = getPersistedJobToken(location.pathname)
+          if (jobId && jobToken) {
+            try {
+              await claimGuestJob(jobId, jobToken)
+            } catch (err) {
+              console.error('Failed to claim guest job:', err)
+              toast.error('Could not link this job to your account. Please try again.')
+            }
+          }
+          setShowAuthModal(false)
+          if (pendingDownloadRef.current) {
+            const action = pendingDownloadRef.current
+            pendingDownloadRef.current = null
+            action()
+          } else if (result) {
+            // Result is already in memory — just close the modal.
+            // The download panel becomes visible on the next render since isLoggedIn() is now true.
+          } else {
+            window.location.reload()
+          }
+        }}
+      />
+
+      {faq.length > 0 && location.pathname !== '/burn-subtitles' && (
+        <CollapsibleFaqSection items={faq} title="Frequently asked questions" />
       )}
     </>
   )

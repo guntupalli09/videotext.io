@@ -12,7 +12,9 @@ tags:
 
 # Speaker Diarization Problems Nobody Talks About
 
-*The benchmark accuracy numbers for AI speaker diarization are deceptively good. Here is what actually happens on production audio — and why these problems persist despite years of improvement.*
+**Speaker diarization** — assigning words to the right speaker — fails predictably on cross-talk, similar voices, and long recordings. Here is why labels drift and how to fix attribution before QA.
+
+> **Better diarization + export:** [Video → Transcript →](https://videotext.io/video-to-transcript) maintains speaker labels through long files. [Fix subtitle speaker timing →](https://videotext.io/fix-subtitles)
 
 ---
 

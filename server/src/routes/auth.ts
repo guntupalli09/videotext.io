@@ -8,6 +8,8 @@ import type { User } from '../models/User'
 import { signAuthToken, signEmailVerificationToken, verifyEmailVerificationToken, generatePasswordResetToken } from '../utils/auth'
 import { getPlanAndEmailForStripeCustomer } from '../services/stripe'
 import { getPlanLimits } from '../utils/limits'
+import { applyReferralOnSignup } from '../services/referral'
+import { getRequestCountry } from '../utils/geoPricing'
 import { getLogger } from '../lib/logger'
 import { incrementResendCounter } from '../lib/apiCreditsCache'
 import { prisma } from '../db'
@@ -249,15 +251,44 @@ interface SignupBody {
   password: string
 }
 
-/** Complete signup after OTP verification. Body: { verificationToken, password }. */
-interface CompleteSignupBody {
+/** Client-captured first-touch acquisition data, sent by every signup path. All optional/untrusted. */
+interface AttributionBody {
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
+  referrer?: string | null
+}
+
+const MAX_ATTRIBUTION_FIELD_LEN = 512
+
+function sanitizeAttributionField(value: unknown): string | undefined {
+  if (typeof value !== 'string') return undefined
+  const trimmed = value.trim().slice(0, MAX_ATTRIBUTION_FIELD_LEN)
+  return trimmed || undefined
+}
+
+/** Resolve client-reported UTM/referrer + server-trusted geo-IP country for a new signup. */
+function resolveSignupAttribution(req: Request, body: AttributionBody) {
+  return {
+    utmSource: sanitizeAttributionField(body.utmSource),
+    utmMedium: sanitizeAttributionField(body.utmMedium),
+    utmCampaign: sanitizeAttributionField(body.utmCampaign),
+    firstReferrer: sanitizeAttributionField(body.referrer),
+    country: getRequestCountry(req),
+  }
+}
+
+/** Complete signup after OTP verification. Body: { verificationToken, password, referralCode? }. */
+interface CompleteSignupBody extends AttributionBody {
   verificationToken: string
   password: string
+  referralCode?: string
 }
 
 router.post('/complete-signup', async (req: Request, res: Response) => {
   try {
-    const { verificationToken, password } = req.body as CompleteSignupBody
+    const { verificationToken, password, referralCode } = req.body as CompleteSignupBody
+    const attribution = resolveSignupAttribution(req, req.body as AttributionBody)
     if (!verificationToken || !password) {
       return res.status(400).json({ message: 'Verification token and password are required.' })
     }
@@ -311,17 +342,27 @@ router.post('/complete-signup', async (req: Request, res: Response) => {
       },
       limits: getPlanLimits('free'),
       overagesThisMonth: { minutes: 0, languages: 0, batches: 0, totalCharge: 0 },
+      ...attribution,
+      firstSeenAt: now,
       createdAt: now,
       updatedAt: now,
     }
 
     await saveUser(user)
+    let referralApplied = false
+    try {
+      const refResult = await applyReferralOnSignup(user.id, referralCode)
+      referralApplied = refResult.applied
+    } catch {
+      // Signup succeeds even if referral fails — logged in service
+    }
     const jwt = signAuthToken(user)
     return res.status(201).json({
       token: jwt,
       userId: user.id,
       plan: user.plan,
       email: user.email,
+      referralApplied,
     })
   } catch (error: unknown) {
     log.error({ msg: 'complete-signup error', error: (error as Error)?.message ?? String(error) })
@@ -591,10 +632,11 @@ const googleAuthLimit = rateLimit({
  */
 router.post('/google', googleAuthLimit, async (req: Request, res: Response) => {
   try {
-    const { credential } = req.body as { credential?: string }
+    const { credential, referralCode } = req.body as { credential?: string; referralCode?: string } & AttributionBody
     if (!credential || typeof credential !== 'string') {
       return res.status(400).json({ message: 'Google credential is required.' })
     }
+    const attribution = resolveSignupAttribution(req, req.body as AttributionBody)
 
     const clientId = process.env.GOOGLE_CLIENT_ID
     if (!clientId) {
@@ -670,12 +712,32 @@ router.post('/google', googleAuthLimit, async (req: Request, res: Response) => {
         },
         limits: getPlanLimits('free'),
         overagesThisMonth: { minutes: 0, languages: 0, batches: 0, totalCharge: 0 },
+        ...attribution,
+        firstSeenAt: now,
         createdAt: now,
         updatedAt: now,
       }
       await saveUser(newUser)
       user = newUser
       log.info({ msg: 'Google OAuth new user created', email })
+      let referralApplied = false
+      try {
+        const refResult = await applyReferralOnSignup(user.id, referralCode)
+        referralApplied = refResult.applied
+      } catch {
+        // non-blocking
+      }
+      trackGoogleAuthCompleted({ user_id: user.id, plan: user.plan, is_new_user: isNewUser })
+      const token = signAuthToken(user)
+      return res.json({
+        token,
+        userId: user.id,
+        plan: user.plan,
+        email: user.email,
+        name: user.name ?? null,
+        isNewUser,
+        referralApplied,
+      })
     } else {
       // Update name if we now have one and the user didn't have one stored
       if (googleName && !user.name) {

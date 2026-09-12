@@ -3,6 +3,15 @@
   "outputDirectory": "dist",
   "headers": [
     {
+      "source": "/embed/:path*",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "frame-ancestors *"
+        }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
         {
@@ -117,18 +126,88 @@
       "status": 301
     },
     {
+      "src": "/youtube-transcript",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
       "src": "/youtube-transcript-transcription",
-      "dest": "/youtube-transcript",
+      "dest": "/video-to-transcript",
       "status": 301
     },
     {
       "src": "/youtube-to-text",
-      "dest": "/youtube-transcript",
+      "dest": "/video-to-transcript",
       "status": 301
     },
     {
       "src": "/youtube-video-transcript",
-      "dest": "/youtube-transcript",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/youtube-to-transcript",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/youtube-transcript-generator",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/youtube-url-to-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/youtube-video-to-transcript",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/how-to-transcript-youtube",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/youtube-transcript-editor",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/interview-transcription-tool",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/google-meet-transcript",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/srt-generator",
+      "dest": "/video-to-srt",
+      "status": 301
+    },
+    {
+      "src": "/srt-to-word",
+      "dest": "/tools/srt-to-text",
+      "status": 301
+    },
+    {
+      "src": "/batch-process",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/zoom-meeting-transcript",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/zoom-recording-transcript",
+      "dest": "/video-to-transcript",
       "status": 301
     },
     {
@@ -169,6 +248,31 @@
     {
       "src": "/french-transcription-transcription",
       "dest": "/french-transcription",
+      "status": 301
+    },
+    {
+      "src": "/otter-ai-alternative",
+      "dest": "/otter-alternative",
+      "status": 301
+    },
+    {
+      "src": "/burn-subtitles-into-video",
+      "dest": "/burn-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/hardcoded-captions",
+      "dest": "/burn-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/video-with-subtitles",
+      "dest": "/burn-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/subtitle-resources",
+      "dest": "/subtitle-tools",
       "status": 301
     },
     {

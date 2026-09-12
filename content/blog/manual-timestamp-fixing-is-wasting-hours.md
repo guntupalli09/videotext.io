@@ -12,9 +12,9 @@ tags:
 
 # Manual Timestamp Fixing Is Wasting Hours of Your Week
 
-*Timestamp problems are the most avoidable category of manual work in transcription. Most workflows absorb this cost silently every week.*
+**Timestamp errors** are the most avoidable manual work in transcription — yet they eat **4+ hours/week** on a 20-hour processing load. Stop fixing timestamps by hand; use tools that output correct SRT/VTT from the start.
 
----
+> **Fix timing without rebuilding from scratch:** [Fix subtitles →](https://videotext.io/fix-subtitles) · **Prevent drift:** [Video → Transcript](https://videotext.io/video-to-transcript) with assembly-aware timestamps · **Validate before delivery:** [Subtitle validator →](https://videotext.io/subtitle-validator)
 
 Timestamp errors are not interesting. They do not require judgment or expertise. They do not involve nuanced decisions about verbatim mode or speaker attribution. They are mechanical formatting failures that are entirely predictable and almost entirely preventable — yet they account for a substantial portion of the manual correction time in most transcription workflows.
 
@@ -173,6 +173,8 @@ The goal is not to become faster at fixing timestamps. It is to stop fixing them
 **Step 4: Use consistent output templates.** If your transcript template produces correctly formatted timestamps as part of the template, tool-to-tool handoff corruptions happen to a template structure that you can validate, not to free-form text.
 
 [Get a structured transcript with correctly formatted timestamps](https://videotext.io/video-to-transcript)
+
+[Fix drift and ordering errors in existing SRT/VTT files](https://videotext.io/fix-subtitles)
 
 [Apply formatting rules that include timestamp compliance before delivery](https://videotext.io/guideline-format)
 

@@ -1819,9 +1819,10 @@
     {
       "path": "/subtitle-resources",
       "source": "react-router",
-      "indexable": true,
-      "prerendered": true,
-      "ssrMode": "seo-document",
+      "indexable": false,
+      "prerendered": false,
+      "ssrMode": "redirect-301",
+      "redirectTo": "/subtitle-tools",
       "ssrCovered": true
     },
     {

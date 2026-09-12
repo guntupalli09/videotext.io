@@ -41,6 +41,7 @@ export default function SrtToVtt() {
 
   return (
     <FreeToolLayout
+      collapseSeoSections
       title="SRT to VTT Converter — Free Online"
       description="Convert SRT subtitle files to WebVTT (VTT) format instantly. Paste your SRT or upload a file — no account required, nothing uploaded to any server."
       hubLink={{ label: 'Free Subtitle Tools', path: '/subtitle-tools' }}

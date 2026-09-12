@@ -12,27 +12,152 @@ test('progresses only after successful free imports', () => {
   assert.equal(getFreePlanNudgeState(3, 0), 'exhausted')
 })
 
-test('shared inline conversion surfaces explicitly choose monthly checkout', () => {
-  for (const file of ['FreePlanNudge.tsx', 'PaywallModal.tsx', 'UpgradeBanner.tsx', 'ProResultNudge.tsx']) {
+test('shared inline conversion surfaces route checkout through startCheckout', () => {
+  for (const file of ['FreePlanNudge.tsx', 'PaywallModal.tsx', 'UpgradeBanner.tsx', 'ProResultNudge.tsx', 'SecondJobUpgradeNudge.tsx']) {
     const source = readFileSync(resolve(process.cwd(), 'src/components', file), 'utf8')
-    assert.match(source, /billingInterval:\s*['"]monthly['"]/, file)
+    assert.match(source, /startCheckout\(/, file)
     assert.doesNotMatch(source, /\bprice(Id)?\s*:/, file)
   }
 })
 
-test('all quota-consuming core result pages mount the shared nudge', () => {
+test('TranslateSubtitles Pro links route checkout through ProCheckoutLink', () => {
+  const source = readFileSync(resolve(process.cwd(), 'src/pages/TranslateSubtitles.tsx'), 'utf8')
+  assert.match(source, /ProCheckoutLink/)
+  assert.doesNotMatch(source, /Link to="\/pricing"[^>]*>Unlock Pro/)
+})
+
+test('all quota-consuming core result pages mount shared conversion nudges', () => {
   for (const file of ['VideoToTranscript.tsx', 'VideoToSubtitles.tsx', 'TranslateSubtitles.tsx', 'FixSubtitles.tsx', 'BurnSubtitles.tsx', 'CompressVideo.tsx', 'VoiceRecorder.tsx']) {
     const source = readFileSync(resolve(process.cwd(), 'src/pages', file), 'utf8')
     assert.match(source, /<FreePlanNudge\b/, file)
+    assert.match(source, /<SecondJobUpgradeNudge\b/, file)
+    assert.match(source, /milestone=\{3\}/, file)
+    assert.match(source, /<ResultUpgradeCard\b/, file)
+    assert.match(source, /compactToolHeader:\s*true|compactToolHeader\b/, file)
+    assert.match(source, /<ResultHeader\b|<TranslateResult\b/, file)
   }
   const guideline = readFileSync(resolve(process.cwd(), 'src/pages/GuidelineFormat.tsx'), 'utf8')
-  assert.match(guideline, /<ProResultNudge\b/)
+  assert.match(guideline, /<ResultUpgradeCard\b/)
+  assert.match(guideline, /<ResultHeader\b/)
+  assert.match(guideline, /compactToolHeader/)
   assert.doesNotMatch(guideline, /<FreePlanNudge\b/)
+})
+
+test('VoiceRecorder Pro grid routes checkout through startCheckout', () => {
+  const source = readFileSync(resolve(process.cwd(), 'src/pages/VoiceRecorder.tsx'), 'utf8')
+  assert.match(source, /startCheckout\(/)
+  assert.doesNotMatch(source, /Link to="\/pricing"[^>]*>Unlock Pro/)
+})
+
+test('core tool pages enforce type scale and display font on titles', () => {
+  const coreTools = [
+    'VideoToTranscript.tsx',
+    'VideoToSubtitles.tsx',
+    'TranslateSubtitles.tsx',
+    'FixSubtitles.tsx',
+    'BurnSubtitles.tsx',
+    'CompressVideo.tsx',
+    'VoiceRecorder.tsx',
+    'GuidelineFormat.tsx',
+  ]
+  for (const file of coreTools) {
+    const source = readFileSync(resolve(process.cwd(), 'src/pages', file), 'utf8')
+    assert.doesNotMatch(source, /text-\[(10|11|13|14)px\]/, file)
+  }
+  const toolLayout = readFileSync(resolve(process.cwd(), 'src/components/figma/ToolLayout.tsx'), 'utf8')
+  assert.match(toolLayout, /tool-title-compact/)
+  assert.match(toolLayout, /tool-title text-2xl/)
+})
+
+test('P3 polish: burn preview, compress savings card, collapsed SEO depth on results', () => {
+  const burn = readFileSync(resolve(process.cwd(), 'src/pages/BurnSubtitles.tsx'), 'utf8')
+  assert.match(burn, /<VideoResultPreview/)
+  assert.match(burn, /defaultCollapsed=\{status === 'completed'\}/)
+  assert.match(burn, /<ResultHeader embedded/)
+
+  const compress = readFileSync(resolve(process.cwd(), 'src/pages/CompressVideo.tsx'), 'utf8')
+  assert.match(compress, /<CompressionSavingsCard/)
+  assert.match(compress, /estimateCompressedSize/)
+  assert.doesNotMatch(compress, /compressed file/)
+
+  const seoDepth = readFileSync(resolve(process.cwd(), 'src/components/CoreToolSeoDepth.tsx'), 'utf8')
+  assert.match(seoDepth, /defaultCollapsed/)
+  assert.match(seoDepth, /<details/)
+  assert.match(seoDepth, /space-y-section/)
+
+  for (const file of [
+    'VideoToTranscript.tsx',
+    'VideoToSubtitles.tsx',
+    'TranslateSubtitles.tsx',
+    'FixSubtitles.tsx',
+    'BurnSubtitles.tsx',
+    'CompressVideo.tsx',
+    'VoiceRecorder.tsx',
+    'GuidelineFormat.tsx',
+  ]) {
+    const source = readFileSync(resolve(process.cwd(), 'src/pages', file), 'utf8')
+    assert.match(source, /defaultCollapsed=/, file)
+  }
+})
+
+test('P4 audit fixes: unified guest headers, exports panel, checkout links, processing shell', () => {
+  const fix = readFileSync(resolve(process.cwd(), 'src/pages/FixSubtitles.tsx'), 'utf8')
+  assert.match(fix, /<ResultHeader embedded title="Subtitles fixed!"/)
+
+  const subtitles = readFileSync(resolve(process.cwd(), 'src/pages/VideoToSubtitles.tsx'), 'utf8')
+  assert.match(subtitles, /<ExportsPanel/)
+  assert.doesNotMatch(subtitles, /to="\/pricing"/)
+
+  const transcript = readFileSync(resolve(process.cwd(), 'src/pages/VideoToTranscript.tsx'), 'utf8')
+  assert.doesNotMatch(transcript, /to="\/pricing"/)
+  assert.match(transcript, /ProCheckoutLink/)
+
+  const translate = readFileSync(resolve(process.cwd(), 'src/pages/TranslateSubtitles.tsx'), 'utf8')
+  assert.match(translate, /ResultUpgradeCard tool="translation" resultKey=\{`doc-/)
+  assert.match(translate, /defaultCollapsed=\{status === 'completed' \|\| !!docTranslated\}/)
+
+  const guideline = readFileSync(resolve(process.cwd(), 'src/pages/GuidelineFormat.tsx'), 'utf8')
+  assert.match(guideline, /ProcessingStateShell/)
+  assert.match(guideline, /ProcessingProgress/)
+  assert.match(guideline, /<ResultHeader embedded title="Your formatted transcript is ready"/)
+})
+
+test('home page: checkout-first pricing, type scale, collapsed SEO grids', () => {
+  const home = readFileSync(resolve(process.cwd(), 'src/pages/Home.tsx'), 'utf8')
+  assert.match(home, /startCheckout/)
+  assert.match(home, /useProPricing/)
+  assert.match(home, /pro_cta_clicked/)
+  assert.match(home, /pricing_page_view/)
+  assert.doesNotMatch(home, /to="\/pricing"[^>]*>[\s\S]*Unlock Pro/)
+  assert.doesNotMatch(home, /\$49/)
+  assert.match(home, /<CompetitorSection/)
+  assert.match(home, /<details/)
+
+  const landingFiles = [
+    'src/pages/Home.tsx',
+    'src/components/figma/Hero.tsx',
+    'src/components/figma/Features.tsx',
+    'src/components/figma/HowItWorks.tsx',
+    'src/components/landing/FAQ.tsx',
+    'src/components/landing/FinalCTA.tsx',
+    'src/components/landing/FoundingTeamCTA.tsx',
+    'src/components/landing/UseCases.tsx',
+    'src/components/landing/Testimonials.tsx',
+    'src/components/landing/CompetitorSection.tsx',
+  ]
+  for (const file of landingFiles) {
+    const source = readFileSync(resolve(process.cwd(), file), 'utf8')
+    assert.doesNotMatch(source, /text-\[(7|9|10|11|12|13|14|15|16|17)px\]/, file)
+  }
+
+  const useCases = readFileSync(resolve(process.cwd(), 'src/components/landing/UseCases.tsx'), 'utf8')
+  assert.match(useCases, /podcast-transcription-tool/)
+  assert.doesNotMatch(useCases, /\/podcast-transcription'/)
 })
 
 test('PaywallModal owns its impression and has no competing navigation callback', () => {
   const modal = readFileSync(resolve(process.cwd(), 'src/components/PaywallModal.tsx'), 'utf8')
-  assert.equal((modal.match(/paywall_shown/g) || []).length, 1)
+  assert.equal((modal.match(/trackEvent\('paywall_shown'/g) || []).length, 1)
   assert.doesNotMatch(modal, /onUpgrade/)
 })
 

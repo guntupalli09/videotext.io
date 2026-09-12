@@ -231,7 +231,7 @@ const TOOL_GUIDES: ToolGuide[] = [
       'Fix overlapping timestamps and gaps for YouTube and other platforms.',
       'Grammar and punctuation corrections, line break normalization.',
       'Remove filler words (um, uh, like, etc.) from cue text.',
-      'Pro/Agency: in-app subtitle editor to tweak segments.',
+      'Pro: in-app subtitle editor to tweak segments.',
     ],
   },
   {
@@ -301,7 +301,7 @@ const TOOL_GUIDES: ToolGuide[] = [
 
 /** Plan limits at a glance (authoritative summary; exact values in server/utils/limits.ts). */
 const PLAN_LIMITS = [
-  { plan: 'Free', uploads: '3/day', maxDuration: '30 min', maxSize: '2 GB', languages: '1', batch: '-', aiFeatures: '-' },
+  { plan: 'Free', uploads: '3/month', maxDuration: '30 min', maxSize: '2 GB', languages: '1', batch: '-', aiFeatures: '-' },
   { plan: 'Pro', uploads: 'No daily import cap', maxDuration: '2 h', maxSize: '10 GB', languages: '70+', batch: 'Up to 20 files', aiFeatures: 'Summary, Chapters, Speakers, Translation' },
 ]
 
@@ -501,7 +501,7 @@ export default function Guide() {
           <div className="p-4 sm:p-6 border-b border-gray-100">
             <h2 className="text-lg font-medium text-gray-900">Plan limits at a glance</h2>
             <p className="text-sm text-gray-600 mt-1">
-              Free: 3 imports/day, 30 min per video. Paid: monthly minute quota. AI features (Summary, Chapters, Speakers, Translation, Batch) are Pro and above. Exact limits enforced at upload.
+              Free: 3 imports/month, 30 min per video. Paid: monthly minute quota. AI features (Summary, Chapters, Speakers, Translation, Batch) are Pro and above. Exact limits enforced at upload.
             </p>
           </div>
           <div className="overflow-x-auto">
@@ -535,7 +535,7 @@ export default function Guide() {
         </section>
 
         {/* Pro Tips */}
-        <section className="mt-14 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl border border-amber-200/30 dark:border-amber-500/20 p-8">
+        <section className="mt-14 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-950/20 rounded-xl border border-blue-200/30 dark:border-blue-500/20 p-8">
           <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-6">Pro tips for best results</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[

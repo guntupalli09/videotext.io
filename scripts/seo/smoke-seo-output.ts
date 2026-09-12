@@ -8,6 +8,7 @@
 import * as path from 'path'
 import * as fs from 'fs'
 import { countFaqPageInJsonLdScripts, countBreadcrumbListInJsonLdScripts } from './jsonLdUtils'
+import { getCoreToolFaq } from '../../client/src/lib/coreToolSeoDepth'
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:5173'
 const REPO_ROOT = path.resolve(__dirname, '..', '..')
@@ -96,7 +97,7 @@ async function main(): Promise<void> {
         failed = true
         continue
       }
-      const expectFaqPage = p === '/faq' || (registryFaqCount.get(p) ?? 0) > 0
+      const expectFaqPage = p === '/faq' || (registryFaqCount.get(p) ?? 0) > 0 || getCoreToolFaq(p).length > 0
       if (!expectFaqPage && faqJsonLdCount > 0) {
         console.error(`[smoke] ${url}: FAQPage JSON-LD should not be present (registry has no FAQs for this path)`)
         failed = true

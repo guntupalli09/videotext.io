@@ -29,7 +29,9 @@ import healthRoutes from './routes/health'
 import feedbackRoutes from './routes/feedback'
 import eventsRoutes from './routes/events'
 import shareRoutes from './routes/share'
+import referralRoutes from './routes/referral'
 import feedbackSystemRoutes from './routes/feedbackSystem'
+import cancellationFeedbackRoutes from './routes/cancellationFeedback'
 import adminDashboardRoutes, { clearDashboardCache } from './routes/adminDashboard'
 import adminConversionIntentRoutes from './routes/adminConversionIntent'
 import adminSupportRoutes, { runAlertChecks, maybeSendDailyDigest } from './routes/adminSupport'
@@ -43,6 +45,7 @@ import { createMagicLinkToken } from './routes/auth'
 import { attachLiveTranscription } from './routes/liveTranscription'
 import { maybeRunYoutubeCanary } from './services/youtubeCanary'
 import { startOnboardingEmailCron } from './jobs/onboardingEmailCron'
+import { startProOnboardingEmailCron } from './jobs/proOnboardingEmailCron'
 import { startUpgradeRescueCron } from './jobs/upgradeRescueCron'
 import { startPricingIntentRescueCron } from './jobs/pricingIntentRescueCron'
 import { startXPostCron } from './jobs/xPostCron'
@@ -276,9 +279,11 @@ app.use('/api/translate-transcript', translateTranscriptRoutes)
 app.use('/api/translate-subtitles', translateSubtitlesRoutes)
 app.use('/api/guidelines', guidelinesRoutes)
 app.use('/api/shares', shareRoutes)
+app.use('/api/referral', referralRoutes)
 app.use('/api/feedback', feedbackRoutes)
 app.use('/api/events', eventsRoutes)
 app.use('/api/feedback', feedbackSystemRoutes)
+app.use('/api/feedback', cancellationFeedbackRoutes)
 app.use('/api/admin/feedback', feedbackSystemRoutes)
 app.use('/api/admin', adminDashboardRoutes)
 app.use('/api/admin', adminConversionIntentRoutes)
@@ -406,8 +411,17 @@ const server = app.listen(PORT, () => {
 
   // Daily quota reset email — fires once per day at 9 AM CST (15:00 UTC)
   // Sends free-plan users a magic-login email so they can open the tool in one click.
+  //
+  // DISABLED: this sent to every free-plan user (800+) every day via Resend,
+  // which exhausted Resend's shared daily send quota and blocked transactional
+  // sends on the same RESEND_API_KEY — including the sign-in OTP email in
+  // routes/auth.ts, locking users out of login. Replaced by manual targeted
+  // outreach instead of a blanket daily blast. Re-enable only after moving this
+  // off Resend (e.g. to the Gmail SMTP path in utils/mailer.ts, like the other
+  // growth crons) or onto a higher-quota provider.
+  const DAILY_QUOTA_EMAIL_CRON_ENABLED: boolean = false
   let lastDailyEmailDate = ''
-  setInterval(async () => {
+  if (DAILY_QUOTA_EMAIL_CRON_ENABLED) setInterval(async () => {
     try {
       const now = new Date()
       // CST = UTC-6 (no DST adjustment needed — close enough for a daily email)
@@ -447,7 +461,7 @@ const server = app.listen(PORT, () => {
             body: JSON.stringify({
               from: fromEmail,
               to: [email],
-              subject: 'Your 3 free daily transcriptions have arrived! 🎬',
+              subject: 'Your free imports have reset for the month! 🎬',
               html,
               headers: {
                 'List-Unsubscribe': `<${unsubscribeUrl}>`,
@@ -497,7 +511,7 @@ const server = app.listen(PORT, () => {
         <tr>
           <td style="padding:0 40px 32px">
             <p style="margin:0 0 16px;color:#a0a0c0;font-size:15px;line-height:1.6">Hey!</p>
-            <p style="margin:0 0 16px;color:#a0a0c0;font-size:15px;line-height:1.6">Your 3 free daily transcriptions have reset. Upload a video and get your transcript, subtitles, or captions in minutes.</p>
+            <p style="margin:0 0 16px;color:#a0a0c0;font-size:15px;line-height:1.6">Your 3 free monthly imports are available again. Upload a video and get your transcript, subtitles, or captions in minutes.</p>
             <p style="margin:0 0 32px;color:#a0a0c0;font-size:15px;line-height:1.6">Click below — you'll be logged in instantly, no password needed.</p>
             <a href="${openLink}" style="display:block;background:#2563EB;color:#ffffff;text-decoration:none;text-align:center;padding:16px 32px;border-radius:10px;font-size:15px;font-weight:700;letter-spacing:0.5px">OPEN NOW</a>
           </td>
@@ -529,6 +543,10 @@ const server = app.listen(PORT, () => {
   // Activation sequence (Day 0/1/3/7) for free users who signed up but never started.
   startOnboardingEmailCron().catch((e) => {
     log.error({ msg: 'Failed to start onboarding cron', error: (e as Error)?.message })
+  })
+
+  startProOnboardingEmailCron().catch((e) => {
+    log.error({ msg: 'Failed to start pro onboarding cron', error: (e as Error)?.message })
   })
 
   // Upgrade rescue sequence for users who clicked upgrade but did not complete payment in 24h.

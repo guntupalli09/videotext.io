@@ -71,7 +71,12 @@ export interface User {
   utmCampaign?: string | null
   firstReferrer?: string | null
   firstSeenAt?: Date | null
+  country?: string | null
   lastActiveAt?: Date | null
+  referralCode?: string | null
+  referredByUserId?: string | null
+  bonusImportCredits?: number
+  referralSignupCount?: number
   createdAt: Date
   updatedAt: Date
 }
@@ -128,7 +133,12 @@ function rowToUser(row: DbUser): User {
     utmCampaign: (row as { utmCampaign?: string | null }).utmCampaign ?? undefined,
     firstReferrer: (row as { firstReferrer?: string | null }).firstReferrer ?? undefined,
     firstSeenAt: (row as { firstSeenAt?: Date | null }).firstSeenAt ?? undefined,
+    country: (row as { country?: string | null }).country ?? undefined,
     lastActiveAt: (row as { lastActiveAt?: Date | null }).lastActiveAt ?? undefined,
+    referralCode: (row as { referralCode?: string | null }).referralCode ?? undefined,
+    referredByUserId: (row as { referredByUserId?: string | null }).referredByUserId ?? undefined,
+    bonusImportCredits: Number((row as { bonusImportCredits?: number | null }).bonusImportCredits ?? 0),
+    referralSignupCount: Number((row as { referralSignupCount?: number | null }).referralSignupCount ?? 0),
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   }
@@ -178,7 +188,12 @@ function userToDb(user: User) {
     utmCampaign: user.utmCampaign ?? null,
     firstReferrer: user.firstReferrer ?? null,
     firstSeenAt: user.firstSeenAt ?? null,
+    country: user.country ?? null,
     lastActiveAt: user.lastActiveAt ?? null,
+    referralCode: user.referralCode ?? null,
+    referredByUserId: user.referredByUserId ?? null,
+    bonusImportCredits: user.bonusImportCredits ?? 0,
+    referralSignupCount: user.referralSignupCount ?? 0,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
   }

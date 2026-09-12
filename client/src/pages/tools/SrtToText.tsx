@@ -46,6 +46,7 @@ export default function SrtToText() {
 
   return (
     <FreeToolLayout
+      collapseSeoSections
       title="SRT to Plain Text — Extract Transcript from Subtitle Files"
       description="Strip timing codes and cue numbers from SRT or VTT files to get clean plain text. Perfect for repurposing subtitles as blog posts, show notes, or transcripts."
       hubLink={{ label: 'Free Subtitle Tools', path: '/subtitle-tools' }}

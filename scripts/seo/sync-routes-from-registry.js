@@ -23,6 +23,7 @@ const STATIC_ROUTES = [
   '/fix-subtitles',
   '/burn-subtitles',
   '/compress-video',
+  '/guideline-format',
   '/batch-process',
 ]
 

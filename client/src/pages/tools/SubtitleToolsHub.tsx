@@ -2,6 +2,10 @@ import { Link } from 'react-router-dom'
 import { MessageSquare, Wand2, Languages, Wrench, Zap, ArrowRight } from 'lucide-react'
 import Seo from '../../components/Seo'
 import OpenStatsStrip from '../../components/OpenStatsStrip'
+import SeoJourneyBanner from '../../components/SeoJourneyBanner'
+import SerpTrustStrip from '../../components/SerpTrustStrip'
+import PageGscSeoSections from '../../components/PageGscSeoSections'
+import { getSeoJourneyBanner } from '../../lib/seoJourneyConfig'
 
 const SUBTITLE_TOOLS = [
   {
@@ -9,12 +13,13 @@ const SUBTITLE_TOOLS = [
     icon: MessageSquare,
     description: 'Create subtitles from video or audio',
     links: [
-      { path: '/video-to-subtitles', label: 'Video to Subtitles' },
+      { path: '/video-to-subtitles', label: 'Video to Subtitles (full product hub)' },
+      { path: '/video-to-srt', label: 'Video to SRT' },
+      { path: '/netflix-ttsc-checklist', label: 'Netflix TTSC Checklist' },
       { path: '/subtitle-generator', label: 'Subtitle Generator' },
       { path: '/auto-subtitle-generator', label: 'Auto Subtitle Generator' },
       { path: '/youtube-subtitle-generator', label: 'YouTube Subtitle Generator' },
       { path: '/caption-video-online', label: 'Caption Video Online' },
-      { path: '/video-with-subtitles', label: 'Video with Subtitles' },
       { path: '/batch-process', label: 'Batch Video to Subtitles' },
     ],
   },
@@ -50,10 +55,11 @@ const SUBTITLE_TOOLS = [
     icon: Zap,
     description: 'Check, validate, and analyze subtitles',
     links: [
-      { path: '/subtitle-validator', label: 'Subtitle Validator' },
-      { path: '/subtitle-word-counter', label: 'Subtitle Word Counter' },
-      { path: '/subtitle-character-checker', label: 'Subtitle Character Checker' },
-      { path: '/subtitle-reading-speed', label: 'Subtitle Reading Speed' },
+      { path: '/netflix-ttsc-checklist', label: 'Netflix TTSC Checklist' },
+      { path: '/tools/subtitle-validator', label: 'Subtitle Validator' },
+      { path: '/tools/subtitle-word-counter', label: 'Subtitle Word Counter' },
+      { path: '/tools/subtitle-character-checker', label: 'Subtitle Character Checker' },
+      { path: '/tools/subtitle-reading-speed', label: 'Subtitle Reading Speed' },
       { path: '/tools/merge-srt-files', label: 'Merge SRT Files' },
       { path: '/tools/srt-to-text', label: 'SRT to Text' },
       { path: '/tools/srt-to-sbv', label: 'SRT to SBV' },
@@ -67,7 +73,8 @@ const SUBTITLE_TOOLS = [
     icon: Wand2,
     description: 'Learn subtitle formats and best practices',
     links: [
-      { path: '/subtitle-resources', label: 'Subtitle Resources & Standards' },
+      { path: '/netflix-ttsc-checklist', label: 'Netflix TTSC pre-delivery checklist' },
+      { path: '/tools/subtitle-character-checker', label: 'Netflix-style CPL Checker (42 chars)' },
       { path: '/open-captions-vs-closed-captions', label: 'Open vs Closed Captions' },
       { path: '/free-captions-and-subtitles', label: 'Free Captions & Subtitles' },
       { path: '/ada-video-captions', label: 'ADA Video Captions' },
@@ -78,31 +85,42 @@ const SUBTITLE_TOOLS = [
 ]
 
 const STANDARDS = [
-  { platform: 'Netflix', cps: '20 (EN)', chars: '42', lines: '2', notes: '17 CPS for most languages' },
+  { platform: 'Netflix', cps: '20 (adult)', chars: '42', lines: '2', notes: '17 CPS for children\'s content (TTSC)' },
   { platform: 'BBC iPlayer', cps: '17', chars: '37', lines: '2', notes: 'EBU R37 compliant' },
-  { platform: 'Amazon Prime', cps: '17', chars: '42', lines: '2', notes: 'Similar to Netflix guidelines' },
+  { platform: 'Amazon Prime', cps: '20', chars: '42', lines: '2', notes: 'Similar to Netflix TTSC' },
   { platform: 'YouTube', cps: 'No limit', chars: 'No limit', lines: '3', notes: 'Auto-captions may wrap' },
   { platform: 'Apple TV+', cps: '17', chars: '40', lines: '2', notes: 'Follows EBU STL spec' },
   { platform: 'Disney+', cps: '17', chars: '42', lines: '2', notes: 'IMSC-1 compatible required' },
 ]
 
 export default function SubtitleToolsHub() {
+  const journey = getSeoJourneyBanner('/subtitle-tools')
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
+      <SerpTrustStrip />
+      {journey && <SeoJourneyBanner data={journey} />}
       <Seo
-        title="Free Subtitle Tools for Creators — Convert, Validate & Fix | VideoText"
-        description="Free online subtitle tools: convert SRT, VTT, SBV, ASS, TTML. Validate timing, check reading speed, merge files. All run in your browser — no account, no upload."
+        title="Subtitletools Alternative — Free SRT Convert & Validate | VideoText"
+        description="Free browser subtitle tools like Subtitletools: convert SRT↔VTT, validate CPL/CPS, shift timing — plus AI SRT generation when you need a new file. Nothing uploaded."
         canonicalPath="/subtitle-tools"
       />
       {/* Hero */}
-      <div className="bg-gradient-to-br from-pink-600 to-rose-800 text-white py-16 px-4">
+      <div className="bg-gray-950 text-white py-16 px-4 border-b border-white/[0.06]">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-display font-medium mb-4">
-            Subtitle Tools & Resources
+            Free Subtitle Tools — Subtitletools Alternative
           </h1>
-          <p className="text-lg text-pink-100 max-w-2xl">
-            Complete toolkit for subtitle creation, translation, editing, and conversion. Perfect for creators, studios, and video professionals.
+          <p className="text-lg text-white/55 max-w-2xl">
+            Browser-local converters and validators (like Subtitletools) — plus a path to AI SRT generation, translate, and QC repair when free checks are not enough.
           </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link to="/video-to-srt" className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 transition-colors">
+              Generate SRT from video →
+            </Link>
+            <Link to="/subtitle-grammar-fixer" className="inline-flex items-center rounded-lg border border-white/30 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10 transition-colors">
+              Fix CPL & CPS in one pass
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -127,7 +145,7 @@ export default function SubtitleToolsHub() {
                     <li key={link.path}>
                       <Link
                         to={link.path}
-                        className="flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-pink-400 dark:hover:border-pink-500 hover:bg-pink-50 dark:hover:bg-gray-800 transition-colors group"
+                        className="flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors group"
                       >
                         <span className="text-gray-900 dark:text-gray-100 group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors">
                           {link.label}
@@ -141,6 +159,37 @@ export default function SubtitleToolsHub() {
             )
           })}
         </div>
+
+        {/* Subtitletools comparison */}
+        <section className="space-y-4">
+          <h2 className="text-2xl font-display font-medium text-gray-900 dark:text-white">VideoText vs Subtitletools.com</h2>
+          <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 dark:bg-gray-800">
+                <tr>
+                  {['Feature', 'VideoText', 'Subtitletools'].map((h) => (
+                    <th key={h} className="text-left px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                {[
+                  ['Browser-local SRT/VTT tools', 'Yes', 'Yes'],
+                  ['AI SRT from video upload', 'Yes (Whisper)', 'No'],
+                  ['Translate SRT (70+ languages)', 'Yes', 'Limited'],
+                  ['CPL/CPS auto-fix (grammar fixer)', 'Yes', 'Check only'],
+                  ['Burn captions into video', 'Yes', 'No'],
+                ].map(([feature, vt, st]) => (
+                  <tr key={feature}>
+                    <td className="px-4 py-2.5 text-gray-900 dark:text-white">{feature}</td>
+                    <td className="px-4 py-2.5 text-green-700 dark:text-green-400 font-medium">{vt}</td>
+                    <td className="px-4 py-2.5 text-gray-600 dark:text-gray-400">{st}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
 
         {/* What are subtitle tools */}
         <section className="space-y-4">
@@ -217,25 +266,7 @@ export default function SubtitleToolsHub() {
           </div>
         </section>
 
-        {/* FAQ */}
-        <section>
-          <h2 className="text-2xl font-display font-medium text-gray-900 dark:text-white mb-6">Frequently asked questions</h2>
-          <div className="space-y-5">
-            {[
-              { q: 'Are these subtitle tools really free?', a: 'Yes, completely. All tools on this page run in your browser with no server processing. There are no file size limits, no account requirements, and no usage restrictions. They work using pure JavaScript in your browser.' },
-              { q: 'Do subtitle files get uploaded to a server?', a: 'No. When you use tools like the Subtitle Validator or Shift Timing tool, your file is read by your browser locally using the HTML5 File API. The file content is processed in JavaScript in your browser tab and never leaves your device.' },
-              { q: 'What subtitle formats are supported?', a: 'Most tools support SRT (SubRip Text) and VTT (WebVTT) — the two most widely used formats. SRT is universally compatible with editing software and platforms. VTT is the web standard required for HTML5 players. Some tools only accept SRT, so if you have a VTT file, use the VTT to SRT converter first.' },
-              { q: 'How do I fix subtitles that are out of sync?', a: 'Use the Shift Subtitle Timing tool. If subtitles are consistently early by the same amount, enter a negative offset (e.g. -1.5 seconds). If they appear too late, enter a positive offset. For subtitles that drift over time (not a fixed offset), you\'ll need to re-time them manually in a subtitle editor like Subtitle Edit.' },
-              { q: 'What is CPS and why does it matter?', a: 'CPS stands for characters per second — how fast a subtitle requires the viewer to read. Netflix\'s limit is 17 CPS for most languages (20 CPS for English). Subtitles above the limit are too fast to read comfortably and will fail QC checks for broadcast delivery. Use the Subtitle Reading Speed Checker to identify cues that exceed the limit.' },
-              { q: 'What is the maximum number of characters per subtitle line?', a: 'This varies by platform: Netflix allows 42 characters per line, BBC iPlayer 37, and Apple TV+ 40. Lines over these limits may wrap awkwardly or fail delivery QC. Use the Subtitle Character Limit Checker to scan your file for long lines before submitting.' },
-            ].map(({ q, a }) => (
-              <div key={q}>
-                <p className="font-semibold text-gray-900 dark:text-white text-sm mb-1">{q}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{a}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        <PageGscSeoSections path="/subtitle-tools" className="!max-w-3xl !px-0" />
 
         {/* Back to all tools */}
         <div className="text-center pt-4 border-t border-gray-100 dark:border-gray-800">

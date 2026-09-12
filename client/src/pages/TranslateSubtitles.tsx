@@ -1,31 +1,46 @@
 import { useState, useEffect, useRef, Suspense, lazy } from 'react'
-import { useLocation, useNavigate, Link } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import TranslateLangCluster from '../components/TranslateLangCluster'
 import { Languages, Copy, Check, Download, ArrowRight, Bold, Italic, AlignLeft, AlignCenter, AlignRight } from 'lucide-react'
 import FailedState from '../components/FailedState'
+import CoreToolSeoDepth from '../components/CoreToolSeoDepth'
+import CollapsibleFaqSection from '../components/CollapsibleFaqSection'
+import PageGscSupplementFaq from '../components/PageGscSupplementFaq'
 import SamplesModule from '../components/SamplesModule'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
 import JobAuthGateModal from '../components/JobAuthGateModal'
 import UpgradeBanner from '../components/UpgradeBanner'
 import FreePlanNudge from '../components/FreePlanNudge'
+import SecondJobUpgradeNudge from '../components/SecondJobUpgradeNudge'
+import ProCheckoutLink from '../components/ProCheckoutLink'
+import ResultUpgradeCard from '../components/ResultUpgradeCard'
+import ResultHeader from '../components/ResultHeader'
 import { ToolLayout } from '../components/figma/ToolLayout'
 import { UploadZone } from '../components/figma/UploadZone'
 import { ProcessingInterface } from '../components/figma/ProcessingInterface'
 import { ProcessingProgress } from '../components/figma/ProcessingProgress'
+import { ProcessingStateShell } from '../components/figma/ProcessingStateShell'
+import { ExportsPanel, ExportSection } from '../components/figma/ExportsPanel'
 import { TranslateResult } from '../components/figma/TranslateResult'
 import { Select } from '../components/figma/FormControls'
 import type { SubtitleRow } from '../components/SubtitleEditor'
 const SubtitleEditor = lazy(() => import('../components/SubtitleEditor'))
 import { incrementUsage } from '../lib/usage'
+import { incrementJobCompletedCount } from '../lib/jobCount'
 import { uploadFileWithProgress, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError, getAuthToken } from '../lib/api'
 import { isLoggedIn } from '../lib/auth'
 import { isPaidPlan as hasPaidPlan } from '../lib/plans'
+import { watermarkTextExport, watermarkClipboardText, applyWatermarkToVtt, applyWatermarkToAss, drawPdfFreePlanWatermark, WATERMARK_DOC_FOOTER, WATERMARK_DOC_HEADER } from '../lib/watermark'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl, getApiBase } from '../lib/apiBase'
 import { persistJobId, clearPersistedJobId, getPersistedJobId, getPersistedJobToken } from '../lib/jobSession'
 import { trackEvent } from '../lib/analytics'
 import toast from 'react-hot-toast'
 import { Film, Wrench, MessageSquare } from 'lucide-react'
+import SerpTrustStrip from '../components/SerpTrustStrip'
+import TranslateSerpHero from '../components/TranslateSerpHero'
+import TranslatePostQcBanner from '../components/TranslatePostQcBanner'
 import { trackAppEvent } from '../lib/feedbackEvents'
 import { LANGUAGES } from '../lib/languages'
 import { exportFileStem, joinExportFilename, targetLangFileSlug } from '../lib/exportFileNames'
@@ -75,7 +90,7 @@ function srtTimeToAss(t: string): string {
   return stripped.replace(/(\.\d{2})\d*$/, '$1')
 }
 
-function generateStyledVtt(rows: SubtitleRow[], styles: SubStyles, baseFilename: string): void {
+function generateStyledVtt(rows: SubtitleRow[], styles: SubStyles, baseFilename: string, isPaidPlan: boolean): void {
   const { fontFamily, fontSize, color, bgColor, bgOpacity, bold, italic, position } = styles
   const linePos = position === 'top' ? ' line:5%' : position === 'center' ? ' line:50%' : ' line:90%'
   let vtt = `WEBVTT\n\nSTYLE\n::cue {\n`
@@ -89,10 +104,11 @@ function generateStyledVtt(rows: SubtitleRow[], styles: SubStyles, baseFilename:
   for (let i = 0; i < rows.length; i++) {
     vtt += `${i + 1}\n${rows[i].startTime} --> ${rows[i].endTime}${linePos}\n${rows[i].text}\n\n`
   }
+  if (!isPaidPlan) vtt = applyWatermarkToVtt(vtt)
   downloadBlob(vtt, 'text/vtt', `${baseFilename}_styled.vtt`)
 }
 
-function generateAssFile(rows: SubtitleRow[], styles: SubStyles, baseFilename: string): void {
+function generateAssFile(rows: SubtitleRow[], styles: SubStyles, baseFilename: string, isPaidPlan: boolean): void {
   const { fontFamily, fontSize, color, bgColor, bgOpacity, bold, italic, position } = styles
   const alignment = position === 'top' ? 6 : position === 'center' ? 10 : 2
   const primaryColor = hexToAssColor(color)
@@ -109,6 +125,7 @@ function generateAssFile(rows: SubtitleRow[], styles: SubStyles, baseFilename: s
     const text = row.text.replace(/\n/g, '\\N')
     ass += `Dialogue: 0,${start},${end},Default,,0,0,0,,${text}\n`
   }
+  if (!isPaidPlan) ass = applyWatermarkToAss(ass)
   downloadBlob(ass, 'text/plain', `${baseFilename}.ass`)
 }
 
@@ -204,12 +221,38 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
   const [tab, setTab] = useState<Tab>('upload')
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [pastedText, setPastedText] = useState('')
-  const [targetLanguage, setTargetLanguage] = useState<string>('Spanish')
+  const [searchParams] = useSearchParams()
+  const [targetLanguage, setTargetLanguage] = useState<string>(() => {
+    const fromQuery = searchParams.get('to')
+    if (fromQuery && LANGUAGES.some((l) => l.value === fromQuery)) return fromQuery
+    return 'Spanish'
+  })
   const [copied, setCopied] = useState(false)
   const [showPaywall, setShowPaywall] = useState(false)
   const [paywallReason, setPaywallReason] = useState<PaywallReason>('FREE_DAILY_LIMIT_REACHED')
   const [showAuthGate, setShowAuthGate] = useState(false)
   const pendingDownloadRef = useRef<(() => void) | null>(null)
+  const pendingCopyRef = useRef<(() => void) | null>(null)
+
+  /** Gate any download action behind authentication. */
+  function requireAuthForDownload(action: () => void) {
+    if (isLoggedIn()) {
+      action()
+    } else {
+      pendingDownloadRef.current = action
+      setShowAuthGate(true)
+    }
+  }
+
+  /** Gate copy-to-clipboard behind authentication. */
+  function requireAuthForCopy(action: () => void) {
+    if (isLoggedIn()) {
+      action()
+    } else {
+      pendingCopyRef.current = action
+      setShowAuthGate(true)
+    }
+  }
 
   // ── Subtitles (job queue) ──────────────────────────────────────────────────
   const [status, setStatus] = useState<'idle' | 'processing' | 'completed' | 'failed'>('idle')
@@ -242,6 +285,19 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
   const [docText, setDocText] = useState<string | null>(null)
   const [docTranslated, setDocTranslated] = useState<string | null>(null)
   const [docLoading, setDocLoading] = useState(false)
+  const [docProgress, setDocProgress] = useState(0)
+
+  useEffect(() => {
+    if (status === 'completed' && !isLoggedIn()) {
+      setShowAuthGate(true)
+    }
+  }, [status])
+
+  useEffect(() => {
+    if (docTranslated && !isLoggedIn()) {
+      setShowAuthGate(true)
+    }
+  }, [docTranslated])
 
   const plan = (localStorage.getItem('plan') || 'free').toLowerCase()
   const isPaidPlan = hasPaidPlan(plan)
@@ -260,15 +316,12 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
 
   const subtitleBaseName = (result?.fileName ?? fallbackTranslatedName('.srt')).replace(/\.\w+$/, '')
 
-  /** Gate any download action behind authentication. */
-  function requireAuthForDownload(action: () => void) {
-    if (isLoggedIn()) {
-      action()
-    } else {
-      pendingDownloadRef.current = action
-      setShowAuthGate(true)
+  useEffect(() => {
+    const fromQuery = searchParams.get('to')
+    if (fromQuery && LANGUAGES.some((l) => l.value === fromQuery)) {
+      setTargetLanguage(fromQuery)
     }
-  }
+  }, [searchParams])
 
   // On mount: restore a completed job if jobId is persisted in URL/sessionStorage
   // (handles browser refresh after a translate job completes)
@@ -282,6 +335,11 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
         const transition = getJobLifecycleTransition(jobStatus)
         if (transition !== 'completed') return
         setStatus('completed')
+        if (jobStatus.requiresAuth || !isLoggedIn()) {
+          setShowAuthGate(true)
+          setResult(jobStatus.result?.fileName ? { downloadUrl: '', fileName: jobStatus.result.fileName } : { downloadUrl: '' })
+          return
+        }
         setResult(jobStatus.result ?? null)
         if (jobStatus.result?.downloadUrl) {
           try {
@@ -319,6 +377,18 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
   }
 
   // ── Document translate ─────────────────────────────────────────────────────
+  useEffect(() => {
+    if (!docLoading) {
+      setDocProgress(0)
+      return
+    }
+    setDocProgress(12)
+    const id = window.setInterval(() => {
+      setDocProgress((p) => Math.min(92, p + 4))
+    }, 450)
+    return () => window.clearInterval(id)
+  }, [docLoading])
+
   const handleDocTranslate = async () => {
     const src = tab === 'paste' ? pastedText : docText
     if (!src?.trim()) { toast.error('No text to translate'); return }
@@ -347,12 +417,27 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
     }
   }
 
-  const downloadDocAsDocx = async (text: string, filename: string) => {
+  const downloadDocAsDocx = async (text: string, filename: string, isPaid: boolean) => {
     const { Document, Paragraph, TextRun, Packer } = await import('docx')
-    const paragraphs = text.split('\n').map((line) =>
-      new Paragraph({ children: [new TextRun({ text: line || ' ' })] })
+    const children = []
+    if (!isPaid) {
+      children.push(
+        new Paragraph({
+          children: [new TextRun({ text: WATERMARK_DOC_HEADER, bold: true, color: '666666', size: 20 })],
+          spacing: { after: 80 },
+        }),
+        new Paragraph({
+          children: [new TextRun({ text: WATERMARK_DOC_FOOTER, italics: true, color: '888888', size: 18 })],
+          spacing: { after: 200 },
+        }),
+      )
+    }
+    children.push(
+      ...text.split('\n').map((line) =>
+        new Paragraph({ children: [new TextRun({ text: line || ' ' })] }),
+      ),
     )
-    const doc = new Document({ sections: [{ children: paragraphs }] })
+    const doc = new Document({ sections: [{ children }] })
     const blob = await Packer.toBlob(doc)
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -362,16 +447,27 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
     URL.revokeObjectURL(url)
   }
 
-  const downloadDocAsPdf = async (text: string, filename: string) => {
+  const downloadDocAsPdf = async (text: string, filename: string, isPaid: boolean) => {
     const { default: jsPDF } = await import('jspdf')
     const doc = new jsPDF()
-    const lines = doc.splitTextToSize(text, 180) as string[]
     let y = 15
+    if (!isPaid) {
+      doc.setFontSize(9)
+      doc.setTextColor(120)
+      doc.text(WATERMARK_DOC_HEADER, 15, y)
+      y += 6
+      doc.text(WATERMARK_DOC_FOOTER, 15, y)
+      y += 12
+      doc.setTextColor(0)
+      doc.setFontSize(11)
+    }
+    const lines = doc.splitTextToSize(text, 180) as string[]
     for (const line of lines) {
       if (y > 280) { doc.addPage(); y = 15 }
       doc.text(line, 15, y)
       y += 6
     }
+    if (!isPaid) drawPdfFreePlanWatermark(doc)
     doc.save(filename)
   }
 
@@ -451,24 +547,43 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
             const started = processingStartedAtRef.current ?? Date.now()
             setLastProcessingMs(Date.now() - started)
             setStatus('completed')
-            setResult(jobStatus.result ?? null)
             trackAppEvent('transcription_completed', { toolId: 'translate-subtitles' })
 
-            if (jobStatus.result?.downloadUrl) {
-              try {
-                const res = await fetch(getAbsoluteDownloadUrl(jobStatus.result.downloadUrl))
-                const txt = await res.text()
-                const isTxt = (jobStatus.result.fileName ?? '').toLowerCase().endsWith('.txt')
-                if (isTxt) {
-                  setPlainTextResult(txt)
-                } else {
-                  setSubtitleRows(parseSubtitlesToRows(txt))
+            if (jobStatus.requiresAuth || !isLoggedIn()) {
+              setShowAuthGate(true)
+              setResult(jobStatus.result?.fileName ? { downloadUrl: '', fileName: jobStatus.result.fileName } : { downloadUrl: '' })
+            } else {
+              setResult(jobStatus.result ?? null)
+              if (jobStatus.result?.downloadUrl) {
+                try {
+                  const token = getAuthToken()
+                  const res = await fetch(getAbsoluteDownloadUrl(jobStatus.result.downloadUrl), {
+                    headers: token ? { Authorization: `Bearer ${token}` } : {},
+                  })
+                  const txt = await res.text()
+                  const isTxt = (jobStatus.result.fileName ?? '').toLowerCase().endsWith('.txt')
+                  if (isTxt) {
+                    setPlainTextResult(txt)
+                  } else {
+                    setSubtitleRows(parseSubtitlesToRows(txt))
+                  }
+                } catch {
+                  // ignore
                 }
+              }
+              incrementUsage('translate-subtitles')
+              try {
+                const nextJobCount = incrementJobCompletedCount()
+                trackEvent('job_completed', {
+                  job_id: response.jobId,
+                  tool_type: BACKEND_TOOL_TYPES.TRANSLATE_SUBTITLES,
+                  processing_time_ms: Date.now() - started,
+                  job_count: nextJobCount,
+                })
               } catch {
-                // ignore
+                /* non-blocking */
               }
             }
-            incrementUsage('translate-subtitles')
           } else if (transition === 'failed') {
             clearInterval(pollIntervalRef.current)
             setStatus('failed')
@@ -507,12 +622,15 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
   const getDownloadUrl = () => result?.downloadUrl ? getAbsoluteDownloadUrl(result.downloadUrl) : ''
 
   const copyToClipboard = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text)
-      setCopied(true)
-      toast.success('Copied!')
-      setTimeout(() => setCopied(false), 2000)
-    } catch { toast.error('Copy failed') }
+    requireAuthForCopy(async () => {
+      try {
+        const payload = isPaidPlan ? text : watermarkClipboardText(text)
+        await navigator.clipboard.writeText(payload)
+        setCopied(true)
+        toast.success(isPaidPlan ? 'Copied!' : 'Copied (with watermark)')
+        setTimeout(() => setCopied(false), 2000)
+      } catch { toast.error('Copy failed') }
+    })
   }
 
   const switchKind = (k: InputKind) => {
@@ -530,11 +648,21 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
   const breadcrumbs = [{ label: 'Translate', href: '/translation' }]
   const layoutProps = {
     breadcrumbs,
-    title: seoH1 ?? 'Translate',
-    subtitle: seoIntro ?? 'Translate subtitles, documents, DOCX, TXT, and JSON into 70+ languages — structure always preserved.',
-    icon: <Languages className="w-8 h-8 text-blue-600 dark:text-blue-400" />,
+    title: seoH1 ?? 'Translate Subtitles to Any Language',
+    subtitle: seoIntro ?? 'Upload SRT or VTT, pick a target language, download a timed file. 70+ languages. Timestamps stay in sync. Try it free.',
+    icon: <Languages className="w-4 h-4 text-blue-600 dark:text-blue-400" />,
     tags: ['SRT', 'VTT', 'TXT', 'DOCX', 'JSON', '70+ Languages'],
     sidebar: null,
+    compactToolHeader: true,
+    coreToolPath: location.pathname === '/translate-subtitles' ? '/translate-subtitles' : undefined,
+    currentStepLabel:
+      status === 'completed'
+        ? 'Translation ready'
+        : docTranslated
+          ? 'Document translated'
+          : selectedFile || pastedText.trim()
+            ? 'Upload configured'
+            : 'Ready to upload',
   }
 
   // ── Shared tab bar (used in both modes) ────────────────────────────────────
@@ -558,11 +686,11 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
 
   // ── Subtitle style panel (shown after successful subtitle translation) ──────
   const subtitleStylePanel = subtitleRows.length > 0 && (
-    <div className="surface-card rounded-xl p-6 space-y-5">
+    <div className="surface-card rounded-xl p-component space-y-5">
       <h3 className="text-sm font-medium text-gray-800 dark:text-gray-100">Subtitle Style</h3>
-      <div className="flex flex-col sm:flex-row gap-6">
+      <div className="flex flex-col sm:flex-row gap-component">
         {/* Controls */}
-        <div className="flex-1 space-y-4">
+        <div className="flex-1 space-y-component-sm">
           {/* Font */}
           <div className="flex gap-3">
             <div className="flex-1">
@@ -588,7 +716,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
             </div>
           </div>
           {/* Colors */}
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-component-sm">
             <div>
               <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Text color</label>
               <input type="color" value={subStyles.color} onChange={(e) => updateStyle('color', e.target.value)}
@@ -659,22 +787,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
           </div>
         </div>
       </div>
-      {/* Export buttons */}
-      <div className="flex flex-wrap gap-2 pt-2 border-t border-gray-100 dark:border-gray-800">
-        <button
-          onClick={() => requireAuthForDownload(() => generateStyledVtt(subtitleRows, subStyles, subtitleBaseName))}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-        >
-          <Download className="w-3.5 h-3.5" /> Styled VTT
-        </button>
-        <button
-          onClick={() => requireAuthForDownload(() => generateAssFile(subtitleRows, subStyles, subtitleBaseName))}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-        >
-          <Download className="w-3.5 h-3.5" /> ASS / SSA
-        </button>
-        <p className="text-xs text-gray-400 dark:text-gray-500 self-center ml-1">Import into Premiere, DaVinci, Aegisub, or any player that supports styled subtitles</p>
-      </div>
+      {/* Export buttons moved to right-rail ExportsPanel on result view */}
     </div>
   )
 
@@ -694,7 +807,10 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
     </button>
   )
 
-  const kindSelector = (status === 'idle' || inputKind === 'documents') && !docTranslated && (
+  const isPrimaryTranslate = location.pathname === '/translate-subtitles'
+  const showDocumentKind = !isPrimaryTranslate || inputKind === 'documents'
+
+  const kindSelector = showDocumentKind && (status === 'idle' || inputKind === 'documents') && !docTranslated && (
     <div className="mb-5 rounded-xl border border-blue-300/60 dark:border-blue-500/40 bg-gradient-to-r from-blue-50 to-blue-50 dark:from-blue-950/30 dark:to-blue-950/20 p-4 sm:p-5">
       <p className="text-xs font-bold tracking-wide uppercase text-blue-700 dark:text-blue-300">Choose what to translate</p>
       <p className="mt-1 text-sm text-gray-700 dark:text-gray-200">Translate subtitle files or full transcript documents from this same page.</p>
@@ -707,10 +823,24 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
 
   return (
     <>
+      <SerpTrustStrip />
       <ToolLayout {...layoutProps}>
         <UpgradeBanner variant="video-length" tool="translate-subtitles" />
 
+        {isPrimaryTranslate && status === 'idle' && inputKind === 'subtitles' && (
+          <TranslateSerpHero targetLanguage={targetLanguage} onSelectLanguage={setTargetLanguage} />
+        )}
+
         {kindSelector}
+
+        {isPrimaryTranslate && status === 'idle' && inputKind === 'subtitles' && (
+          <p className="mb-4 text-xs text-gray-500 dark:text-gray-400">
+            Need to translate a transcript document instead?{' '}
+            <button type="button" onClick={() => switchKind('documents')} className="font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+              Switch to document mode
+            </button>
+          </p>
+        )}
 
         {/* ══════════════ SUBTITLES PATH ══════════════ */}
         {inputKind === 'subtitles' && (
@@ -719,7 +849,10 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
 
             {/* Upload: no file */}
             {status === 'idle' && tab === 'upload' && !selectedFile && (
-              <div className="space-y-4">
+              <div className="space-y-component-sm">
+                {isPrimaryTranslate && (
+                  <Select label="Translate to" options={LANGUAGES} value={targetLanguage} onChange={setTargetLanguage} />
+                )}
                 <UploadZone
                   immediateSelect
                   onFileSelect={handleFileSelect}
@@ -749,8 +882,8 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                   <Select label="Translate to" options={LANGUAGES} value={targetLanguage} onChange={setTargetLanguage} />
                   {!isPaidPlan && (
                     <p className="text-xs text-gray-400 dark:text-gray-500">
-                      Free plan: 3 translations per day ·{' '}
-                      <Link to="/pricing" className="text-blue-600 hover:underline">Unlock Pro — $7.99/mo</Link>
+                      Free plan: 3 translations per month ·{' '}
+                      <ProCheckoutLink source="translate_subtitles_upload" />
                     </p>
                   )}
                 </div>
@@ -759,7 +892,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
 
             {/* Paste tab */}
             {status === 'idle' && tab === 'paste' && (
-              <div className="space-y-4">
+              <div className="space-y-component-sm">
                 <Select label="Translate to" options={LANGUAGES} value={targetLanguage} onChange={setTargetLanguage} />
                 <textarea
                   value={pastedText}
@@ -769,8 +902,8 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                 />
                 {!isPaidPlan && (
                   <p className="text-xs text-gray-400 dark:text-gray-500">
-                    Free plan: 3 translations per day ·{' '}
-                    <Link to="/pricing" className="text-blue-600 hover:underline">Unlock Pro — $7.99/mo</Link>
+                    Free plan: 3 translations per month ·{' '}
+                    <ProCheckoutLink source="translate_subtitles_paste" />
                   </p>
                 )}
                 <button
@@ -787,8 +920,8 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
 
             {/* Processing */}
             {status === 'processing' && (
-              <div className="rounded-xl bg-blue-50 dark:bg-blue-950/30 p-6 sm:p-8">
-                <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+              <ProcessingStateShell>
+                <div className="mb-component-sm text-sm text-gray-600 dark:text-gray-400">
                   {selectedFile?.name ?? 'Pasted text'} · Translating to {targetLanguage}
                 </div>
                 <ProcessingProgress
@@ -803,36 +936,125 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                   statusSubtext={uploadPhase === 'processing' && queuePosition !== undefined && queuePosition > 0 ? `Queue position: ${queuePosition}` : undefined}
                   onCancel={handleProcessAnother}
                 />
+              </ProcessingStateShell>
+            )}
+
+            {/* Completed — guests see signup only */}
+            {status === 'completed' && result && !isLoggedIn() && (
+              <div className="rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden select-none">
+                <ResultHeader
+                  embedded
+                  title="Translation complete"
+                  processingTime={
+                    lastProcessingMs != null
+                      ? `${(lastProcessingMs / 1000).toFixed(1)}s`
+                      : null
+                  }
+                />
+                <div className="px-5 py-4">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-component-sm">
+                    Create a free account to view, copy, and download your translation.
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowAuthGate(true)}
+                      className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors"
+                    >
+                      Create free account
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
 
-            {/* Completed */}
-            {status === 'completed' && result && (
-              <div className="space-y-6">
+            {/* Completed — full result for signed-in users */}
+            {status === 'completed' && result && isLoggedIn() && (
+              <div className="space-y-component">
+                {isPrimaryTranslate && inputKind === 'subtitles' && <TranslatePostQcBanner />}
                 <TranslateResult
                   title="Translation complete!"
                   fileName={result.fileName ?? fallbackTranslatedName(translateFallbackExt)}
                   processingTime={lastProcessingMs != null ? `${(lastProcessingMs / 1000).toFixed(1)}s` : '—'}
-                  downloadLabel={isPaidPlan ? 'Download translated file' : (freeExportsUsed >= 2 ? '2/2 free downloads used' : 'Download with watermark')}
-                  onDownload={
-                    !isPaidPlan
-                      ? () => requireAuthForDownload(async () => {
-                          if (freeExportsUsed >= 2) { toast('You\'ve used your 2 free downloads. Upgrade for more.'); return }
-                          try {
-                            const token = getAuthToken()
-                            const res = await fetch(getDownloadUrl() + '?wm=1', { headers: token ? { Authorization: `Bearer ${token}` } : {} })
-                            const blob = await res.blob()
-                            const a = document.createElement('a')
-                            a.href = URL.createObjectURL(blob)
-                            a.download = result?.fileName || fallbackTranslatedName(translateFallbackExt)
-                            a.click()
-                            URL.revokeObjectURL(a.href)
-                            try { trackEvent('result_downloaded', { tool: 'translate-subtitles', plan: 'free' }) } catch { /* non-blocking */ }
-                            setFreeExportsUsed((prev) => prev + 1)
-                            toast.success('Download started')
-                          } catch { toast.error('Download failed') }
-                        })
-                      : () => requireAuthForDownload(async () => {
+                  hideDownload
+                  onProcessAnother={handleProcessAnother}
+                  relatedTools={[]}
+                />
+                {inputKind === 'subtitles' && <FreePlanNudge tool="translation" resultKey={result.downloadUrl} />}
+                {inputKind === 'subtitles' && (
+                  <ResultUpgradeCard tool="translation" resultKey={result.downloadUrl} />
+                )}
+                {inputKind === 'subtitles' && (
+                  <>
+                    <SecondJobUpgradeNudge tool="translation" resultKey={result.downloadUrl} milestone={2} />
+                    <SecondJobUpgradeNudge tool="translation" resultKey={result.downloadUrl} milestone={3} />
+                  </>
+                )}
+
+                <div className="grid grid-cols-1 items-start gap-component-sm lg:grid-cols-[minmax(0,1fr)_320px]">
+                  <div className="min-w-0 space-y-component">
+                    {plainTextResult && (
+                      <div className="surface-card space-y-3 rounded-xl p-component">
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">Translated text</p>
+                          <button
+                            onClick={() => copyToClipboard(plainTextResult)}
+                            className="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800"
+                          >
+                            {copied ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
+                            {copied ? 'Copied!' : 'Copy'}
+                          </button>
+                        </div>
+                        <div className="max-h-72 overflow-y-auto rounded-lg border border-gray-100 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-900/60">
+                          <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-gray-700 dark:text-gray-300">{plainTextResult}</pre>
+                        </div>
+                      </div>
+                    )}
+
+                    {result.consistencyIssues && result.consistencyIssues.length > 0 && (
+                      <div className="shadow-card rounded-xl border border-amber-100 bg-amber-50 p-component">
+                        <p className="mb-2 font-medium text-amber-800">Some lines may not be translated.</p>
+                        <ul className="space-y-1 text-sm text-amber-900">
+                          {result.consistencyIssues.slice(0, 8).map((issue, i) => (
+                            <li key={i}>Line {issue.line}: {issue.issueType === 'untranslated' ? 'possibly untranslated' : 'mixed language'}</li>
+                          ))}
+                          {result.consistencyIssues.length > 8 && <li>… and {result.consistencyIssues.length - 8} more</li>}
+                        </ul>
+                      </div>
+                    )}
+
+                    {subtitleStylePanel}
+
+                    {subtitleRows.length > 0 && (
+                      <div className="surface-card rounded-xl p-component">
+                        <Suspense fallback={null}>
+                          <SubtitleEditor entries={subtitleRows} editable={canEdit} onChange={setSubtitleRows} />
+                        </Suspense>
+                        {!canEdit && (
+                          <p className="mt-3 text-xs text-gray-500">Upgrade to edit translated subtitles inline.</p>
+                        )}
+                      </div>
+                    )}
+
+                    <CrossToolSuggestions
+                      workflowHint="Burn into video or fix timing on another file."
+                      suggestions={[
+                        { icon: Film, title: 'Burn Subtitles', path: '/burn-subtitles', description: 'Burn translated captions into video' },
+                        { icon: Wrench, title: 'Fix Subtitles', path: '/fix-subtitles', description: 'Fix timing, grammar, line breaks' },
+                        { icon: MessageSquare, title: 'Video → Subtitles', path: '/video-to-subtitles', description: 'Generate SRT/VTT from another video' },
+                      ]}
+                    />
+                  </div>
+
+                  <ExportsPanel freeExportsUsed={!isPaidPlan ? freeExportsUsed : undefined}>
+                    <ExportSection title="Primary">
+                      <button
+                        type="button"
+                        onClick={() => requireAuthForDownload(async () => {
+                          if (!isPaidPlan && freeExportsUsed >= 2) {
+                            toast('You\'ve used your 2 free downloads. Upgrade for more.')
+                            return
+                          }
                           try {
                             const token = getAuthToken()
                             const res = await fetch(getDownloadUrl(), { headers: token ? { Authorization: `Bearer ${token}` } : {} })
@@ -842,84 +1064,62 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                             a.download = result?.fileName || fallbackTranslatedName(translateFallbackExt)
                             a.click()
                             URL.revokeObjectURL(a.href)
-                            try { trackEvent('result_downloaded', { tool: 'translate-subtitles', plan: 'paid' }) } catch { /* non-blocking */ }
-                          } catch { toast.error('Download failed') }
-                        })
-                  }
-                  onProcessAnother={handleProcessAnother}
-                  relatedTools={[
-                    { path: '/fix-subtitles', name: 'Fix Subtitles', description: 'Auto-correct timing' },
-                    { path: '/burn-subtitles', name: 'Burn Subtitles', description: 'Hardcode into video' },
-                    { path: '/video-to-subtitles', name: 'Video → Subtitles', description: 'Generate SRT/VTT from video' },
-                  ]}
-                />
-                {inputKind === 'subtitles' && <FreePlanNudge tool="translation" resultKey={result.downloadUrl} />}
-
-                {/* Plain text result */}
-                {plainTextResult && (
-                  <div className="surface-card rounded-xl p-6 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">Translated text</p>
-                      <button
-                        onClick={() => copyToClipboard(plainTextResult)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                            try { trackEvent('result_downloaded', { tool: 'translate-subtitles', plan: isPaidPlan ? 'paid' : 'free' }) } catch { /* non-blocking */ }
+                            if (!isPaidPlan) setFreeExportsUsed((prev) => prev + 1)
+                            toast.success('Download started')
+                          } catch {
+                            toast.error('Download failed')
+                          }
+                        })}
+                        disabled={!isPaidPlan && freeExportsUsed >= 2}
+                        className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-3 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
                       >
-                        {copied ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
-                        {copied ? 'Copied!' : 'Copy'}
+                        {!isPaidPlan && freeExportsUsed >= 2
+                          ? '2/2 free downloads used'
+                          : isPaidPlan
+                            ? 'Download translated file'
+                            : 'Download with watermark'}
                       </button>
-                    </div>
-                    <div className="bg-gray-50 dark:bg-gray-900/60 border border-gray-100 dark:border-gray-700 rounded-lg p-4 max-h-72 overflow-y-auto">
-                      <pre className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-sans leading-relaxed">{plainTextResult}</pre>
-                    </div>
-                  </div>
-                )}
-
-                {/* Consistency issues */}
-                {result.consistencyIssues && result.consistencyIssues.length > 0 && (
-                  <div className="bg-amber-50 rounded-xl p-6 shadow-card border border-amber-100">
-                    <p className="text-amber-800 font-medium mb-2">Some lines may not be translated.</p>
-                    <ul className="text-sm text-amber-900 space-y-1">
-                      {result.consistencyIssues.slice(0, 8).map((issue, i) => (
-                        <li key={i}>Line {issue.line}: {issue.issueType === 'untranslated' ? 'possibly untranslated' : 'mixed language'}</li>
-                      ))}
-                      {result.consistencyIssues.length > 8 && <li>… and {result.consistencyIssues.length - 8} more</li>}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Subtitle style panel */}
-                {subtitleStylePanel}
-
-                {/* SRT/VTT inline editor */}
-                {subtitleRows.length > 0 && (
-                  <div className="surface-card rounded-xl p-6">
-                    <Suspense fallback={null}>
-                      <SubtitleEditor entries={subtitleRows} editable={canEdit} onChange={setSubtitleRows} />
-                    </Suspense>
-                    <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-                      <button
-                        disabled={!canEdit}
-                        onClick={() => {
-                          const content = rowsToSrt(subtitleRows)
-                          downloadBlob(content, 'text/plain', (result.fileName || fallbackTranslatedName('.srt')).replace(/\.vtt$/i, '.srt'))
-                        }}
-                        className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300"
-                      >
-                        Download Edited Subtitles
-                      </button>
-                      {!canEdit && <div className="text-xs text-gray-500">Upgrade to edit translated subtitles inline.</div>}
-                    </div>
-                  </div>
-                )}
-
-                <CrossToolSuggestions
-                  workflowHint="Burn into video or fix timing on another file."
-                  suggestions={[
-                    { icon: Film, title: 'Burn Subtitles', path: '/burn-subtitles', description: 'Burn translated captions into video' },
-                    { icon: Wrench, title: 'Fix Subtitles', path: '/fix-subtitles', description: 'Fix timing, grammar, line breaks' },
-                    { icon: MessageSquare, title: 'Video → Subtitles', path: '/video-to-subtitles', description: 'Generate SRT/VTT from another video' },
-                  ]}
-                />
+                    </ExportSection>
+                    {subtitleRows.length > 0 && (
+                      <>
+                        <ExportSection title="Edited subtitles">
+                          <button
+                            type="button"
+                            disabled={!canEdit}
+                            onClick={() => {
+                              let content = rowsToSrt(subtitleRows)
+                              if (!isPaidPlan) content = watermarkTextExport(content, 'srt')
+                              downloadBlob(content, 'text/plain', (result.fileName || fallbackTranslatedName('.srt')).replace(/\.vtt$/i, '.srt'))
+                            }}
+                            className="w-full rounded-lg border border-gray-200 px-2 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+                          >
+                            Download edited SRT
+                          </button>
+                        </ExportSection>
+                        <ExportSection title="Styled exports">
+                          <div className="grid grid-cols-2 gap-2">
+                            <button
+                              onClick={() => requireAuthForDownload(() => generateStyledVtt(subtitleRows, subStyles, subtitleBaseName, isPaidPlan))}
+                              className="rounded-lg border border-gray-200 px-2 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+                            >
+                              Styled VTT
+                            </button>
+                            <button
+                              onClick={() => requireAuthForDownload(() => generateAssFile(subtitleRows, subStyles, subtitleBaseName, isPaidPlan))}
+                              className="rounded-lg border border-gray-200 px-2 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+                            >
+                              ASS / SSA
+                            </button>
+                          </div>
+                          <p className="mt-2 text-xs text-gray-400 dark:text-gray-500">
+                            For Premiere, DaVinci, Aegisub, and styled players
+                          </p>
+                        </ExportSection>
+                      </>
+                    )}
+                  </ExportsPanel>
+                </div>
               </div>
             )}
 
@@ -955,7 +1155,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
 
             {/* Upload: file read, ready to translate */}
             {!docTranslated && !docLoading && tab === 'upload' && selectedFile && docText && (
-              <div className="space-y-4">
+              <div className="space-y-component-sm">
                 <div className="flex items-center gap-3 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">{selectedFile.name}</p>
@@ -969,8 +1169,8 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                 <Select label="Translate to" options={LANGUAGES} value={targetLanguage} onChange={setTargetLanguage} />
                 {!isPaidPlan && (
                   <p className="text-xs text-gray-400 dark:text-gray-500">
-                    Free plan: 3 translations per day ·{' '}
-                    <Link to="/pricing" className="text-blue-600 hover:underline">Unlock Pro — $7.99/mo</Link>
+                    Free plan: 3 translations per month ·{' '}
+                    <ProCheckoutLink source="translate_documents_upload" />
                   </p>
                 )}
                 <button
@@ -986,7 +1186,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
 
             {/* Paste tab */}
             {!docTranslated && !docLoading && tab === 'paste' && (
-              <div className="space-y-4">
+              <div className="space-y-component-sm">
                 <Select label="Translate to" options={LANGUAGES} value={targetLanguage} onChange={setTargetLanguage} />
                 <textarea
                   value={pastedText}
@@ -996,8 +1196,8 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                 />
                 {!isPaidPlan && (
                   <p className="text-xs text-gray-400 dark:text-gray-500">
-                    Free plan: 3 translations per day ·{' '}
-                    <Link to="/pricing" className="text-blue-600 hover:underline">Unlock Pro — $7.99/mo</Link>
+                    Free plan: 3 translations per month ·{' '}
+                    <ProCheckoutLink source="translate_documents_paste" />
                   </p>
                 )}
                 <button
@@ -1012,59 +1212,98 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
               </div>
             )}
 
-            {/* Translating spinner */}
+            {/* Translating */}
             {docLoading && (
-              <div className="rounded-xl bg-blue-50 dark:bg-blue-950/30 p-8 flex flex-col items-center gap-4">
-                <div className="w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                <p className="text-sm text-gray-600 dark:text-gray-400">Translating to {targetLanguage}…</p>
+              <ProcessingStateShell>
+                <ProcessingProgress
+                  steps={[
+                    { label: 'Preparing', status: 'completed' },
+                    { label: 'Translating', status: 'active' },
+                  ]}
+                  currentMessage={`Translating to ${targetLanguage}…`}
+                  progress={docProgress}
+                  estimatedTime="10–30 seconds"
+                />
+              </ProcessingStateShell>
+            )}
+
+            {/* Result — signed-in only */}
+            {docTranslated && !isLoggedIn() && (
+              <div className="overflow-hidden rounded-xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-900">
+                <ResultHeader embedded title="Translation complete" meta={`Translated to ${targetLanguage}`} />
+                <div className="space-y-component-sm p-component text-center">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Create a free account to view, copy, and download your translated document.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setShowAuthGate(true)}
+                    className="mx-auto w-full max-w-xs rounded-xl bg-blue-600 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+                  >
+                    Create free account
+                  </button>
+                </div>
               </div>
             )}
 
-            {/* Result */}
-            {docTranslated && (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
-                    <Check className="w-4 h-4" />
-                    <span className="text-sm font-semibold">Translated to {targetLanguage}</span>
+            {docTranslated && isLoggedIn() && (
+              <div className="space-y-component-sm">
+                <ResultHeader
+                  title="Translation complete"
+                  meta={`Translated to ${targetLanguage}`}
+                  actionLabel="Translate another"
+                  onAction={() => { setDocTranslated(null); setDocText(null); setSelectedFile(null); setPastedText('') }}
+                />
+                <ResultUpgradeCard tool="translation" resultKey={`doc-${docBaseName}`} />
+                <FreePlanNudge tool="translation" resultKey={`doc-${docBaseName}`} />
+                <SecondJobUpgradeNudge tool="translation" resultKey={`doc-${docBaseName}`} milestone={2} />
+                <SecondJobUpgradeNudge tool="translation" resultKey={`doc-${docBaseName}`} milestone={3} />
+
+                <div className="grid grid-cols-1 items-start gap-component-sm lg:grid-cols-[minmax(0,1fr)_320px]">
+                  <div className="min-w-0 space-y-component-sm">
+                    <div className="flex justify-end">
+                      <button
+                        onClick={() => copyToClipboard(docTranslated)}
+                        className="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+                      >
+                        {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                        {copied ? 'Copied!' : 'Copy'}
+                      </button>
+                    </div>
+                    <div className="max-h-80 overflow-y-auto rounded-xl border border-gray-100 bg-gray-50 p-5 dark:border-gray-700 dark:bg-gray-900/60">
+                      <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-gray-700 dark:text-gray-300">{docTranslated}</pre>
+                    </div>
                   </div>
-                  <button
-                    onClick={() => copyToClipboard(docTranslated)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                  >
-                    {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-                    {copied ? 'Copied!' : 'Copy'}
-                  </button>
+
+                  <ExportsPanel>
+                    <ExportSection title="Documents">
+                      <div className="grid grid-cols-1 gap-2">
+                        <button
+                          onClick={() => requireAuthForDownload(() => downloadBlob(
+                            isPaidPlan ? docTranslated : watermarkTextExport(docTranslated, 'txt'),
+                            'text/plain',
+                            `${docBaseName}.txt`,
+                          ))}
+                          className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-gray-200 px-2 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+                        >
+                          <Download className="h-3.5 w-3.5" /> Download TXT
+                        </button>
+                        <button
+                          onClick={() => requireAuthForDownload(() => downloadDocAsDocx(docTranslated, `${docBaseName}.docx`, isPaidPlan))}
+                          className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-gray-200 px-2 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+                        >
+                          <Download className="h-3.5 w-3.5" /> Download DOCX
+                        </button>
+                        <button
+                          onClick={() => requireAuthForDownload(() => downloadDocAsPdf(docTranslated, `${docBaseName}.pdf`, isPaidPlan))}
+                          className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-gray-200 px-2 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+                        >
+                          <Download className="h-3.5 w-3.5" /> Download PDF
+                        </button>
+                      </div>
+                    </ExportSection>
+                  </ExportsPanel>
                 </div>
-                <div className="bg-gray-50 dark:bg-gray-900/60 border border-gray-100 dark:border-gray-700 rounded-xl p-5 max-h-80 overflow-y-auto">
-                  <pre className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-sans leading-relaxed">{docTranslated}</pre>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={() => requireAuthForDownload(() => downloadBlob(docTranslated, 'text/plain', `${docBaseName}.txt`))}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                  >
-                    <Download className="w-3.5 h-3.5" /> Download TXT
-                  </button>
-                  <button
-                    onClick={() => requireAuthForDownload(() => downloadDocAsDocx(docTranslated, `${docBaseName}.docx`))}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                  >
-                    <Download className="w-3.5 h-3.5" /> Download DOCX
-                  </button>
-                  <button
-                    onClick={() => requireAuthForDownload(() => downloadDocAsPdf(docTranslated, `${docBaseName}.pdf`))}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                  >
-                    <Download className="w-3.5 h-3.5" /> Download PDF
-                  </button>
-                </div>
-                <button
-                  onClick={() => { setDocTranslated(null); setDocText(null); setSelectedFile(null); setPastedText('') }}
-                  className="w-full py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                >
-                  Translate another
-                </button>
               </div>
             )}
           </>
@@ -1072,48 +1311,26 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
       </ToolLayout>
 
       {location.pathname === '/translate-subtitles' && (
-        <section className="max-w-4xl mx-auto px-4 py-10 space-y-10">
-          <header className="space-y-3">
-            <h1 className="text-3xl font-medium text-gray-900 dark:text-gray-100">Translate Subtitles &amp; Transcripts Online (SRT, VTT, TXT)</h1>
-            <p className="text-gray-700 dark:text-gray-300">Translate subtitles, SRT files, and transcripts into 70+ languages — timestamps and structure preserved.</p>
-            <p className="text-sm font-medium text-gray-800 dark:text-gray-200">👉 Upload subtitle file → get translated version instantly</p>
-            <p className="text-sm text-gray-700 dark:text-gray-300">👉 No formatting loss. No manual editing. Works for long files.</p>
-          </header>
-
-          <section className="space-y-3">
-            <h2 className="text-2xl font-medium">Translate Subtitles Online (SRT, VTT, TXT)</h2>
-            <p>Easily translate subtitles and transcripts online without breaking timing or formatting. Upload an SRT, VTT, TXT, or DOCX file and get a clean, translated version in seconds. Need subtitles first? Use the <Link to="/subtitle-generator" className="text-blue-600 hover:underline">subtitle generator</Link>.</p>
-            <ul className="list-disc pl-6 space-y-1">
-              <li>Translate subtitles to 70+ languages</li><li>Keep timestamps perfectly aligned</li><li>Download translated SRT/VTT instantly</li>
-            </ul>
-          </section>
-
-          <section className="space-y-3"><h2 className="text-2xl font-medium">Translate SRT Files Without Losing Timestamps</h2><p>Most tools break subtitle timing. This subtitle translator keeps every timestamp intact. Working from video first? Convert your file with <Link to="/video-to-transcript" className="text-blue-600 hover:underline">video to transcript</Link>.</p></section>
-
-          <section className="space-y-3"><h2 className="text-2xl font-medium">Translate Video Subtitles Automatically</h2><p>Translate subtitles directly from video or from existing transcript files. Ideal for YouTube, courses, interviews, and podcasts. Starting from YouTube? Try the <Link to="/youtube-transcript-generator" className="text-blue-600 hover:underline">YouTube transcript generator</Link>.</p></section>
-
-          <section className="space-y-3"><h2 className="text-2xl font-medium">Why This Subtitle Translator Is Better</h2><ul className="list-disc pl-6 space-y-1"><li>Timestamps preserved — no sync issues</li><li>Multiple formats supported — SRT, VTT, TXT, DOCX, JSON</li><li>No manual cleanup — clean output instantly</li><li>Fast processing — large files handled in minutes</li><li>Privacy-first — files deleted after processing</li></ul></section>
-
-          <section className="space-y-3"><h2 className="text-2xl font-medium">Fast Subtitle Translation Without Editing</h2><p>Traditional tools require manual fixes after translation. With VideoText: upload → translate → download, with no timeline editing and no formatting fixes. It also works with long files via <Link to="/transcribe-long-videos" className="text-blue-600 hover:underline">transcribe long videos</Link>.</p></section>
-
-          <section className="space-y-3"><h2 className="text-2xl font-medium">Who Needs Subtitle Translation?</h2><ul className="list-disc pl-6 space-y-1"><li>YouTubers → translate captions for global audience</li><li>Course creators → localize lessons</li><li>Agencies → scale multilingual content</li><li>Podcasters → expand reach with subtitles</li></ul></section>
-
-          <section className="space-y-3"><h2 className="text-2xl font-medium">More Transcription &amp; Subtitle Tools</h2><ul className="list-disc pl-6 space-y-1"><li><Link to="/video-to-transcript" className="text-blue-600 hover:underline">Video to transcript tool</Link></li><li><Link to="/subtitle-generator" className="text-blue-600 hover:underline">Subtitle generator</Link></li><li><Link to="/youtube-transcript-generator" className="text-blue-600 hover:underline">YouTube transcript generator</Link></li><li><Link to="/transcribe-long-videos" className="text-blue-600 hover:underline">Transcribe long videos</Link></li></ul></section>
-
-          <section className="space-y-3" aria-label="FAQ"><h2 className="text-2xl font-medium">Frequently Asked Questions</h2><dl className="space-y-3"><div><dt className="font-medium">How do I translate subtitles online?</dt><dd className="text-gray-700 dark:text-gray-300">Upload your subtitle file (SRT/VTT), select the target language, and download the translated version instantly.</dd></div><div><dt className="font-medium">Can I translate SRT files without losing timestamps?</dt><dd className="text-gray-700 dark:text-gray-300">Yes. This tool preserves all timing while translating text.</dd></div><div><dt className="font-medium">Is there a free subtitle translator?</dt><dd className="text-gray-700 dark:text-gray-300">Yes, basic usage is available without signup.</dd></div><div><dt className="font-medium">How do I translate video subtitles automatically?</dt><dd className="text-gray-700 dark:text-gray-300">Upload your subtitle file or video transcript and export the translated version.</dd></div><div><dt className="font-medium">What formats are supported?</dt><dd className="text-gray-700 dark:text-gray-300">SRT, VTT, TXT, DOCX, and JSON.</dd></div></dl></section>
-        </section>
+        <>
+          <CoreToolSeoDepth path="/translate-subtitles" />
+          <PageGscSupplementFaq path="/translate-subtitles" title="More translation questions" />
+          <TranslateLangCluster />
+        </>
       )}
 
 
       <JobAuthGateModal
         isOpen={showAuthGate}
-        onClose={() => { setShowAuthGate(false); pendingDownloadRef.current = null }}
-        dismissable
-        jobDescription="Sign up to download your translation"
+        onClose={() => { setShowAuthGate(false); pendingDownloadRef.current = null; pendingCopyRef.current = null }}
+        dismissable={false}
+        jobDescription="Sign up to view and download your translation"
         onAuthSuccess={() => {
           setShowAuthGate(false)
           pendingDownloadRef.current?.()
           pendingDownloadRef.current = null
+          pendingCopyRef.current?.()
+          pendingCopyRef.current = null
+          window.location.reload()
         }}
       />
 
@@ -1124,18 +1341,8 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
         tool="translate-subtitles"
       />
 
-      {faq.length > 0 && (
-        <section className="mt-12 pt-8 border-t border-gray-100/70 max-w-4xl mx-auto px-4" aria-label="FAQ">
-          <h2 className="text-2xl font-medium text-gray-800 mb-4">Frequently asked questions</h2>
-          <dl className="space-y-4">
-            {faq.map((item, i) => (
-              <div key={i}>
-                <dt className="font-medium text-gray-800">{item.q}</dt>
-                <dd className="mt-1 text-gray-600">{item.a}</dd>
-              </div>
-            ))}
-          </dl>
-        </section>
+      {faq.length > 0 && location.pathname !== '/translate-subtitles' && (
+        <CollapsibleFaqSection items={faq} route={location.pathname} />
       )}
     </>
   )

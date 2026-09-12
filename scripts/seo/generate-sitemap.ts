@@ -5,13 +5,18 @@
  */
 import * as path from 'path'
 import * as fs from 'fs'
-import { CORE_PATHS, getSitemap2Paths } from './registry'
+import { CORE_PATHS, getSitemap2Paths, getHashnodeBlogPaths } from './registry'
 import { getCanonicalPathForRoute } from '../../client/src/lib/primaryUrls'
+import { getHashnodePostUrl } from '../../client/src/lib/blogSlugMap'
+import { maxLastmodForPaths, resolveLastmodForPath } from './resolve-lastmod'
 
 const SITE_URL = (process.env.SITE_URL || 'https://videotext.io').replace('https://www.', 'https://').replace(/\/+$/, '')
 const BLOG_URL = (process.env.BLOG_URL || 'https://blog.videotext.io').replace('https://www.', 'https://').replace(/\/+$/, '')
 const REPO_ROOT = path.resolve(__dirname, '..', '..')
 const PUBLIC_DIR = path.join(REPO_ROOT, 'client', 'public')
+const DIST_DIR = path.join(REPO_ROOT, 'dist')
+const CLIENT_DIST_DIR = path.join(REPO_ROOT, 'client', 'dist')
+const SITEMAP_SKIP = new Set(['/site-index'])
 
 function escapeXml(s: string): string {
   return s
@@ -38,36 +43,53 @@ function assertNoMixedDomains(urls: string[]): void {
 
 function getCanonicalLoc(canonicalPath: string): string {
   if (canonicalPath === '/blog') return `${BLOG_URL}/`
-  if (canonicalPath.startsWith('/blog/')) return `${BLOG_URL}/${canonicalPath.slice('/blog/'.length)}`
+  if (canonicalPath.startsWith('/blog/')) return getHashnodePostUrl(canonicalPath)
   return canonicalPath === '/' ? `${SITE_URL}/` : `${SITE_URL}${canonicalPath}`
 }
 
-function buildNormalizedLocs(paths: string[]): string[] {
-  const uniqueUrls = new Set<string>()
-  for (const p of paths.filter((x) => x !== '*')) {
+function isSitemapPath(routePath: string): boolean {
+  if (!routePath || routePath === '*') return false
+  if (SITEMAP_SKIP.has(routePath)) return false
+  const canonicalPath = getCanonicalPathForRoute(routePath)
+  if (SITEMAP_SKIP.has(canonicalPath)) return false
+  return true
+}
+
+function uniqueCanonicalPaths(paths: string[]): string[] {
+  const seen = new Set<string>()
+  const out: string[] = []
+  for (const p of paths.filter(isSitemapPath)) {
     const canonicalPath = getCanonicalPathForRoute(p)
-    const loc = getCanonicalLoc(canonicalPath)
-    uniqueUrls.add(normalizeUrl(loc))
+    if (seen.has(canonicalPath)) continue
+    seen.add(canonicalPath)
+    out.push(canonicalPath)
   }
-  const urls = [...uniqueUrls]
+  return out
+}
+
+function buildNormalizedLocs(paths: string[]): string[] {
+  const urls = uniqueCanonicalPaths(paths).map((canonicalPath) => normalizeUrl(getCanonicalLoc(canonicalPath)))
   assertNoMixedDomains(urls)
   return urls
 }
 
-function buildUrlSet(paths: string[], today: string): string {
-  const urls = buildNormalizedLocs(paths)
-    .map((loc) => {
-      const url = new URL(loc)
-      const pathPart = url.pathname || '/'
-      const priority = pathPart === '/' ? '1.0' : pathPart === '/pricing' ? '0.9' : pathPart.startsWith('/video-to-') || pathPart.startsWith('/mp4-') || pathPart.startsWith('/youtube-') || pathPart.startsWith('/transcribe-youtube') ? '0.9' : '0.8'
-      const changefreq = pathPart === '/' ? 'weekly' : 'monthly'
-      return `  <url>
-    <loc>${escapeXml(loc)}</loc>
-    <lastmod>${today}</lastmod>
+function lastmodTag(canonicalPath: string): string {
+  const lastmod = resolveLastmodForPath(canonicalPath)
+  return lastmod ? `\n    <lastmod>${lastmod}</lastmod>` : ''
+}
+
+function buildUrlSet(paths: string[]): string {
+  const urls = uniqueCanonicalPaths(paths).map((canonicalPath) => {
+    const loc = normalizeUrl(getCanonicalLoc(canonicalPath))
+    const pathPart = canonicalPath === '/blog' ? '/blog' : canonicalPath
+    const priority = pathPart === '/' ? '1.0' : pathPart === '/pricing' ? '0.9' : pathPart.startsWith('/video-to-') || pathPart.startsWith('/mp4-') || pathPart.startsWith('/youtube-') || pathPart.startsWith('/transcribe-youtube') ? '0.9' : '0.8'
+    const changefreq = pathPart === '/' ? 'weekly' : 'monthly'
+    return `  <url>
+    <loc>${escapeXml(loc)}</loc>${lastmodTag(canonicalPath)}
     <changefreq>${changefreq}</changefreq>
     <priority>${priority}</priority>
   </url>`
-    })
+  })
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls.join('\n')}
@@ -75,60 +97,94 @@ ${urls.join('\n')}
 `
 }
 
-async function main(): Promise<void> {
-  const today = new Date().toISOString().slice(0, 10)
+function writeSitemapFiles(filename: string, xml: string): string[] {
+  const dirs = [PUBLIC_DIR]
+  if (fs.existsSync(DIST_DIR)) dirs.push(DIST_DIR)
+  if (fs.existsSync(CLIENT_DIST_DIR)) dirs.push(CLIENT_DIST_DIR)
+  const written: string[] = []
+  for (const dir of dirs) {
+    fs.mkdirSync(dir, { recursive: true })
+    const dest = path.join(dir, filename)
+    fs.writeFileSync(dest, xml, 'utf8')
+    written.push(dest)
+  }
+  return written
+}
 
-  // Sitemap 1 — Core pages (~40). Submit this first.
-  const corePaths = [...new Set(CORE_PATHS)]
-  const coreXml = buildUrlSet(corePaths, today)
-  const corePath = path.join(PUBLIC_DIR, 'sitemap-core.xml')
-  fs.writeFileSync(corePath, coreXml, 'utf8')
-  console.log('[SEO] Sitemap 1 (core):', corePath, `(${corePaths.length} URLs)`)
+async function main(): Promise<void> {
+  // Sitemap 1 — Core product pages (blog posts live in sitemap-blog.xml)
+  const corePaths = [...new Set(CORE_PATHS)].filter(isSitemapPath)
+  const coreXml = buildUrlSet(corePaths)
+  const coreWritten = writeSitemapFiles('sitemap-core.xml', coreXml)
+  console.log('[SEO] Sitemap 1 (core):', coreWritten[0], `(${corePaths.length} URLs)`)
+  for (const extra of coreWritten.slice(1)) console.log('[SEO]   also wrote', extra)
 
   // Sitemap 2 — Programmatic + remaining manual pages
-  const sitemap2Paths = getSitemap2Paths()
-  const sitemap2Xml = buildUrlSet(sitemap2Paths, today)
-  const sitemap2Path = path.join(PUBLIC_DIR, 'sitemap-programmatic.xml')
-  fs.writeFileSync(sitemap2Path, sitemap2Xml, 'utf8')
-  console.log('[SEO] Sitemap 2 (programmatic + other):', sitemap2Path, `(${sitemap2Paths.length} URLs)`)
+  const sitemap2Paths = getSitemap2Paths().filter(isSitemapPath)
+  const sitemap2Xml = buildUrlSet(sitemap2Paths)
+  const sitemap2Written = writeSitemapFiles('sitemap-programmatic.xml', sitemap2Xml)
+  console.log('[SEO] Sitemap 2 (programmatic + other):', sitemap2Written[0], `(${sitemap2Paths.length} URLs)`)
+  for (const extra of sitemap2Written.slice(1)) console.log('[SEO]   also wrote', extra)
 
-  // Sitemap index — references both. Submit sitemap-index.xml or sitemap-core.xml first.
-  const indexLocs = [`${SITE_URL}/sitemap-core.xml`, `${SITE_URL}/sitemap-programmatic.xml`].map(normalizeUrl)
+  // Sitemap 3 — All Hashnode blog posts (/blog index is in sitemap-core.xml)
+  const blogPaths = uniqueCanonicalPaths(getHashnodeBlogPaths())
+  const blogUrls = blogPaths.map((canonicalPath) => {
+    const loc = normalizeUrl(getCanonicalLoc(canonicalPath))
+    return `  <url>
+    <loc>${escapeXml(loc)}</loc>${lastmodTag(canonicalPath)}
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>`
+  })
+  const blogXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${blogUrls.join('\n')}
+</urlset>
+`
+  const blogWritten = writeSitemapFiles('sitemap-blog.xml', blogXml)
+  console.log('[SEO] Sitemap 3 (blog):', blogWritten[0], `(${blogPaths.length} URLs)`)
+
+  // Sitemap index — references all three
+  const indexLocs = [
+    `${SITE_URL}/sitemap-core.xml`,
+    `${SITE_URL}/sitemap-programmatic.xml`,
+    `${SITE_URL}/sitemap-blog.xml`,
+  ].map(normalizeUrl)
   assertNoMixedDomains(indexLocs)
+  const coreLastmod = maxLastmodForPaths(corePaths.map((p) => getCanonicalPathForRoute(p)))
+  const programmaticLastmod = maxLastmodForPaths(sitemap2Paths.map((p) => getCanonicalPathForRoute(p)))
+  const blogLastmod = maxLastmodForPaths(blogPaths)
+  const indexLastmodTag = (date: string | null) => (date ? `\n    <lastmod>${date}</lastmod>` : '')
+
   const indexXml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
-    <loc>${indexLocs[0]}</loc>
-    <lastmod>${today}</lastmod>
+    <loc>${indexLocs[0]}</loc>${indexLastmodTag(coreLastmod)}
   </sitemap>
   <sitemap>
-    <loc>${indexLocs[1]}</loc>
-    <lastmod>${today}</lastmod>
+    <loc>${indexLocs[1]}</loc>${indexLastmodTag(programmaticLastmod)}
+  </sitemap>
+  <sitemap>
+    <loc>${indexLocs[2]}</loc>${indexLastmodTag(blogLastmod)}
   </sitemap>
 </sitemapindex>
 `
-  const indexPath = path.join(PUBLIC_DIR, 'sitemap-index.xml')
-  fs.writeFileSync(indexPath, indexXml, 'utf8')
-  console.log('[SEO] Sitemap index:', indexPath)
+  const indexWritten = writeSitemapFiles('sitemap-index.xml', indexXml)
+  console.log('[SEO] Sitemap index:', indexWritten[0])
 
   // Legacy: also write sitemap.xml as copy of index (for backwards compatibility)
-  fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap.xml'), indexXml, 'utf8')
-  console.log('[SEO] sitemap.xml (→ index):', path.join(PUBLIC_DIR, 'sitemap.xml'))
+  const legacyWritten = writeSitemapFiles('sitemap.xml', indexXml)
+  console.log('[SEO] sitemap.xml (→ index):', legacyWritten[0])
 
-  if (process.env.SITEMAP_PING !== '0' && process.env.SITEMAP_PING !== 'false') {
-    // Ping with index; to submit core only first, use: SITEMAP_PING_URL=https://videotext.io/sitemap-core.xml
+  // Google retired the sitemap ping endpoint in 2023 — resubmit via Search Console UI.
+  // Bing still accepts pings; opt in with SITEMAP_PING=1 (Google ping skipped always).
+  if (process.env.SITEMAP_PING === '1' || process.env.SITEMAP_PING === 'true') {
     const pingUrl = normalizeUrl(process.env.SITEMAP_PING_URL || `${SITE_URL}/sitemap-index.xml`)
-    const pingUrls = [
-      `https://www.google.com/ping?sitemap=${encodeURIComponent(pingUrl)}`,
-      `https://www.bing.com/ping?sitemap=${encodeURIComponent(pingUrl)}`,
-    ]
-    for (const url of pingUrls) {
-      try {
-        const res = await fetch(url)
-        if (res.ok) console.log('[SEO] Pinged:', url.split('?')[0])
-      } catch {
-        // non-fatal
-      }
+    try {
+      const res = await fetch(`https://www.bing.com/ping?sitemap=${encodeURIComponent(pingUrl)}`)
+      if (res.ok) console.log('[SEO] Pinged Bing sitemap endpoint')
+    } catch {
+      // non-fatal
     }
   }
 }

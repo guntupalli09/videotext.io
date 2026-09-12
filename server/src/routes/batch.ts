@@ -13,9 +13,11 @@ import {
   enforceUsageLimits,
   getDailySoftCapConcurrency,
   getJobPriority,
-  getMaxDailyImports,
+  getMaxMonthlyImports,
+  FREE_MONTHLY_IMPORT_QUOTA_MESSAGE,
   sumBatchVideoDurationsSeconds,
 } from '../utils/limits'
+import { assertCanImport, freeImportBlockedMessage } from '../utils/importQuota'
 import { resetDailyImportIfNeeded, resetDailyMinutesIfNeeded, resetUserUsageIfNeeded } from '../utils/usageReset'
 import { addJobToQueue, getTotalQueueCount } from '../workers/videoProcessor'
 import { insertJobRecord } from '../lib/jobAnalytics'
@@ -232,17 +234,25 @@ router.post(
         return res.status(statusCode).json({ message: batchCheck.reason })
       }
 
-      // Free plan: 3 imports per day (resets midnight UTC; batch not available for free anyway)
-      const batchDailyCap = getMaxDailyImports(user.plan)
-      if (batchDailyCap !== null) {
-        const importCountToday = user.usageThisMonth.importCountToday ?? 0
-        if (importCountToday >= batchDailyCap) {
+      // Free plan: 3 imports per calendar month (batch not available for free anyway)
+      const batchImportGate = assertCanImport(user)
+      if (!batchImportGate.ok) {
+        for (const v of videoMeta) fs.unlinkSync(v.path)
+        return res.status(403).json({ message: batchImportGate.message })
+      }
+      const importCount = user.usageThisMonth.importCount ?? 0
+      const batchMonthlyCap = getMaxMonthlyImports(user.plan)
+      const bonus = user.bonusImportCredits ?? 0
+      if (batchMonthlyCap !== null) {
+        const monthlySlots = Math.max(0, batchMonthlyCap - importCount)
+        const totalSlots = monthlySlots + bonus
+        if (videoMeta.length > totalSlots) {
           for (const v of videoMeta) fs.unlinkSync(v.path)
-          return res.status(403).json({ message: "You've used today's 3 free imports. They reset at midnight — or upgrade to Pro." })
-        }
-        if (importCountToday + videoMeta.length > batchDailyCap) {
-          for (const v of videoMeta) fs.unlinkSync(v.path)
-          return res.status(403).json({ message: "You've used today's 3 free imports. They reset at midnight — or upgrade to Pro." })
+          return res.status(403).json({
+            message: totalSlots === 0
+              ? freeImportBlockedMessage()
+              : `Batch exceeds available imports (${totalSlots} remaining this month, including bonus credits).`,
+          })
         }
       }
 

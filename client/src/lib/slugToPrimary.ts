@@ -1,6 +1,6 @@
 /**
  * Alternate SEO paths → primary product URLs (cluster consolidation).
- * Keep in sync with scripts/seo/registry.ts SLUG_TO_PRIMARY.
+ * Single source of truth — scripts/seo/registry.ts re-exports this directly.
  */
 export const SLUG_TO_PRIMARY: Record<string, string> = {
   'video-to-text': '/video-to-transcript',
@@ -22,13 +22,22 @@ export const SLUG_TO_PRIMARY: Record<string, string> = {
   'subtitle-language-checker': '/translate-subtitles',
   'subtitle-grammar-fixer': '/fix-subtitles',
   'subtitle-line-break-fixer': '/fix-subtitles',
+  // Dead SEO landing → live cluster (301 + canonical)
+  'subtitle-resources': '/subtitle-tools',
   'hardcoded-captions': '/burn-subtitles',
   'video-with-subtitles': '/burn-subtitles',
+  // GSC: /burn-subtitles-into-video ranked better than the money URL for the same
+  // “burn into video” intent. Consolidate to /burn-subtitles (301 + canonical).
+  'burn-subtitles-into-video': '/burn-subtitles',
   'video-compressor': '/compress-video',
   'reduce-video-size': '/compress-video',
-  'batch-video-processing': '/batch-process',
-  'bulk-subtitle-export': '/batch-process',
-  'bulk-transcript-export': '/batch-process',
+  // '/batch-process' is itself a client redirect into '/video-to-transcript' (batch
+  // capability lives inside that tool, not a standalone page) — canonicalize it and
+  // its aliases directly to the final page rather than through the redirect stub.
+  'batch-process': '/video-to-transcript',
+  'batch-video-processing': '/video-to-transcript',
+  'bulk-subtitle-export': '/video-to-transcript',
+  'bulk-transcript-export': '/video-to-transcript',
   'transcribe-video': '/video-to-transcript',
   'video-transcription': '/video-to-transcript',
   'free-transcription': '/video-to-transcript',
@@ -37,27 +46,39 @@ export const SLUG_TO_PRIMARY: Record<string, string> = {
   'audio-to-text': '/video-to-transcript',
   'podcast-transcript': '/video-to-transcript',
   'zoom-meeting-transcript': '/video-to-transcript',
-  'zoom-recording-transcript': '/zoom-meeting-transcript',
+  'zoom-recording-transcript': '/video-to-transcript',
+  'google-meet-to-text': '/google-meet-transcript',
   'meeting-recording-to-transcript': '/video-to-transcript',
   'transcribe-meeting-recording': '/meeting-recording-to-transcript',
   'meeting-transcription-tool': '/video-to-transcript',
   'interview-transcription': '/video-to-transcript',
+  'interview-transcription-tool': '/video-to-transcript',
   'lecture-transcription': '/video-to-transcript',
-  'youtube-to-transcript': '/youtube-transcript-generator',
-  'youtube-transcript': '/youtube-transcript-generator',
-  'youtube-video-transcript': '/youtube-transcript-generator',
-  'transcribe-youtube-video': '/youtube-transcript-generator',
-  'youtube-to-text': '/youtube-transcript-generator',
+  'google-meet-transcript': '/video-to-transcript',
+  'best-youtube-transcription-tool': '/video-to-transcript',
+  'youtube-transcript-generator': '/video-to-transcript',
+  'youtube-to-transcript': '/video-to-transcript',
+  'youtube-transcript': '/video-to-transcript',
+  'youtube-video-transcript': '/video-to-transcript',
+  'transcribe-youtube-video': '/video-to-transcript',
+  'youtube-to-text': '/video-to-transcript',
+  'youtube-url-to-transcription': '/video-to-transcript',
+  'how-to-transcript-youtube': '/video-to-transcript',
+  'youtube-transcript-editor': '/video-to-transcript',
+  'youtube-video-to-transcript': '/video-to-transcript',
+  'srt-to-word': '/tools/srt-to-text',
   'mov-to-text': '/video-to-transcript',
   'webm-to-text': '/video-to-transcript',
   'automatic-subtitles': '/video-to-subtitles',
   'caption-generator': '/video-to-subtitles',
   'closed-caption-generator': '/video-to-subtitles',
   'free-subtitle-generator': '/video-to-subtitles',
-  'video-to-srt': '/video-to-subtitles',
-  'srt-generator': '/video-to-subtitles',
+  // GSC pre-deploy baseline (Sep 2026): /video-to-srt earns same clicks from 62% of impressions vs
+  // /srt-generator (264 vs 258 clicks; 5.08% vs 3.32% CTR). Verb-first URL wins — consolidate
+  // srt-generator → video-to-srt (301 + canonical) before deploy.
+  'srt-generator': '/video-to-srt',
   'translate-video': '/translate-subtitles',
   'video-translation': '/translate-subtitles',
-  'bulk-video-transcription': '/batch-process',
+  'bulk-video-transcription': '/video-to-transcript',
   'otter-ai-alternative': '/otter-alternative',
 }

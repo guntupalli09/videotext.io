@@ -1,8 +1,11 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { getPopularFooterLinks } from '../lib/seoRegistry'
 import { getBlogOutboundUrl } from '../lib/blogOutbound'
 
 export default function Footer() {
+  const { pathname } = useLocation()
+  if (pathname.startsWith('/embed/')) return null
+
   const popularLinks = getPopularFooterLinks()
 
   return (
@@ -47,7 +50,7 @@ export default function Footer() {
               <li><Link to="/subtitle-tools" className="hover:text-white transition-colors">Subtitle tools</Link></li>
               <li><Link to="/tools" className="hover:text-white transition-colors">Free tools</Link></li>
               <li><Link to="/alternatives" className="hover:text-white transition-colors">All alternatives</Link></li>
-              <li><Link to="/subtitle-resources" className="hover:text-white transition-colors">Subtitle resources</Link></li>
+              <li><Link to="/subtitle-tools" className="hover:text-white transition-colors">Subtitle tools</Link></li>
               <li><Link to="/transcription-benchmark" className="hover:text-white transition-colors">Transcription benchmark</Link></li>
               <li><Link to="/accuracy-test" className="hover:text-white transition-colors">Accuracy test</Link></li>
             </ul>
@@ -57,7 +60,7 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-medium mb-4">Popular pages</h3>
             <ul className="space-y-2 text-sm">
-              {popularLinks.slice(0, 14).map(({ path, label }) => (
+              {popularLinks.slice(0, 8).map(({ path, label }) => (
                 <li key={path}>
                   <Link to={path} className="hover:text-white transition-colors">
                     {label}
@@ -88,8 +91,14 @@ export default function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className="mt-8 pt-8 border-t border-gray-800 text-sm text-center">
+        <div className="mt-8 pt-8 border-t border-gray-800 text-sm text-center space-y-2">
           <p>&copy; {new Date().getFullYear()} VideoText. All rights reserved.</p>
+          <p className="text-xs text-gray-500">
+            AI/agents: see{' '}
+            <a href="https://videotext.io/llms.txt" className="hover:text-white transition-colors underline-offset-2 hover:underline">
+              https://videotext.io/llms.txt
+            </a>
+          </p>
         </div>
 
         {/* Badges */}

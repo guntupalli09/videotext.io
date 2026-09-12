@@ -27,7 +27,7 @@ const FAQ = [
   },
   {
     q: 'Is VideoText free unlike EasyScribe?',
-    a: 'Yes. VideoText has a permanent free tier — 3 uploads per day with no credit card required. You can transcribe your first video right now without entering any payment information.',
+    a: 'Yes. VideoText has a permanent free tier — 3 uploads per month with no credit card required. You can transcribe your first video right now without entering any payment information.',
   },
   {
     q: 'Can VideoText generate subtitle files that EasyScribe cannot?',
@@ -52,7 +52,7 @@ function Cell({ val, isUs = false }: { val: boolean | string; isUs?: boolean }) 
     return <span className={`text-sm font-semibold ${isUs ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-300'}`}>{val}</span>
   }
   return val
-    ? <CheckCircle2 className={`w-5 h-5 mx-auto ${isUs ? 'text-emerald-500' : 'text-emerald-400'}`} />
+    ? <CheckCircle2 className={`w-5 h-5 mx-auto ${isUs ? 'text-blue-500' : 'text-blue-400/80'}`} />
     : <XCircle className="w-5 h-5 mx-auto text-gray-300 dark:text-gray-700" />
 }
 
@@ -60,15 +60,14 @@ export default function EasyScribeAlternativePage() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors duration-500">
       {/* Hero */}
-      <section className="relative py-20 sm:py-28 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-blue-950/20 dark:via-gray-950 dark:to-blue-950/20 transition-colors duration-500" />
-        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
+      <section className="border-b border-gray-200 bg-gray-50 py-20 dark:border-white/[0.08] dark:bg-gray-900/50 sm:py-28">
+        <div className="max-w-4xl mx-auto px-6 text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-600/10 border border-blue-200/60 dark:border-blue-500/20 mb-6">
             <span className="text-[12px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">EasyScribe Alternative</span>
           </div>
           <h1 className="text-4xl sm:text-5xl font-medium text-gray-900 dark:text-white mb-5 leading-tight">
             The best{' '}
-            <span className="bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
+            <span className="text-blue-600 dark:text-blue-400">
               EasyScribe alternative
             </span>{' '}
             for video &amp; subtitles
@@ -78,7 +77,7 @@ export default function EasyScribeAlternativePage() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link to="/video-to-transcript">
-              <span className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-7 py-3.5 rounded-xl font-semibold text-[15px] shadow-lg shadow-blue-500/25 hover:shadow-xl transition-all">
+              <span className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-7 py-3.5 text-[15px] font-semibold text-white transition-colors hover:bg-blue-700">
                 Try VideoText free
                 <ChevronRight className="w-4 h-4" />
               </span>
@@ -147,7 +146,7 @@ export default function EasyScribeAlternativePage() {
         <section className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           {[
             { icon: Zap, title: 'Full subtitle workflow', body: 'VideoText generates SRT and VTT files with accurate timestamps, translates them to 70+ languages, and can burn them directly into video. EasyScribe produces plain text only.' },
-            { icon: DollarSign, title: 'Free tier included', body: 'Start with 3 free imports per day — no credit card, no trial expiry. EasyScribe requires payment to get started.' },
+            { icon: DollarSign, title: 'Free tier included', body: 'Start with 3 free imports per month — no credit card, no trial expiry. EasyScribe requires payment to get started.' },
             { icon: Shield, title: 'YouTube URL support', body: 'Paste any YouTube link and VideoText transcribes it directly. No need to download the video. EasyScribe has no YouTube integration.' },
           ].map(({ icon: Icon, title, body }) => (
             <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-6">
@@ -174,11 +173,11 @@ export default function EasyScribeAlternativePage() {
         </section>
 
         {/* CTA */}
-        <section className="bg-gradient-to-br from-blue-600 via-blue-600 to-blue-700 rounded-xl p-8 sm:p-12 text-white text-center">
+        <section className="rounded-xl border border-white/[0.08] bg-gray-950 p-8 text-center sm:p-12">
           <h2 className="text-2xl sm:text-3xl font-medium mb-3">Go beyond basic transcription</h2>
-          <p className="text-white/70 mb-8 max-w-xl mx-auto">Upload any video or paste a YouTube URL. Transcript, SRT file, subtitle translation, or burned-in captions — all from one tool. Free tier, no credit card.</p>
+          <p className="text-white/55 mb-8 max-w-xl mx-auto">Upload any video or paste a YouTube URL. Transcript, SRT file, subtitle translation, or burned-in captions — all from one tool. Free tier, no credit card.</p>
           <Link to="/video-to-transcript">
-            <span className="inline-flex items-center gap-2 bg-white text-blue-700 px-8 py-3.5 rounded-xl font-bold text-[15px] shadow-lg hover:shadow-xl transition-all">
+            <span className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-8 py-3.5 text-[15px] font-bold text-white transition-colors hover:bg-blue-700">
               Transcribe my first video free
               <ChevronRight className="w-4 h-4" />
             </span>

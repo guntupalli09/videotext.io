@@ -12,7 +12,9 @@ tags:
 
 # Human QA vs AI QA: Where Errors Actually Happen
 
-*Human QA and AI QA do not compete. They fail in opposite directions. Here is what that means for building a process that catches both.*
+**Human QA vs AI QA** catch different error types — not competing methods. AI QA finds formatting violations; human QA finds semantic and proper-noun failures. Use both or miss half the rejections.
+
+> **Pre-format before QA:** [Transcribe →](https://videotext.io/video-to-transcript) then [apply client guidelines →](https://videotext.io/guideline-format) so QA verifies rules instead of discovering them. [Transcript QA workflow →](https://videotext.io/blog/real-workflow-behind-qa-review)
 
 ---
 

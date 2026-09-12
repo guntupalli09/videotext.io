@@ -94,6 +94,7 @@ export interface DashboardUser {
   lastActiveAt: string | null
   utmSource: string | null
   firstReferrer: string | null
+  country: string | null
   totalJobs: number
   jobCount30d: number
 }

@@ -12,15 +12,9 @@ tags:
 
 # Why Most AI Transcripts Fail QA
 
-*AI accuracy is not the problem. Here is what actually is.*
+**AI transcript cleanup** and **transcript QA** are not the same as “fix typos.” In 2026, word error rates on clean audio are often under 5% — yet **QA rejection rates barely moved**. Accuracy improved; **transcript quality** (formatting, tags, speakers, structure) did not.
 
----
-
-In 2026, the average word error rate for AI transcription on clean audio is under 5%. That is genuinely remarkable. A few years ago, 15% was considered good. The accuracy story is a success.
-
-The QA failure story is different. Transcripts produced by AI tools — even highly accurate ones — are rejected at rates that have not declined proportionally with accuracy improvements. Teams that were expecting AI to eliminate QA review are finding instead that QA is taking as long as it ever did, just on different problems.
-
-Understanding why requires separating two things that most people conflate: **transcription accuracy** and **transcript quality**.
+> **Fix the post-AI gap:** [Transcribe →](https://videotext.io/video-to-transcript) then [apply client style rules before QA →](https://videotext.io/guideline-format). That eliminates most formatting-related rejections.
 
 ---
 
@@ -167,3 +161,21 @@ The path forward is not better accuracy — accuracy is already good enough for 
 [Then apply the formatting and style rules that make it pass QA](https://videotext.io/guideline-format)
 
 The two steps together eliminate the category of QA failures this post describes. The accuracy step handles words. The formatting step handles everything else.
+
+---
+
+## FAQ: Why AI transcripts fail QA
+
+**Why do accurate AI transcripts still fail QA?**  
+Clients grade formatting, tags, speakers, and structure — not WER alone.
+
+**Is there an ai transcript cleanup service?**  
+The fastest path is accurate AI + rule-based formatting: [VideoText](https://videotext.io/video-to-transcript) → [Guideline format](https://videotext.io/guideline-format).
+
+**How long should transcript QA take?**  
+~45–51 min per 30 min of audio with structured passes. [Full QA workflow →](https://videotext.io/blog/real-workflow-behind-qa-review)
+
+**Otter / TurboScribe / Descript — same QA problem?**  
+Yes. All deliver raw-ish text; none apply your client’s Rev/GoTranscript PDF. [Compare tools →](https://videotext.io/compare)
+
+---

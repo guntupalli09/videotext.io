@@ -2,6 +2,10 @@ import { useLocation } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import Seo from './Seo'
 import OpenStatsStrip from './OpenStatsStrip'
+import SeoJourneyBanner from './SeoJourneyBanner'
+import CollapsibleToolSection from './CollapsibleToolSection'
+import CollapsibleFaqSection from './CollapsibleFaqSection'
+import { getSeoJourneyBanner } from '../lib/seoJourneyConfig'
 import { resolveInternalLinkPath } from '../lib/primaryUrls'
 
 interface FaqItem {
@@ -33,6 +37,16 @@ interface FreeToolLayoutProps {
   hubLink?: { label: string; path: string }
   /** Show /open stats teaser (default true). */
   showOpenStatsStrip?: boolean
+  /** Wrap guide, content sections, and FAQ in collapsed blocks (SEO depth, tool stays primary). */
+  collapseSeoSections?: boolean
+  /** Above-fold money CTA (fix / translate / burn). Visible without hunting. */
+  moneyCta?: {
+    kicker?: string
+    title: string
+    body?: string
+    primary: { label: string; path: string }
+    secondary?: { label: string; path: string }[]
+  }
 }
 
 const defaultRelated = [
@@ -53,12 +67,16 @@ export default function FreeToolLayout({
   contentSections = [],
   hubLink,
   showOpenStatsStrip = true,
+  collapseSeoSections = false,
+  moneyCta,
 }: FreeToolLayoutProps) {
   const { pathname } = useLocation()
   const isSubtitleCluster = hubLink?.path === '/subtitle-tools'
+  const journey = getSeoJourneyBanner(pathname)
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       <Seo title={title} description={description} canonicalPath={pathname} />
+      {journey && <SeoJourneyBanner data={journey} />}
       {/* Hero */}
       <div className="bg-gradient-to-b from-blue-50 to-white dark:from-gray-800 dark:to-gray-900 border-b border-gray-100 dark:border-gray-700">
         <div className="max-w-3xl mx-auto px-4 py-10 sm:py-14 text-center">
@@ -79,6 +97,32 @@ export default function FreeToolLayout({
           <p className="mt-3 text-base sm:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             {description}
           </p>
+          {moneyCta && (
+            <div className="mt-6 mx-auto max-w-xl text-left rounded-2xl border-2 border-blue-400 dark:border-blue-600 bg-white dark:bg-gray-900 px-4 py-4 sm:px-5">
+              <p className="text-xs font-semibold uppercase tracking-widest text-blue-700 dark:text-blue-300">
+                {moneyCta.kicker ?? 'Next step'}
+              </p>
+              <p className="mt-1 text-base font-medium text-gray-900 dark:text-white">{moneyCta.title}</p>
+              {moneyCta.body && <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{moneyCta.body}</p>}
+              <div className="mt-3 flex flex-col sm:flex-row gap-2">
+                <Link
+                  to={resolveInternalLinkPath(moneyCta.primary.path)}
+                  className="inline-flex items-center justify-center rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5"
+                >
+                  {moneyCta.primary.label} →
+                </Link>
+                {moneyCta.secondary?.map((s) => (
+                  <Link
+                    key={s.path}
+                    to={resolveInternalLinkPath(s.path)}
+                    className="inline-flex items-center justify-center rounded-xl border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200 text-sm font-semibold px-4 py-2.5 hover:bg-blue-50 dark:hover:bg-blue-950/40"
+                  >
+                    {s.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -111,6 +155,49 @@ export default function FreeToolLayout({
 
         {/* The actual tool */}
         <section>{children}</section>
+
+        {isSubtitleCluster && (
+          <section
+            className="rounded-2xl border-2 border-blue-300 dark:border-blue-700 bg-blue-50/80 dark:bg-blue-950/30 px-5 py-5"
+            aria-label="Next steps after this file"
+          >
+            <p className="text-xs font-semibold uppercase tracking-widest text-blue-700 dark:text-blue-300 mb-1">
+              Don’t stop at the download
+            </p>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-1">
+              Next: fix, translate, burn, or generate from video
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Out of sync, overlapping, or CPS fail? Use Fix. Need another language or hardcoded captions? Those are one click away.
+            </p>
+            <div className="flex flex-col sm:flex-row flex-wrap gap-2">
+              <Link
+                to="/fix-subtitles"
+                className="inline-flex items-center justify-center rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5"
+              >
+                Fix this file in one click →
+              </Link>
+              <Link
+                to="/translate-subtitles"
+                className="inline-flex items-center justify-center rounded-xl border border-blue-200 dark:border-blue-800 bg-white dark:bg-gray-900 text-blue-800 dark:text-blue-200 text-sm font-semibold px-4 py-2.5"
+              >
+                Translate
+              </Link>
+              <Link
+                to="/burn-subtitles"
+                className="inline-flex items-center justify-center rounded-xl border border-blue-200 dark:border-blue-800 bg-white dark:bg-gray-900 text-blue-800 dark:text-blue-200 text-sm font-semibold px-4 py-2.5"
+              >
+                Burn
+              </Link>
+              <Link
+                to="/video-to-subtitles"
+                className="inline-flex items-center justify-center rounded-xl border border-blue-200 dark:border-blue-800 bg-white dark:bg-gray-900 text-blue-800 dark:text-blue-200 text-sm font-semibold px-4 py-2.5"
+              >
+                Video to Subtitles
+              </Link>
+            </div>
+          </section>
+        )}
 
         {/* Upgrade nudge — positioned immediately after the tool delivers value */}
         <section className="rounded-xl bg-gray-900 dark:bg-gray-800 border border-gray-700 dark:border-gray-600 overflow-hidden">
@@ -158,57 +245,110 @@ export default function FreeToolLayout({
         </section>
 
         {/* Rich content sections — SEO depth text */}
-        {contentSections.length > 0 && (
-          <section className="space-y-6">
-            {contentSections.map((s, i) => (
-              <div key={i}>
-                <h2 className="text-xl font-display font-medium text-gray-900 dark:text-white mb-3">{s.heading}</h2>
-                {typeof s.body === 'string' ? (
-                  <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{s.body}</p>
-                ) : (
-                  <div className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed space-y-3">{s.body}</div>
-                )}
-              </div>
-            ))}
-          </section>
-        )}
-
-        {/* Mini guide */}
-        {guideSteps.length > 0 && (
-          <section>
-            <h2 className="text-xl font-display font-medium text-gray-900 dark:text-white mb-5">
-              {guideTitle ?? `How to use this tool`}
-            </h2>
-            <ol className="space-y-4">
-              {guideSteps.map((s, i) => (
-                <li key={i} className="flex gap-4">
-                  <span className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 font-bold text-sm flex items-center justify-center">
-                    {i + 1}
-                  </span>
-                  <div>
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{s.step}</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">{s.desc}</p>
+        {contentSections.length > 0 &&
+          (collapseSeoSections ? (
+            <CollapsibleToolSection
+              id="tool-explainer"
+              title="About this tool"
+              route={pathname}
+              analyticsSection="how_it_works"
+              className="!max-w-3xl !px-0 !pt-8 !pb-8 !border-t-0"
+            >
+              <div className="space-y-6">
+                {contentSections.map((s, i) => (
+                  <div key={i}>
+                    <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-2">{s.heading}</h2>
+                    {typeof s.body === 'string' ? (
+                      <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{s.body}</p>
+                    ) : (
+                      <div className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed space-y-3">{s.body}</div>
+                    )}
                   </div>
-                </li>
-              ))}
-            </ol>
-          </section>
-        )}
-
-        {/* FAQ */}
-        {faqs.length > 0 && (
-          <section>
-            <h2 className="text-xl font-display font-medium text-gray-900 dark:text-white mb-5">Frequently Asked Questions</h2>
-            <dl className="space-y-5">
-              {faqs.map((f, i) => (
-                <div key={i} className="border-b border-gray-100 dark:border-gray-700 pb-5 last:border-0 last:pb-0">
-                  <dt className="font-semibold text-gray-900 dark:text-white text-sm mb-1.5">{f.q}</dt>
-                  <dd className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{f.a}</dd>
+                ))}
+              </div>
+            </CollapsibleToolSection>
+          ) : (
+            <section className="space-y-6">
+              {contentSections.map((s, i) => (
+                <div key={i}>
+                  <h2 className="text-xl font-display font-medium text-gray-900 dark:text-white mb-3">{s.heading}</h2>
+                  {typeof s.body === 'string' ? (
+                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{s.body}</p>
+                  ) : (
+                    <div className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed space-y-3">{s.body}</div>
+                  )}
                 </div>
               ))}
-            </dl>
-          </section>
-        )}
+            </section>
+          ))}
+
+        {/* Mini guide */}
+        {guideSteps.length > 0 &&
+          (collapseSeoSections ? (
+            <CollapsibleToolSection
+              id="tool-how-to"
+              title={guideTitle ?? 'How to use this tool'}
+              route={pathname}
+              analyticsSection="how_it_works"
+              className="!max-w-3xl !px-0 !pt-0 !pb-8 !border-t-0"
+            >
+              <ol className="space-y-4">
+                {guideSteps.map((s, i) => (
+                  <li key={i} className="flex gap-4">
+                    <span className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 font-bold text-sm flex items-center justify-center">
+                      {i + 1}
+                    </span>
+                    <div>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{s.step}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">{s.desc}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </CollapsibleToolSection>
+          ) : (
+            <section>
+              <h2 className="text-xl font-display font-medium text-gray-900 dark:text-white mb-5">
+                {guideTitle ?? `How to use this tool`}
+              </h2>
+              <ol className="space-y-4">
+                {guideSteps.map((s, i) => (
+                  <li key={i} className="flex gap-4">
+                    <span className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 font-bold text-sm flex items-center justify-center">
+                      {i + 1}
+                    </span>
+                    <div>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{s.step}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">{s.desc}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          ))}
+
+        {/* FAQ */}
+        {faqs.length > 0 &&
+          (collapseSeoSections ? (
+            <CollapsibleFaqSection
+              items={faqs.map((f, i) => ({ ...f, id: `free-faq-${i}` }))}
+              route={pathname}
+              id="free-tool-faq"
+              className="!max-w-3xl !px-0 !pt-0 !pb-8 !border-t-0"
+            />
+          ) : (
+            <section>
+              <h2 className="text-xl font-display font-medium text-gray-900 dark:text-white mb-5">Frequently Asked Questions</h2>
+              <dl className="space-y-5">
+                {faqs.map((f, i) => (
+                  <div key={i} className="border-b border-gray-100 dark:border-gray-700 pb-5 last:border-0 last:pb-0">
+                    <dt className="font-semibold text-gray-900 dark:text-white text-sm mb-1.5">{f.q}</dt>
+                    <dd className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{f.a}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          ))}
 
         {/* Related tools */}
         <section>

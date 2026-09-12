@@ -48,6 +48,7 @@ export default function TtmlToSrt() {
       title="TTML to SRT Converter — Free Online"
       description="Convert TTML, DFXP, or EBU-TT subtitle files to SRT format instantly. Used for Netflix, broadcast, and enterprise video. Runs entirely in your browser."
       hubLink={{ label: 'Free Subtitle Tools', path: '/subtitle-tools' }}
+      collapseSeoSections
       contentSections={[
         {
           heading: 'What is TTML (Timed Text Markup Language)?',
@@ -77,12 +78,12 @@ export default function TtmlToSrt() {
         { q: 'Will the SRT work for Netflix or YouTube upload?', a: 'SRT files converted from TTML will work for YouTube subtitle uploads. Netflix does not accept external SRT uploads from content creators — they use their own delivery pipeline. For standard platform uploads (YouTube, Vimeo, Wistia), the converted SRT is fully compatible.' },
       ]}
       relatedTools={[
-        { label: 'ASS to SRT Converter', path: '/tools/ass-to-srt', desc: 'Convert ASS/SSA anime subtitles to SRT' },
-        { label: 'SBV to SRT Converter', path: '/tools/sbv-to-srt', desc: 'Convert YouTube SBV captions to SRT' },
-        { label: 'SRT to VTT Converter', path: '/tools/srt-to-vtt', desc: 'Convert SRT to WebVTT for web players' },
+        { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'Auto-correct overlaps, long lines, and CPS after convert' },
         { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Check your converted SRT for errors' },
-        { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate SRT/VTT from any video with AI' },
-        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT to 70+ languages' },
+        { label: 'Character Limit Checker', path: '/tools/subtitle-character-checker', desc: '42 CPL after TTML → SRT convert' },
+        { label: 'Netflix TTSC Checklist', path: '/netflix-ttsc-checklist', desc: 'QC converted SRT against TTSC-style limits' },
+        { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Full caption hub: video → SRT/VTT, then fix or burn' },
+        { label: 'ASS to SRT Converter', path: '/tools/ass-to-srt', desc: 'Convert ASS/SSA anime subtitles to SRT' },
       ]}
     >
       <div className="space-y-4">

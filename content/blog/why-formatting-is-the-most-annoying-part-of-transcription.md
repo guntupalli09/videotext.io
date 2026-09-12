@@ -12,7 +12,9 @@ tags:
 
 # Why Formatting Is Still the Most Annoying Part of Transcription
 
-*AI solved the typing. Formatting is still your problem. Here is why — and what a different workflow looks like.*
+AI solved accuracy. **Formatting** — speaker labels, timestamps, tags, numbers, verbatim mode — is still 100% manual in most workflows. That is the hidden tax on every Otter, Descript, and TurboScribe export.
+
+> **Automate the formatting pass:** [Format → Client guidelines →](https://videotext.io/guideline-format) — Rev/GoTranscript presets as editable rule cards before QA.
 
 ---
 

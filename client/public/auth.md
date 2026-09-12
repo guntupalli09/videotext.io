@@ -42,9 +42,8 @@ All `/api/*` endpoints require authentication except:
 ## Rate Limits
 
 - Free tier: 3 video imports per month
-- Basic ($19/mo): 450 minutes per month
-- Pro ($49/mo): 1,200 minutes per month
-- Agency ($129/mo): 3,000 minutes per month
+- Pro ($7.99/mo): full transcription, subtitle, translation, batch, and delivery workflow
+- Pro annual ($69.99/year): same Pro workflow, save 27% vs monthly
 
 ## Terms
 

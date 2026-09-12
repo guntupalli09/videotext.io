@@ -19,7 +19,8 @@ import fs from 'fs'
 import { v4 as uuidv4 } from 'uuid'
 import { fileQueue, addJobToQueue, getTotalQueueCount as getQueueCountFromWorker, JobData } from '../workers/videoProcessor'
 import { validateFileType, validateSubtitleFile } from '../utils/fileValidation'
-import { enforceUsageLimits, getDailySoftCapConcurrency, getMaxDailyImports, getPlanLimits, applySystemLoadGuard } from '../utils/limits'
+import { enforceUsageLimits, getDailySoftCapConcurrency, getMaxMonthlyImports, getPlanLimits, applySystemLoadGuard, FREE_MONTHLY_IMPORT_QUOTA_MESSAGE, GUEST_DAILY_IMPORT_QUOTA_MESSAGE } from '../utils/limits'
+import { assertCanImport, freeImportBlockedMessage } from '../utils/importQuota'
 import { resetDailyImportIfNeeded, resetDailyMinutesIfNeeded, resetUserUsageIfNeeded } from '../utils/usageReset'
 import { getUser, saveUser, PlanType, User, atomicResetDailyImportIfNeeded, atomicResetDailyMinutesIfNeeded } from '../models/User'
 import { getAuthFromRequest, getEffectiveUserId } from '../utils/auth'
@@ -119,7 +120,7 @@ export async function runFixSubtitlesDualIntake(
       if (!(await checkAndRecordGuestIpImport(clientIp))) {
         safeUnlink(files.video?.[0]?.path)
         safeUnlink(files.subtitles?.[0]?.path)
-        return intakeError(403, 'QUOTA_EXCEEDED', "You've used today's 3 free imports. They reset at midnight — or upgrade to Pro.")
+        return intakeError(403, 'QUOTA_EXCEEDED', GUEST_DAILY_IMPORT_QUOTA_MESSAGE)
       }
     }
 
@@ -144,11 +145,11 @@ export async function runFixSubtitlesDualIntake(
       await saveUser(fixUser)
     }
 
-    const fixDailyCap = getMaxDailyImports(plan)
-    if (fixDailyCap !== null && fixUser && (fixUser.usageThisMonth.importCountToday ?? 0) >= fixDailyCap) {
+    const fixImportGate = fixUser ? assertCanImport(fixUser) : { ok: true as const }
+    if (!fixImportGate.ok) {
       safeUnlink(files.subtitles[0].path)
       safeUnlink(files.video?.[0]?.path)
-      return intakeError(403, 'QUOTA_EXCEEDED', "You've used today's 3 free imports. They reset at midnight — or upgrade to Pro.")
+      return intakeError(403, 'QUOTA_EXCEEDED', fixImportGate.message)
     }
 
     const subtitleFileForFix = files.subtitles[0]
@@ -220,7 +221,7 @@ export async function runBurnSubtitlesIntake(
       if (!(await checkAndRecordGuestIpImport(clientIp))) {
         safeUnlink(files.video?.[0]?.path)
         safeUnlink(files.subtitles?.[0]?.path)
-        return intakeError(403, 'QUOTA_EXCEEDED', "You've used today's 3 free imports. They reset at midnight — or upgrade to Pro.")
+        return intakeError(403, 'QUOTA_EXCEEDED', GUEST_DAILY_IMPORT_QUOTA_MESSAGE)
       }
     }
 
@@ -265,11 +266,11 @@ export async function runBurnSubtitlesIntake(
       if (dailyMinutesReset) await atomicResetDailyMinutesIfNeeded(burnUser.id, now, burnUser.usageThisMonth.dailyMinutesTodayResetDate!)
     }
 
-    const burnDailyCap = getMaxDailyImports(burnUser.plan)
-    if (burnDailyCap !== null && (burnUser.usageThisMonth.importCountToday ?? 0) >= burnDailyCap) {
+    const burnImportGate = assertCanImport(burnUser)
+    if (!burnImportGate.ok) {
       safeUnlink(videoFile.path)
       safeUnlink(subtitleFile.path)
-      return intakeError(403, 'QUOTA_EXCEEDED', "You've used today's 3 free imports. They reset at midnight — or upgrade to Pro.")
+      return intakeError(403, 'QUOTA_EXCEEDED', burnImportGate.message)
     }
 
     const activeJobs = await fileQueue.getJobs(['active', 'waiting', 'delayed'])

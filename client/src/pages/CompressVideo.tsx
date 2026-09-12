@@ -4,11 +4,14 @@ import { Minimize2, Lock } from 'lucide-react'
 import { isLoggedIn } from '../lib/auth'
 // import { useWorkflow } from '../contexts/WorkflowContext'
 import FailedState from '../components/FailedState'
+import CoreToolSeoDepth from '../components/CoreToolSeoDepth'
+import CollapsibleFaqSection from '../components/CollapsibleFaqSection'
 import SamplesModule from '../components/SamplesModule'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal from '../components/PaywallModal'
 import FreePlanNudge from '../components/FreePlanNudge'
+import SecondJobUpgradeNudge from '../components/SecondJobUpgradeNudge'
 import { isPaidPlan } from '../lib/plans'
 import JobAuthGateModal from '../components/JobAuthGateModal'
 import { ToolLayout } from '../components/figma/ToolLayout'
@@ -17,10 +20,16 @@ import { ProcessingInterface } from '../components/figma/ProcessingInterface'
 import { ProcessingProgress } from '../components/figma/ProcessingProgress'
 import { ResultSkeleton } from '../components/figma/ResultSkeleton'
 import { TranslateResult } from '../components/figma/TranslateResult'
+import { ExportsPanel, ExportSection } from '../components/figma/ExportsPanel'
+import { ProcessingStateShell } from '../components/figma/ProcessingStateShell'
+import ResultUpgradeCard from '../components/ResultUpgradeCard'
+import ResultHeader from '../components/ResultHeader'
+import { CompressionSavingsCard, estimateCompressedSize } from '../components/figma/CompressionSavingsCard'
 import { RadioGroup } from '../components/figma/FormControls'
 import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/filePreview'
 import { incrementUsage } from '../lib/usage'
-import { uploadFileWithProgress, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError, claimGuestJob } from '../lib/api'
+import { incrementJobCompletedCount } from '../lib/jobCount'
+import { uploadFileWithProgress, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError, claimGuestJob, getAuthToken } from '../lib/api'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
 import { persistJobId, clearPersistedJobId, getPersistedJobId, getPersistedJobToken } from '../lib/jobSession'
@@ -28,7 +37,6 @@ import { trackEvent } from '../lib/analytics'
 // import { texJobStarted, texJobCompleted, texJobFailed } from '../tex'
 import toast from 'react-hot-toast'
 import { MessageSquare, Film, FileText } from 'lucide-react'
-import { formatFileSize } from '../lib/utils'
 import { trackAppEvent } from '../lib/feedbackEvents'
 import { exportFileStem, joinExportFilename } from '../lib/exportFileNames'
 // import { emitToolCompleted } from '../workflow/workflowStore'
@@ -145,15 +153,10 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
     setTrimEnd(null)
   }
 
-  const getEstimatedSize = (): number => {
-    if (!selectedFile) return 0
-    const reductionMap: Record<CompressionLevel, number> = {
-      light: 0.3, // 30% smaller
-      medium: 0.5, // 50% smaller
-      heavy: 0.7, // 70% smaller
-    }
-    return selectedFile.size * (1 - reductionMap[compressionLevel])
-  }
+  const estimatedCompressedBytes =
+    selectedFile != null
+      ? estimateCompressedSize(selectedFile.size, compressionLevel, compressProfile)
+      : 0
 
   const handleProcess = async (trimStartPercent?: number, trimEndPercent?: number) => {
     if (!selectedFile) {
@@ -219,7 +222,17 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
             trackAppEvent('transcription_completed', { toolId: 'compress-video' })
             // emitToolCompleted({ toolId: 'compress-video', pathname: '/compress-video', processingMs })
             incrementUsage('compress-video')
-            // texJobCompleted(processingMs, 'compress-video')
+            try {
+              const nextJobCount = incrementJobCompletedCount()
+              trackEvent('job_completed', {
+                job_id: response.jobId,
+                tool_type: BACKEND_TOOL_TYPES.COMPRESS_VIDEO,
+                processing_time_ms: processingMs,
+                job_count: nextJobCount,
+              })
+            } catch {
+              /* non-blocking */
+            }
           } else if (transition === 'failed') {
             clearInterval(pollIntervalRef.current)
             setStatus('failed')
@@ -259,21 +272,42 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
     return getAbsoluteDownloadUrl(result.downloadUrl)
   }
 
+  /** Fetch a download URL with the required auth header and trigger a real file save (a plain <a> click can't carry the Bearer token, so it 401s). */
+  const downloadAuthedUrl = async (url: string, filename: string) => {
+    const token = getAuthToken()
+    const res = await fetch(url, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+    if (!res.ok) throw new Error(`Download failed (${res.status})`)
+    const blob = await res.blob()
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = filename
+    a.click()
+    URL.revokeObjectURL(a.href)
+  }
+
   const breadcrumbs = [{ label: 'Compress Video', href: '/compress-video' }]
   const layoutProps = {
     breadcrumbs,
-    title: seoH1 ?? 'Compress Video Online (Reduce File Size Without Losing Quality)',
-    subtitle: seoIntro ?? 'Reduce video file size instantly while maintaining quality. Compress large videos for faster upload, sharing, and processing.',
-    icon: <Minimize2 className="w-8 h-8 text-blue-600 dark:text-blue-400" />,
+    title: seoH1 ?? 'Compress Video — Light, Medium, Heavy',
+    subtitle: seoIntro ?? 'Shrink a video with light, medium, or heavy compression. Files deleted after processing. 3 free imports/mo.',
+    icon: <Minimize2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />,
     tags: ['Compression', 'Reduce size', 'Quality', 'Optimize'],
     sidebar: null,
+    compactToolHeader: true,
+    coreToolPath: '/compress-video',
+    currentStepLabel:
+      status === 'completed'
+        ? 'Video compressed'
+        : selectedFile
+          ? 'Upload configured'
+          : 'Ready to upload',
   }
 
   return (
     <>
       <ToolLayout {...layoutProps}>
         {status === 'idle' && !selectedFile && (
-          <div className="space-y-4">
+          <div className="space-y-component-sm">
             <UploadZone
               immediateSelect
               onFileSelect={handleFileSelect}
@@ -312,7 +346,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
             videoSrc={videoPreviewUrl ?? undefined}
             durationSeconds={filePreview?.durationSeconds}
           >
-            <div className="space-y-6">
+            <div className="space-y-component">
               <RadioGroup
                 label="Profile (recommended)"
                 options={[
@@ -336,19 +370,18 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
                   onChange={(v) => setCompressionLevel(v as CompressionLevel)}
                 />
               )}
-              <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                <p className="text-sm text-gray-700 dark:text-gray-300">
-                  Your <span className="font-medium">{formatFileSize(selectedFile.size)}</span> file → approximately{' '}
-                  <span className="font-medium">{formatFileSize(getEstimatedSize())}</span>
-                </p>
-              </div>
+              <CompressionSavingsCard
+                variant="estimate"
+                originalBytes={selectedFile.size}
+                compressedBytes={estimatedCompressedBytes}
+              />
             </div>
           </ProcessingInterface>
         )}
 
         {status === 'processing' && (
-          <div className="rounded-xl bg-blue-50 dark:bg-blue-950/30 p-6 sm:p-8">
-            <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+          <ProcessingStateShell>
+            <div className="mb-component-sm text-sm text-gray-600 dark:text-gray-400">
               {selectedFile?.name} • {filePreview?.durationSeconds != null ? formatDuration(filePreview.durationSeconds) : '—'}
             </div>
             <ProcessingProgress
@@ -364,33 +397,35 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
               onCancel={handleProcessAnother}
             />
             <ResultSkeleton variant="compress" />
-          </div>
+          </ProcessingStateShell>
         )}
 
         {status === 'completed' && result && selectedFile && (
-          <div className="space-y-6">
+          <div className="space-y-component">
             {/* Teaser card for guests */}
             {showAuthGate && !isLoggedIn() && (
               <div className="rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden select-none">
-                <div className="px-5 pt-4 pb-3 flex items-center justify-between border-b border-gray-100 dark:border-gray-800">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
-                    <span className="text-sm font-semibold text-gray-800 dark:text-white">Video compressed!</span>
-                    {lastProcessingMs != null && (
-                      <span className="text-xs text-gray-400">· {(lastProcessingMs / 1000).toFixed(1)}s</span>
-                    )}
-                  </div>
-                </div>
+                <ResultHeader
+                  embedded
+                  title="Video compressed"
+                  processingTime={
+                    lastProcessingMs != null
+                      ? `${(lastProcessingMs / 1000).toFixed(1)}s`
+                      : null
+                  }
+                />
                 <div className="px-5 py-4">
-                  <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-4">
-                    <span>Original: {formatFileSize(selectedFile.size)}</span>
-                    <span className="text-gray-400">→</span>
-                    <span className="text-emerald-600 font-semibold">Compressed: {formatFileSize(getEstimatedSize())}</span>
+                  <div className="mb-component-sm">
+                    <CompressionSavingsCard
+                      variant="inline"
+                      originalBytes={selectedFile.size}
+                      compressedBytes={estimatedCompressedBytes}
+                    />
                   </div>
-                  <p className="text-[11px] text-gray-400 mb-2 font-medium">Sign up to unlock:</p>
-                  <div className="flex flex-wrap gap-1.5 mb-4">
+                  <p className="text-xs text-gray-400 mb-2 font-medium">Sign up to unlock:</p>
+                  <div className="flex flex-wrap gap-1.5 mb-component-sm">
                     {(['Download compressed video', '2 free exports', 'No watermark'] as const).map((feat) => (
-                      <span key={feat} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-[11px] text-gray-400 dark:text-gray-500">
+                      <span key={feat} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-xs text-gray-400 dark:text-gray-500">
                         <Lock className="w-2.5 h-2.5" />
                         {feat}
                       </span>
@@ -418,88 +453,80 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
 
             {/* Full result — hidden until signed in */}
             {(!showAuthGate || isLoggedIn()) && (
+            <>
             <TranslateResult
               title="Video compressed!"
               fileName={result.fileName ?? fallbackCompressedName}
               processingTime={lastProcessingMs != null ? `${(lastProcessingMs / 1000).toFixed(1)}s` : '—'}
-              downloadLabel={!hasPaidPlan ? (freeExportsUsed >= 2 ? '2/2 free downloads used' : 'Download (2 free)') : 'Download Video'}
-              onDownload={
-                !hasPaidPlan
-                  ? async () => {
-                      if (freeExportsUsed >= 2) {
-                        toast('You\'ve used your 2 free downloads. Upgrade for more.')
-                        return
-                      }
-                      try {
-                        const res = await fetch(getDownloadUrl())
-                        const blob = await res.blob()
-                        const a = document.createElement('a')
-                        a.href = URL.createObjectURL(blob)
-                        a.download = result?.fileName || fallbackCompressedName
-                        a.click()
-                        URL.revokeObjectURL(a.href)
-                        trackAppEvent('export_clicked', { toolId: 'compress-video' })
-                        try { trackEvent('result_downloaded', { tool: 'compress-video', plan: 'free' }) } catch { /* non-blocking */ }
-                        setFreeExportsUsed((prev) => prev + 1)
-                        toast.success('Download started')
-                      } catch {
-                        toast.error('Download failed')
-                      }
-                    }
-                  : () => {
-                      const a = document.createElement('a')
-                      a.href = getDownloadUrl()
-                      a.download = result?.fileName || fallbackCompressedName
-                      a.click()
-                      try { trackEvent('result_downloaded', { tool: 'compress-video', plan: 'paid' }) } catch { /* non-blocking */ }
-                    }
-              }
+              hideDownload
               onProcessAnother={handleProcessAnother}
-              relatedTools={[
-                { path: '/burn-subtitles', name: 'Burn Subtitles', description: 'Burn captions into video' },
-                { path: '/video-to-subtitles', name: 'Video → Subtitles', description: 'Generate SRT/VTT' },
-                { path: '/video-to-transcript', name: 'Video → Transcript', description: 'Get transcript & chapters' },
-              ]}
+              relatedTools={[]}
             />
+
+            <div className="grid grid-cols-1 items-start gap-component-sm lg:grid-cols-[minmax(0,1fr)_320px]">
+              <div className="space-y-component min-w-0">
+                <CompressionSavingsCard
+                  variant="result"
+                  originalBytes={selectedFile.size}
+                  compressedBytes={estimatedCompressedBytes}
+                  showQualityNote
+                />
+
+                <CrossToolSuggestions
+                  workflowHint="Your last file is pre-filled on the next tool."
+                  suggestions={[
+                    { icon: Film, title: 'Burn Subtitles', path: '/burn-subtitles', description: 'Burn captions into video', state: { useWorkflowVideo: true } },
+                    { icon: MessageSquare, title: 'Video → Subtitles', path: '/video-to-subtitles', description: 'Generate SRT/VTT', state: { useWorkflowVideo: true } },
+                    { icon: FileText, title: 'Video → Transcript', path: '/video-to-transcript', description: 'Get transcript & chapters', state: { useWorkflowVideo: true } },
+                  ]}
+                />
+              </div>
+
+              <ExportsPanel freeExportsUsed={!hasPaidPlan ? freeExportsUsed : undefined}>
+                <ExportSection title="Video">
+                  <button
+                    type="button"
+                    onClick={
+                      !hasPaidPlan
+                        ? async () => {
+                            if (freeExportsUsed >= 2) {
+                              toast('You\'ve used your 2 free downloads. Upgrade for more.')
+                              return
+                            }
+                            try {
+                              await downloadAuthedUrl(getDownloadUrl(), result?.fileName || fallbackCompressedName)
+                              trackAppEvent('export_clicked', { toolId: 'compress-video' })
+                              try { trackEvent('result_downloaded', { tool: 'compress-video', plan: 'free' }) } catch { /* non-blocking */ }
+                              setFreeExportsUsed((prev) => prev + 1)
+                              toast.success('Download started')
+                            } catch {
+                              toast.error('Download failed')
+                            }
+                          }
+                        : async () => {
+                            try {
+                              await downloadAuthedUrl(getDownloadUrl(), result?.fileName || fallbackCompressedName)
+                              try { trackEvent('result_downloaded', { tool: 'compress-video', plan: 'paid' }) } catch { /* non-blocking */ }
+                            } catch {
+                              toast.error('Download failed')
+                            }
+                          }
+                    }
+                    disabled={!hasPaidPlan && freeExportsUsed >= 2}
+                    className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-3 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {!hasPaidPlan && freeExportsUsed >= 2 ? '2/2 free downloads used' : 'Download Video'}
+                  </button>
+                </ExportSection>
+              </ExportsPanel>
+            </div>
+            </>
             )}{/* end gate-hidden result */}
+            <ResultUpgradeCard tool="compress" resultKey={result.downloadUrl} />
             <FreePlanNudge tool="compress-video" resultKey={result.downloadUrl} />
-            <div className="mt-2 min-h-[2.75rem]">
-            {/* <WorkflowChainSuggestion
-              pathname={location.pathname}
-              plan={plan}
-              lastJobCompletedToolId={lastJobCompletedToolId}
-            /> */}
-            </div>
-
-            <div className="bg-green-50 rounded-xl p-6 border border-green-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Original size</p>
-                  <p className="text-lg font-semibold text-gray-800">{formatFileSize(selectedFile.size)}</p>
-                </div>
-                <div className="text-2xl text-gray-400">→</div>
-                <div className="text-right">
-                  <p className="text-sm text-gray-600">Compressed size</p>
-                  <p className="text-lg font-semibold text-green-600">
-                    {formatFileSize(getEstimatedSize())}
-                  </p>
-                </div>
-              </div>
-              <div className="mt-4 pt-4 border-t border-green-200">
-                <p className="text-sm text-green-800 font-medium">
-                  Quality preserved ✓
-                </p>
-              </div>
-            </div>
-
-            <CrossToolSuggestions
-              workflowHint="Your last file is pre-filled on the next tool."
-              suggestions={[
-                { icon: Film, title: 'Burn Subtitles', path: '/burn-subtitles', description: 'Burn captions into video', state: { useWorkflowVideo: true } },
-                { icon: MessageSquare, title: 'Video → Subtitles', path: '/video-to-subtitles', description: 'Generate SRT/VTT', state: { useWorkflowVideo: true } },
-                { icon: FileText, title: 'Video → Transcript', path: '/video-to-transcript', description: 'Get transcript & chapters', state: { useWorkflowVideo: true } },
-              ]}
-            />
+            <SecondJobUpgradeNudge tool="compress-video" resultKey={result.downloadUrl} milestone={2} />
+            <SecondJobUpgradeNudge tool="compress-video" resultKey={result.downloadUrl} milestone={3} />
+            <div className="mt-2 min-h-[2.75rem]" />
           </div>
         )}
 
@@ -533,83 +560,11 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
 
 
       {location.pathname === '/compress-video' && (
-        <section className="mt-12 pt-8 border-t border-gray-100/70 max-w-4xl mx-auto px-4 space-y-10" aria-label="Compress video guide">
-          <p className="text-base font-medium text-gray-800">👉 Upload video → reduce size in seconds (no quality loss)</p>
-          <p className="text-sm text-gray-600">👉 Works for large files and multiple formats</p>
-
-          <div>
-            <h2 className="text-2xl font-medium text-gray-800 mb-3">Compress Video Files Online Instantly</h2>
-            <p className="text-gray-600">Reduce the size of your video without compromising quality. If you need subtitles after compression, generate them automatically at <a className="text-blue-600 hover:underline" href="/video-to-subtitles">/video-to-subtitles</a>.</p>
-            <p className="mt-3 text-sm text-gray-500">compress video online · video compressor · reduce video size</p>
-          </div>
-
-          <div>
-            <h2 className="text-2xl font-medium text-gray-800 mb-3">Reduce Video Size Without Losing Quality</h2>
-            <p className="text-gray-600">Most tools degrade quality. This compressor optimizes compression, maintains clarity, and reduces file size efficiently. Need text output too? Convert video to transcript at <a className="text-blue-600 hover:underline" href="/video-to-transcript">/video-to-transcript</a>.</p>
-          </div>
-
-          <div>
-            <h2 className="text-2xl font-medium text-gray-800 mb-3">Compress Large Video Files Fast</h2>
-            <p className="text-gray-600">Built for large files and long videos with support for large uploads, sharing-ready outputs, and performance-optimized processing. Working with YouTube content? Use <a className="text-blue-600 hover:underline" href="/youtube-transcript-generator">/youtube-transcript-generator</a>.</p>
-          </div>
-
-          <div>
-            <h2 className="text-2xl font-medium text-gray-800 mb-3">Why Compress Videos?</h2>
-            <ul className="list-disc pl-6 text-gray-600 space-y-1">
-              <li>Upload faster to platforms</li>
-              <li>Reduce storage usage</li>
-              <li>Share videos easily</li>
-              <li>Optimize videos for web</li>
-            </ul>
-          </div>
-
-          <div>
-            <h2 className="text-2xl font-medium text-gray-800 mb-3">Why This Video Compressor Is Better</h2>
-            <ul className="list-disc pl-6 text-gray-600 space-y-1">
-              <li>Fast compression</li>
-              <li>Minimal quality loss</li>
-              <li>Supports multiple formats</li>
-              <li>No installation required</li>
-              <li>Browser-based processing</li>
-            </ul>
-            <p className="mt-3 text-gray-600">Need translation too? Translate subtitles and transcripts with <a className="text-blue-600 hover:underline" href="/translate-subtitles">/translate-subtitles</a>.</p>
-          </div>
-
-          <div>
-            <h2 className="text-2xl font-medium text-gray-800 mb-3">Complete Video Processing Workflow</h2>
-            <ul className="list-disc pl-6 text-gray-600 space-y-1">
-              <li><a className="text-blue-600 hover:underline" href="/video-to-transcript">Convert video to transcript</a></li>
-              <li><a className="text-blue-600 hover:underline" href="/video-to-subtitles">Generate subtitles</a></li>
-              <li><a className="text-blue-600 hover:underline" href="/burn-subtitles">Burn subtitles</a></li>
-              <li><a className="text-blue-600 hover:underline" href="/translate-subtitles">Translate subtitles</a></li>
-            </ul>
-          </div>
-
-          <div>
-            <h2 className="text-2xl font-medium text-gray-800 mb-4">Frequently Asked Questions</h2>
-            <dl className="space-y-4 text-gray-600">
-              <div><dt className="font-medium text-gray-800">How do I compress a video online?</dt><dd>Upload your video and the tool will reduce its size instantly.</dd></div>
-              <div><dt className="font-medium text-gray-800">Can I reduce video size without losing quality?</dt><dd>Yes. This tool optimizes compression to maintain quality.</dd></div>
-              <div><dt className="font-medium text-gray-800">Is there a free video compressor?</dt><dd>Yes. You can compress videos online without installing software.</dd></div>
-              <div><dt className="font-medium text-gray-800">What formats are supported?</dt><dd>Common formats like MP4, MOV, AVI, and more.</dd></div>
-              <div><dt className="font-medium text-gray-800">Can I compress large video files?</dt><dd>Yes. The tool supports large video files and long videos.</dd></div>
-            </dl>
-          </div>
-        </section>
+        <CoreToolSeoDepth path="/compress-video" />
       )}
 
-      {faq.length > 0 && (
-        <section className="mt-12 pt-8 border-t border-gray-100/70 max-w-4xl mx-auto px-4" aria-label="FAQ">
-          <h2 className="text-2xl font-medium text-gray-800 mb-4">Frequently asked questions</h2>
-          <dl className="space-y-4">
-            {faq.map((item, i) => (
-              <div key={i}>
-                <dt className="font-medium text-gray-800">{item.q}</dt>
-                <dd className="mt-1 text-gray-600">{item.a}</dd>
-              </div>
-            ))}
-          </dl>
-        </section>
+      {faq.length > 0 && location.pathname !== '/compress-video' && (
+        <CollapsibleFaqSection items={faq} />
       )}
     </>
   )

@@ -7,20 +7,33 @@ import {
   AlertTriangle, Info,
 } from 'lucide-react'
 import FailedState from '../components/FailedState'
+import CoreToolSeoDepth from '../components/CoreToolSeoDepth'
+import CollapsibleFaqSection from '../components/CollapsibleFaqSection'
+import CollapsibleToolSection from '../components/CollapsibleToolSection'
+import PageGscSupplementFaq from '../components/PageGscSupplementFaq'
 import FreePlanNudge from '../components/FreePlanNudge'
+import SecondJobUpgradeNudge from '../components/SecondJobUpgradeNudge'
 import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
 import { isPaidPlan } from '../lib/plans'
+import { WATERMARK_DOC_FOOTER, WATERMARK_DOC_HEADER, watermarkTextExport, drawPdfFreePlanWatermark } from '../lib/watermark'
 import SamplesModule from '../components/SamplesModule'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import { ToolLayout } from '../components/figma/ToolLayout'
+import SerpTrustStrip from '../components/SerpTrustStrip'
+import { shouldShowSerpTrustStrip } from '../lib/serpTrustPaths'
 import { UploadZone } from '../components/figma/UploadZone'
 import { ProcessingInterface } from '../components/figma/ProcessingInterface'
 import { ProcessingProgress } from '../components/figma/ProcessingProgress'
+import { ProcessingStateShell } from '../components/figma/ProcessingStateShell'
+import { ExportsPanel, ExportSection } from '../components/figma/ExportsPanel'
 import { TranslateResult } from '../components/figma/TranslateResult'
+import ResultHeader from '../components/ResultHeader'
+import ResultUpgradeCard from '../components/ResultUpgradeCard'
 import { Checkbox } from '../components/figma/FormControls'
 import type { SubtitleRow } from '../components/SubtitleEditor'
 const SubtitleQAReview = lazy(() => import('../components/SubtitleQAReview'))
 import { incrementUsage } from '../lib/usage'
+import { incrementJobCompletedCount } from '../lib/jobCount'
 import { uploadFileWithProgress, uploadFixSubtitlesDual, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError, getAuthToken, claimGuestJob } from '../lib/api'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
@@ -36,25 +49,35 @@ import { exportFileStem, joinExportFilename } from '../lib/exportFileNames'
 
 // ─── Finding type metadata ────────────────────────────────────────────────────
 const FINDING_META: Record<string, { icon: typeof Film; colorText: string; colorBg: string; colorBorder: string; label: string }> = {
-  overlap:       { icon: Layers,     colorText: 'text-orange-600 dark:text-orange-400',  colorBg: 'bg-orange-50 dark:bg-orange-950/20',    colorBorder: 'border-orange-200 dark:border-orange-800',   label: 'Overlapping cues' },
+  overlap:       { icon: Layers,     colorText: 'text-rose-600 dark:text-rose-400',  colorBg: 'bg-rose-50 dark:bg-rose-950/20',    colorBorder: 'border-rose-200 dark:border-rose-800',   label: 'Overlapping cues' },
   long_line:     { icon: AlignLeft,  colorText: 'text-blue-600 dark:text-blue-400',      colorBg: 'bg-blue-50 dark:bg-blue-950/20',         colorBorder: 'border-blue-200 dark:border-blue-800',       label: 'Line too long (CPL)' },
   fast_reading:  { icon: Zap,        colorText: 'text-amber-600 dark:text-amber-400',    colorBg: 'bg-amber-50 dark:bg-amber-950/20',       colorBorder: 'border-amber-200 dark:border-amber-800',     label: 'Reading speed (CPS)' },
   reading_speed: { icon: Zap,        colorText: 'text-amber-600 dark:text-amber-400',    colorBg: 'bg-amber-50 dark:bg-amber-950/20',       colorBorder: 'border-amber-200 dark:border-amber-800',     label: 'Reading speed (CPS)' },
   large_gap:     { icon: Clock,      colorText: 'text-gray-500 dark:text-gray-400',      colorBg: 'bg-gray-50 dark:bg-gray-900/60',         colorBorder: 'border-gray-200 dark:border-gray-700',       label: 'Large gap' },
-  scene_cut:     { icon: Scissors,   colorText: 'text-violet-600 dark:text-violet-400',  colorBg: 'bg-violet-50 dark:bg-violet-950/20',     colorBorder: 'border-violet-200 dark:border-violet-800',   label: 'Spans scene cut' },
+  scene_cut:     { icon: Scissors,   colorText: 'text-slate-600 dark:text-slate-400',  colorBg: 'bg-slate-50 dark:bg-slate-950/20',     colorBorder: 'border-slate-200 dark:border-slate-800',   label: 'Spans scene cut' },
   invalid_timing:{ icon: AlertTriangle, colorText: 'text-red-600 dark:text-red-400',     colorBg: 'bg-red-50 dark:bg-red-950/20',           colorBorder: 'border-red-200 dark:border-red-800',         label: 'Invalid timing' },
 }
 const DEFAULT_FINDING_META = { icon: AlertTriangle, colorText: 'text-gray-600 dark:text-gray-400', colorBg: 'bg-gray-50 dark:bg-gray-900', colorBorder: 'border-gray-200 dark:border-gray-700', label: 'Issue' }
+
+export type WhatThisFixesItem = {
+  name: string
+  before: string
+  after: string
+}
 
 /** Optional SEO overrides for alternate entry points. Do NOT duplicate logic. */
 export type FixSubtitlesSeoProps = {
   seoH1?: string
   seoIntro?: string
   faq?: { q: string; a: string }[]
+  /** Route-specific problem/solution rows rendered below the tool UI. */
+  whatThisFixes?: WhatThisFixesItem[]
+  /** Honest scope limits — trust signal for professional buyers. */
+  limitsNotIncluded?: string[]
 }
 
 export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
-  const { seoH1, seoIntro, faq = [] } = props
+  const { seoH1, seoIntro, faq = [], whatThisFixes = [], limitsNotIncluded = [] } = props
   const location = useLocation()
   const navigate = useNavigate()
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -256,6 +279,8 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
       y += lineH * bodyLines.length + lineH * 0.8
     }
 
+    if (watermark) drawPdfFreePlanWatermark(doc)
+
     doc.save(filename)
   }
 
@@ -265,10 +290,16 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
       new Paragraph({ text: 'Subtitle Script', heading: HeadingLevel.HEADING_1 }),
     ]
     if (watermark) {
-      children.push(new Paragraph({
-        children: [new TextRun({ text: watermark, italics: true, color: '888888', size: 18 })],
-        spacing: { after: 200 },
-      }))
+      children.push(
+        new Paragraph({
+          children: [new TextRun({ text: WATERMARK_DOC_HEADER, bold: true, color: '666666', size: 20 })],
+          spacing: { after: 80 },
+        }),
+        new Paragraph({
+          children: [new TextRun({ text: WATERMARK_DOC_FOOTER, italics: true, color: '888888', size: 18 })],
+          spacing: { after: 200 },
+        }),
+      )
     }
     for (const row of rows) {
       children.push(
@@ -302,7 +333,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
     if (!isLoggedIn()) return true
     try {
       const usage = await getCurrentUsage({ skipCache: true })
-      const remaining = usage.remaining ?? (usage.limit ?? 3) - (usage.used ?? usage.usage.importCountToday ?? 0)
+      const remaining = usage.remaining ?? (usage.limit ?? 3) - (usage.used ?? usage.usage.importCount ?? 0)
       if (usage.plan === 'free' && usage.quotaType === 'imports' && remaining <= 0) {
         setProPaywallReason('FREE_DAILY_LIMIT_REACHED'); setShowProPaywall(true); return false
       }
@@ -345,10 +376,15 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
           const transition = getJobLifecycleTransition(jobStatus)
           if (transition === 'completed') {
             clearInterval(pollIntervalRef.current)
-            setResult(jobStatus.result ?? null)
-            setIssues(jobStatus.result?.issues ?? [])
-            setWarnings(jobStatus.result?.warnings ?? [])
-            setShowIssues(true)
+            if (isLoggedIn() && !jobStatus.requiresAuth) {
+              setResult(jobStatus.result ?? null)
+              setIssues(jobStatus.result?.issues ?? [])
+              setWarnings(jobStatus.result?.warnings ?? [])
+              setShowIssues(true)
+            } else {
+              setShowAuthModal(true)
+              setResult({ downloadUrl: '' })
+            }
             setStatus('idle')
             trackAppEvent('transcription_completed', { toolId: 'fix-subtitles' })
             // texJobCompleted(Date.now() - processingStartedAtRef.current, 'fix-subtitles')
@@ -420,14 +456,29 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
             const processingMs = Date.now() - started
             setLastProcessingMs(processingMs)
             setStatus('completed')
-            setResult(jobStatus.result ?? null)
-            setIssues(jobStatus.result?.issues ?? [])
-            trackAppEvent('transcription_completed', { toolId: 'fix-subtitles' })
-            // emitToolCompleted({ toolId: 'fix-subtitles', pathname: '/fix-subtitles', processingMs })
-            setWarnings(jobStatus.result?.warnings ?? [])
+            if (isLoggedIn() && !jobStatus.requiresAuth) {
+              setResult(jobStatus.result ?? null)
+            } else {
+              setShowAuthModal(true)
+              setResult({ downloadUrl: '' })
+            }
+            setIssues(isLoggedIn() && !jobStatus.requiresAuth ? (jobStatus.result?.issues ?? []) : [])
+            setWarnings(isLoggedIn() && !jobStatus.requiresAuth ? (jobStatus.result?.warnings ?? []) : [])
+            setShowIssues(isLoggedIn() && !jobStatus.requiresAuth)
             incrementUsage('fix-subtitles')
-            // texJobCompleted(processingMs, 'fix-subtitles')
-            if (jobStatus.result?.downloadUrl) {
+            trackAppEvent('transcription_completed', { toolId: 'fix-subtitles' })
+            try {
+              const nextJobCount = incrementJobCompletedCount()
+              trackEvent('job_completed', {
+                job_id: response.jobId,
+                tool_type: BACKEND_TOOL_TYPES.FIX_SUBTITLES,
+                processing_time_ms: processingMs,
+                job_count: nextJobCount,
+              })
+            } catch {
+              /* non-blocking */
+            }
+            if (isLoggedIn() && jobStatus.result?.downloadUrl) {
               try {
                 const token = getAuthToken()
                 const res = await fetch(getAbsoluteDownloadUrl(jobStatus.result.downloadUrl), {
@@ -511,8 +562,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
 
     try {
       const token = getAuthToken()
-      const shouldWatermark = plan === 'free'
-      const downloadUrl = `${getDownloadUrl()}${shouldWatermark ? '?wm=1' : ''}`
+      const downloadUrl = `${getDownloadUrl()}`
       const res = await fetch(downloadUrl, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       })
@@ -549,16 +599,13 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
 
   const exportRows = subtitleRows.length > 0 ? subtitleRows : []
   const isPaid = isPaidPlan(plan)
-  const exportWatermark = !isPaid ? 'Generated by VideoText.io (Free Plan) · videotext.io' : undefined
+  const exportWatermark = !isPaid ? WATERMARK_DOC_FOOTER : undefined
 
   const handleExportSrt = () => {
     if (exportRows.length > 0) {
-      // Use edited/fixed rows so pro user edits are included
       const content = rowsToSrt(exportRows)
-      const watermarked = !isPaid
-        ? `1\n00:00:00,000 --> 00:00:01,500\nVideoText.io (Free Plan)\n\n${content}`
-        : content
-      triggerBlobDownload(watermarked, `${stemName}.srt`, 'text/plain')
+      const payload = isPaid ? content : watermarkTextExport(content, 'srt')
+      triggerBlobDownload(payload, `${stemName}.srt`, 'text/plain')
       trackAppEvent('export_clicked', { toolId: 'fix-subtitles', format: 'srt' })
       toast.success(isPaid ? 'Download started' : 'Download started (with watermark)')
     } else {
@@ -568,13 +615,17 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
 
   const handleExportVtt = () => {
     if (!exportRows.length) { toast.error('No subtitle data to export'); return }
-    triggerBlobDownload(rowsToVtt(exportRows), `${stemName}.vtt`, 'text/vtt')
+    const content = rowsToVtt(exportRows)
+    const payload = isPaid ? content : watermarkTextExport(content, 'vtt')
+    triggerBlobDownload(payload, `${stemName}.vtt`, 'text/vtt')
     trackAppEvent('export_clicked', { toolId: 'fix-subtitles', format: 'vtt' })
   }
 
   const handleExportTxt = () => {
     if (!exportRows.length) { toast.error('No subtitle data to export'); return }
-    triggerBlobDownload(rowsToTxt(exportRows), `${stemName}.txt`, 'text/plain')
+    const content = rowsToTxt(exportRows)
+    const payload = isPaid ? content : watermarkTextExport(content, 'txt')
+    triggerBlobDownload(payload, `${stemName}.txt`, 'text/plain')
     trackAppEvent('export_clicked', { toolId: 'fix-subtitles', format: 'txt' })
   }
 
@@ -638,7 +689,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
             </span>
           )}
           {sceneCuts.length > 0 && (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 dark:bg-slate-900/30 dark:text-slate-300">
               <Scissors className="h-3 w-3" />
               {sceneCuts.length} scene cut{sceneCuts.length !== 1 ? 's' : ''}
             </span>
@@ -647,17 +698,17 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
 
         {/* Scene cuts — manual review required */}
         {sceneCuts.length > 0 && (
-          <div className="rounded-xl border border-violet-200 bg-violet-50 p-4 dark:border-violet-800 dark:bg-violet-950/20">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/20">
             <div className="mb-3 flex items-center gap-2">
-              <Scissors className="h-4 w-4 text-violet-600 dark:text-violet-400" />
-              <p className="text-sm font-semibold text-violet-800 dark:text-violet-200">Scene cuts — manual review required</p>
+              <Scissors className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+              <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">Scene cuts — manual review required</p>
             </div>
             <ol className="space-y-2">
               {sceneCuts.map((w, i) => (
-                <li key={i} className="rounded-lg border border-violet-200 bg-white px-4 py-3 text-sm dark:border-violet-800 dark:bg-gray-900">
+                <li key={i} className="rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm dark:border-slate-800 dark:bg-gray-900">
                   <div className="flex items-baseline justify-between gap-2">
-                    <p className="font-medium text-violet-800 dark:text-violet-200">{w.message}</p>
-                    {w.line != null && <span className="shrink-0 font-mono text-xs text-violet-500">Cue {w.line}</span>}
+                    <p className="font-medium text-slate-800 dark:text-slate-200">{w.message}</p>
+                    {w.line != null && <span className="shrink-0 font-mono text-xs text-slate-500">Cue {w.line}</span>}
                   </div>
                 </li>
               ))}
@@ -720,18 +771,27 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
   const breadcrumbs = [{ label: 'Fix Subtitles', href: '/fix-subtitles' }]
   const layoutProps = {
     breadcrumbs,
-    title: seoH1 ?? 'Fix Subtitles',
-    subtitle: seoIntro ?? 'Validate and auto-correct CPS, CPL, timing, and scene cut issues in SRT and VTT files.',
-    icon: <Wrench className="w-8 h-8 text-blue-600 dark:text-blue-400" />,
+    title: seoH1 ?? 'Fix Subtitles — Timing, CPS & Lines',
+    subtitle: seoIntro ?? 'Fix overlapping timestamps, long lines, CPS/reading-speed, and formatting in SRT/VTT. Files deleted after processing. 3 free imports/mo.',
+    icon: <Wrench className="w-4 h-4 text-blue-600 dark:text-blue-400" />,
     tags: ['CPS', 'CPL', 'Timing', 'Scene Cuts', 'Line Breaks', 'Filler Words'],
     sidebar: null,
+    compactToolHeader: true,
+    coreToolPath: '/fix-subtitles',
+    currentStepLabel:
+      status === 'completed'
+        ? 'Subtitles fixed'
+        : selectedFile
+          ? 'Upload configured'
+          : 'Ready to upload',
   }
 
   return (
     <>
+      {shouldShowSerpTrustStrip(location.pathname) && <SerpTrustStrip />}
       <ToolLayout {...layoutProps}>
         {status === 'idle' && !selectedFile && !showIssues && (
-          <div className="space-y-4">
+          <div className="space-y-component-sm">
             <UploadZone
               immediateSelect
               onFileSelect={handleFileSelect}
@@ -763,10 +823,10 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
             {/* Optional video upload for scene cut detection */}
             <div>
               <div className="mb-3 flex items-center gap-2">
-                <Scissors className="h-4 w-4 text-violet-500" />
+                <Scissors className="h-4 w-4 text-slate-500" />
                 <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
                   Scene cut detection
-                  <span className="ml-2 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-normal text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                  <span className="ml-2 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-normal text-gray-500 dark:bg-gray-800 dark:text-gray-400">
                     optional
                   </span>
                 </p>
@@ -778,13 +838,13 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.97 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="flex items-center gap-3 rounded-lg border border-violet-200 bg-violet-50 px-3.5 py-2.5 dark:border-violet-800 dark:bg-violet-950/20"
+                  className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 dark:border-slate-800 dark:bg-slate-950/20"
                 >
-                  <Film className="h-4 w-4 shrink-0 text-violet-500" />
-                  <span className="flex-1 truncate text-sm font-medium text-violet-800 dark:text-violet-200">{videoFile.name}</span>
+                  <Film className="h-4 w-4 shrink-0 text-slate-500" />
+                  <span className="flex-1 truncate text-sm font-medium text-slate-800 dark:text-slate-200">{videoFile.name}</span>
                   <button
                     onClick={() => setVideoFile(null)}
-                    className="shrink-0 rounded p-0.5 text-violet-400 transition-colors hover:bg-violet-200 hover:text-violet-700 dark:hover:bg-violet-900/40 dark:hover:text-violet-300"
+                    className="shrink-0 rounded p-0.5 text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-900/40 dark:hover:text-slate-300"
                     aria-label="Remove video"
                   >
                     <X className="h-3.5 w-3.5" />
@@ -798,7 +858,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
                     className="sr-only"
                     onChange={(e) => { const f = e.target.files?.[0]; if (f) setVideoFile(f) }}
                   />
-                  <span className="inline-flex items-center gap-2 rounded-lg border border-dashed border-gray-300 bg-white px-4 py-2 text-sm text-gray-600 transition-colors group-hover:border-violet-400 group-hover:bg-violet-50 group-hover:text-violet-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:group-hover:border-violet-700 dark:group-hover:bg-violet-950/20 dark:group-hover:text-violet-300">
+                  <span className="inline-flex items-center gap-2 rounded-lg border border-dashed border-gray-300 bg-white px-4 py-2 text-sm text-gray-600 transition-colors group-hover:border-slate-400 group-hover:bg-slate-50 group-hover:text-slate-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:group-hover:border-slate-700 dark:group-hover:bg-slate-950/20 dark:group-hover:text-slate-300">
                     <UploadCloud className="h-4 w-4" />
                     Add source video
                   </span>
@@ -809,10 +869,10 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
         )}
 
         {status === 'analyzing' && (
-          <div className="rounded-xl bg-blue-50 dark:bg-blue-950/30 p-6 sm:p-8">
-            <div className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+          <ProcessingStateShell>
+            <div className="mb-component-sm text-sm text-gray-500 dark:text-gray-400">
               {selectedFile?.name}
-              {videoFile && <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700 dark:bg-violet-900/30 dark:text-violet-300"><Scissors className="h-3 w-3" />scene detection enabled</span>}
+              {videoFile && <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700 dark:bg-slate-900/30 dark:text-slate-300"><Scissors className="h-3 w-3" />scene detection enabled</span>}
             </div>
             <ProcessingProgress
               steps={[
@@ -826,7 +886,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
               statusSubtext={uploadPhase === 'processing' && queuePosition !== undefined && queuePosition > 0 ? `Queue position: ${queuePosition}` : undefined}
               onCancel={handleProcessAnother}
             />
-          </div>
+          </ProcessingStateShell>
         )}
 
         {status === 'idle' && showIssues && (() => {
@@ -835,10 +895,10 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
           const totalFindings = issues.length + warnings.length
 
           return (
-            <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[1fr_320px] lg:items-start">
+            <div className="flex flex-col gap-component-sm lg:grid lg:grid-cols-[1fr_320px] lg:items-start">
 
               {/* ── Left column: summary + scene cuts + fix options + CTA ── */}
-              <div className="space-y-4">
+              <div className="space-y-component-sm">
 
                 {/* Header / summary */}
                 <motion.div
@@ -868,7 +928,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
                         </span>
                       )}
                       {sceneCuts.length > 0 && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-violet-100 px-2.5 py-1 text-xs font-semibold text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700 dark:bg-slate-900/30 dark:text-slate-300">
                           <Scissors className="h-3 w-3" />
                           {sceneCuts.length} scene cut{sceneCuts.length !== 1 ? 's' : ''}
                         </span>
@@ -889,22 +949,22 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.05 }}
-                    className="rounded-xl border border-violet-200 bg-violet-50 p-5 dark:border-violet-800 dark:bg-violet-950/20"
+                    className="rounded-xl border border-slate-200 bg-slate-50 p-5 dark:border-slate-800 dark:bg-slate-950/20"
                   >
                     <div className="mb-3 flex items-center gap-2.5">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-100 dark:bg-violet-900/40">
-                        <Scissors className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-900/40">
+                        <Scissors className="h-4 w-4 text-slate-600 dark:text-slate-400" />
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-violet-900 dark:text-violet-100">Scene cuts detected — manual review needed</p>
-                        <p className="text-xs text-violet-600 dark:text-violet-400">These cues span a camera cut and cannot be auto-fixed.</p>
+                        <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">Scene cuts detected — manual review needed</p>
+                        <p className="text-xs text-slate-600 dark:text-slate-400">These cues span a camera cut and cannot be auto-fixed.</p>
                       </div>
                     </div>
                     <ol className="space-y-2">
                       {sceneCuts.map((w, i) => (
-                        <li key={i} className="flex items-start justify-between gap-3 rounded-lg border border-violet-200 bg-white px-4 py-3 text-sm dark:border-violet-800 dark:bg-gray-900">
-                          <p className="text-violet-800 dark:text-violet-200">{w.message}</p>
-                          {w.line != null && <span className="shrink-0 font-mono text-xs text-violet-400">Cue {w.line}</span>}
+                        <li key={i} className="flex items-start justify-between gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm dark:border-slate-800 dark:bg-gray-900">
+                          <p className="text-slate-800 dark:text-slate-200">{w.message}</p>
+                          {w.line != null && <span className="shrink-0 font-mono text-xs text-slate-400">Cue {w.line}</span>}
                         </li>
                       ))}
                     </ol>
@@ -918,7 +978,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
                   transition={{ delay: 0.1 }}
                   className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
                 >
-                  <div className="mb-4 flex items-center justify-between">
+                  <div className="mb-component-sm flex items-center justify-between">
                     <div>
                       <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Fix options</h3>
                       <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">Original file is always preserved — only the downloaded copy is modified.</p>
@@ -1083,8 +1143,8 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
         })()}
 
         {status === 'processing' && (
-          <div className="rounded-xl bg-blue-50 dark:bg-blue-950/30 p-6 sm:p-8">
-            <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+          <ProcessingStateShell>
+            <div className="mb-component-sm text-sm text-gray-600 dark:text-gray-400">
               {selectedFile?.name} • {((selectedFile?.size ?? 0) / 1024).toFixed(2)} KB
             </div>
             <ProcessingProgress
@@ -1099,159 +1159,187 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
               statusSubtext={uploadPhase === 'processing' && queuePosition !== undefined && queuePosition > 0 ? `Queue position: ${queuePosition}` : undefined}
               onCancel={handleProcessAnother}
             />
-          </div>
+          </ProcessingStateShell>
         )}
 
         {status === 'completed' && result && !isLoggedIn() && (
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900 text-center space-y-4"
+            className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900"
           >
-            <div className="flex items-center justify-center gap-2">
-              <CheckCircle className="h-6 w-6 text-green-500" />
-              <p className="text-base font-semibold text-gray-900 dark:text-white">Your fixed subtitles are ready!</p>
-            </div>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Create a free account to download your corrected subtitle file.
-            </p>
-            <div className="flex gap-2 justify-center">
-              <button
-                onClick={() => { setAuthModalMode('signup-combo'); setShowAuthModal(true) }}
-                className="flex-1 max-w-[200px] py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors"
-              >
-                Create free account
-              </button>
-              <button
-                onClick={() => { setAuthModalMode('login'); setShowAuthModal(true) }}
-                className="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
-              >
-                Log in
-              </button>
+            <ResultHeader embedded title="Subtitles fixed!" />
+            <div className="space-y-component-sm px-5 py-4 text-center">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Create a free account to download your corrected subtitle file.
+              </p>
+              <div className="flex justify-center gap-2">
+                <button
+                  onClick={() => { setAuthModalMode('signup-combo'); setShowAuthModal(true) }}
+                  className="max-w-[200px] flex-1 rounded-xl bg-blue-600 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+                >
+                  Create free account
+                </button>
+                <button
+                  onClick={() => { setAuthModalMode('login'); setShowAuthModal(true) }}
+                  className="rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-600 transition-colors hover:border-gray-300 dark:border-gray-700 dark:text-gray-300 dark:hover:border-gray-600"
+                >
+                  Log in
+                </button>
+              </div>
             </div>
           </motion.div>
         )}
 
         {status === 'completed' && result && isLoggedIn() && (
-          <div className="space-y-6">
+          <div className="space-y-component">
             <TranslateResult
               title="Subtitles fixed!"
               fileName={result.fileName ?? fallbackFixedName}
               processingTime={lastProcessingMs != null ? `${(lastProcessingMs / 1000).toFixed(1)}s` : '—'}
-              downloadLabel={plan === 'free' ? (freeExportsUsed >= 2 ? '2/2 free downloads used' : 'Download SRT') : 'Download SRT'}
-              onDownload={() => requireAuthForDownload(downloadFixedSubtitles)}
+              hideDownload
               onProcessAnother={handleProcessAnother}
+              processAnotherLabel="Fix another file"
               relatedTools={[]}
             />
+            <ResultUpgradeCard tool="fix-srt" resultKey={result.downloadUrl} />
             <FreePlanNudge tool="fix-srt" resultKey={result.downloadUrl} />
+            <SecondJobUpgradeNudge tool="fix-srt" resultKey={result.downloadUrl} milestone={2} />
+            <SecondJobUpgradeNudge tool="fix-srt" resultKey={result.downloadUrl} milestone={3} />
 
-            {changedCues.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 overflow-hidden"
-              >
-                <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3.5 dark:border-gray-800">
-                  <div className="flex items-center gap-2">
-                    <div className="flex h-6 w-6 items-center justify-center rounded-md bg-blue-50 dark:bg-blue-900/30">
-                      <Wrench className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+            <div className="grid grid-cols-1 items-start gap-component-sm lg:grid-cols-[minmax(0,1fr)_320px]">
+              <div className="min-w-0 space-y-component">
+                {changedCues.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900"
+                  >
+                    <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3.5 dark:border-gray-800">
+                      <div className="flex items-center gap-2">
+                        <div className="flex h-6 w-6 items-center justify-center rounded-md bg-blue-50 dark:bg-blue-900/30">
+                          <Wrench className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                          Before &amp; after &mdash; {changedCues.length} cue{changedCues.length !== 1 ? 's' : ''} changed
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-3 text-xs text-gray-400">
+                        <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-red-200 dark:bg-red-900" />Before</span>
+                        <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-green-200 dark:bg-green-900" />After</span>
+                      </div>
                     </div>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                      Before &amp; after &mdash; {changedCues.length} cue{changedCues.length !== 1 ? 's' : ''} changed
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-3 text-xs text-gray-400">
-                    <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-red-200 dark:bg-red-900" />Before</span>
-                    <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-green-200 dark:bg-green-900" />After</span>
-                  </div>
-                </div>
-                <ol className="divide-y divide-gray-100 dark:divide-gray-800">
-                  {changedCues.map(({ index, before, after }) => (
-                    <li key={index} className="px-5 py-4 space-y-2">
-                      <p className="font-mono text-[11px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
-                        Cue {before.index}
-                      </p>
-                      <div className="rounded-lg border border-red-200 bg-red-50 px-3.5 py-2.5 dark:border-red-900/50 dark:bg-red-950/20">
-                        <p className="font-mono text-[11px] text-red-500 dark:text-red-400 mb-1">
-                          {before.startTime} {'->'} {before.endTime}
-                        </p>
-                        <p className="text-sm text-red-800 dark:text-red-200 whitespace-pre-wrap">{before.text}</p>
-                      </div>
-                      <div className="rounded-lg border border-green-200 bg-green-50 px-3.5 py-2.5 dark:border-green-900/50 dark:bg-green-950/20">
-                        <p className="font-mono text-[11px] text-green-600 dark:text-green-400 mb-1">
-                          {after.startTime} {'->'} {after.endTime}
-                        </p>
-                        <p className="text-sm text-green-800 dark:text-green-200 whitespace-pre-wrap">{after.text}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-              </motion.div>
-            )}
-
-            {/* ── Export formats ─────────────────────────────────────────── */}
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 overflow-hidden"
-            >
-              <div className="border-b border-gray-100 px-5 py-3.5 dark:border-gray-800 flex items-center justify-between">
-                <p className="text-sm font-semibold text-gray-900 dark:text-white">Export formats</p>
-                {subtitleRows.length > 0 && changedCues.length > 0 && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-medium text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
-                    <CheckCircle className="h-3 w-3" />
-                    Includes your edits
-                  </span>
+                    <ol className="divide-y divide-gray-100 dark:divide-gray-800">
+                      {changedCues.map(({ index, before, after }) => (
+                        <li key={index} className="space-y-2 px-5 py-4">
+                          <p className="font-mono text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+                            Cue {before.index}
+                          </p>
+                          <div className="rounded-lg border border-red-200 bg-red-50 px-3.5 py-2.5 dark:border-red-900/50 dark:bg-red-950/20">
+                            <p className="mb-1 font-mono text-xs text-red-500 dark:text-red-400">
+                              {before.startTime} {'->'} {before.endTime}
+                            </p>
+                            <p className="whitespace-pre-wrap text-sm text-red-800 dark:text-red-200">{before.text}</p>
+                          </div>
+                          <div className="rounded-lg border border-green-200 bg-green-50 px-3.5 py-2.5 dark:border-green-900/50 dark:bg-green-950/20">
+                            <p className="mb-1 font-mono text-xs text-green-600 dark:text-green-400">
+                              {after.startTime} {'->'} {after.endTime}
+                            </p>
+                            <p className="whitespace-pre-wrap text-sm text-green-800 dark:text-green-200">{after.text}</p>
+                          </div>
+                        </li>
+                      ))}
+                    </ol>
+                  </motion.div>
                 )}
+
+                {subtitleRows.length > 0 && (
+                  <Suspense fallback={<div className="h-[300px] animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800" />}>
+                    <SubtitleQAReview
+                      key={result?.downloadUrl}
+                      videoSrc={videoPreviewUrl}
+                      rows={subtitleRows}
+                      onRowsChange={canEdit ? setSubtitleRows : () => {}}
+                      editable={canEdit}
+                      onDownloadEdited={handleExportSrt}
+                    />
+                  </Suspense>
+                )}
+                {!canEdit && subtitleRows.length > 0 && (
+                  <button type="button" onClick={() => { setProPaywallReason('INLINE_EDIT'); setShowProPaywall(true) }} className="px-1 text-left text-xs font-medium text-blue-600 hover:underline dark:text-blue-400">
+                    Upgrade to Pro to edit subtitle text — $7.99/mo
+                  </button>
+                )}
+
+                {(issues.length > 0 || warnings.length > 0) && renderIssueEditor()}
               </div>
-              <div className="p-5 space-y-5">
-                {/* Subtitle files */}
-                <div>
-                  <p className="mb-2.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Subtitle files</p>
-                  <div className="flex flex-wrap gap-2">
+
+              <ExportsPanel
+                freeExportsUsed={plan === 'free' ? freeExportsUsed : undefined}
+                badge={
+                  subtitleRows.length > 0 && changedCues.length > 0 ? (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+                      <CheckCircle className="h-3 w-3" />
+                      Edits included
+                    </span>
+                  ) : undefined
+                }
+              >
+                <ExportSection title="Primary">
+                  <button
+                    onClick={() => requireAuthForDownload(downloadFixedSubtitles)}
+                    disabled={plan === 'free' && freeExportsUsed >= 2}
+                    className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-3 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {plan === 'free' && freeExportsUsed >= 2 ? '2/2 free downloads used' : 'Download SRT'}
+                    {plan === 'free' && freeExportsUsed < 2 && (
+                      <span className="font-normal text-blue-200">· watermark</span>
+                    )}
+                  </button>
+                </ExportSection>
+                <ExportSection title="Subtitle files">
+                  <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => requireAuthForDownload(handleExportSrt)}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-blue-400 hover:text-blue-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-blue-600 dark:hover:text-blue-400"
+                      className="rounded-lg border border-gray-200 px-2 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
                     >
-                      SRT {!isPaid && <span className="text-[10px] text-gray-400">(watermark)</span>}
+                      SRT {!isPaid && <span className="text-gray-400">(wm)</span>}
                     </button>
                     <button
                       onClick={() => requireAuthForDownload(handleExportVtt)}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-blue-400 hover:text-blue-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-blue-600 dark:hover:text-blue-400"
+                      className="rounded-lg border border-gray-200 px-2 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
                     >
                       VTT
                     </button>
                   </div>
-                </div>
-                {/* Document formats */}
-                <div>
-                  <p className="mb-2.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Documents</p>
-                  <div className="flex flex-wrap gap-2">
+                </ExportSection>
+                <ExportSection title="Documents">
+                  <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => requireAuthForDownload(handleExportTxt)}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-blue-400 hover:text-blue-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-blue-600 dark:hover:text-blue-400"
+                      className="rounded-lg border border-gray-200 px-2 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
                     >
                       TXT
                     </button>
                     <button
                       onClick={() => requireAuthForDownload(handleExportPdf)}
-                      className={`inline-flex items-center gap-1.5 rounded-lg border px-3.5 py-2 text-sm font-medium transition-colors ${
+                      className={`rounded-lg border px-2 py-2 text-xs font-medium transition-colors ${
                         isPaid
-                          ? 'border-gray-200 bg-white text-gray-700 hover:border-blue-400 hover:text-blue-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-blue-600 dark:hover:text-blue-400'
-                          : 'border-dashed border-gray-200 bg-gray-50 text-gray-400 dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-500'
+                          ? 'border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800'
+                          : 'border-dashed border-gray-200 text-gray-400 dark:border-gray-700 dark:text-gray-500'
                       }`}
                     >
-                      PDF {!isPaid && <span className="text-[10px]">Pro</span>}
+                      PDF {!isPaid && 'Pro'}
                     </button>
                     <button
                       onClick={() => requireAuthForDownload(handleExportDocx)}
-                      className={`inline-flex items-center gap-1.5 rounded-lg border px-3.5 py-2 text-sm font-medium transition-colors ${
+                      className={`col-span-2 rounded-lg border px-2 py-2 text-xs font-medium transition-colors ${
                         isPaid
-                          ? 'border-gray-200 bg-white text-gray-700 hover:border-blue-400 hover:text-blue-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-blue-600 dark:hover:text-blue-400'
-                          : 'border-dashed border-gray-200 bg-gray-50 text-gray-400 dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-500'
+                          ? 'border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800'
+                          : 'border-dashed border-gray-200 text-gray-400 dark:border-gray-700 dark:text-gray-500'
                       }`}
                     >
-                      Word {!isPaid && <span className="text-[10px]">Pro</span>}
+                      Word {!isPaid && 'Pro'}
                     </button>
                   </div>
                   {!isPaid && (
@@ -1259,33 +1347,9 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
                       PDF and Word export available on paid plans.
                     </p>
                   )}
-                </div>
-              </div>
-            </motion.div>
-
-            {/* ── QA editor — same reviewer used on Video → Subtitles (video-synced cue list,
-                 live overlap/CPL/CPS/AI-artifact detection, inline edit mode) so both subtitle
-                 tools give users the same review experience. Falls back to its own "no video
-                 preview" state when this job had no dual-uploaded video. ── */}
-            {subtitleRows.length > 0 && (
-              <Suspense fallback={<div className="h-[300px] rounded-xl bg-gray-100 dark:bg-gray-800 animate-pulse" />}>
-                <SubtitleQAReview
-                  key={result?.downloadUrl}
-                  videoSrc={videoPreviewUrl}
-                  rows={subtitleRows}
-                  onRowsChange={canEdit ? setSubtitleRows : () => {}}
-                  editable={canEdit}
-                  onDownloadEdited={handleExportSrt}
-                />
-              </Suspense>
-            )}
-            {!canEdit && subtitleRows.length > 0 && (
-              <button type="button" onClick={() => { setProPaywallReason('INLINE_EDIT'); setShowProPaywall(true) }} className="px-1 text-left text-xs font-medium text-blue-600 hover:underline dark:text-blue-400">
-                Upgrade to Pro to edit subtitle text — $7.99/mo
-              </button>
-            )}
-
-            {(issues.length > 0 || warnings.length > 0) && renderIssueEditor()}
+                </ExportSection>
+              </ExportsPanel>
+            </div>
 
             <CrossToolSuggestions
               workflowHint="Burn into video, translate, or generate subtitles from video."
@@ -1303,18 +1367,40 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
         )}
       </ToolLayout>
 
-      {faq.length > 0 && (
-        <section className="mt-12 pt-8 border-t border-gray-100/70 max-w-4xl mx-auto px-4" aria-label="FAQ">
-          <h2 className="text-2xl font-medium text-gray-800 mb-4">Frequently asked questions</h2>
-          <dl className="space-y-4">
-            {faq.map((item, i) => (
-              <div key={i}>
-                <dt className="font-medium text-gray-800">{item.q}</dt>
-                <dd className="mt-1 text-gray-600">{item.a}</dd>
-              </div>
+      {location.pathname === '/fix-subtitles' && (
+        <CoreToolSeoDepth path="/fix-subtitles" />
+      )}
+
+      {whatThisFixes.length > 0 && (
+        <CollapsibleToolSection id="what-this-fixes" title="What this fixes">
+          <ul className="max-w-4xl space-y-component-sm">
+            {whatThisFixes.map((item) => (
+              <li key={item.name} className="text-sm text-gray-700 dark:text-gray-300 sm:text-base">
+                <span className="font-medium text-gray-900 dark:text-white">{item.name}.</span>{' '}
+                <span className="text-gray-500 dark:text-gray-400">Before:</span> {item.before}{' '}
+                <span className="text-gray-500 dark:text-gray-400">After:</span> {item.after}
+              </li>
             ))}
-          </dl>
-        </section>
+          </ul>
+        </CollapsibleToolSection>
+      )}
+
+      {limitsNotIncluded.length > 0 && (
+        <CollapsibleToolSection id="what-this-does-not-do" title="What this does not do">
+          <ul className="max-w-4xl list-disc space-y-micro pl-5 text-sm text-gray-700 dark:text-gray-300 sm:text-base">
+            {limitsNotIncluded.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </CollapsibleToolSection>
+      )}
+
+      {faq.length > 0 && location.pathname !== '/fix-subtitles' && (
+        <CollapsibleFaqSection items={faq} route={location.pathname} />
+      )}
+
+      {location.pathname === '/subtitle-grammar-fixer' && (
+        <PageGscSupplementFaq path="/subtitle-grammar-fixer" title="More QC questions" />
       )}
 
       <JobAuthGateModal

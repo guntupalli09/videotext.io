@@ -12,6 +12,7 @@ const TOOLS = [
       { path: '/tools/srt-to-sbv', label: 'SRT to SBV Converter', desc: 'Convert SRT subtitle files to YouTube\'s native SBV format', keywords: 'srt to sbv, convert to sbv, youtube sbv' },
       { path: '/tools/ass-to-srt', label: 'ASS / SSA to SRT Converter', desc: 'Strip ASS/SSA styling tags and convert to plain SRT', keywords: 'ass to srt, ssa to srt, convert ass subtitles' },
       { path: '/tools/ttml-to-srt', label: 'TTML to SRT Converter', desc: 'Convert TTML, DFXP, or EBU-TT subtitle files to SRT', keywords: 'ttml to srt, dfxp to srt, ebu-tt to srt' },
+      { path: '/tools/html-to-srt', label: 'HTML to SRT Converter', desc: 'Convert HTML captions or transcript exports to SRT', keywords: 'html to srt, html captions to srt, convert html transcript' },
     ],
   },
   {
@@ -24,9 +25,10 @@ const TOOLS = [
   {
     category: 'Subtitle Analysis & Validation',
     items: [
+      { path: '/netflix-ttsc-checklist', label: 'Netflix TTSC Checklist', desc: 'Pre-delivery CPL, CPS, and overlap workflow before vendor handoff', keywords: 'netflix ttsc checklist, subtitle qc workflow' },
       { path: '/tools/subtitle-validator', label: 'Subtitle Validator', desc: 'Check SRT/VTT files for overlaps, empty cues, and errors', keywords: 'validate srt, check subtitle file, srt validator' },
       { path: '/tools/subtitle-reading-speed', label: 'Reading Speed Checker', desc: 'Analyze CPS against Netflix, BBC, and EBU broadcast standards', keywords: 'subtitle cps checker, reading speed subtitles, netflix cps' },
-      { path: '/tools/subtitle-character-checker', label: 'Character Limit Checker', desc: 'Verify line lengths meet Netflix (42), YouTube (80), or BBC (37) standards', keywords: 'netflix subtitle character limit, subtitle line length' },
+      { path: '/tools/subtitle-character-checker', label: 'Netflix-style CPL Checker', desc: 'Check line lengths against Netflix-published TTSC (42 CPL), BBC (37), or a wide 80-char preset', keywords: 'netflix subtitle character limit, subtitle line length' },
       { path: '/tools/subtitle-word-counter', label: 'Subtitle Word Counter', desc: 'Count words, characters, and speaking stats in subtitle files', keywords: 'subtitle word count, count words in srt' },
     ],
   },

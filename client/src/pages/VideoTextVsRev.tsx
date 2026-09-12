@@ -22,7 +22,7 @@ export default function VideoTextVsRev() {
               <span className="text-white">VideoText vs Rev</span>
             </nav>
 
-            <div className="inline-block bg-orange-500/20 border border-orange-400/40 text-orange-200 text-xs font-semibold px-3 py-1 rounded-full mb-4 uppercase tracking-wider">
+            <div className="inline-block bg-gray-50 dark:bg-gray-9000/20 border border-gray-400/40 text-gray-300 text-xs font-semibold px-3 py-1 rounded-full mb-4 uppercase tracking-wider">
               Rev AI: $0.25/min · Rev Human: $1.50+/min · VideoText: ~$0.042/min
             </div>
 
@@ -91,7 +91,7 @@ export default function VideoTextVsRev() {
                 <thead>
                   <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
                     <th className="px-5 py-3 text-left font-semibold text-gray-700 dark:text-gray-300">Usage</th>
-                    <th className="px-5 py-3 text-left font-semibold text-orange-600">Rev AI ($0.25/min)</th>
+                    <th className="px-5 py-3 text-left font-semibold text-gray-500 dark:text-gray-400">Rev AI ($0.25/min)</th>
                     <th className="px-5 py-3 text-left font-semibold text-red-600">Rev Human ($1.50/min)</th>
                     <th className="px-5 py-3 text-left font-semibold text-blue-700 dark:text-blue-400">VideoText Pro ($7.99/mo)</th>
                   </tr>
@@ -105,7 +105,7 @@ export default function VideoTextVsRev() {
                   ].map(([usage, revai, revhuman, vt]) => (
                     <tr key={usage} className="hover:bg-gray-50 dark:hover:bg-gray-900/40">
                       <td className="px-5 py-3 text-gray-700 dark:text-gray-300">{usage}</td>
-                      <td className="px-5 py-3 text-orange-600 font-semibold">{revai}</td>
+                      <td className="px-5 py-3 text-gray-500 dark:text-gray-400 font-semibold">{revai}</td>
                       <td className="px-5 py-3 text-red-600 font-semibold">{revhuman}</td>
                       <td className="px-5 py-3 text-blue-700 dark:text-blue-400 font-bold">{vt}</td>
                     </tr>
@@ -123,7 +123,7 @@ export default function VideoTextVsRev() {
                 <thead>
                   <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
                     <th className="px-5 py-3 text-left font-semibold text-gray-700 dark:text-gray-300 w-60">Feature</th>
-                    <th className="px-5 py-3 text-center font-semibold text-orange-600">Rev AI</th>
+                    <th className="px-5 py-3 text-center font-semibold text-gray-500 dark:text-gray-400">Rev AI</th>
                     <th className="px-5 py-3 text-center font-semibold text-red-600">Rev Human</th>
                     <th className="px-5 py-3 text-center font-semibold text-blue-700 dark:text-blue-400">VideoText</th>
                   </tr>
@@ -140,11 +140,11 @@ export default function VideoTextVsRev() {
                     ['Chapter markers', CROSS, CROSS, CHECK],
                     ['YouTube URL direct input', CROSS, CROSS, CHECK],
                     ['Batch processing', PARTIAL, PARTIAL, CHECK],
-                    ['Language support', <span key="r-lang" className="text-orange-600 text-xs font-semibold">~36 languages</span>, <span key="rh-lang" className="text-red-600 text-xs">English primary</span>, <span key="v-lang" className="text-emerald-700 dark:text-emerald-400 text-xs font-bold">90+ languages</span>],
+                    ['Language support', <span key="r-lang" className="text-gray-500 dark:text-gray-400 text-xs font-semibold">~36 languages</span>, <span key="rh-lang" className="text-red-600 text-xs">English primary</span>, <span key="v-lang" className="text-emerald-700 dark:text-emerald-400 text-xs font-bold">90+ languages</span>],
                     ['Zero data retention', CROSS, CROSS, CHECK],
                     ['Free tier', CROSS, CROSS, CHECK],
-                    ['Pricing', <span key="rai-p" className="text-orange-600 text-xs">$0.25/min</span>, <span key="rh-p" className="text-red-600 text-xs">$1.50+/min</span>, <span key="v-p" className="text-emerald-700 dark:text-emerald-400 text-xs font-bold">~$0.042/min flat</span>],
-                    ['Processing speed (1-hr video)', <span key="rai-s" className="text-orange-500 text-xs">5–10 min</span>, <span key="rh-s" className="text-red-500 text-xs">12–24 hrs</span>, <span key="v-s" className="text-emerald-700 dark:text-emerald-400 text-xs font-bold">3–5 min</span>],
+                    ['Pricing', <span key="rai-p" className="text-gray-500 dark:text-gray-400 text-xs">$0.25/min</span>, <span key="rh-p" className="text-red-600 text-xs">$1.50+/min</span>, <span key="v-p" className="text-emerald-700 dark:text-emerald-400 text-xs font-bold">~$0.042/min flat</span>],
+                    ['Processing speed (1-hr video)', <span key="rai-s" className="text-gray-500 dark:text-gray-400 text-xs">5–10 min</span>, <span key="rh-s" className="text-red-500 text-xs">12–24 hrs</span>, <span key="v-s" className="text-emerald-700 dark:text-emerald-400 text-xs font-bold">3–5 min</span>],
                     ['Burn subtitles into video', CROSS, CROSS, CHECK],
                     ['JSON / CSV export', CROSS, CROSS, CHECK],
                     ['Notion export', CROSS, CROSS, CHECK],
@@ -235,7 +235,7 @@ export default function VideoTextVsRev() {
                 },
                 {
                   q: 'Is there a free plan for VideoText vs Rev?',
-                  a: 'VideoText has a permanent free tier: 3 uploads per day, no credit card required. Rev has no free tier — you pay $0.25/min from the first second. VideoText Free is more useful than Temi\'s one-off trial.',
+                  a: 'VideoText has a permanent free tier: 3 uploads per month, no credit card required. Rev has no free tier — you pay $0.25/min from the first second. VideoText Free is more useful than Temi\'s one-off trial.',
                 },
               ].map(({ q, a }) => (
                 <div key={q} className="border-b border-gray-100 dark:border-gray-800 pb-5 last:border-0 last:pb-0">
@@ -260,7 +260,7 @@ export default function VideoTextVsRev() {
                 View Plans
               </Link>
             </div>
-            <p className="mt-4 text-xs text-blue-300">3 uploads/day free · No credit card · Cancel anytime</p>
+            <p className="mt-4 text-xs text-blue-300">3 uploads/month free · No credit card · Cancel anytime</p>
           </section>
 
           {/* Internal links */}

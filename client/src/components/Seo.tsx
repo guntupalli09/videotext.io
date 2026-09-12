@@ -7,6 +7,8 @@ export interface SeoProps {
   canonicalPath?: string
   ogImage?: string
   noindex?: boolean
+  /** Overrides default robots when set (e.g. noindex,follow for /site-index). */
+  robots?: string
   jsonLd?: object | object[]
   /** Set for blog posts to emit og:type=article and article:published_time */
   articleMeta?: { publishedTime: string; modifiedTime: string }
@@ -18,6 +20,7 @@ export default function Seo({
   canonicalPath = '/',
   ogImage = DEFAULT_OG_IMAGE,
   noindex = false,
+  robots,
   jsonLd,
   articleMeta,
 }: SeoProps) {
@@ -31,7 +34,7 @@ export default function Seo({
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
       <link rel="canonical" href={canonical} />
-      {noindex && <meta name="robots" content="noindex, nofollow" />}
+      {(robots || noindex) && <meta name="robots" content={robots || 'noindex, nofollow'} />}
 
       {/* Open Graph */}
       <meta property="og:type" content={articleMeta ? 'article' : 'website'} />

@@ -30,7 +30,7 @@ Hey HN — I built VideoText after noticing two things that bugged me about exis
 - Transcription: AI speech-to-text (provider abstracted for model flexibility)
 - Billing: Stripe
 
-**Free tier**: 3 imports/month, no credit card. Paid plans from $19/month.
+**Free tier**: 3 imports/month, no credit card. Pro is $7.99/month for the full workflow.
 
 The privacy angle has been the strongest differentiator — specifically for agencies and freelancers handling client footage who can't legally upload it to a tool with indefinite storage.
 

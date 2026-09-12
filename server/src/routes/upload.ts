@@ -6,7 +6,8 @@ import fs from 'fs'
 import { v4 as uuidv4 } from 'uuid'
 import { fileQueue, addJobToQueue, getJobById, getTotalQueueCount as getQueueCountFromWorker, JobData } from '../workers/videoProcessor'
 import { validateFileType, validateFileSize, validateSubtitleFile } from '../utils/fileValidation'
-import { enforceLanguageLimits, enforceUsageLimits, getDailySoftCapConcurrency, getJobPriority, getMaxDailyImports, getPlanLimits, applySystemLoadGuard } from '../utils/limits'
+import { enforceLanguageLimits, enforceUsageLimits, getDailySoftCapConcurrency, getJobPriority, getMaxMonthlyImports, getPlanLimits, applySystemLoadGuard, FREE_MONTHLY_IMPORT_QUOTA_MESSAGE, GUEST_DAILY_IMPORT_QUOTA_MESSAGE } from '../utils/limits'
+import { assertCanImport } from '../utils/importQuota'
 import { resetDailyImportIfNeeded, resetDailyMinutesIfNeeded, resetUserUsageIfNeeded } from '../utils/usageReset'
 import { getUser, saveUser, PlanType, User, atomicResetDailyImportIfNeeded, atomicResetDailyMinutesIfNeeded } from '../models/User'
 import { hashFile, checkDuplicateProcessing } from '../services/duplicate'
@@ -204,7 +205,7 @@ router.post('/init', async (req: Request, res: Response) => {
     if (userId.startsWith('guest_')) {
       const clientIp = extractClientIp(req)
       if (!await checkAndRecordGuestIpImport(clientIp)) {
-        return res.status(403).json({ message: "You've used today's 3 free imports. They reset at midnight — or upgrade to Pro." })
+        return res.status(403).json({ message: GUEST_DAILY_IMPORT_QUOTA_MESSAGE })
       }
     }
 
@@ -450,9 +451,9 @@ router.post('/complete', async (req: Request, res: Response) => {
         const dailyMinutesReset = resetDailyMinutesIfNeeded(user, now)
         if (dailyImportReset && !meta.userId!.startsWith('guest_')) await atomicResetDailyImportIfNeeded(user.id, now, user.usageThisMonth.importCountTodayResetDate!)
         if (dailyMinutesReset && !meta.userId!.startsWith('guest_')) await atomicResetDailyMinutesIfNeeded(user.id, now, user.usageThisMonth.dailyMinutesTodayResetDate!)
-        const chunkDailyCap = getMaxDailyImports(user.plan)
-        if (chunkDailyCap !== null && (user.usageThisMonth.importCountToday ?? 0) >= chunkDailyCap) {
-          throw Object.assign(new Error("You've used today's 3 free imports. They reset at midnight — or upgrade to Pro."), { statusCode: 403 })
+        const importGate = assertCanImport(user)
+        if (!importGate.ok) {
+          throw Object.assign(new Error(importGate.message), { statusCode: 403 })
         }
       }
       const fileSize = fs.statSync(outPath).size
@@ -465,6 +466,11 @@ router.post('/complete', async (req: Request, res: Response) => {
       const trimmedStart = opts.trimmedStart != null ? (typeof opts.trimmedStart === 'number' ? opts.trimmedStart : parseFloat(String(opts.trimmedStart))) : undefined
       const trimmedEnd = opts.trimmedEnd != null ? (typeof opts.trimmedEnd === 'number' ? opts.trimmedEnd : parseFloat(String(opts.trimmedEnd))) : undefined
       const { trimmedStart: _s, trimmedEnd: _e, uploadMode: _um, originalFileName: _ofn, originalFileSize: _ofs, ...restOptions } = opts
+      // Speaker diarization is a paid-plan feature (real Replicate GPU cost per job) —
+      // never trust a client-supplied flag; free plan never gets it regardless of what was sent.
+      if (meta.plan === 'free') {
+        (restOptions as Record<string, unknown>).speakerDiarization = false
+      }
       const isChunkedAudioOnly =
         (meta.toolType === 'video-to-transcript' || meta.toolType === 'video-to-subtitles') &&
         opts.uploadMode === 'audio-only'
@@ -777,10 +783,10 @@ router.post('/youtube', async (req: Request, res: Response) => {
       if (dailyMinutesReset) await atomicResetDailyMinutesIfNeeded(user.id, now, user.usageThisMonth.dailyMinutesTodayResetDate!)
     }
 
-    // ── Import count check (free plan: 3 imports/day, resets at midnight UTC) ─
-    const ytDailyCap = getMaxDailyImports(user.plan)
-    if (ytDailyCap !== null && (user.usageThisMonth.importCountToday ?? 0) >= ytDailyCap) {
-      return res.status(403).json({ message: "You've used today's 3 free imports. They reset at midnight — or upgrade to Pro." })
+    // ── Import count check (free plan: 3 imports/month, resets on the 1st UTC) ─
+    const ytImportGate = user ? assertCanImport(user) : { ok: true as const }
+    if (!ytImportGate.ok) {
+      return res.status(403).json({ message: ytImportGate.message })
     }
 
     // ── Concurrent job cap ────────────────────────────────────────────────────
@@ -826,7 +832,9 @@ router.post('/youtube', async (req: Request, res: Response) => {
       language: normalizeLanguageCode(options.language),
       includeSummary: options.includeSummary === true || options.includeSummary === 'true',
       includeChapters: options.includeChapters === true || options.includeChapters === 'true',
-      speakerDiarization: options.speakerDiarization === true || options.speakerDiarization === 'true',
+      // Speaker diarization is a paid-plan feature (real Replicate GPU cost per job) —
+      // never trust a client-supplied flag; free plan never gets it regardless of what was sent.
+      speakerDiarization: plan !== 'free' && (options.speakerDiarization === true || options.speakerDiarization === 'true'),
       numSpeakers: options.numSpeakers ? Number(options.numSpeakers) : undefined,
       diarizationLanguage: typeof options.diarizationLanguage === 'string' && options.diarizationLanguage.trim() ? options.diarizationLanguage.trim() : undefined,
       glossary: typeof options.glossary === 'string' && options.glossary.trim() ? options.glossary.trim() : undefined,

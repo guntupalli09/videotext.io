@@ -1,9 +1,13 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { Link } from 'react-router-dom'
 import UpgradeBanner from '../components/UpgradeBanner'
 import FreePlanNudge from '../components/FreePlanNudge'
+import SecondJobUpgradeNudge from '../components/SecondJobUpgradeNudge'
+import ResultUpgradeCard from '../components/ResultUpgradeCard'
+import ResultHeader from '../components/ResultHeader'
 import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
 import { isPaidPlan as hasPaidPlan } from '../lib/plans'
+import { startCheckout } from '../lib/startCheckout'
+import { useProPricing } from '../contexts/PricingContext'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Mic,
@@ -21,8 +25,12 @@ import {
   Users,
   FileText,
   Languages,
+  Loader2,
 } from 'lucide-react'
 import { ToolLayout } from '../components/figma/ToolLayout'
+import { ProcessingProgress } from '../components/figma/ProcessingProgress'
+import { ProcessingStateShell } from '../components/figma/ProcessingStateShell'
+import CoreToolSeoDepth from '../components/CoreToolSeoDepth'
 import TranscriptSharePanel from '../components/TranscriptSharePanel'
 import JobAuthGateModal from '../components/JobAuthGateModal'
 import {
@@ -42,6 +50,8 @@ import PinnedAudioPlayerBar from '../components/transcript/PinnedAudioPlayerBar'
 import { LANGUAGES } from '../lib/languages'
 import { exportFileStem, joinExportFilename, targetLangFileSlug } from '../lib/exportFileNames'
 import { trackEvent } from '../lib/analytics'
+import { incrementJobCompletedCount } from '../lib/jobCount'
+import { applyWatermarkToTxt, WATERMARK_CLIPBOARD_SUFFIX } from '../lib/watermark'
 import toast from 'react-hot-toast'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -89,6 +99,7 @@ export default function VoiceRecorder() {
   const [phase, setPhase] = useState<Phase>('idle')
   const [recSecs, setRecSecs] = useState(0)
   const [uploadPct, setUploadPct] = useState(0)
+  const [processingPct, setProcessingPct] = useState(35)
   const [transcript, setTranscript] = useState('')
   const [partial, setPartial] = useState('')
   const [copied, setCopied] = useState(false)
@@ -170,6 +181,17 @@ export default function VoiceRecorder() {
       const t = setTimeout(() => setShowAuthGate(true), 3000)
       return () => clearTimeout(t)
     }
+  }, [phase])
+
+  useEffect(() => {
+    if (phase !== 'processing') {
+      setProcessingPct(35)
+      return
+    }
+    const id = window.setInterval(() => {
+      setProcessingPct((p) => Math.min(92, p + 3))
+    }, 700)
+    return () => window.clearInterval(id)
   }, [phase])
 
   useEffect(() => {
@@ -350,7 +372,7 @@ export default function VoiceRecorder() {
     if (!isLoggedIn()) return true
     try {
       const usage = await getCurrentUsage({ skipCache: true })
-      const remaining = usage.remaining ?? (usage.limit ?? 3) - (usage.used ?? usage.usage?.importCountToday ?? 0)
+      const remaining = usage.remaining ?? (usage.limit ?? 3) - (usage.used ?? usage.usage?.importCount ?? 0)
       if (usage.plan === 'free' && usage.quotaType === 'imports' && remaining <= 0) {
         setPaywallReason('FREE_DAILY_LIMIT_REACHED')
         setShowPaywall(true)
@@ -673,10 +695,22 @@ export default function VoiceRecorder() {
             setTranscript(text)
             setPhase('result')
             invalidateUsageCache()
+            const words = text.trim().split(/\s+/).filter(Boolean).length
             trackEvent('processing_completed', {
               tool: 'voice-recorder',
-              words: text.trim().split(/\s+/).filter(Boolean).length,
+              words,
             })
+            try {
+              const nextJobCount = incrementJobCompletedCount()
+              trackEvent('job_completed', {
+                job_id: res.jobId,
+                tool_type: 'voice-recorder',
+                job_count: nextJobCount,
+                words,
+              })
+            } catch {
+              /* non-blocking */
+            }
             toast.success('Transcript ready!')
           } else if (s.status === 'failed') {
             stopPollRef.current?.()
@@ -704,9 +738,13 @@ export default function VoiceRecorder() {
 
   // ── Actions ────────────────────────────────────────────────────────────────
   async function copyTranscript() {
+    if (!isLoggedIn()) {
+      setAuthModalMode('signup-combo')
+      setShowAuthModal(true)
+      return
+    }
     const displayText = transcriptView === 'translated' && translatedText ? translatedText : transcript
-    const WM = '\n\n---\nTranscribed by VideoText.io (Free Plan) · videotext.io/pricing'
-    const textToCopy = isPaidPlan ? displayText : displayText + WM
+    const textToCopy = isPaidPlan ? displayText : displayText + WATERMARK_CLIPBOARD_SUFFIX
     try {
       await navigator.clipboard.writeText(textToCopy)
       setCopied(true)
@@ -745,12 +783,7 @@ export default function VoiceRecorder() {
   function downloadTranscript(which: 'original' | 'translated' = 'original') {
     const useTranslated = which === 'translated' && translatedText
     const baseText = useTranslated ? translatedText! : transcript
-    const WM_SEP   = '=================================================================================='
-    const WM_LINE1 = 'Fast AI transcription by VideoText.io — Free Plan'
-    const WM_LINE2 = '⚠  Remove this watermark with Pro: videotext.io/pricing  |  $7.99/mo'
-    const content = isPaidPlan
-      ? baseText
-      : `${WM_SEP}\n${WM_LINE1}\n${WM_LINE2}\n${WM_SEP}\n\n${baseText}\n\n${WM_SEP}\n${WM_LINE1}\n${WM_LINE2}\n${WM_SEP}`
+    const content = isPaidPlan ? baseText : applyWatermarkToTxt(baseText)
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -808,6 +841,27 @@ export default function VoiceRecorder() {
     typeof window !== 'undefined' &&
     hasPaidPlan(localStorage.getItem('plan'))
 
+  const { pricing } = useProPricing()
+  const [proCheckoutLoading, setProCheckoutLoading] = useState(false)
+
+  async function handleProCheckout(source: string) {
+    if (proCheckoutLoading) return
+    setProCheckoutLoading(true)
+    try {
+      await startCheckout({
+        returnToPath: window.location.pathname,
+        attribution: {
+          source,
+          tool: 'voice',
+          plan: 'free',
+          billing_interval: 'monthly',
+        },
+      })
+    } catch {
+      setProCheckoutLoading(false)
+    }
+  }
+
   const wordCount = transcript.trim().split(/\s+/).filter(Boolean).length
   const showCanvas = phase === 'idle' || phase === 'requesting' || phase === 'recording'
 
@@ -815,12 +869,23 @@ export default function VoiceRecorder() {
   return (
     <ToolLayout
       breadcrumbs={[{ label: 'Voice Recorder', href: '/voice-recorder' }]}
-      title="Live Voice to Text (Real-Time Speech to Text — No Upload Needed)"
-      subtitle="Speak and see words appear instantly as you talk. Real-time transcription with no delay or file upload."
-      icon={<Mic className="w-5 h-5 text-blue-600" />}
+      title="Voice to Text — In-Browser Recorder"
+      subtitle="Speak in the browser and get text. No video upload to start. Files deleted after processing. 3 free imports/mo."
+      icon={<Mic className="w-4 h-4 text-blue-600" />}
       tags={['Free', '99 Languages', 'Live Transcription', 'Translation']}
+      coreToolPath="/voice-recorder"
+      compactToolHeader
+      currentStepLabel={
+        phase === 'result'
+          ? 'Transcript ready'
+          : phase === 'recording'
+            ? 'Recording…'
+            : phase === 'uploading' || phase === 'processing'
+              ? 'Processing…'
+              : 'Ready to record'
+      }
     >
-      <div className={`max-w-2xl mx-auto space-y-5 ${audioObjectUrl ? 'pb-24 sm:pb-28' : 'pb-16'}`}>
+      <div className={`max-w-2xl mx-auto space-y-component-sm ${audioObjectUrl ? 'pb-24 sm:pb-28' : 'pb-16'}`}>
         <UpgradeBanner variant="voice" tool="voice-recorder" />
 
         {/* ── Main recorder card ──────────────────────────────────────────── */}
@@ -983,7 +1048,7 @@ export default function VoiceRecorder() {
                         animate={{ opacity: [1, 0.2, 1] }}
                         transition={{ duration: 1, repeat: Infinity }}
                       />
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-red-500">
+                      <span className="text-xs font-bold uppercase tracking-wider text-red-500">
                         Live
                       </span>
                     </div>
@@ -1009,67 +1074,20 @@ export default function VoiceRecorder() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                className="p-8 sm:p-10 flex flex-col items-center gap-6"
+                className="p-component sm:p-8"
               >
-                {/* Animated icon */}
-                <div className="w-[76px] h-[76px] rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}
-                  >
-                    <Sparkles className="w-9 h-9 text-blue-600 dark:text-blue-400" />
-                  </motion.div>
-                </div>
-
-                <div className="text-center space-y-1.5 w-full">
-                  <p className="text-base font-semibold text-gray-800 dark:text-gray-100">
-                    {phase === 'uploading' ? 'Uploading recording…' : 'Transcribing with AI…'}
-                  </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {phase === 'uploading'
-                      ? 'Preparing your audio for the AI'
-                      : 'Usually takes 5–8 seconds'}
-                  </p>
-                </div>
-
-                {/* Upload progress bar */}
-                {phase === 'uploading' && (
-                  <div className="w-full max-w-xs bg-gray-100 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
-                    <motion.div
-                      className="h-full bg-gradient-to-r from-blue-600 to-blue-500 rounded-full"
-                      initial={{ width: '0%' }}
-                      animate={{ width: `${uploadPct}%` }}
-                      transition={{ duration: 0.25 }}
-                    />
-                  </div>
-                )}
-
-                {/* Processing pulse dots */}
-                {phase === 'processing' && !partial && (
-                  <div className="flex gap-2">
-                    {[0, 1, 2].map((i) => (
-                      <motion.div
-                        key={i}
-                        className="w-2.5 h-2.5 rounded-full bg-blue-600"
-                        animate={{ opacity: [0.25, 1, 0.25], scale: [0.8, 1.15, 0.8] }}
-                        transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.18 }}
-                      />
-                    ))}
-                  </div>
-                )}
-
-                {/* Partial transcript preview */}
-                {phase === 'processing' && partial && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="w-full bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/40 rounded-xl p-4 max-h-32 overflow-y-auto"
-                  >
-                    <p className="text-sm text-blue-800 dark:text-blue-200 italic leading-relaxed">
-                      "{partial}"
-                    </p>
-                  </motion.div>
-                )}
+                <ProcessingStateShell className="!p-component sm:!p-8">
+                  <ProcessingProgress
+                    steps={[
+                      { label: 'Uploading', status: phase === 'uploading' ? 'active' : 'completed' },
+                      { label: 'Transcribing', status: phase === 'processing' ? 'active' : 'pending' },
+                    ]}
+                    currentMessage={phase === 'uploading' ? 'Uploading recording…' : 'Transcribing with AI…'}
+                    progress={phase === 'uploading' ? uploadPct : processingPct}
+                    estimatedTime={phase === 'processing' ? 'Usually 5–8 seconds' : undefined}
+                    liveTranscript={phase === 'processing' && partial && isLoggedIn() ? partial : undefined}
+                  />
+                </ProcessingStateShell>
               </motion.div>
             )}
 
@@ -1081,31 +1099,24 @@ export default function VoiceRecorder() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.25 }}
-                className="p-6 sm:p-8 space-y-5"
+                className="p-component sm:p-8 space-y-component-sm"
               >
                 {/* Teaser card for guests */}
                 {showAuthGate && !isLoggedIn() && (
                   <div className="rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden select-none">
-                    <div className="px-5 pt-4 pb-3 flex items-center justify-between border-b border-gray-100 dark:border-gray-800">
-                      <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
-                        <span className="text-sm font-semibold text-gray-800 dark:text-white">Voice transcript ready!</span>
-                      </div>
-                      <span className="text-xs text-gray-400">{wordCount.toLocaleString()} words · {formatTime(recSecs)} recorded</span>
-                    </div>
+                    <ResultHeader
+                      embedded
+                      title="Voice transcript ready"
+                      meta={`${wordCount.toLocaleString()} words · ${formatTime(recSecs)} recorded`}
+                    />
                     <div className="px-5 py-4">
-                      {transcript && (
-                        <div className="relative overflow-hidden mb-4" style={{ maxHeight: '8rem' }}>
-                          <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                            {transcript.slice(0, Math.max(300, Math.ceil(transcript.length * 0.25)))}
-                          </p>
-                          <div className="absolute bottom-0 left-0 right-0 h-12 pointer-events-none bg-gradient-to-t from-white dark:from-gray-900 to-transparent" />
-                        </div>
-                      )}
-                      <p className="text-[11px] text-gray-400 mb-2 font-medium">Sign up to unlock:</p>
-                      <div className="flex flex-wrap gap-1.5 mb-4">
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-component-sm">
+                        Create a free account to view, copy, and download your transcript.
+                      </p>
+                      <p className="text-xs text-gray-400 mb-2 font-medium">Sign up to unlock:</p>
+                      <div className="flex flex-wrap gap-1.5 mb-component-sm">
                         {(['Full transcript', 'Download TXT', 'Copy text'] as const).map((feat) => (
-                          <span key={feat} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-[11px] text-gray-400 dark:text-gray-500">
+                          <span key={feat} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-xs text-gray-400 dark:text-gray-500">
                             <Lock className="w-2.5 h-2.5" />
                             {feat}
                           </span>
@@ -1133,22 +1144,14 @@ export default function VoiceRecorder() {
 
                 {/* Full result — hidden until signed in */}
                 {(!showAuthGate || isLoggedIn()) && (<>
-                {/* Result header */}
-                <div className="flex items-center justify-between flex-wrap gap-3">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center shrink-0">
-                      <Check className="w-4.5 h-4.5 text-emerald-600 dark:text-emerald-400" strokeWidth={2.5} />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">
-                        Transcript ready
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {wordCount.toLocaleString()} {wordCount === 1 ? 'word' : 'words'} · {formatTime(recSecs)} recorded
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 flex-wrap">
+                <ResultHeader
+                  title="Transcript ready"
+                  meta={`${wordCount.toLocaleString()} ${wordCount === 1 ? 'word' : 'words'} · ${formatTime(recSecs)} recorded`}
+                  actionLabel="Record another"
+                  actionIcon={RefreshCw}
+                  onAction={reset}
+                />
+                <div className="flex items-center gap-2 flex-wrap">
                     <button
                       onClick={copyTranscript}
                       className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-gray-200 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
@@ -1178,7 +1181,6 @@ export default function VoiceRecorder() {
                       </button>
                     )}
                   </div>
-                </div>
 
                 {/* Translation sub-tabs — shown when translation is available */}
                 {isPaidPlan && translatedText && (
@@ -1218,7 +1220,7 @@ export default function VoiceRecorder() {
                       !(transcriptView === 'translated' && translatedText)
                     if (showSegmentSync && voiceSegments) {
                       return (
-                        <div className="space-y-2">
+                        <div className="space-y-micro">
                           {voiceSegments.map((seg, i) => {
                             const isActive = i === activeSegIdx
                             return (
@@ -1260,13 +1262,13 @@ export default function VoiceRecorder() {
 
                 {/* Translation panel — Pro only */}
                 {isPaidPlan && transcript.trim() && (
-                  <div className={`rounded-xl border p-4 space-y-3 transition-colors ${
+                  <div className={`rounded-xl border p-4 space-y-component-sm transition-colors ${
                     translatedText ? 'border-blue-200 dark:border-blue-800/40 bg-blue-50/40 dark:bg-blue-950/20' : 'border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/20'
                   }`}>
                     <div className="flex items-center gap-2">
                       <Languages className="w-4 h-4 text-blue-500 shrink-0" />
                       <span className="text-sm font-medium text-gray-800 dark:text-gray-200">Translate</span>
-                      <span className="ml-auto text-[10px] font-semibold text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full">Pro</span>
+                      <span className="ml-auto text-xs font-semibold text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full">Pro</span>
                     </div>
                     <div className="flex gap-2">
                       <select
@@ -1323,7 +1325,7 @@ export default function VoiceRecorder() {
 
                 {/* Pro-locked feature teasers — free users only */}
                 {!isPaidPlan && transcript.trim().length > 0 && (
-                  <div className="rounded-xl border border-blue-200 dark:border-blue-800/40 bg-blue-50/50 dark:bg-blue-950/20 p-4 space-y-3">
+                  <div className="rounded-xl border border-blue-200 dark:border-blue-800/40 bg-blue-50/50 dark:bg-blue-950/20 p-4 space-y-component-sm">
                     <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">
                       Unlock with Pro
                     </p>
@@ -1334,10 +1336,12 @@ export default function VoiceRecorder() {
                         { Icon: Languages, label: 'Translation',    desc: '70+ languages' },
                         { Icon: FileText,  label: 'SRT Export',     desc: 'Subtitle-ready format' },
                       ] as const).map(({ Icon, label, desc }) => (
-                        <Link
-                          to="/pricing"
+                        <button
+                          type="button"
                           key={label}
-                          className="flex flex-col items-center gap-1.5 rounded-lg bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-700/60 p-3 text-center hover:border-blue-400 dark:hover:border-blue-500 transition-colors"
+                          disabled={proCheckoutLoading}
+                          onClick={() => handleProCheckout('voice_pro_grid')}
+                          className="flex flex-col items-center gap-1.5 rounded-lg bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-700/60 p-3 text-center hover:border-blue-400 dark:hover:border-blue-500 transition-colors disabled:cursor-wait disabled:opacity-70"
                         >
                           <div className="relative">
                             <Icon className="w-5 h-5 text-gray-300 dark:text-gray-600" />
@@ -1346,25 +1350,43 @@ export default function VoiceRecorder() {
                           <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 leading-tight">
                             {label}
                           </span>
-                          <span className="text-[11px] text-gray-400 dark:text-gray-500 leading-tight">
+                          <span className="text-xs text-gray-400 dark:text-gray-500 leading-tight">
                             {desc}
                           </span>
-                        </Link>
+                        </button>
                       ))}
                     </div>
-                    <Link
-                      to="/pricing"
-                      className="block text-center text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+                    <button
+                      type="button"
+                      disabled={proCheckoutLoading}
+                      onClick={() => handleProCheckout('voice_pro_footer')}
+                      className="block w-full text-center text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline disabled:cursor-wait disabled:opacity-70"
                     >
-                      Unlock Pro — $7.99/mo →
-                    </Link>
+                      {proCheckoutLoading ? (
+                        <span className="inline-flex items-center justify-center gap-1.5">
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
+                          Opening checkout…
+                        </span>
+                      ) : (
+                        `Unlock Pro — ${pricing.priceLabel} →`
+                      )}
+                    </button>
                   </div>
                 )}
 
                 </>)}{/* end gate-hidden result */}
+                {voiceJobId && (
+                  <ResultUpgradeCard tool="voice" resultKey={voiceJobId} wordCount={wordCount} />
+                )}
                 {voiceJobId && <FreePlanNudge tool="voice" resultKey={voiceJobId} />}
+                {voiceJobId && (
+                  <>
+                    <SecondJobUpgradeNudge tool="voice" resultKey={voiceJobId} milestone={2} />
+                    <SecondJobUpgradeNudge tool="voice" resultKey={voiceJobId} milestone={3} />
+                  </>
+                )}
 
-                {/* Record again */}
+                {/* Record again — mobile fallback when header action is off-screen */}
                 <button
                   onClick={reset}
                   className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-gray-200 dark:border-gray-600 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
@@ -1383,12 +1405,12 @@ export default function VoiceRecorder() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                className="p-8 sm:p-10 flex flex-col items-center gap-6 text-center"
+                className="p-8 sm:p-10 flex flex-col items-center gap-component text-center"
               >
                 <div className="w-[76px] h-[76px] rounded-full bg-red-50 dark:bg-red-900/30 flex items-center justify-center">
                   <AlertCircle className="w-9 h-9 text-red-500" />
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-micro">
                   <p className="text-base font-semibold text-gray-800 dark:text-gray-100">
                     Something went wrong
                   </p>
@@ -1413,7 +1435,7 @@ export default function VoiceRecorder() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25, delay: 0.15 }}
-              className="flex items-center justify-center gap-6 flex-wrap"
+              className="flex items-center justify-center gap-component flex-wrap"
             >
               {[
                 'Works best in quiet environments',
@@ -1457,85 +1479,7 @@ export default function VoiceRecorder() {
           />
         )}
 
-        <section className="max-w-3xl mx-auto space-y-8 pt-4">
-          <p className="text-base font-semibold text-gray-800 dark:text-gray-200">
-            👉 No upload. No waiting. Just live transcription as you speak.
-          </p>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            👉 Works instantly in your browser — no installation required.
-          </p>
-
-          <section className="space-y-3">
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Convert Voice to Text Online Instantly</h2>
-            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-              Use your microphone to convert speech into text in real time. No uploads, no processing — just instant results.
-              This is built for <strong>voice to text online</strong>, <strong>speech to text instantly</strong>, and
-              <strong> real-time voice transcription</strong>.
-              Need file workflows? Try <Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/video-to-transcript">video to transcript</Link>.
-            </p>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Live Voice to Text (See Words as You Speak)</h2>
-            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-              This is not traditional transcription. Words appear in real time with continuous live updates and no waiting for
-              processing. If you are working from links, use our <Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/youtube-transcript-generator">YouTube transcript generator</Link>.
-            </p>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Voice to Text Without Uploading Files</h2>
-            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-              Most tools require uploading audio and waiting. This tool uses your microphone directly, converts speech instantly,
-              and avoids file uploads completely. Need captions after transcript? Open the <Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/subtitle-generator">subtitle generator</Link>.
-            </p>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Why This Live Voice to Text Tool Is Different</h2>
-            <ul className="list-disc pl-5 text-sm text-gray-700 dark:text-gray-300 space-y-1">
-              <li>Real-time transcription — not delayed</li>
-              <li>No upload required — direct microphone input</li>
-              <li>Fast and continuous — no interruptions</li>
-              <li>Privacy-first — nothing stored</li>
-              <li>Multi-language support — 70+ languages</li>
-            </ul>
-            <p className="text-sm text-gray-700 dark:text-gray-300">
-              Need multilingual output? Use <Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/translate-subtitles">translate subtitles</Link>.
-            </p>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Who Uses Live Voice to Text?</h2>
-            <ul className="list-disc pl-5 text-sm text-gray-700 dark:text-gray-300 space-y-1">
-              <li>Writers — dictate ideas instantly</li>
-              <li>Students — capture lectures in real time</li>
-              <li>Professionals — take notes without typing</li>
-              <li>Creators — convert speech into content instantly</li>
-            </ul>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">More Transcription &amp; Subtitle Tools</h2>
-            <ul className="list-disc pl-5 text-sm text-gray-700 dark:text-gray-300 space-y-1">
-              <li><Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/video-to-transcript">Video to transcript tool</Link></li>
-              <li><Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/youtube-transcript-generator">YouTube transcript generator</Link></li>
-              <li><Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/subtitle-generator">Subtitle generator</Link></li>
-              <li><Link className="text-blue-600 dark:text-blue-400 hover:underline" to="/translate-subtitles">Translate subtitles</Link></li>
-            </ul>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Frequently Asked Questions</h2>
-            <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-              <p><strong>How do I convert voice to text online?</strong><br />Use your microphone and start speaking. The tool converts your speech into text instantly.</p>
-              <p><strong>Is there a free voice to text tool?</strong><br />Yes, you can use this tool directly in your browser without uploading files.</p>
-              <p><strong>Can I transcribe speech in real time?</strong><br />Yes. This tool provides live transcription as you speak.</p>
-              <p><strong>Does this work without uploading audio?</strong><br />Yes. It uses your microphone directly, so no upload is needed.</p>
-              <p><strong>What languages are supported?</strong><br />70+ languages with automatic detection.</p>
-            </div>
-          </section>
-        </section>
+        <CoreToolSeoDepth path="/voice-recorder" />
 
       </div>
 

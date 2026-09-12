@@ -42,6 +42,16 @@ export default function SubtitleValidator() {
       title="Subtitle Validator — Check SRT & VTT Files for Errors"
       description="Validate SRT and VTT subtitle files for overlapping timestamps, long lines, empty cues, and reading speed violations. Instant, browser-based, no account required."
       hubLink={{ label: 'Free Subtitle Tools', path: '/subtitle-tools' }}
+      moneyCta={{
+        kicker: 'Overlaps, CPS, or long lines?',
+        title: 'Fix this file in one click',
+        body: 'Out of sync, overlapping, or CPS fail → the Fix tool auto-corrects timing, lines, and reading speed.',
+        primary: { label: 'Fix overlaps & CPS in one pass', path: '/subtitle-grammar-fixer' },
+        secondary: [
+          { label: 'Translate', path: '/translate-subtitles' },
+          { label: 'Burn', path: '/burn-subtitles' },
+        ],
+      }}
       contentSections={[
         {
           heading: 'What does subtitle validation check for?',
@@ -70,22 +80,22 @@ export default function SubtitleValidator() {
         { step: 'Review and fix', desc: 'Each issue shows the cue number and a description. Fix manually or use our AI-powered Fix Subtitles tool.' },
       ]}
       faqs={[
-        { q: 'What errors does the validator check for?', a: 'Overlapping timestamps, end time before start time, empty cue text, lines over 42 characters (Netflix spec), and reading speed over 21 CPS (EBU standard).' },
-        { q: 'What is 21 CPS and why does it matter?', a: 'CPS stands for Characters Per Second — how fast a viewer must read a subtitle. Netflix limits captions to 17 CPS; EBU allows 21 CPS. Subtitles faster than this are hard for most viewers to read in the available time.' },
-        { q: 'What is the maximum line length for subtitles?', a: 'Netflix requires no more than 42 characters per line. YouTube recommends 80 characters per full line. BBC specifies 37 characters. This tool flags lines over 42 characters as warnings.' },
+        { q: 'What errors does the validator check for?', a: 'Overlapping timestamps, end time before start time, empty cue text, lines over 42 characters (Netflix TTSC CPL), and reading speed over 21 CPS — the tool\'s EBU-style warning threshold, not a Netflix delivery limit.' },
+        { q: 'What is 21 CPS and why does it matter?', a: 'CPS stands for Characters Per Second — how fast a viewer must read a subtitle. This validator flags cues above 21 CPS as a readability warning (aligned with EBU R37). Netflix TTSC specifies 20 CPS for adult programming and 17 CPS for children\'s content — stricter than this scan. Run the reading-speed checker against your platform preset before delivery.' },
+        { q: 'What is the maximum line length for subtitles?', a: 'Netflix-published TTSC guidelines commonly specify 42 characters per line (CPL). BBC specifies 37 characters. YouTube does not publish an official CPL limit. This tool flags lines over 42 characters as warnings — not official Netflix certification.' },
         { q: 'What is an overlapping subtitle?', a: 'An overlap occurs when one subtitle\'s end time is later than the next subtitle\'s start time. Both would show simultaneously, which most players handle by cutting one off or displaying both stacked.' },
         { q: 'How do I fix the issues found?', a: 'Use our free Shift Subtitle Timing tool to adjust timestamps in bulk, or our AI-powered Fix Subtitles tool to automatically correct overlaps, long lines, and timing.' },
-        { q: 'Will my file pass Netflix quality control after validation?', a: 'Passing this validator means your file meets common structural requirements (no overlaps, line lengths, CPS). Netflix QC also checks language-specific requirements, style guide compliance, and encoding. This tool covers the technical checks.' },
+        { q: 'Does a clean validator report mean Netflix will accept my file?', a: 'No. A clean report here means common structural issues (overlaps, line lengths, CPS warnings) were not flagged. Netflix and its vendors also check language-specific style guides, encoding, and requirements this tool does not evaluate. VideoText is not affiliated with Netflix.' },
         { q: 'What is a "zero-duration" cue?', a: 'A zero-duration cue has the same start and end time (e.g., 00:00:01,000 --> 00:00:01,000). It displays for zero seconds and is invisible to viewers. It\'s usually a transcription error.' },
         { q: 'I have 50 warnings but no errors — is my file usable?', a: 'Yes. Warnings indicate best-practice violations (like slightly long lines) but won\'t cause playback failures. Errors (overlapping timestamps, bad timing) may cause visible issues. Fix errors first; address warnings if the file is for broadcast delivery.' },
       ]}
       relatedTools={[
-        { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'AI auto-correct overlaps, timing & long lines' },
+        { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'Auto-correct overlaps, timing & long lines' },
+        { label: 'Character Limit Checker', path: '/tools/subtitle-character-checker', desc: 'Netflix-style 42 CPL / BBC 37 presets' },
+        { label: 'Reading Speed Checker', path: '/tools/subtitle-reading-speed', desc: '20 CPS adult / 17 CPS children presets' },
+        { label: 'Netflix TTSC Checklist', path: '/netflix-ttsc-checklist', desc: 'CPL, CPS, and overlap checks before delivery' },
         { label: 'Shift Subtitle Timing', path: '/tools/shift-subtitle-timing', desc: 'Bulk-adjust all timestamps' },
-        { label: 'Reading Speed Checker', path: '/tools/subtitle-reading-speed', desc: 'Detailed CPS analysis per cue' },
-        { label: 'Character Limit Checker', path: '/tools/subtitle-character-checker', desc: 'Netflix/YouTube line length check' },
-        { label: 'Merge SRT Files', path: '/tools/merge-srt-files', desc: 'Combine two subtitle files' },
-        { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate clean AI subtitles from video' },
+        { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate timed SRT/VTT from video' },
       ]}
     >
       <div className="space-y-4">
@@ -129,7 +139,7 @@ export default function SubtitleValidator() {
             )}
 
             {!isValid && (
-              <a href="/fix-subtitles" className="block w-full py-2.5 rounded-xl border border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 font-semibold text-sm text-center hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+              <a href="/subtitle-grammar-fixer" className="block w-full py-2.5 rounded-xl border border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 font-semibold text-sm text-center hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
                 Fix issues automatically with AI →
               </a>
             )}

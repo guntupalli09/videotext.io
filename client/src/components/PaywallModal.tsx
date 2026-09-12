@@ -3,12 +3,16 @@ import { Loader2, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { trackEvent } from '../lib/analytics'
 import { trackAppEvent } from '../lib/feedbackEvents'
-import { createCheckoutSession, rememberCheckoutAttribution } from '../lib/billing'
+import { startCheckout } from '../lib/startCheckout'
 import { isLoggedIn } from '../lib/auth'
 import { Link } from 'react-router-dom'
+import { Check } from 'lucide-react'
+import { PRO_BENEFIT_BULLETS } from '../lib/upgradeCopy'
+import { useProPricing } from '../contexts/PricingContext'
 
 export type PaywallReason =
   | 'FREE_DAILY_LIMIT_REACHED'
+  | 'FREE_MONTHLY_LIMIT_REACHED'
   | 'VIDEO_TOO_LONG'
   | 'BATCH_NOT_AVAILABLE'
   | 'MULTI_LANGUAGE_NOT_AVAILABLE'
@@ -28,17 +32,17 @@ interface PaywallModalProps {
   reason?: PaywallReason
   tool?: string
   remainingImports?: number
-  /** ISO string for midnight UTC reset (free plan) */
+  /** ISO string for monthly reset (free plan) */
   resetDate?: string
 }
 
-function getContent(reason?: PaywallReason) {
+function getContent(reason: PaywallReason | undefined, priceLabel: string) {
   switch (reason) {
     case 'VIDEO_TOO_LONG':
       return {
         title: 'This video is over the Free 30-minute limit',
         body: 'Pro supports videos up to 2 hours.',
-        cta: 'Process longer videos — $7.99/mo',
+        cta: `Process longer videos — ${priceLabel}`,
         secondaryLabel: 'Upload shorter video',
         secondary: null,
       }
@@ -46,7 +50,7 @@ function getContent(reason?: PaywallReason) {
       return {
         title: 'You selected multiple files',
         body: 'Free processes one file at a time. Pro runs up to 20 videos per batch and gives you one ZIP with every transcript/subtitle.',
-        cta: 'Unlock batch processing — $7.99/mo',
+        cta: `Unlock batch processing — ${priceLabel}`,
         secondaryLabel: null,
         secondary: null,
       }
@@ -54,7 +58,7 @@ function getContent(reason?: PaywallReason) {
       return {
         title: 'You selected multiple languages',
         body: 'Free exports one language. Pro generates up to 5 language files in the same job, plus speaker labels and summaries.',
-        cta: 'Create multi-language files — $7.99/mo',
+        cta: `Create multi-language files — ${priceLabel}`,
         secondaryLabel: null,
         secondary: null,
       }
@@ -62,7 +66,7 @@ function getContent(reason?: PaywallReason) {
       return {
         title: 'You hit the free copy/export limit',
         body: 'Your result stays available. Pro unlocks uninterrupted professional exports.',
-        cta: 'Unlock Pro — $7.99/mo',
+        cta: `Unlock Pro — ${priceLabel}`,
         secondaryLabel: null,
         secondary: null,
       }
@@ -70,28 +74,30 @@ function getContent(reason?: PaywallReason) {
       return {
         title: 'You asked for AI summary and chapters',
         body: 'Free gives you the transcript. Pro adds summary, bullet points, and chapter markers automatically for each video.',
-        cta: 'Unlock Pro — $7.99/mo',
+        cta: `Unlock Pro — ${priceLabel}`,
         secondaryLabel: null,
         secondary: null,
       }
     case 'PDF_EXPORT':
-      return { title: 'Export as PDF with Pro', body: 'Create a professional PDF from your result.', cta: 'Unlock Pro — $7.99/mo', secondaryLabel: null, secondary: null }
+      return { title: 'Export as PDF with Pro', body: 'Create a professional PDF from your result.', cta: `Unlock Pro — ${priceLabel}`, secondaryLabel: null, secondary: null }
     case 'WORD_EXPORT':
-      return { title: 'Export as Word with Pro', body: 'Create an editable Word document from your result.', cta: 'Unlock Pro — $7.99/mo', secondaryLabel: null, secondary: null }
+      return { title: 'Export as Word with Pro', body: 'Create an editable Word document from your result.', cta: `Unlock Pro — ${priceLabel}`, secondaryLabel: null, secondary: null }
     case 'INLINE_EDIT':
-      return { title: 'Editing is a Pro feature', body: 'Edit your result directly before professional export.', cta: 'Unlock Pro — $7.99/mo', secondaryLabel: null, secondary: null }
+      return { title: 'Editing is a Pro feature', body: 'Edit your result directly before professional export.', cta: `Unlock Pro — ${priceLabel}`, secondaryLabel: null, secondary: null }
     case 'VTT_EXPORT':
     case 'TRANSLATED_EXPORT':
     case 'SHARING':
-      return { title: 'Unlock this professional workflow', body: 'Keep your result and unlock this Pro delivery option.', cta: 'Unlock Pro — $7.99/mo', secondaryLabel: null, secondary: null }
+      return { title: 'Unlock this professional workflow', body: 'Keep your result and unlock this Pro delivery option.', cta: `Unlock Pro — ${priceLabel}`, secondaryLabel: null, secondary: null }
     case 'DOCUMENT_TRANSLATION_LIMIT':
-      return { title: "Today's 3 free document translations are used", body: 'This separate translation allowance resets daily, or continue with Pro.', cta: 'Continue with Pro — $7.99/mo', secondaryLabel: null, secondary: null }
+      return { title: "Today's 3 free document translations are used", body: 'This separate translation allowance resets daily, or continue with Pro.', cta: `Continue with Pro — ${priceLabel}`, secondaryLabel: null, secondary: null }
+    case 'FREE_MONTHLY_LIMIT_REACHED':
     case 'FREE_DAILY_LIMIT_REACHED':
     default:
       return {
-        title: "Today's 3 free imports are used",
-        body: 'They reset at midnight UTC, or keep processing now with Pro.',
-        cta: 'Continue with Pro — $7.99/mo',
+        title: "You've used all 3 free imports this month",
+        body: 'They reset on the 1st — or upgrade now for unlimited imports, clean exports, and videos up to 2 hours.',
+        cta: `Continue without limits — ${priceLabel}`,
+        bullets: PRO_BENEFIT_BULLETS,
         secondaryLabel: null,
         secondary: null,
       }
@@ -99,6 +105,7 @@ function getContent(reason?: PaywallReason) {
 }
 
 export default function PaywallModal({ isOpen, onClose, reason, tool, remainingImports }: PaywallModalProps) {
+  const { pricing } = useProPricing()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   useEffect(() => {
@@ -112,29 +119,23 @@ export default function PaywallModal({ isOpen, onClose, reason, tool, remainingI
 
   if (!isOpen) return null
 
-  const { title, body, cta, secondaryLabel, secondary } = getContent(reason)
+  const { title, body, cta, secondaryLabel, secondary, bullets } = getContent(reason, pricing.priceLabel) as ReturnType<typeof getContent> & { bullets?: readonly string[] }
 
   async function handleUpgrade() {
     if (loading) return
     setError(null)
     setLoading(true)
     try {
-      const attribution = { source: 'paywall_modal', tool, reason, plan: 'free', billing_interval: 'monthly', displayed_price: 7.99 }
-      try { trackEvent('upgrade_clicked', attribution) } catch { /* non-blocking */ }
-      try { trackAppEvent('upgrade_clicked', attribution) } catch { /* non-blocking */ }
-      const { url } = await createCheckoutSession({
-        mode: 'subscription',
-        plan: 'pro',
-        billingInterval: 'monthly',
-        returnToPath: '/pricing',
-        frontendOrigin: window.location.origin,
+      await startCheckout({
+        returnToPath: window.location.pathname,
+        attribution: {
+          source: 'paywall_modal',
+          tool,
+          reason,
+          plan: 'free',
+          billing_interval: 'monthly',
+        },
       })
-      rememberCheckoutAttribution(attribution)
-      try {
-        trackEvent('checkout_session_created', attribution); trackEvent('stripe_redirect', attribution)
-        if (isLoggedIn()) { trackAppEvent('checkout_session_created', attribution); trackAppEvent('stripe_redirect', attribution) }
-      } catch { /* non-blocking */ }
-      window.location.assign(url)
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to start checkout. Please try again.'
       setError(message)
@@ -170,7 +171,18 @@ export default function PaywallModal({ isOpen, onClose, reason, tool, remainingI
           </button>
 
           <h2 id="paywall-title" className="text-xl font-medium text-gray-900 dark:text-white mb-2">{title}</h2>
-          <p className="text-gray-600 dark:text-gray-300 text-sm mb-6">{body}</p>
+          <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">{body}</p>
+
+          {bullets && bullets.length > 0 && (
+            <ul className="mb-5 space-y-2">
+              {bullets.map((item) => (
+                <li key={item} className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          )}
 
           <button
             type="button"
@@ -182,6 +194,8 @@ export default function PaywallModal({ isOpen, onClose, reason, tool, remainingI
             {loading ? 'Opening checkout…' : cta}
           </button>
           {error && <p className="mt-3 text-sm text-red-600 dark:text-red-400 text-center" role="alert">{error}</p>}
+
+          <p className="mt-2 text-center text-xs text-gray-400 dark:text-gray-500">{pricing.annualNote}</p>
 
           <Link to="/pricing" onClick={onClose} className="mt-3 block text-center text-sm font-medium text-gray-500 underline underline-offset-2 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
             Compare plans

@@ -20,20 +20,32 @@ import {
   Pencil,
   Copy as CopyIcon,
 } from "lucide-react";
+import ProCheckoutLink from "../components/ProCheckoutLink";
 import FailedState from "../components/FailedState";
+import CoreToolSeoDepth from "../components/CoreToolSeoDepth";
+import CollapsibleFaqSection from "../components/CollapsibleFaqSection";
+import VideoToTranscriptSeoDeepContent, {
+  type VideoToTranscriptSeoDeepContent as VideoToTranscriptSeoDeepContentType,
+} from "../components/VideoToTranscriptSeoDeepContent";
 import { MakeClientReadyTranscriptButton } from "../components/SuccessState";
 import SamplesModule from "../components/SamplesModule";
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal, { type PaywallReason } from "../components/PaywallModal";
 import UpgradeBanner from "../components/UpgradeBanner";
 import FreePlanNudge from "../components/FreePlanNudge";
+import SecondJobUpgradeNudge from "../components/SecondJobUpgradeNudge";
+import ResultUpgradeCard from "../components/ResultUpgradeCard";
+import ResultHeader from "../components/ResultHeader";
+import { incrementJobCompletedCount } from "../lib/jobCount";
 import JobAuthGateModal from "../components/JobAuthGateModal";
 import { isLoggedIn } from "../lib/auth";
 import { isPaidPlan as hasPaidPlan } from "../lib/plans";
 import { ToolLayout } from "../components/figma/ToolLayout";
+import SerpTrustStrip from "../components/SerpTrustStrip";
 import { UploadZone } from "../components/figma/UploadZone";
 import { ProcessingInterface } from "../components/figma/ProcessingInterface";
 import { ProcessingProgress } from "../components/figma/ProcessingProgress";
+import { ProcessingStateShell } from "../components/figma/ProcessingStateShell";
 import { ResultSkeleton } from "../components/figma/ResultSkeleton";
 import TranscriptSharePanel from "../components/TranscriptSharePanel";
 import SpeakerSegmentsPanel from "../components/videoTranscript/SpeakerSegmentsPanel";
@@ -96,7 +108,11 @@ import { trackEvent, trackFirstOutputSeen } from "../lib/analytics";
 import {
   formatTimestamp,
   type Segment,
+  segmentsToSrt,
+  segmentsToVtt,
 } from "../lib/srtExport";
+import { WATERMARK_DOC_FOOTER, watermarkTextExport, watermarkClipboardText } from "../lib/watermark";
+import { addAnchorTimecode } from "../lib/smpteTimecode";
 import {
   type SpeakerNameMap,
   type TimestampMode,
@@ -190,28 +206,14 @@ const SIGNUP_STARTED_AT_KEY = "videotext:signup_started_at";
 const JOB_COMPLETED_COUNT_KEY = "videotext:job_completed_count";
 const EXPORT_PREFS_KEY = "vt:transcript_export_prefs";
 
-/** Optional SEO overrides for alternate entry points (e.g. /video-to-text, /youtube-transcript-generator). Do NOT duplicate logic here. */
+/** Optional SEO overrides for alternate entry points. Core hub uses CoreToolSeoDepth only. */
 export type VideoToTranscriptSeoProps = {
   seoH1?: string;
   seoIntro?: string;
   faq?: { q: string; a: string }[];
   /** Open YouTube URL tab by default (for /youtube-transcript-generator SEO pages). */
   defaultInputMode?: "file" | "youtube";
-  seoDeepContent?: {
-    proofPoints?: string[];
-    workflowSteps?: { title: string; detail: string }[];
-    outputExamples?: { title: string; body: string }[];
-    comparisonRows?: {
-      feature: string;
-      videotext: string;
-      alternatives: string;
-    }[];
-    useCases?: { title: string; body: string }[];
-    visualProof?: { title: string; body: string; image?: string }[];
-    technicalExplanation?: { title: string; body: string }[];
-    ctaText?: string;
-    ctaPath?: string;
-  };
+  seoDeepContent?: VideoToTranscriptSeoDeepContentType;
 };
 
 export default function VideoToTranscript(
@@ -340,6 +342,17 @@ export default function VideoToTranscript(
     useState<TimestampMode>("per-interval");
   const [verbatimMode, setVerbatimMode] = useState<VerbatimMode>("full");
   const [intervalSec, setIntervalSec] = useState(30);
+  // SMPTE / BITC timecode mode — opt-in only, off unless the user explicitly
+  // selects it under Timestamp format. Manual starting timecode + frame rate,
+  // same one-time entry the user already does in tools like ExpressScribe;
+  // VideoText then computes every segment's timecode deterministically from it.
+  // Four separate numeric fields (not free-text HH:MM:SS:FF) so there's no
+  // ambiguous parsing of hand-typed colons/semicolons.
+  const [smpteAnchorH, setSmpteAnchorH] = useState(0);
+  const [smpteAnchorM, setSmpteAnchorM] = useState(0);
+  const [smpteAnchorS, setSmpteAnchorS] = useState(0);
+  const [smpteAnchorF, setSmpteAnchorF] = useState(0);
+  const [smpteFpsChoice, setSmpteFpsChoice] = useState("25");
   // Text-only translation panel state
   const [textTranslateOpen, setTextTranslateOpen] = useState(false);
   const [textTranslateInput, setTextTranslateInput] = useState("");
@@ -351,6 +364,17 @@ export default function VideoToTranscript(
   const [numSpeakers, setNumSpeakers] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState("");
   const [glossary, setGlossary] = useState("");
+  /** Parses "29.97-df" / "29.97-ndf" / "25" etc. into { fps, dropFrame }. */
+  const { smpteFps, smpteDropFrame } = useMemo(() => {
+    const [ratePart, flag] = smpteFpsChoice.split("-");
+    return { smpteFps: parseFloat(ratePart) || 25, smpteDropFrame: flag === "df" };
+  }, [smpteFpsChoice]);
+  /** "HH:MM:SS:FF" (or ";FF" for drop-frame) built from the four numeric fields — no free-text parsing. */
+  const smpteAnchor = useMemo(() => {
+    const pad = (n: number) => String(Math.max(0, Math.floor(n))).padStart(2, "0");
+    const sep = smpteDropFrame ? ";" : ":";
+    return `${pad(smpteAnchorH)}:${pad(smpteAnchorM)}:${pad(smpteAnchorS)}${sep}${pad(smpteAnchorF)}`;
+  }, [smpteAnchorH, smpteAnchorM, smpteAnchorS, smpteAnchorF, smpteDropFrame]);
   const [searchQuery, setSearchQuery] = useState("");
   const [transcriptEditMode, setTranscriptEditMode] = useState(false);
   const [editableSegments, setEditableSegments] = useState<Segment[] | null>(
@@ -972,7 +996,12 @@ export default function VideoToTranscript(
           terminalRef.current = true;
           setPartialSegments([]);
           setStatus("completed");
-          setResult(jobStatus.result ?? null);
+          if (isLoggedIn() && !jobStatus.requiresAuth) {
+            setResult(jobStatus.result ?? null);
+          } else {
+            setShowAuthGate(true);
+            setResult({ downloadUrl: "" });
+          }
           trackAppEvent("transcription_completed", {
             toolId: "video-to-transcript",
           });
@@ -1022,6 +1051,7 @@ export default function VideoToTranscript(
           return;
         }
         if (
+          isLoggedIn() &&
           jobStatus.status === "processing" &&
           jobStatus.partialSegments?.length
         ) {
@@ -1062,7 +1092,12 @@ export default function VideoToTranscript(
               rehydratePollRef.current = null;
               setPartialSegments([]);
               setStatus("completed");
-              setResult(s.result ?? null);
+              if (isLoggedIn() && !s.requiresAuth) {
+                setResult(s.result ?? null);
+              } else {
+                setShowAuthGate(true);
+                setResult({ downloadUrl: "" });
+              }
               trackAppEvent("transcription_completed", {
                 toolId: "video-to-transcript",
               });
@@ -1107,7 +1142,7 @@ export default function VideoToTranscript(
               setStatus("failed");
               toast.error("Processing failed. Please try again.");
               clearPersistedJobId(pathname, navigate);
-            } else if (s.status === "processing" && s.partialSegments?.length) {
+            } else if (isLoggedIn() && s.status === "processing" && s.partialSegments?.length) {
               const version = s.partialVersion ?? 0;
               if (
                 version > lastPartialVersionRef.current ||
@@ -1491,7 +1526,9 @@ export default function VideoToTranscript(
       const _isPaid =
         typeof window !== "undefined" &&
         (localStorage.getItem("plan") || "free").toLowerCase() !== "free";
-      const diarizationEnabledForJob = true;
+      // Speaker labels are a Pro-only feature (paid Replicate diarization cost per job) —
+      // the server re-checks plan too, but never ask for it on free plan in the first place.
+      const diarizationEnabledForJob = _isPaid && speakerDiarization;
       const baseOptions: Parameters<typeof uploadFileWithProgress>[1] = {
         toolType: BACKEND_TOOL_TYPES.VIDEO_TO_TRANSCRIPT,
         trimmedStart: trimStartSec ?? trimStart ?? undefined,
@@ -1630,7 +1667,12 @@ export default function VideoToTranscript(
             minStreamDelayTimeoutRef.current = null;
             setPartialSegments([]);
             setStatus("completed");
-            setResult(jobStatus.result ?? null);
+            if (isLoggedIn() && !jobStatus.requiresAuth) {
+              setResult(jobStatus.result ?? null);
+            } else {
+              setShowAuthGate(true);
+              setResult({ downloadUrl: "" });
+            }
             trackAppEvent("transcription_completed", {
               toolId: "video-to-transcript",
             });
@@ -1687,13 +1729,7 @@ export default function VideoToTranscript(
                 processing_time_ms: processingMs,
                 ...getFunnelProps("file_upload"),
               });
-              const nextJobCount =
-                (Number(localStorage.getItem(JOB_COMPLETED_COUNT_KEY) || "0") ||
-                  0) + 1;
-              localStorage.setItem(
-                JOB_COMPLETED_COUNT_KEY,
-                String(nextJobCount),
-              );
+              const nextJobCount = incrementJobCompletedCount();
               trackFirstOutputSeen({
                 ...getFunnelProps("result_panel"),
                 job_count: nextJobCount,
@@ -1755,6 +1791,7 @@ export default function VideoToTranscript(
           }
           toast.error("Processing failed. Please try again.");
         } else if (
+          isLoggedIn() &&
           jobStatus.status === "processing" &&
           jobStatus.partialVersion != null &&
           jobStatus.partialVersion > lastPartialVersionRef.current
@@ -1945,7 +1982,9 @@ export default function VideoToTranscript(
       setPartialSegments([]);
       setYoutubeStage(null);
       youtubeStageAtFailureRef.current = null;
-      const diarizationEnabledForJob = true;
+      // Speaker labels are a Pro-only feature (paid Replicate diarization cost per job) —
+      // the server re-checks plan too, but never ask for it on free plan in the first place.
+      const diarizationEnabledForJob = _isPaid && speakerDiarization;
       setDiarizationWasRequested(diarizationEnabledForJob);
       trackEvent("processing_started", {
         tool: "video-to-transcript",
@@ -2043,7 +2082,12 @@ export default function VideoToTranscript(
             minStreamDelayTimeoutRef.current = null;
             setPartialSegments([]);
             setStatus("completed");
-            setResult(jobStatus.result ?? null);
+            if (isLoggedIn() && !jobStatus.requiresAuth) {
+              setResult(jobStatus.result ?? null);
+            } else {
+              setShowAuthGate(true);
+              setResult({ downloadUrl: "" });
+            }
             trackAppEvent("transcription_completed", {
               toolId: "video-to-transcript",
             });
@@ -2092,13 +2136,7 @@ export default function VideoToTranscript(
                 processing_time_ms: processingMs,
                 ...getFunnelProps("youtube_url"),
               });
-              const nextJobCount =
-                (Number(localStorage.getItem(JOB_COMPLETED_COUNT_KEY) || "0") ||
-                  0) + 1;
-              localStorage.setItem(
-                JOB_COMPLETED_COUNT_KEY,
-                String(nextJobCount),
-              );
+              const nextJobCount = incrementJobCompletedCount();
               trackFirstOutputSeen({
                 ...getFunnelProps("result_panel"),
                 job_count: nextJobCount,
@@ -2148,6 +2186,7 @@ export default function VideoToTranscript(
               : "Processing failed. Please try again.",
           );
         } else if (
+          isLoggedIn() &&
           jobStatus.status === "processing" &&
           jobStatus.partialVersion != null &&
           jobStatus.partialVersion > lastPartialVersionRef.current
@@ -2231,10 +2270,7 @@ export default function VideoToTranscript(
       return;
     }
     // Gate 2: 3 free copies per session for free-plan users
-    const _isCopyPaid =
-      typeof window !== "undefined" &&
-      (localStorage.getItem("plan") || "free").toLowerCase() !== "free";
-    if (!_isCopyPaid && freeCopiesUsed >= 3) {
+    if (!isPaidPlan && freeCopiesUsed >= 3) {
       trackEvent("copy_gate_limit", {
         tool: "video-to-transcript",
         copies_used: freeCopiesUsed,
@@ -2253,32 +2289,33 @@ export default function VideoToTranscript(
               .trim()
           : (fullTranscript || "").trim();
     if (!textToCopy) return;
+    const payload = isPaidPlan ? textToCopy : watermarkClipboardText(textToCopy);
     try {
-      await navigator.clipboard.writeText(textToCopy);
-      toast.success("Copied to clipboard!");
+      await navigator.clipboard.writeText(payload);
+      toast.success(isPaidPlan ? "Copied to clipboard!" : "Copied (with watermark)");
     } catch {
       // Fallback for environments where clipboard API is restricted
       try {
         const textArea = document.createElement("textarea");
-        textArea.value = textToCopy;
+        textArea.value = payload;
         textArea.style.position = "fixed";
         textArea.style.opacity = "0";
         document.body.appendChild(textArea);
         textArea.select();
         document.execCommand("copy");
         document.body.removeChild(textArea);
-        toast.success("Copied to clipboard!");
+        toast.success(isPaidPlan ? "Copied to clipboard!" : "Copied (with watermark)");
       } catch {
         toast.error("Failed to copy to clipboard");
         return;
       }
     }
     trackEvent("transcript_copied", {
-      plan: _isCopyPaid ? "paid" : "free",
+      plan: isPaidPlan ? "paid" : "free",
       copies_used: freeCopiesUsed + 1,
     });
     // Increment counter for free users after successful copy
-    if (!_isCopyPaid) setFreeCopiesUsed((n) => n + 1);
+    if (!isPaidPlan) setFreeCopiesUsed((n) => n + 1);
   };
 
   const handleProcessAnother = () => {
@@ -2710,9 +2747,7 @@ export default function VideoToTranscript(
       );
       return;
     }
-    const watermark = isPaidPlan
-      ? undefined
-      : "Exported from VideoText (Free Plan) · videotext.io";
+    const watermark = isPaidPlan ? undefined : WATERMARK_DOC_FOOTER;
     const filename = joinExportFilename(
       exportFileStem(selectedFile?.name, "video"),
       `transcript_original_${langCodeForFile(exportSourceLangCode)}`,
@@ -2723,6 +2758,8 @@ export default function VideoToTranscript(
         timestampMode,
         verbatimMode,
         intervalSec,
+        smpteAnchor,
+        smpteFps,
       });
       if (!isPaidPlan) setFreeExportsUsed((n) => n + 1);
       try {
@@ -2770,9 +2807,7 @@ export default function VideoToTranscript(
       );
       return;
     }
-    const watermark = isPaidPlan
-      ? undefined
-      : "Exported from VideoText (Free Plan) · videotext.io";
+    const watermark = isPaidPlan ? undefined : WATERMARK_DOC_FOOTER;
     const filename = joinExportFilename(
       exportFileStem(selectedFile?.name, "video"),
       `transcript_original_${langCodeForFile(exportSourceLangCode)}`,
@@ -2783,6 +2818,8 @@ export default function VideoToTranscript(
         timestampMode,
         verbatimMode,
         intervalSec,
+        smpteAnchor,
+        smpteFps,
       });
       if (!isPaidPlan) setFreeExportsUsed((n) => n + 1);
       try {
@@ -2826,9 +2863,7 @@ export default function VideoToTranscript(
       );
       return;
     }
-    const watermark = isPaidPlan
-      ? undefined
-      : "Exported from VideoText (Free Plan) · videotext.io";
+    const watermark = isPaidPlan ? undefined : WATERMARK_DOC_FOOTER;
     const slug = translationLanguage
       ? targetLangFileSlug(translationLanguage)
       : "translated";
@@ -2843,7 +2878,7 @@ export default function VideoToTranscript(
         speakerNameMap,
         filename,
         watermark,
-        { timestampMode, verbatimMode, intervalSec },
+        { timestampMode, verbatimMode, intervalSec, smpteAnchor, smpteFps },
       );
       if (!isPaidPlan) setFreeExportsUsed((n) => n + 1);
       try {
@@ -2886,9 +2921,7 @@ export default function VideoToTranscript(
       );
       return;
     }
-    const watermark = isPaidPlan
-      ? undefined
-      : "Exported from VideoText (Free Plan) · videotext.io";
+    const watermark = isPaidPlan ? undefined : WATERMARK_DOC_FOOTER;
     const slug = translationLanguage
       ? targetLangFileSlug(translationLanguage)
       : "translated";
@@ -2903,7 +2936,7 @@ export default function VideoToTranscript(
         speakerNameMap,
         filename,
         watermark,
-        { timestampMode, verbatimMode, intervalSec },
+        { timestampMode, verbatimMode, intervalSec, smpteAnchor, smpteFps },
       );
       if (!isPaidPlan) setFreeExportsUsed((n) => n + 1);
       try {
@@ -2950,9 +2983,7 @@ export default function VideoToTranscript(
       );
       return;
     }
-    const watermark = isPaidPlan
-      ? undefined
-      : "Exported from VideoText (Free Plan) · videotext.io";
+    const watermark = isPaidPlan ? undefined : WATERMARK_DOC_FOOTER;
     const filename = joinExportFilename(
       exportFileStem(selectedFile?.name, "video"),
       `transcript_3col_${langCodeForFile(exportSourceLangCode)}`,
@@ -2963,7 +2994,7 @@ export default function VideoToTranscript(
         segs,
         speakerNameMap,
         filename,
-        { verbatimMode },
+        { verbatimMode, timestampMode, smpteAnchor, smpteFps },
         watermark,
       );
       if (!isPaidPlan) setFreeExportsUsed((n) => n + 1);
@@ -3012,9 +3043,7 @@ export default function VideoToTranscript(
       );
       return;
     }
-    const watermark = isPaidPlan
-      ? undefined
-      : "Exported from VideoText (Free Plan) · videotext.io";
+    const watermark = isPaidPlan ? undefined : WATERMARK_DOC_FOOTER;
     const filename = joinExportFilename(
       exportFileStem(selectedFile?.name, "video"),
       `transcript_3col_${langCodeForFile(exportSourceLangCode)}`,
@@ -3025,7 +3054,7 @@ export default function VideoToTranscript(
         segs,
         speakerNameMap,
         filename,
-        { verbatimMode },
+        { verbatimMode, timestampMode, smpteAnchor, smpteFps },
         watermark,
       );
       if (!isPaidPlan) setFreeExportsUsed((n) => n + 1);
@@ -3057,6 +3086,67 @@ export default function VideoToTranscript(
     exportSourceLangCode,
     verbatimMode,
   ]);
+
+  const downloadSubtitleExport = useCallback(
+    (format: "srt" | "vtt") => {
+      const segs =
+        (editableSegments && editableSegments.length > 0
+          ? editableSegments
+          : result?.segments) ?? null;
+      if (!segs?.length) {
+        toast.error("Nothing to export");
+        return;
+      }
+      if (!isPaidPlan && freeExportsUsed >= 2) {
+        toast(
+          "You've used your 2 free exports. Unlock continued downloads with Pro — $7.99/mo.",
+        );
+        return;
+      }
+      const resolved = withResolvedSpeakers(segs, speakerNameMap);
+      let content =
+        format === "srt"
+          ? segmentsToSrt(resolved)
+          : segmentsToVtt(resolved);
+      if (!isPaidPlan) {
+        content = watermarkTextExport(content, format);
+        setFreeExportsUsed((n) => n + 1);
+      }
+      const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = joinExportFilename(
+        exportFileStem(selectedFile?.name, "video"),
+        `subtitles_original_${langCodeForFile(exportSourceLangCode)}`,
+        format === "srt" ? ".srt" : ".vtt",
+      );
+      a.click();
+      URL.revokeObjectURL(a.href);
+      try {
+        trackEvent("result_downloaded", {
+          tool: "video-to-transcript",
+          format,
+          plan: isPaidPlan ? "paid" : "free",
+        });
+      } catch {
+        /* non-blocking */
+      }
+      toast.success(
+        isPaidPlan
+          ? "Download started"
+          : "Download started (with watermark)",
+      );
+    },
+    [
+      editableSegments,
+      result?.segments,
+      speakerNameMap,
+      isPaidPlan,
+      freeExportsUsed,
+      selectedFile?.name,
+      exportSourceLangCode,
+    ],
+  );
 
   /** Translate a pasted plain-text transcript (no video/audio upload required). */
   const handleTextTranslate = useCallback(async () => {
@@ -3225,12 +3315,16 @@ export default function VideoToTranscript(
         ? translatedSegments
         : segmentsForExport;
     if (segs?.length) {
-      return segs
-        .map((s) =>
-          verbatimMode === "clean" ? applyCleanVerbatim(s.text) : s.text,
-        )
-        .join("\n\n")
-        .trim();
+      // Carry real speaker + timestamp data into the guideline formatter (same
+      // builder the TXT export uses) instead of bare segment text — otherwise
+      // the formatter receives no speaker/time signal and fabricates its own.
+      return buildTxt(segs, speakerNameMap, {
+        timestampMode,
+        verbatimMode,
+        intervalSec,
+        smpteAnchor,
+        smpteFps,
+      }).trim();
     }
     return (
       displayTranscript ||
@@ -3242,7 +3336,12 @@ export default function VideoToTranscript(
     transcriptView,
     translatedSegments,
     segmentsForExport,
+    speakerNameMap,
+    timestampMode,
     verbatimMode,
+    intervalSec,
+    smpteAnchor,
+    smpteFps,
     displayTranscript,
     fullTranscript,
     transcriptPreview,
@@ -3255,20 +3354,16 @@ export default function VideoToTranscript(
       href: "/video-to-transcript",
     },
   ];
-  const hasDeepContent = Boolean(
-    seoDeepContent?.proofPoints?.length ||
-    seoDeepContent?.workflowSteps?.length ||
-    seoDeepContent?.outputExamples?.length ||
-    seoDeepContent?.comparisonRows?.length ||
-    seoDeepContent?.useCases?.length,
-  );
   const layoutProps = {
     breadcrumbs,
     title: "Fastest Way to Transcribe Your Audio/Video",
-    subtitle: seoIntro ?? "Extract spoken text from any video in seconds",
+    subtitle:
+      seoIntro ??
+      "Upload MP4, MOV, WebM, or MKV. Get a transcript, SRT/VTT, summary, and chapters. Whisper large-v3. Files deleted after processing. 3 free imports/mo.",
     icon: <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />,
     sidebar: null,
     compactToolHeader: true,
+    coreToolPath: "/video-to-transcript",
     currentStepLabel:
       status === "completed"
         ? "Transcript ready"
@@ -3279,22 +3374,23 @@ export default function VideoToTranscript(
 
   return (
     <>
+      <SerpTrustStrip />
       <ToolLayout {...layoutProps}>
         <UpgradeBanner variant="video-length" tool="video-to-transcript" />
         {status === "idle" && !selectedFile && !isBatchMode && (
-          <div className="space-y-4">
+          <div className="space-y-component-sm">
             {/* YouTube URL tab temporarily hidden — feature under development */}
 
             {/* ── File upload tab ── */}
             {inputMode === "file" && (
-              <div className="space-y-3 sm:space-y-4">
+              <div className="space-y-component-sm sm:space-y-component-sm">
                 {batchUploadEligible() && (
                   <div
-                    className="rounded-xl sm:rounded-xl border-2 border-blue-400/55 dark:border-blue-500/45 bg-gradient-to-br from-blue-600/[0.12] via-blue-600/[0.08] to-fuchsia-600/[0.06] dark:from-blue-950/60 dark:via-blue-950/40 dark:to-fuchsia-950/25 px-4 py-3.5 sm:px-5 sm:py-4 shadow-sm shadow-blue-500/10"
+                    className="rounded-xl border border-blue-200/80 bg-blue-50/80 px-4 py-3.5 dark:border-blue-800/50 dark:bg-blue-950/25 sm:px-5 sm:py-4"
                     role="status"
                     aria-live="polite"
                   >
-                    <div className="flex gap-3 sm:gap-4">
+                    <div className="flex gap-3 sm:gap-component-sm">
                       <div className="shrink-0 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-blue-600/25 dark:bg-blue-400/20 ring-2 ring-blue-600/35">
                         <Layers
                           className="h-5 w-5 sm:h-6 sm:w-6 text-blue-700 dark:text-blue-200"
@@ -3315,23 +3411,23 @@ export default function VideoToTranscript(
                   </div>
                 )}
                 {sourceMessage && (
-                  <div className="rounded-xl border border-emerald-200/70 bg-emerald-50/80 dark:border-emerald-800/60 dark:bg-emerald-950/25 px-4 py-3">
-                    <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
+                  <div className="rounded-xl border border-blue-200/70 bg-blue-50/80 dark:border-blue-800/60 dark:bg-blue-950/25 px-4 py-3">
+                    <p className="text-sm font-semibold text-blue-800 dark:text-blue-300">
                       {sourceMessage.title}
                     </p>
-                    <p className="mt-1 text-xs text-emerald-700 dark:text-emerald-200/90">
+                    <p className="mt-1 text-xs text-blue-700 dark:text-blue-200/90">
                       {sourceMessage.body}
                     </p>
                   </div>
                 )}
                 {shouldShowActivationCard && (
-                  <div className="rounded-xl border border-emerald-300/70 dark:border-emerald-700/70 bg-emerald-50/80 dark:bg-emerald-950/25 px-4 py-4 sm:px-5 sm:py-5">
+                  <div className="rounded-xl border border-blue-300/70 dark:border-blue-700/70 bg-blue-50/80 dark:bg-blue-950/25 px-4 py-4 sm:px-5 sm:py-5">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-200">
+                        <p className="text-sm font-semibold text-blue-900 dark:text-blue-200">
                           Get your first transcript in under a minute
                         </p>
-                        <ol className="mt-2 space-y-1.5 text-xs sm:text-sm text-emerald-800 dark:text-emerald-100/90">
+                        <ol className="mt-2 space-y-1.5 text-xs sm:text-sm text-blue-800 dark:text-blue-100/90">
                           <li className="flex items-center gap-2">
                             <CheckCircle2
                               className="h-4 w-4 shrink-0"
@@ -3358,7 +3454,7 @@ export default function VideoToTranscript(
                       <button
                         type="button"
                         onClick={handleActivationWizardCta}
-                        className="shrink-0 rounded-lg bg-emerald-600 px-3 py-2 text-xs sm:text-sm font-semibold text-white hover:bg-emerald-700 transition"
+                        className="shrink-0 rounded-lg bg-blue-600 px-3 py-2 text-xs sm:text-sm font-semibold text-white hover:bg-blue-700 transition"
                       >
                         Start now
                       </button>
@@ -3370,7 +3466,7 @@ export default function VideoToTranscript(
                   <p className="text-xs font-semibold text-sky-900 dark:text-sky-200">
                     Need transcript-only translation?
                   </p>
-                  <p className="text-[11px] text-sky-800 dark:text-sky-300 mt-0.5">
+                  <p className="text-xs text-sky-800 dark:text-sky-300 mt-0.5">
                     Upload TXT, DOCX, SRT, or VTT directly — no audio/video
                     required.
                     <Link
@@ -3415,7 +3511,7 @@ export default function VideoToTranscript(
                     />
                   </button>
                   {textTranslateOpen && (
-                    <div className="px-4 pb-4 space-y-3 border-t border-gray-100 dark:border-gray-800">
+                    <div className="px-4 pb-4 space-y-component-sm border-t border-gray-100 dark:border-gray-800">
                       <p className="text-xs text-gray-500 dark:text-gray-400 pt-3">
                         Paste your finished transcript below or upload a
                         .txt/.srt/.vtt file, pick a target language, and
@@ -3437,7 +3533,7 @@ export default function VideoToTranscript(
                             }}
                           />
                         </label>
-                        <p className="text-[10px] text-gray-400 dark:text-gray-500 self-center">
+                        <p className="text-xs text-gray-400 dark:text-gray-500 self-center">
                           .txt · .srt · .vtt
                         </p>
                       </div>
@@ -3481,7 +3577,7 @@ export default function VideoToTranscript(
                         </button>
                       </div>
                       {textTranslateResult && (
-                        <div className="space-y-2">
+                        <div className="space-y-micro">
                           <div className="flex items-center justify-between">
                             <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">
                               Translation ({textTranslateLang})
@@ -3614,22 +3710,24 @@ export default function VideoToTranscript(
                           Pro &amp; Business
                         </span>
                         .{" "}
-                        <Link
-                          to="/pricing"
-                          className="text-blue-600 dark:text-blue-400 font-semibold hover:underline"
+                        <ProCheckoutLink
+                          source="transcript_batch_upload"
+                          tool="transcript"
+                          className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
                         >
                           View plans
-                        </Link>
+                        </ProCheckoutLink>
                       </>
                     ) : (
                       <>
                         Batch upload — process many videos in one go — is on{" "}
-                        <Link
-                          to="/pricing"
-                          className="text-blue-600 dark:text-blue-400 font-semibold hover:underline"
+                        <ProCheckoutLink
+                          source="transcript_batch_upload"
+                          tool="transcript"
+                          className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
                         >
                           Pro &amp; Business
-                        </Link>
+                        </ProCheckoutLink>
                         .
                       </>
                     )}
@@ -3640,9 +3738,9 @@ export default function VideoToTranscript(
 
             {/* ── YouTube URL tab ── */}
             {inputMode === "youtube" && (
-              <div className="space-y-4">
+              <div className="space-y-component-sm">
                 {/* Highlighted input card */}
-                <div className="rounded-xl sm:rounded-xl border-2 border-red-400/60 dark:border-red-500/50 bg-red-50/60 dark:bg-red-950/20 p-4 sm:p-6 space-y-4">
+                <div className="rounded-xl sm:rounded-xl border-2 border-red-400/60 dark:border-red-500/50 bg-red-50/60 dark:bg-red-950/20 p-4 sm:p-6 space-y-component-sm">
                   <div className="flex items-center gap-2">
                     {/* YouTube icon (SVG — no lucide dependency) */}
                     <svg
@@ -3705,11 +3803,11 @@ export default function VideoToTranscript(
                 </div>
 
                 {/* Options (same as file mode) */}
-                <div className="rounded-xl bg-gray-50/90 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-700/50 p-4 space-y-3">
+                <div className="rounded-xl bg-gray-50/90 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-700/50 p-4 space-y-component-sm">
                   <h4 className="text-sm font-medium text-gray-800 dark:text-gray-200">
                     Options
                   </h4>
-                  <div className="space-y-2">
+                  <div className="space-y-micro">
                     {/* AI Summary — Pro only */}
                     {isPaidPlan ? (
                       <label className="flex items-center gap-2 cursor-pointer select-none">
@@ -3729,12 +3827,13 @@ export default function VideoToTranscript(
                           Include AI summary &amp; bullets{" "}
                           <Lock className="w-3 h-3 text-gray-400" />
                         </span>
-                        <Link
-                          to="/pricing"
-                          className="text-xs text-blue-600 font-medium hover:underline"
+                        <ProCheckoutLink
+                          source="transcript_youtube_summary"
+                          tool="transcript"
+                          className="text-xs font-medium text-blue-600 hover:underline"
                         >
                           Pro
-                        </Link>
+                        </ProCheckoutLink>
                       </div>
                     )}
                     {/* Chapters — Pro only */}
@@ -3756,12 +3855,13 @@ export default function VideoToTranscript(
                           Auto-generate chapters{" "}
                           <Lock className="w-3 h-3 text-gray-400" />
                         </span>
-                        <Link
-                          to="/pricing"
-                          className="text-xs text-blue-600 font-medium hover:underline"
+                        <ProCheckoutLink
+                          source="transcript_youtube_summary"
+                          tool="transcript"
+                          className="text-xs font-medium text-blue-600 hover:underline"
                         >
                           Pro
-                        </Link>
+                        </ProCheckoutLink>
                       </div>
                     )}
                     {/* Audio language — always visible */}
@@ -3806,12 +3906,13 @@ export default function VideoToTranscript(
                           Speaker labels (who said what){" "}
                           <Lock className="w-3 h-3 text-gray-400" />
                         </span>
-                        <Link
-                          to="/pricing"
-                          className="text-xs text-blue-600 font-medium hover:underline"
+                        <ProCheckoutLink
+                          source="transcript_youtube_summary"
+                          tool="transcript"
+                          className="text-xs font-medium text-blue-600 hover:underline"
                         >
                           Pro
-                        </Link>
+                        </ProCheckoutLink>
                       </div>
                     )}
                     {isPaidPlan && speakerDiarization && (
@@ -3823,18 +3924,44 @@ export default function VideoToTranscript(
                         </p>
                         <div className="mt-1">
                           <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
-                            No. of speakers{" "}
-                            <span className="text-gray-400">(optional)</span>
+                            No. of speakers
                           </label>
-                          <input
-                            type="number"
-                            min={1}
-                            max={50}
-                            value={numSpeakers}
-                            onChange={(e) => setNumSpeakers(e.target.value)}
-                            placeholder="Auto-detect"
-                            className="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-600"
-                          />
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mb-1.5">
+                            Telling us the speaker count (e.g. a 1-on-1
+                            interview) noticeably improves who-said-what
+                            accuracy — auto-detect has to guess it first.
+                          </p>
+                          <div className="flex rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600">
+                            {(
+                              [
+                                { value: "", label: "Auto" },
+                                { value: "2", label: "2" },
+                                { value: "3", label: "3" },
+                                { value: "4", label: "4" },
+                                { value: "5", label: "5+" },
+                              ] as const
+                            ).map(({ value, label }) => (
+                              <button
+                                key={label}
+                                type="button"
+                                onClick={() => setNumSpeakers(value)}
+                                className={`flex-1 py-1.5 text-xs font-medium transition-colors ${
+                                  numSpeakers === value
+                                    ? "bg-blue-600 text-white"
+                                    : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                }`}
+                              >
+                                {label}
+                              </button>
+                            ))}
+                          </div>
+                          {numSpeakers === "5" && (
+                            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                              "5+" is sent as a floor of 5 speakers — the
+                              diarization model takes an exact count, not an
+                              open-ended range.
+                            </p>
+                          )}
                         </div>
                       </>
                     )}
@@ -3865,8 +3992,8 @@ export default function VideoToTranscript(
 
         {/* Batch mode — file list + process CTA */}
         {isBatchMode && status === "idle" && (
-          <div className="space-y-4">
-            <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 space-y-3">
+          <div className="space-y-component-sm">
+            <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 space-y-component-sm">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <h3 className="text-sm font-medium text-gray-900 dark:text-white">
@@ -3937,25 +4064,25 @@ export default function VideoToTranscript(
                 </span>
               </label>
             </div>
-            <div className="rounded-lg border border-gray-100 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-900/40 p-3 space-y-3 text-sm">
+            <div className="rounded-lg border border-gray-100 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-900/40 p-3 space-y-component-sm text-sm">
               <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
                 ZIP layout:{" "}
-                <span className="font-mono text-[11px]">
+                <span className="font-mono text-xs">
                   Batch/&lt;video-folder&gt;/
                 </span>{" "}
                 with{" "}
-                <span className="font-mono text-[11px]">
+                <span className="font-mono text-xs">
                   *_transcript_original_*.txt
                 </span>
                 ,{" "}
-                <span className="font-mono text-[11px]">
+                <span className="font-mono text-xs">
                   *_transcript_original_*.json
                 </span>
                 ,{" "}
-                <span className="font-mono text-[11px]">
+                <span className="font-mono text-xs">
                   *_subtitles_original_*
                 </span>
-                , <span className="font-mono text-[11px]">*_notion.json</span>
+                , <span className="font-mono text-xs">*_notion.json</span>
                 {isPaidPlan &&
                   ", plus speaker files and translated *_subtitles_translated_* / *_transcript_translated_*"}
                 .
@@ -4064,13 +4191,13 @@ export default function VideoToTranscript(
             }
             videoSrc={videoPreviewUrl ?? undefined}
           >
-            <div className="space-y-3">
-              <h3 className="text-[11px] font-medium uppercase tracking-[0.06em] text-gray-500 dark:text-gray-400">
+            <div className="space-y-component-sm">
+              <h3 className="text-xs font-medium uppercase tracking-[0.06em] text-gray-500 dark:text-gray-400">
                 Options
               </h3>
               <div className="divide-y divide-gray-100 dark:divide-gray-800">
                 <div className="py-2">
-                  <label className="mb-1 block text-[11px] text-gray-500 dark:text-gray-400">
+                  <label className="mb-1 block text-xs text-gray-500 dark:text-gray-400">
                     Audio language{" "}
                     <span className="text-gray-400">
                       (optional — improves accuracy)
@@ -4090,7 +4217,7 @@ export default function VideoToTranscript(
                   </select>
                 </div>
                 <div className="py-2">
-                  <label className="mb-1 block text-[11px] text-gray-500 dark:text-gray-400">
+                  <label className="mb-1 block text-xs text-gray-500 dark:text-gray-400">
                     Also translate to{" "}
                     <span className="text-gray-400">(optional)</span>
                   </label>
@@ -4111,6 +4238,88 @@ export default function VideoToTranscript(
                     ))}
                   </select>
                 </div>
+                <div className="py-2">
+                  {isPaidPlan ? (
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={speakerDiarization}
+                        onChange={(e) =>
+                          setSpeakerDiarization(e.target.checked)
+                        }
+                        className="rounded border-gray-300 text-blue-600"
+                      />
+                      <span className="text-sm text-gray-700 dark:text-gray-300">
+                        Speaker labels (who said what)
+                      </span>
+                    </label>
+                  ) : (
+                    <div className="flex items-center justify-between opacity-60">
+                      <span className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                        Speaker labels (who said what){" "}
+                        <Lock className="w-3 h-3 text-gray-400" />
+                      </span>
+                      <ProCheckoutLink
+                        source="transcript_upload_speakers"
+                        tool="transcript"
+                        className="text-xs font-medium text-blue-600 hover:underline"
+                      >
+                        Pro
+                      </ProCheckoutLink>
+                    </div>
+                  )}
+                  {isPaidPlan && speakerDiarization && (
+                    <>
+                      <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 py-2 mt-2">
+                        Speaker identification adds extra processing time —
+                        roughly 1.5× longer than standard transcription
+                        (e.g. a 2-hour video takes ~10 min instead of ~4
+                        min).
+                      </p>
+                      <div className="mt-2">
+                        <label className="mb-1 block text-xs text-gray-500 dark:text-gray-400">
+                          No. of speakers
+                        </label>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1.5">
+                          Telling us the speaker count (e.g. a 1-on-1
+                          interview) noticeably improves who-said-what
+                          accuracy — auto-detect has to guess it first.
+                        </p>
+                        <div className="flex rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600">
+                          {(
+                            [
+                              { value: "", label: "Auto" },
+                              { value: "2", label: "2" },
+                              { value: "3", label: "3" },
+                              { value: "4", label: "4" },
+                              { value: "5", label: "5+" },
+                            ] as const
+                          ).map(({ value, label }) => (
+                            <button
+                              key={label}
+                              type="button"
+                              onClick={() => setNumSpeakers(value)}
+                              className={`flex-1 py-1.5 text-xs font-medium transition-colors ${
+                                numSpeakers === value
+                                  ? "bg-blue-600 text-white"
+                                  : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                              }`}
+                            >
+                              {label}
+                            </button>
+                          ))}
+                        </div>
+                        {numSpeakers === "5" && (
+                          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                            "5+" is sent as a floor of 5 speakers — the
+                            diarization model takes an exact count, not an
+                            open-ended range.
+                          </p>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </ProcessingInterface>
@@ -4118,10 +4327,10 @@ export default function VideoToTranscript(
 
         {/* Batch processing progress */}
         {isBatchMode && status === "processing" && batchInfo && (
-          <div className="rounded-xl border border-blue-200/80 dark:border-blue-800/50 bg-gradient-to-br from-blue-50/90 via-white to-fuchsia-50/50 dark:from-blue-950/40 dark:via-gray-900/80 dark:to-fuchsia-950/20 p-6 sm:p-8 space-y-6 shadow-lg shadow-blue-500/10">
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-              <div className="flex gap-4">
-                <div className="shrink-0 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-fuchsia-600 text-white shadow-md">
+          <div className="space-y-component rounded-xl border border-gray-200 bg-white p-6 dark:border-white/[0.08] dark:bg-gray-900 sm:p-8">
+            <div className="flex flex-col gap-component-sm sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex gap-component-sm">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white sm:h-12 sm:w-12">
                   <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" aria-hidden />
                 </div>
                 <div>
@@ -4144,14 +4353,14 @@ export default function VideoToTranscript(
                 </p>
               </div>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-micro">
               <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
                 <span>Overall progress</span>
                 <span>{batchInfo.progress.percentage}%</span>
               </div>
               <div className="w-full bg-gray-200/90 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
                 <div
-                  className="bg-gradient-to-r from-blue-600 to-fuchsia-500 h-2.5 rounded-full transition-all duration-200 ease-out"
+                  className="h-2.5 rounded-full bg-blue-600 transition-all duration-200 ease-out"
                   style={{
                     width: `${Math.min(100, batchInfo.progress.percentage)}%`,
                   }}
@@ -4179,9 +4388,9 @@ export default function VideoToTranscript(
 
         {/* Batch completed results */}
         {isBatchMode && status === "completed" && batchInfo && (
-          <div className="rounded-xl border border-emerald-200/80 dark:border-emerald-900/40 bg-gradient-to-br from-emerald-50/95 via-white to-teal-50/60 dark:from-emerald-950/35 dark:via-gray-900/90 dark:to-teal-950/25 p-6 sm:p-8 space-y-6 shadow-lg shadow-emerald-500/10">
-            <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-              <div className="shrink-0 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-md">
+          <div className="space-y-component rounded-xl border border-gray-200 bg-white p-6 dark:border-white/[0.08] dark:bg-gray-900 sm:p-8">
+            <div className="flex flex-col gap-component-sm sm:flex-row sm:items-start">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white">
                 <Download className="w-6 h-6" aria-hidden />
               </div>
               <div className="flex-1 min-w-0">
@@ -4227,7 +4436,7 @@ export default function VideoToTranscript(
             <a
               href={getBatchDownloadUrl(batchInfo.batchId)}
               download
-              className="flex items-center justify-center gap-2 w-full py-3.5 px-6 rounded-xl font-semibold text-sm bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white transition-colors shadow-md"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
             >
               <Download className="w-4 h-4" />
               Download all as ZIP
@@ -4243,8 +4452,8 @@ export default function VideoToTranscript(
         )}
 
         {!isBatchMode && status === "processing" && (
-          <div className="bg-blue-50 dark:bg-blue-900/10 rounded-xl p-8 border border-blue-100 dark:border-blue-900/30">
-            <div className="flex items-center gap-4 mb-8 pb-6 border-b border-blue-200 dark:border-blue-900/30">
+          <ProcessingStateShell className="p-8">
+            <div className="flex items-center gap-component-sm mb-8 pb-6 border-b border-blue-200 dark:border-blue-900/30">
               {/* YouTube thumbnail or file icon */}
               {youtubeThumbnailUrl ? (
                 <div className="w-20 h-14 sm:w-24 sm:h-16 rounded-lg overflow-hidden shrink-0 bg-gray-200 dark:bg-gray-800">
@@ -4373,11 +4582,15 @@ export default function VideoToTranscript(
                   ? `${queuePosition} jobs ahead of you`
                   : undefined
               }
-              liveTranscript={partialSegments.map((s) => s.text).join("\n")}
+              liveTranscript={
+                isLoggedIn()
+                  ? partialSegments.map((s) => s.text).join("\n")
+                  : undefined
+              }
               onCancel={handleCancelUpload}
             />
             <ResultSkeleton variant="transcript" />
-          </div>
+          </ProcessingStateShell>
         )}
 
         {!isBatchMode && status === "completed" && result && (
@@ -4385,92 +4598,22 @@ export default function VideoToTranscript(
             {/* ── Teaser preview card (non-logged-in) — first 10% of real content ── */}
             {showAuthGate &&
               !isLoggedIn() &&
-              (() => {
-                const fullText =
-                  displayTranscript ||
-                  fullTranscript ||
-                  transcriptPreview ||
-                  "";
-                const previewSegs = result.segments?.length
-                  ? result.segments.slice(
-                      0,
-                      Math.max(3, Math.ceil(result.segments.length * 0.25)),
-                    )
-                  : null;
-                const previewText = fullText.slice(
-                  0,
-                  Math.max(400, Math.ceil(fullText.length * 0.25)),
-                );
-                return (
+              (
                   <div className="rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden select-none mb-2">
-                    {/* preview banner */}
-                    <div className="px-5 pt-4 pb-3 flex items-center justify-between border-b border-gray-100 dark:border-gray-800 bg-gradient-to-r from-emerald-50/80 via-cyan-50/70 to-blue-50/70 dark:from-emerald-950/30 dark:via-cyan-950/20 dark:to-blue-950/20">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className="w-2 h-2 rounded-full bg-emerald-500 inline-block"
-                          aria-hidden
-                        />
-                        <span className="text-sm font-semibold text-gray-800 dark:text-white">
-                          Transcript preview
-                        </span>
-                        {lastProcessingMs != null && (
-                          <span className="text-xs text-gray-400">
-                            · {(lastProcessingMs / 1000).toFixed(1)}s
-                          </span>
-                        )}
-                      </div>
-                      <span className="text-xs text-gray-400">
-                        {[
-                          result.segments?.length
-                            ? `${result.segments.length} segments`
-                            : "",
-                          fullText
-                            ? `~${Math.round(fullText.trim().split(/\s+/).length)} words`
-                            : "",
-                        ]
-                          .filter(Boolean)
-                          .join(" · ")}
-                      </span>
-                    </div>
-
-                    {/* 10% preview — real segments or text, fades out at bottom */}
-                    <div
-                      className="relative overflow-hidden"
-                      style={{ maxHeight: "18rem" }}
-                    >
-                      <div className="px-5 py-4 space-y-2">
-                        {previewSegs ? (
-                          previewSegs.map((seg, i) => {
-                            const mins = Math.floor(seg.start / 60);
-                            const secs = Math.floor(seg.start % 60);
-                            const ts = `${mins}:${String(secs).padStart(2, "0")}`;
-                            return (
-                              <div key={i} className="flex gap-3 items-start">
-                                <span className="shrink-0 text-[11px] text-gray-400 dark:text-gray-500 font-mono mt-0.5 w-8">
-                                  {ts}
-                                </span>
-                                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                                  {seg.text}
-                                </p>
-                              </div>
-                            );
-                          })
-                        ) : (
-                          <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                            {previewText}
-                          </p>
-                        )}
-                      </div>
-                      {/* strong gradient fade — covers bottom ~55% to make it feel "cut off" */}
-                      <div
-                        className="absolute bottom-0 left-0 right-0 h-40 pointer-events-none bg-gradient-to-t from-white dark:from-gray-900 via-white/60 dark:via-gray-900/60 to-transparent"
-                        aria-hidden
-                      />
-                    </div>
-
-                    {/* locked features + CTA */}
-                    <div className="px-5 pb-5 pt-2 pointer-events-auto">
-                      <p className="text-[11px] text-gray-400 mb-2 font-medium">
+                    <ResultHeader
+                      embedded
+                      title="Transcript ready"
+                      processingTime={
+                        lastProcessingMs != null
+                          ? `${(lastProcessingMs / 1000).toFixed(1)}s`
+                          : null
+                      }
+                    />
+                    <div className="px-5 pb-5 pt-4 pointer-events-auto">
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                        Create a free account to view, copy, and download your full transcript.
+                      </p>
+                      <p className="text-xs text-gray-400 mb-2 font-medium">
                         Sign up to unlock:
                       </p>
                       <div className="flex flex-wrap gap-1.5 mb-4">
@@ -4485,7 +4628,7 @@ export default function VideoToTranscript(
                         ).map((feat) => (
                           <span
                             key={feat}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-[11px] text-gray-400 dark:text-gray-500"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-xs text-gray-400 dark:text-gray-500"
                           >
                             <Lock className="w-2.5 h-2.5" aria-hidden />
                             {feat}
@@ -4516,14 +4659,35 @@ export default function VideoToTranscript(
                       </div>
                     </div>
                   </div>
-                );
-              })()}
+                )}
 
             <div
-              className={`space-y-6 ${audioObjectUrl ? "pb-24 sm:pb-28" : ""}`}
+              className={`space-y-component ${audioObjectUrl ? "pb-24 sm:pb-28" : ""}`}
               hidden={showAuthGate && !isLoggedIn()}
             >
+              <ResultHeader
+                title="Transcript ready"
+                processingTime={
+                  lastProcessingMs != null
+                    ? `${(lastProcessingMs / 1000).toFixed(1)}s`
+                    : null
+                }
+                fileName={result.fileName ?? selectedFile?.name}
+                onAction={handleProcessAnother}
+              />
+              <ResultUpgradeCard
+                tool="transcript"
+                resultKey={currentJobId || result.downloadUrl}
+                wordCount={
+                  (displayTranscript || fullTranscript || transcriptPreview || "")
+                    .trim()
+                    .split(/\s+/)
+                    .filter(Boolean).length || undefined
+                }
+              />
               <FreePlanNudge tool="transcript" resultKey={currentJobId || result.downloadUrl} />
+              <SecondJobUpgradeNudge tool="transcript" resultKey={currentJobId || result.downloadUrl} milestone={2} />
+              <SecondJobUpgradeNudge tool="transcript" resultKey={currentJobId || result.downloadUrl} milestone={3} />
               {/* ── Transcript stats pills ── */}
               {(() => {
                 const text =
@@ -4568,19 +4732,8 @@ export default function VideoToTranscript(
                 );
               })()}
 
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={handleProcessAnother}
-                  className="inline-flex items-center gap-2 rounded-xl border border-blue-300 dark:border-blue-700 bg-blue-600 px-3 py-2 text-[13px] font-medium text-white hover:bg-blue-700 transition-colors shadow-sm"
-                >
-                  <Upload className="h-4 w-4" aria-hidden />
-                  Upload new file
-                </button>
-              </div>
-
               {/* Main workspace: transcript / speakers (left) + insight rail (right) */}
-              <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(380px,500px)] xl:grid-cols-[minmax(0,1fr)_540px] items-start">
+              <div className="grid grid-cols-1 gap-component lg:grid-cols-[minmax(0,1fr)_minmax(380px,500px)] xl:grid-cols-[minmax(0,1fr)_540px] items-start">
                 <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm overflow-hidden flex flex-col min-h-[min(62vh,640px)]">
                   <div
                     className="flex h-10 shrink-0 gap-1 border-b border-gray-100 bg-gray-50/90 px-2 pt-1 dark:border-gray-800 dark:bg-gray-950/50"
@@ -4592,7 +4745,7 @@ export default function VideoToTranscript(
                       role="tab"
                       aria-selected={leftWorkspaceTab === "transcript"}
                       onClick={() => setLeftWorkspaceTab("transcript")}
-                      className={`px-3 py-2 text-[13px] font-medium rounded-t-lg border-b-2 -mb-px transition-colors ${
+                      className={`px-3 py-2 text-sm font-medium rounded-t-lg border-b-2 -mb-px transition-colors ${
                         leftWorkspaceTab === "transcript"
                           ? "border-blue-600 text-gray-900 dark:text-white bg-white dark:bg-gray-900"
                           : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
@@ -4605,7 +4758,7 @@ export default function VideoToTranscript(
                       role="tab"
                       aria-selected={leftWorkspaceTab === "speakers"}
                       onClick={() => setLeftWorkspaceTab("speakers")}
-                      className={`px-3 py-2 text-[13px] font-medium rounded-t-lg border-b-2 -mb-px transition-colors inline-flex items-center gap-1.5 ${
+                      className={`px-3 py-2 text-sm font-medium rounded-t-lg border-b-2 -mb-px transition-colors inline-flex items-center gap-1.5 ${
                         leftWorkspaceTab === "speakers"
                           ? "border-blue-600 text-gray-900 dark:text-white bg-white dark:bg-gray-900"
                           : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
@@ -4638,7 +4791,7 @@ export default function VideoToTranscript(
                   ) : (
                     <div className="flex min-h-0 flex-1 flex-col p-4">
                       {/* Panel header with translation sub-tabs inline */}
-                      <div className="flex items-center justify-end gap-4 mb-4">
+                      <div className="flex items-center justify-end gap-component-sm mb-4">
                         {/* Translation tabs — right-aligned, shown when translation is ready */}
                         {translateEnabled && translationLanguage && (
                           <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5">
@@ -4707,11 +4860,11 @@ export default function VideoToTranscript(
                         {/* "Saved" indicator — appears after the 1.5 s auto-save debounce fires */}
                         {editsSavedAt && (
                           <span
-                            className="flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 select-none"
+                            className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 select-none"
                             aria-live="polite"
                           >
                             <span
-                              className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"
+                              className="inline-block w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0"
                               aria-hidden
                             />
                             saved
@@ -4728,22 +4881,24 @@ export default function VideoToTranscript(
                         </button>
                       </div>
                       <div className="mb-3 flex items-center gap-2">
-                        <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
                           Timestamp mode:
                         </span>
-                        <span className="inline-flex items-center rounded-full border border-blue-200 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 text-[11px] font-medium text-blue-700 dark:text-blue-200">
+                        <span className="inline-flex items-center rounded-full border border-blue-200 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-200">
                           {timestampMode === "per-speaker"
                             ? "Per speaker"
                             : timestampMode === "per-interval"
                               ? `Per interval (${intervalSec}s)`
                               : timestampMode === "per-segment"
                                 ? "Per segment"
-                                : "No timestamps"}
+                                : timestampMode === "smpte"
+                                  ? `SMPTE/BITC (${smpteFps}fps${smpteDropFrame ? " DF" : " NDF"})`
+                                  : "No timestamps"}
                         </span>
-                        <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
                           Transcript mode:
                         </span>
-                        <span className="inline-flex items-center rounded-full border border-blue-200 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 text-[11px] font-medium text-blue-700 dark:text-blue-200">
+                        <span className="inline-flex items-center rounded-full border border-blue-200 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-200">
                           {verbatimMode === "clean"
                             ? "Clean verbatim"
                             : "Full verbatim"}
@@ -4751,10 +4906,10 @@ export default function VideoToTranscript(
                       </div>
                       <div
                         ref={transcriptScrollRef}
-                        className="flex-1 min-h-0 overflow-y-auto bg-white rounded-xl border border-gray-200/90 px-5 py-5 shadow-[inset_0_1px_0_0_rgba(15,23,42,0.04)] text-[14px] leading-[1.65] tracking-[-0.011em] text-[#1d1d1f] antialiased selection:bg-blue-100 selection:text-[#1d1d1f] font-[ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,'Helvetica_Neue',Helvetica,Arial,sans-serif]"
+                        className="flex-1 min-h-0 overflow-y-auto bg-white rounded-xl border border-gray-200/90 px-5 py-5 shadow-[inset_0_1px_0_0_rgba(15,23,42,0.04)] text-sm leading-[1.65] tracking-[-0.011em] text-[#1d1d1f] antialiased selection:bg-blue-100 selection:text-[#1d1d1f] font-[ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,'Helvetica_Neue',Helvetica,Arial,sans-serif]"
                       >
                         {transcriptEditMode && editableSegments?.length ? (
-                          <div className="space-y-3">
+                          <div className="space-y-component-sm">
                             {editableSegments.map((seg, i) => (
                               <div key={i} className="flex gap-3 items-start">
                                 <span className="shrink-0 text-[12px] tabular-nums text-gray-500 font-mono mt-2.5 w-11">
@@ -4914,7 +5069,7 @@ export default function VideoToTranscript(
                                   rendered.push(
                                     <div
                                       key={`marker-${item.markerTime}`}
-                                      className="mt-5 first:mt-0 mb-1.5 text-[13px] font-bold text-blue-600 dark:text-blue-400"
+                                      className="mt-5 first:mt-0 mb-1.5 text-sm font-bold text-blue-600 dark:text-blue-400"
                                     >
                                       [{formatTimestamp(item.markerTime)}]
                                     </div>,
@@ -4938,7 +5093,8 @@ export default function VideoToTranscript(
                               speakerNameMap,
                             );
                             const showSpeakerHeaders =
-                              timestampMode === "per-speaker";
+                              timestampMode === "per-speaker" ||
+                              timestampMode === "smpte";
                             const hasSpeakers =
                               showSpeakerHeaders &&
                               resolvedForView.some((s) => s.speaker);
@@ -4984,7 +5140,7 @@ export default function VideoToTranscript(
                             }
 
                             return (
-                              <div className="max-w-[52rem] space-y-5">
+                              <div className="max-w-[52rem] space-y-component-sm">
                                 {vGroups.map((vg, gi) => {
                                   // Split items into paragraphs on newPara boundaries
                                   const paras: {
@@ -5005,16 +5161,24 @@ export default function VideoToTranscript(
                                   return (
                                     <div key={gi}>
                                       {hasSpeakers && vg.speaker && (
-                                        <div className="mb-1.5 border-t border-black/[0.06] pt-2 font-mono text-[11px] uppercase text-gray-500">
+                                        <div className="mb-1.5 border-t border-black/[0.06] pt-2 font-mono text-xs uppercase text-gray-500">
                                           {vg.speaker}
                                           {showSpeakerHeaders && (
-                                            <span className="ml-1.5 font-mono text-[11px] text-gray-400">
-                                              {formatTimestamp(vg.startTime)}
+                                            <span className="ml-1.5 font-mono text-xs text-gray-400">
+                                              {timestampMode === "smpte"
+                                                ? addAnchorTimecode(
+                                                    smpteAnchor,
+                                                    smpteFps,
+                                                    vg.startTime,
+                                                  )
+                                                : formatTimestamp(
+                                                    vg.startTime,
+                                                  )}
                                             </span>
                                           )}
                                         </div>
                                       )}
-                                      <div className="space-y-3">
+                                      <div className="space-y-component-sm">
                                         {paras.map((para, pi) => (
                                           <p key={pi}>
                                             {para.map(({ seg, globalIndex }) =>
@@ -5038,7 +5202,7 @@ export default function VideoToTranscript(
                           </div>
                         )}
                       </div>
-                      <div className="mt-6 rounded-xl border border-blue-200/80 dark:border-blue-800/70 bg-gradient-to-r from-blue-50 via-blue-50 to-fuchsia-50 dark:from-blue-950/30 dark:via-blue-950/20 dark:to-fuchsia-950/20 px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <div className="mt-6 flex flex-col gap-3 rounded-xl border border-blue-200/80 bg-blue-50/80 px-4 py-3 dark:border-blue-800/70 dark:bg-blue-950/25 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                           <p className="text-sm font-semibold text-blue-900 dark:text-blue-200">
                             Need a download?
@@ -5067,7 +5231,7 @@ export default function VideoToTranscript(
                     </div>
                   )}
                 </div>
-                <aside className="min-w-0 space-y-3 self-start lg:sticky lg:top-20">
+                <aside className="min-w-0 space-y-component-sm self-start lg:sticky lg:top-20">
                   {(() => {
                     const schema = getSummarySchema();
                     const previewBullets = [
@@ -5097,7 +5261,7 @@ export default function VideoToTranscript(
                               />
                               Exports
                             </h3>
-                            <span className="text-[11px] text-gray-500">
+                            <span className="text-xs text-gray-500">
                               All formats
                             </span>
                           </div>
@@ -5106,19 +5270,19 @@ export default function VideoToTranscript(
                               Exports appear after transcript data is ready.
                             </p>
                           ) : (
-                            <div className="space-y-3">
+                            <div className="space-y-component-sm">
                               {/* ── Output settings (mirrored from pre-processing panel, always visible at export time) ── */}
-                              <div className="space-y-2 rounded-lg border border-gray-100 px-2 pb-2 dark:border-gray-800">
+                              <div className="space-y-micro rounded-lg border border-gray-100 px-2 pb-2 dark:border-gray-800">
                                 <div className="flex items-center justify-between pt-2">
-                                  <span className="text-[11px] font-semibold text-gray-700 dark:text-gray-300">
+                                  <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
                                     Output settings
                                   </span>
-                                  <span className="text-[10px] text-gray-500">
+                                  <span className="text-xs text-gray-500">
                                     Default: Per interval
                                   </span>
                                 </div>
                                 <div className="pt-2">
-                                  <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-1">
+                                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
                                     Timestamp format
                                   </p>
                                   <div className="flex flex-col gap-1">
@@ -5139,6 +5303,10 @@ export default function VideoToTranscript(
                                         {
                                           value: "per-segment",
                                           label: "Per segment",
+                                        },
+                                        {
+                                          value: "smpte",
+                                          label: "SMPTE / BITC timecode",
                                         },
                                       ] as const
                                     ).map(({ value, label }) => (
@@ -5164,7 +5332,7 @@ export default function VideoToTranscript(
                                   </div>
                                   {timestampMode === "per-interval" && (
                                     <div className="flex items-center gap-2 mt-1.5 ml-4">
-                                      <label className="text-[10px] text-gray-500 shrink-0">
+                                      <label className="text-xs text-gray-500 shrink-0">
                                         Interval:
                                       </label>
                                       <select
@@ -5172,7 +5340,7 @@ export default function VideoToTranscript(
                                         onChange={(e) =>
                                           setIntervalSec(Number(e.target.value))
                                         }
-                                        className="text-[10px] rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-1.5 py-0.5"
+                                        className="text-xs rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-1.5 py-0.5"
                                       >
                                         <option value={15}>15s</option>
                                         <option value={30}>30s</option>
@@ -5182,9 +5350,84 @@ export default function VideoToTranscript(
                                       </select>
                                     </div>
                                   )}
+                                  {timestampMode === "smpte" && (
+                                    <div className="mt-1.5 ml-4 space-y-1.5">
+                                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                                        Starting timecode (matches the video's
+                                        BITC / burned-in timecode)
+                                      </p>
+                                      <div className="flex items-center gap-1">
+                                        {(
+                                          [
+                                            { v: smpteAnchorH, set: setSmpteAnchorH, max: 23, label: "HH" },
+                                            { v: smpteAnchorM, set: setSmpteAnchorM, max: 59, label: "MM" },
+                                            { v: smpteAnchorS, set: setSmpteAnchorS, max: 59, label: "SS" },
+                                            { v: smpteAnchorF, set: setSmpteAnchorF, max: 59, label: "FF" },
+                                          ] as const
+                                        ).map(({ v, set, max, label }, i) => (
+                                          <span key={label} className="flex items-center">
+                                            {i > 0 && (
+                                              <span className="text-xs text-gray-400 px-0.5">
+                                                :
+                                              </span>
+                                            )}
+                                            <input
+                                              type="number"
+                                              min={0}
+                                              max={max}
+                                              value={v}
+                                              onChange={(e) =>
+                                                set(
+                                                  Math.max(0, Math.min(max, Number(e.target.value) || 0)),
+                                                )
+                                              }
+                                              title={label}
+                                              className="w-10 text-xs rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-1 py-0.5"
+                                            />
+                                          </span>
+                                        ))}
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <label className="text-xs text-gray-500 shrink-0">
+                                          Frame rate:
+                                        </label>
+                                        <select
+                                          value={smpteFpsChoice}
+                                          onChange={(e) =>
+                                            setSmpteFpsChoice(e.target.value)
+                                          }
+                                          className="text-xs rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-1.5 py-0.5"
+                                        >
+                                          <option value="23.976">23.976 fps</option>
+                                          <option value="24">24 fps</option>
+                                          <option value="25">25 fps (PAL)</option>
+                                          <option value="29.97-ndf">
+                                            29.97 fps — Non-Drop
+                                          </option>
+                                          <option value="29.97-df">
+                                            29.97 fps — Drop-Frame (NTSC)
+                                          </option>
+                                          <option value="30">30 fps</option>
+                                          <option value="50">50 fps</option>
+                                          <option value="59.94-ndf">
+                                            59.94 fps — Non-Drop
+                                          </option>
+                                          <option value="59.94-df">
+                                            59.94 fps — Drop-Frame
+                                          </option>
+                                          <option value="60">60 fps</option>
+                                        </select>
+                                      </div>
+                                      <p className="text-xs text-gray-400 dark:text-gray-500">
+                                        Computed deterministically from this
+                                        anchor + frame rate — never edited by
+                                        AI formatting.
+                                      </p>
+                                    </div>
+                                  )}
                                   {timestampMode === "per-speaker" && (
                                     <div className="mt-2 ml-4 space-y-1.5">
-                                      <p className="text-[10px] text-gray-500 dark:text-gray-400">
+                                      <p className="text-xs text-gray-500 dark:text-gray-400">
                                         Speaker labels for exports
                                       </p>
                                       {hasDiarizedSpeakersForExport ? (
@@ -5192,7 +5435,7 @@ export default function VideoToTranscript(
                                           (rawSpeaker, idx) => (
                                             <label
                                               key={rawSpeaker}
-                                              className="flex items-center gap-2 text-[10px]"
+                                              className="flex items-center gap-2 text-xs"
                                             >
                                               <span className="min-w-20 text-gray-500">
                                                 {rawSpeaker}
@@ -5216,7 +5459,7 @@ export default function VideoToTranscript(
                                           ),
                                         )
                                       ) : (
-                                        <p className="text-[10px] text-amber-600 dark:text-amber-400">
+                                        <p className="text-xs text-amber-600 dark:text-amber-400">
                                           REPLICATE_API diarization labels are
                                           still processing for this job. If no
                                           labels appear, reprocess with speaker
@@ -5227,7 +5470,7 @@ export default function VideoToTranscript(
                                   )}
                                 </div>
                                 <div>
-                                  <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-1">
+                                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
                                     Verbatim mode
                                   </p>
                                   <div className="flex flex-col gap-1">
@@ -5266,7 +5509,27 @@ export default function VideoToTranscript(
                                 </div>
                               </div>
                               <div>
-                                <p className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.06em] text-gray-500">
+                                <p className="mb-1.5 text-xs font-medium uppercase tracking-[0.06em] text-gray-500">
+                                  Subtitles
+                                </p>
+                                <div className="grid grid-cols-2 gap-2">
+                                  {(["srt", "vtt"] as const).map((format) => (
+                                    <button
+                                      key={format}
+                                      type="button"
+                                      onClick={() => downloadSubtitleExport(format)}
+                                      className="rounded-lg border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-900 px-2 py-2 text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                    >
+                                      {format.toUpperCase()}
+                                      {!isPaidPlan && (
+                                        <span className="text-gray-400 font-normal"> · wm</span>
+                                      )}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                              <div>
+                                <p className="mb-1.5 text-xs font-medium uppercase tracking-[0.06em] text-gray-500">
                                   Documents
                                 </p>
                                 <div className="grid grid-cols-3 gap-2">
@@ -5291,10 +5554,10 @@ export default function VideoToTranscript(
                                             timestampMode,
                                             verbatimMode,
                                             intervalSec,
+                                            smpteAnchor,
+                                            smpteFps,
                                           },
                                         );
-                                        const FREE_EXPORT_WATERMARK =
-                                          "\n\n---\nExported from VideoText (Free Plan) · videotext.io\n";
                                         const freeCanDownload =
                                           !isPaidPlan && freeExportsUsed < 2;
                                         const freeUsedAll =
@@ -5322,7 +5585,7 @@ export default function VideoToTranscript(
                                           return;
                                         }
                                         const blob = new Blob(
-                                          [content + FREE_EXPORT_WATERMARK],
+                                          [watermarkTextExport(content, "txt")],
                                           { type: "text/plain" },
                                         );
                                         setFreeExportsUsed((prev) => prev + 1);
@@ -5345,7 +5608,7 @@ export default function VideoToTranscript(
                                           type="button"
                                           onClick={handleDownload}
                                           disabled={!canClick}
-                                          className="rounded-lg border border-blue-400/70 dark:border-blue-500/70 bg-blue-600 dark:bg-blue-700 px-2 py-2 text-[11px] font-semibold tracking-wide text-white hover:bg-blue-600 dark:hover:bg-blue-600 transition-colors"
+                                          className="rounded-lg border border-blue-400/70 dark:border-blue-500/70 bg-blue-600 dark:bg-blue-700 px-2 py-2 text-xs font-semibold tracking-wide text-white hover:bg-blue-600 dark:hover:bg-blue-600 transition-colors"
                                           title="Click to download"
                                         >
                                           {format.toUpperCase()}
@@ -5356,7 +5619,7 @@ export default function VideoToTranscript(
                                 </div>
                               </div>
                               <div>
-                                <p className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.06em] text-gray-500">
+                                <p className="mb-1.5 text-xs font-medium uppercase tracking-[0.06em] text-gray-500">
                                   Other formats
                                 </p>
                                 <div className="grid grid-cols-2 gap-2">
@@ -5379,13 +5642,23 @@ export default function VideoToTranscript(
                                                 highlights,
                                                 keywords,
                                               },
-                                              { timestampMode, verbatimMode },
+                                              {
+                                                timestampMode,
+                                                verbatimMode,
+                                                smpteAnchor,
+                                                smpteFps,
+                                              },
                                             )
                                           : format === "csv"
                                             ? buildCsv(
                                                 segsForFormat,
                                                 speakerNameMap,
-                                                { timestampMode, verbatimMode },
+                                                {
+                                                  timestampMode,
+                                                  verbatimMode,
+                                                  smpteAnchor,
+                                                  smpteFps,
+                                                },
                                               )
                                             : format === "notion"
                                               ? buildNotion(
@@ -5394,6 +5667,8 @@ export default function VideoToTranscript(
                                                   {
                                                     timestampMode,
                                                     verbatimMode,
+                                                    smpteAnchor,
+                                                    smpteFps,
                                                   },
                                                 )
                                               : buildTxt(
@@ -5403,47 +5678,56 @@ export default function VideoToTranscript(
                                                     timestampMode,
                                                     verbatimMode,
                                                     intervalSec,
+                                                    smpteAnchor,
+                                                    smpteFps,
                                                   },
                                                 );
-                                      const FREE_EXPORT_WATERMARK =
-                                        "\n\n---\nExported from VideoText (Free Plan) · videotext.io\n";
-                                      const freeCanDownload =
-                                        !isPaidPlan && freeExportsUsed < 2;
-                                      const freeUsedAll =
-                                        !isPaidPlan && freeExportsUsed >= 2;
-                                      const mimeType =
-                                        format === "json"
-                                          ? "application/json"
-                                          : "text/plain";
-                                      const canClick =
-                                        isPaidPlan || freeCanDownload;
-                                      const handleDownload = () => {
-                                        if (isPaidPlan) {
-                                          const blob = new Blob([content], {
-                                            type: mimeType,
-                                          });
-                                          const a = document.createElement("a");
-                                          a.href = URL.createObjectURL(blob);
-                                          a.download = transcriptExportName(
-                                            selectedFile?.name,
-                                            format,
-                                            exportSourceLangCode,
+                                        const freeCanDownload =
+                                          !isPaidPlan && freeExportsUsed < 2;
+                                        const freeUsedAll =
+                                          !isPaidPlan && freeExportsUsed >= 2;
+                                        const mimeType =
+                                          format === "json"
+                                            ? "application/json"
+                                            : "text/plain";
+                                        const canClick =
+                                          isPaidPlan || freeCanDownload;
+                                        const handleDownload = () => {
+                                          if (isPaidPlan) {
+                                            const blob = new Blob([content], {
+                                              type: mimeType,
+                                            });
+                                            const a = document.createElement("a");
+                                            a.href = URL.createObjectURL(blob);
+                                            a.download = transcriptExportName(
+                                              selectedFile?.name,
+                                              format,
+                                              exportSourceLangCode,
+                                            );
+                                            a.click();
+                                            URL.revokeObjectURL(a.href);
+                                            toast.success("Download started");
+                                            return;
+                                          }
+                                          if (freeUsedAll) {
+                                            toast(
+                                              "You've used your 2 free exports. Unlock continued downloads with Pro — $7.99/mo.",
+                                            );
+                                            return;
+                                          }
+                                          const blob = new Blob(
+                                            [
+                                              watermarkTextExport(
+                                                content,
+                                                format === "json"
+                                                  ? "json"
+                                                  : format === "csv"
+                                                    ? "csv"
+                                                    : "notion",
+                                              ),
+                                            ],
+                                            { type: mimeType },
                                           );
-                                          a.click();
-                                          URL.revokeObjectURL(a.href);
-                                          toast.success("Download started");
-                                          return;
-                                        }
-                                        if (freeUsedAll) {
-                                          toast(
-                                            "You've used your 2 free exports. Unlock continued downloads with Pro — $7.99/mo.",
-                                          );
-                                          return;
-                                        }
-                                        const blob = new Blob(
-                                          [content + FREE_EXPORT_WATERMARK],
-                                          { type: mimeType },
-                                        );
                                         setFreeExportsUsed((prev) => prev + 1);
                                         const a = document.createElement("a");
                                         a.href = URL.createObjectURL(blob);
@@ -5464,7 +5748,7 @@ export default function VideoToTranscript(
                                           type="button"
                                           onClick={handleDownload}
                                           disabled={!canClick}
-                                          className={`rounded-lg border px-2 py-2 text-[11px] font-medium transition-colors ${
+                                          className={`rounded-lg border px-2 py-2 text-xs font-medium transition-colors ${
                                             canClick
                                               ? "border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800"
                                               : "border-gray-200 dark:border-gray-700 text-gray-400 bg-gray-50 dark:bg-gray-800/50 cursor-not-allowed"
@@ -5482,7 +5766,7 @@ export default function VideoToTranscript(
                                     onClick={() =>
                                       void handleExportPdfThreeColumn()
                                     }
-                                    className="rounded-lg border border-blue-200 dark:border-blue-700/60 px-2 py-2 text-[11px] font-medium text-blue-700 dark:text-blue-300 bg-blue-50/60 dark:bg-blue-950/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
+                                    className="rounded-lg border border-blue-200 dark:border-blue-700/60 px-2 py-2 text-xs font-medium text-blue-700 dark:text-blue-300 bg-blue-50/60 dark:bg-blue-950/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
                                     title="3-column table: Speaker | Timecode | Dialogue"
                                   >
                                     PDF 3-col
@@ -5490,13 +5774,13 @@ export default function VideoToTranscript(
                                   <button
                                     type="button"
                                     onClick={handleExportDocxThreeColumn}
-                                    className="rounded-lg border border-blue-200 dark:border-blue-700/60 px-2 py-2 text-[11px] font-medium text-blue-700 dark:text-blue-300 bg-blue-50/60 dark:bg-blue-950/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
+                                    className="rounded-lg border border-blue-200 dark:border-blue-700/60 px-2 py-2 text-xs font-medium text-blue-700 dark:text-blue-300 bg-blue-50/60 dark:bg-blue-950/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
                                     title="3-column table: Speaker | Timecode | Dialogue"
                                   >
                                     DOCX 3-col
                                   </button>
                                 </div>
-                                <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">
+                                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
                                   3-col: Speaker · Timecode · Dialogue table
                                 </p>
                               </div>
@@ -5512,8 +5796,6 @@ export default function VideoToTranscript(
                                     selectedFile?.name,
                                     "video",
                                   );
-                                  const FREE_EXPORT_WATERMARK =
-                                    "\n\n---\nExported from VideoText (Free Plan) · videotext.io\n";
                                   const freeCanDownload =
                                     !isPaidPlan && freeExportsUsed < 2;
                                   const freeUsedAll =
@@ -5533,13 +5815,23 @@ export default function VideoToTranscript(
                                               translatedSegments,
                                               speakerNameMap,
                                               {},
-                                              { timestampMode, verbatimMode },
+                                              {
+                                                timestampMode,
+                                                verbatimMode,
+                                                smpteAnchor,
+                                                smpteFps,
+                                              },
                                             )
                                           : format === "csv"
                                             ? buildCsv(
                                                 translatedSegments,
                                                 speakerNameMap,
-                                                { timestampMode, verbatimMode },
+                                                {
+                                                  timestampMode,
+                                                  verbatimMode,
+                                                  smpteAnchor,
+                                                  smpteFps,
+                                                },
                                               )
                                             : format === "notion"
                                               ? buildNotion(
@@ -5548,6 +5840,8 @@ export default function VideoToTranscript(
                                                   {
                                                     timestampMode,
                                                     verbatimMode,
+                                                    smpteAnchor,
+                                                    smpteFps,
                                                   },
                                                 )
                                               : buildTxt(
@@ -5557,6 +5851,8 @@ export default function VideoToTranscript(
                                                     timestampMode,
                                                     verbatimMode,
                                                     intervalSec,
+                                                    smpteAnchor,
+                                                    smpteFps,
                                                   },
                                                 );
                                       if (freeUsedAll) {
@@ -5577,7 +5873,7 @@ export default function VideoToTranscript(
                                             : ".txt";
                                       const payload = isPaidPlan
                                         ? content
-                                        : content + FREE_EXPORT_WATERMARK;
+                                        : watermarkTextExport(content, format);
                                       if (!isPaidPlan)
                                         setFreeExportsUsed((n) => n + 1);
                                       const blob = new Blob([payload], {
@@ -5600,20 +5896,20 @@ export default function VideoToTranscript(
                                     };
 
                                   const btnCls = (active: boolean) =>
-                                    `rounded-lg border px-2 py-2 text-[11px] font-medium transition-colors ${
+                                    `rounded-lg border px-2 py-2 text-xs font-medium transition-colors ${
                                       active
                                         ? "border-sky-200 dark:border-sky-700 text-sky-700 dark:text-sky-300 bg-sky-50/60 dark:bg-sky-950/30 hover:bg-sky-50 dark:hover:bg-sky-950/60"
                                         : "border-gray-200 dark:border-gray-700 text-gray-400 bg-gray-50 dark:bg-gray-800/50 cursor-not-allowed"
                                     }`;
 
                                   return (
-                                    <div className="border-t border-dashed border-gray-200 dark:border-gray-700 pt-3 space-y-3">
+                                    <div className="border-t border-dashed border-gray-200 dark:border-gray-700 pt-3 space-y-component-sm">
                                       <div className="flex items-center gap-1.5">
-                                        <span className="text-[10px] uppercase tracking-wide text-sky-600 dark:text-sky-400 font-semibold">
+                                        <span className="text-xs uppercase tracking-wide text-sky-600 dark:text-sky-400 font-semibold">
                                           Translated · {langLabel}
                                         </span>
                                         {!isReady && (
-                                          <span className="text-[10px] text-gray-400 italic">
+                                          <span className="text-xs text-gray-400 italic">
                                             translating…
                                           </span>
                                         )}
@@ -5621,7 +5917,7 @@ export default function VideoToTranscript(
 
                                       {/* Structured */}
                                       <div>
-                                        <p className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.06em] text-gray-500">
+                                        <p className="mb-1.5 text-xs font-medium uppercase tracking-[0.06em] text-gray-500">
                                           Structured
                                         </p>
                                         <div className="grid grid-cols-2 gap-2">
@@ -5650,7 +5946,7 @@ export default function VideoToTranscript(
 
                                       {/* Documents */}
                                       <div>
-                                        <p className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.06em] text-gray-500">
+                                        <p className="mb-1.5 text-xs font-medium uppercase tracking-[0.06em] text-gray-500">
                                           Documents
                                         </p>
                                         <div className="grid grid-cols-2 gap-2">
@@ -5696,7 +5992,7 @@ export default function VideoToTranscript(
                               Full summary
                             </h3>
                             {result?.summary ? (
-                              <span className="rounded-[3px] bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
+                              <span className="rounded-[3px] bg-blue-50 px-1.5 py-0.5 text-xs font-medium uppercase tracking-wide text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
                                 AI-generated
                               </span>
                             ) : null}
@@ -5717,7 +6013,7 @@ export default function VideoToTranscript(
                           ) : (
                             <div className="relative rounded-lg overflow-hidden">
                               {/* Blurred skeleton lines representing locked summary content */}
-                              <div className="blur-sm select-none pointer-events-none space-y-2 py-1">
+                              <div className="blur-sm select-none pointer-events-none space-y-micro py-1">
                                 <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full w-full" />
                                 <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full w-5/6" />
                                 <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full w-11/12" />
@@ -5742,7 +6038,7 @@ export default function VideoToTranscript(
                           )}
                           {previewBullets.length > 0 ? (
                             <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-800">
-                              <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-2">
+                              <p className="text-xs uppercase tracking-wide text-gray-500 mb-2">
                                 Key bullets
                               </p>
                               <ul className="text-xs text-gray-600 dark:text-gray-300 space-y-1.5 list-disc pl-4">
@@ -5791,7 +6087,7 @@ export default function VideoToTranscript(
                               aria-hidden
                             />
                           </summary>
-                          <ul className="px-4 pb-3 border-t border-gray-100 dark:border-gray-800 pt-3 space-y-2 max-h-56 overflow-y-auto">
+                          <ul className="px-4 pb-3 border-t border-gray-100 dark:border-gray-800 pt-3 space-y-micro max-h-56 overflow-y-auto">
                             {highlights.length === 0 ? (
                               <li className="text-xs text-gray-500">
                                 No highlights detected.
@@ -5832,7 +6128,7 @@ export default function VideoToTranscript(
                                     onClick={() =>
                                       scrollToSegment(k.segmentIndex)
                                     }
-                                    className="text-[11px] px-2 py-1 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-950/30"
+                                    className="text-xs px-2 py-1 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-950/30"
                                   >
                                     {k.keyword} ({k.count})
                                   </button>
@@ -6000,452 +6296,15 @@ export default function VideoToTranscript(
         }}
       />
 
-      {(hasDeepContent || faq.length > 0) && (
-        <div className="mt-20 border-t border-gray-100 dark:border-gray-800/60" />
-      )}
-
-      {hasDeepContent && (
-        <section
-          className="py-16 px-4 sm:px-6 max-w-5xl mx-auto space-y-20"
-          aria-label="Workflow proof and comparison"
-        >
-          {location.pathname === "/video-to-transcript" && (
-            <div className="space-y-10">
-              <div>
-                <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-gray-100">
-                  Video to Transcript Online (Free &amp; Fast)
-                </h2>
-                <p className="mt-3 text-gray-600 dark:text-gray-300">
-                  VideoText lets you convert video to transcript online in
-                  minutes with one upload and one clean output package.
-                </p>
-              </div>
-              <div>
-                <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-gray-100">
-                  Transcribe Video to Text in Minutes
-                </h2>
-                <p className="mt-3 text-gray-600 dark:text-gray-300">
-                  Upload a file or paste a URL, then download transcript text,
-                  SRT/VTT subtitles, summary, and chapters without manual
-                  cleanup.
-                </p>
-              </div>
-              <div>
-                <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-gray-100">
-                  Convert Video to Transcript Without Editing
-                </h2>
-                <p className="mt-3 text-gray-600 dark:text-gray-300">
-                  No timeline editing, no manual cleanup, and no extra steps.
-                  VideoText is built for one-click output so you can publish
-                  faster.
-                </p>
-              </div>
-              <div>
-                <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-gray-100">
-                  The Fastest Video to Transcript Tool
-                </h2>
-                <p className="mt-3 text-gray-600 dark:text-gray-300">
-                  Most tools process in longer, multi-step workflows. VideoText
-                  focuses on fast parallel processing for long videos, so you
-                  get structured outputs in minutes.
-                </p>
-              </div>
-              <div>
-                <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-gray-100">
-                  Related transcription tools
-                </h2>
-                <ul className="mt-4 space-y-2 text-blue-700 dark:text-blue-300 font-medium">
-                  <li>
-                    <Link
-                      to="/youtube-transcript-generator"
-                      className="hover:underline"
-                    >
-                      Transcribe YouTube videos
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/subtitle-generator" className="hover:underline">
-                      Generate subtitles automatically
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/transcribe-long-videos"
-                      className="hover:underline"
-                    >
-                      Transcribe long videos
-                    </Link>
-                  </li>
-                </ul>
-                <p className="mt-6 text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  More workflow tools
-                </p>
-                <ul className="mt-2 space-y-2 text-blue-700 dark:text-blue-300 font-medium">
-                  <li>
-                    <Link to="/translate-subtitles" className="hover:underline">
-                      Translate your transcripts
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/burn-subtitles" className="hover:underline">
-                      Burn subtitles
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/compress-video" className="hover:underline">
-                      Compress your video
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/voice-recorder" className="hover:underline">
-                      Need notes/transcripts from your voice
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          )}
-
-          {/* ── Proof points ── */}
-          {seoDeepContent?.proofPoints?.length ? (
-            <div>
-              <div className="mb-8">
-                <p className="text-xs font-semibold uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">
-                  By the numbers
-                </p>
-                <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-gray-100">
-                  Proof, not promises
-                </h2>
-              </div>
-              <ul className="grid sm:grid-cols-2 gap-3" role="list">
-                {seoDeepContent.proofPoints.map((point, idx) => (
-                  <li
-                    key={`proof-${idx}`}
-                    className="flex items-start gap-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900/50 px-5 py-4 shadow-sm"
-                  >
-                    <span
-                      className="mt-0.5 shrink-0 flex h-5 w-5 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/50"
-                      aria-hidden
-                    >
-                      <svg
-                        className="w-3 h-3 text-blue-600 dark:text-blue-400"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={3}
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    </span>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                      {point}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-              {seoDeepContent.ctaText && seoDeepContent.ctaPath && (
-                <div className="mt-8">
-                  <Link
-                    to={seoDeepContent.ctaPath}
-                    className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors shadow-sm"
-                  >
-                    {seoDeepContent.ctaText}
-                    <ChevronRight className="w-4 h-4" aria-hidden />
-                  </Link>
-                </div>
-              )}
-            </div>
+      {location.pathname === "/video-to-transcript" ? (
+        <CoreToolSeoDepth path="/video-to-transcript" />
+      ) : (
+        <>
+          {seoDeepContent ? (
+            <VideoToTranscriptSeoDeepContent content={seoDeepContent} />
           ) : null}
-
-          {/* ── Visual proof ── */}
-          {seoDeepContent?.visualProof?.length ? (
-            <div>
-              <div className="mb-8">
-                <p className="text-xs font-semibold uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">
-                  See the actual output
-                </p>
-                <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-gray-100">
-                  This is generated automatically in minutes
-                </h2>
-              </div>
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-                {seoDeepContent.visualProof.map((proof, idx) => (
-                  <article
-                    key={`proof-${idx}`}
-                    className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/70 overflow-hidden shadow-sm hover:shadow-md transition-shadow"
-                  >
-                    {proof.image && (
-                      <div className="relative bg-gray-100 dark:bg-gray-800 aspect-square overflow-hidden">
-                        <img
-                          src={proof.image}
-                          alt={proof.title}
-                          className="w-full h-full object-cover"
-                          loading="lazy"
-                        />
-                      </div>
-                    )}
-                    <div className="p-4">
-                      <h3 className="mb-2 font-medium text-sm text-gray-900 dark:text-gray-100 leading-snug">
-                        {proof.title}
-                      </h3>
-                      <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-                        {proof.body}
-                      </p>
-                    </div>
-                  </article>
-                ))}
-              </div>
-              <p className="mt-6 text-sm text-center text-gray-600 dark:text-gray-400">
-                No manual cleanup. No editing. Ready to use directly in your
-                workflow.
-              </p>
-            </div>
-          ) : null}
-          {seoDeepContent?.workflowSteps?.length ? (
-            <div>
-              <div className="mb-8">
-                <p className="text-xs font-semibold uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">
-                  How it works
-                </p>
-                <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-gray-100">
-                  Three steps, no setup
-                </h2>
-              </div>
-              <div className="grid gap-4 md:grid-cols-3">
-                {seoDeepContent.workflowSteps.map((step, idx) => (
-                  <article
-                    key={`step-${idx}`}
-                    className="relative rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/70 p-6 shadow-sm"
-                  >
-                    <span
-                      className="mb-4 flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white text-sm font-bold"
-                      aria-hidden
-                    >
-                      {idx + 1}
-                    </span>
-                    <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-2">
-                      {step.title}
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                      {step.detail}
-                    </p>
-                  </article>
-                ))}
-              </div>
-            </div>
-          ) : null}
-
-          {/* ── Output examples ── */}
-          {seoDeepContent?.outputExamples?.length ? (
-            <div>
-              <div className="mb-8">
-                <p className="text-xs font-semibold uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">
-                  What you get
-                </p>
-                <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-gray-100">
-                  Not raw text — ready-to-use content
-                </h2>
-                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                  Transcript, summary, chapters, and subtitles. All from one
-                  upload.
-                </p>
-              </div>
-              <div className="grid gap-4 md:grid-cols-3">
-                {seoDeepContent.outputExamples.map((example, idx) => {
-                  const accentBorder = [
-                    "border-t-blue-500",
-                    "border-t-blue-500",
-                    "border-t-emerald-500",
-                  ][idx % 3];
-                  return (
-                    <article
-                      key={`example-${idx}`}
-                      className={`rounded-xl border border-gray-200 dark:border-gray-700 border-t-2 ${accentBorder} bg-white dark:bg-gray-900/70 p-6 shadow-sm`}
-                    >
-                      <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-2">
-                        {example.title}
-                      </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                        {example.body}
-                      </p>
-                    </article>
-                  );
-                })}
-              </div>
-            </div>
-          ) : null}
-
-          {/* ── Comparison table ── */}
-          {seoDeepContent?.comparisonRows?.length ? (
-            <div>
-              <div className="mb-8">
-                <p className="text-xs font-semibold uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">
-                  Compare
-                </p>
-                <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-gray-100">
-                  VideoText vs alternatives
-                </h2>
-              </div>
-              <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-                <table className="min-w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/80">
-                      <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 w-1/3">
-                        Feature
-                      </th>
-                      <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-blue-600 dark:text-blue-400 w-1/3">
-                        VideoText
-                      </th>
-                      <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 w-1/3">
-                        Typical alternatives
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100 dark:divide-gray-800 bg-white dark:bg-gray-950/20">
-                    {seoDeepContent.comparisonRows.map((row, idx) => (
-                      <tr
-                        key={`cmp-${idx}`}
-                        className={
-                          idx % 2 === 1
-                            ? "bg-gray-50/60 dark:bg-gray-900/20"
-                            : ""
-                        }
-                      >
-                        <td className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                          {row.feature}
-                        </td>
-                        <td className="px-5 py-4 font-medium text-gray-900 dark:text-gray-100">
-                          {row.videotext}
-                        </td>
-                        <td className="px-5 py-4 text-gray-500 dark:text-gray-400">
-                          {row.alternatives}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          ) : null}
-
-          {/* ── Technical explanation ── */}
-          {seoDeepContent?.technicalExplanation?.length ? (
-            <div>
-              <div className="mb-8">
-                <p className="text-xs font-semibold uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">
-                  How it works
-                </p>
-                <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-gray-100">
-                  Why VideoText is faster than everyone else
-                </h2>
-              </div>
-              <div className="space-y-4">
-                {seoDeepContent.technicalExplanation.map((tech, idx) => (
-                  <article
-                    key={`tech-${idx}`}
-                    className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/70 p-6 shadow-sm"
-                  >
-                    <h3 className="mb-2 font-medium text-gray-900 dark:text-gray-100">
-                      {tech.title}
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                      {tech.body}
-                    </p>
-                  </article>
-                ))}
-              </div>
-            </div>
-          ) : null}
-
-          {/* ── Use cases ── */}
-          {seoDeepContent?.useCases?.length ? (
-            <div>
-              <div className="mb-8">
-                <p className="text-xs font-semibold uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">
-                  Who it's for
-                </p>
-                <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-gray-100">
-                  Built for people who need it done fast
-                </h2>
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {seoDeepContent.useCases.map((useCase, idx) => (
-                  <article
-                    key={`usecase-${idx}`}
-                    className="flex items-start gap-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/70 p-5 shadow-sm"
-                  >
-                    <span
-                      className="shrink-0 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-bold"
-                      aria-hidden
-                    >
-                      {idx + 1}
-                    </span>
-                    <div className="min-w-0">
-                      <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1">
-                        {useCase.title}
-                      </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                        {useCase.body}
-                      </p>
-                    </div>
-                  </article>
-                ))}
-              </div>
-              {seoDeepContent.ctaText && seoDeepContent.ctaPath && (
-                <div className="mt-8">
-                  <Link
-                    to={seoDeepContent.ctaPath}
-                    className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors shadow-sm"
-                  >
-                    {seoDeepContent.ctaText}
-                    <ChevronRight className="w-4 h-4" aria-hidden />
-                  </Link>
-                </div>
-              )}
-            </div>
-          ) : null}
-        </section>
-      )}
-
-      {faq.length > 0 && (
-        <section
-          className="py-16 px-4 sm:px-6 max-w-5xl mx-auto"
-          aria-label="Frequently asked questions"
-        >
-          <div className="mb-10">
-            <p className="text-xs font-semibold uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">
-              Got questions?
-            </p>
-            <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-gray-100">
-              Frequently asked questions
-            </h2>
-          </div>
-          <dl className="space-y-2">
-            {faq.map((item, i) => (
-              <details
-                key={i}
-                className="group rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/50 overflow-hidden shadow-sm"
-              >
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 [&::-webkit-details-marker]:hidden">
-                  <dt className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                    {item.q}
-                  </dt>
-                  <ChevronRight
-                    className="w-4 h-4 text-gray-400 shrink-0 transition-transform duration-200 group-open:rotate-90"
-                    aria-hidden
-                  />
-                </summary>
-                <dd className="px-6 pb-5 text-sm text-gray-600 dark:text-gray-300 leading-relaxed border-t border-gray-100 dark:border-gray-800 pt-4">
-                  {item.a}
-                </dd>
-              </details>
-            ))}
-          </dl>
-        </section>
+          {faq.length > 0 ? <CollapsibleFaqSection items={faq} /> : null}
+        </>
       )}
     </>
   );

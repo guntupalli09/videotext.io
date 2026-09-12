@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import { CheckCircle2, XCircle, ChevronRight, Zap, Shield, DollarSign } from 'lucide-react'
 
 const COMPARE_ROWS = [
-  { label: 'Starting price', videotext: 'Free / $7.99/mo Pro', competitor: '$24/month' },
+  { label: 'Starting price', videotext: 'Free / $7.99 Pro', competitor: '$24/month' },
   { label: 'No credit card to start', videotext: true, competitor: false },
   { label: 'Processing time (1-hour video)', videotext: '~2 min', competitor: '8–12 min' },
   { label: 'YouTube URL → transcript (no upload)', videotext: true, competitor: false },
@@ -23,7 +23,7 @@ const COMPARE_ROWS = [
 const FAQ = [
   {
     q: 'What is the best free Descript alternative?',
-    a: 'VideoText is the most direct free alternative for pure transcription and subtitle workflows. Descript is a full video editor — if you only need transcripts, SRT files, or subtitle translation, VideoText is faster and cheaper. The free tier gives you 3 imports/day with no credit card.',
+    a: 'VideoText is the most direct free alternative for pure transcription and subtitle workflows. Descript is a full video editor — if you only need transcripts, SRT files, or subtitle translation, VideoText is faster and cheaper. The free tier gives you 3 imports/month with no credit card.',
   },
   {
     q: 'Can VideoText do everything Descript does?',
@@ -48,7 +48,7 @@ function Cell({ val, isUs = false }: { val: boolean | string; isUs?: boolean }) 
     return <span className={`text-sm font-semibold ${isUs ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-300'}`}>{val}</span>
   }
   return val
-    ? <CheckCircle2 className={`w-5 h-5 mx-auto ${isUs ? 'text-emerald-500' : 'text-emerald-400'}`} />
+    ? <CheckCircle2 className={`w-5 h-5 mx-auto ${isUs ? 'text-blue-500' : 'text-blue-400/80'}`} />
     : <XCircle className="w-5 h-5 mx-auto text-gray-300 dark:text-gray-700" />
 }
 
@@ -56,31 +56,46 @@ export default function DescriptAlternativePage() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors duration-500">
       {/* Hero */}
-      <section className="relative py-20 sm:py-28 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-blue-950/20 dark:via-gray-950 dark:to-blue-950/20 transition-colors duration-500" />
-        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
+      <section className="border-b border-gray-200 bg-gray-50 py-20 dark:border-white/[0.08] dark:bg-gray-900/50 sm:py-28">
+        <div className="max-w-4xl mx-auto px-6 text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-600/10 border border-blue-200/60 dark:border-blue-500/20 mb-6">
             <span className="text-[12px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">Descript Alternative</span>
           </div>
           <h1 className="text-4xl sm:text-5xl font-medium text-gray-900 dark:text-white mb-5 leading-tight">
-            The best free{' '}
-            <span className="bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
-              Descript alternative
-            </span>{' '}
-            for transcription
+            Descript alternative —{' '}
+            <span className="text-blue-600 dark:text-blue-400">
+              upload or paste a YouTube URL
+            </span>
           </h1>
-          <p className="text-lg text-gray-500 dark:text-white/45 max-w-2xl mx-auto mb-8">
-            Descript charges $24/month and bundles a full video editor you may not need. VideoText starts free — paste a YouTube URL or upload a file, get a transcript or subtitle file in minutes.
+          <p className="text-lg text-gray-500 dark:text-white/45 max-w-2xl mx-auto mb-6">
+            Problem: you need a transcript and SRT, not a desktop editor. Three steps on Video to Transcript. Free: 3 imports/mo, no card. Files deleted after processing.
           </p>
+          <ol className="grid sm:grid-cols-3 gap-3 text-left max-w-3xl mx-auto mb-8">
+            <li className="rounded-xl border border-blue-100 dark:border-blue-900 bg-white/80 dark:bg-gray-900/60 p-3">
+              <p className="text-xs font-semibold text-blue-700 dark:text-blue-300">1. Upload or paste URL</p>
+              <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">Video file or public YouTube URL. No desktop install.</p>
+            </li>
+            <li className="rounded-xl border border-blue-100 dark:border-blue-900 bg-white/80 dark:bg-gray-900/60 p-3">
+              <p className="text-xs font-semibold text-blue-700 dark:text-blue-300">2. Whisper large-v3</p>
+              <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">~98.5% on clear audio. Transcript + SRT/VTT + summary + chapters.</p>
+            </li>
+            <li className="rounded-xl border border-blue-100 dark:border-blue-900 bg-white/80 dark:bg-gray-900/60 p-3">
+              <p className="text-xs font-semibold text-blue-700 dark:text-blue-300">3. Download and continue</p>
+              <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">Then Fix, Translate, or Burn if you need captions next.</p>
+            </li>
+          </ol>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link to="/video-to-transcript">
-              <span className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-7 py-3.5 rounded-xl font-semibold text-[15px] shadow-lg shadow-blue-500/25 hover:shadow-xl transition-all">
-                Try VideoText free
+              <span className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-7 py-3.5 text-[15px] font-semibold text-white transition-colors hover:bg-blue-700">
+                Open Video to Transcript
                 <ChevronRight className="w-4 h-4" />
               </span>
             </Link>
-            <span className="text-sm text-gray-400">No credit card · Files deleted after processing</span>
+            <Link to="/video-to-subtitles" className="text-sm font-semibold text-blue-700 dark:text-blue-300 hover:underline">
+              Need captions only?
+            </Link>
           </div>
+          <p className="mt-3 text-sm text-gray-400">Free tier · no credit card · files deleted after processing</p>
         </div>
       </section>
 
@@ -143,7 +158,7 @@ export default function DescriptAlternativePage() {
           {[
             { icon: Zap, title: '6× faster', body: 'VideoText processes a 2-hour video in ~3 minutes vs 15–20 minutes in Descript. No waiting on a cloud render.' },
             { icon: Shield, title: 'Files deleted instantly', body: 'Descript stores your project in their cloud. VideoText deletes your file the moment the job completes — nothing retained.' },
-            { icon: DollarSign, title: 'Free tier + Pro at $7.99/mo', body: 'Descript\'s cheapest paid plan is $24/month with limited features. VideoText starts free — 3 uploads/day, no card needed. Pro is $7.99/month.' },
+            { icon: DollarSign, title: 'Free tier + Pro at $7.99/mo', body: 'Descript\'s cheapest paid plan is $24/month with limited features. VideoText starts free — 3 imports/month, no card needed. Pro is $7.99/month for the full workflow.' },
           ].map(({ icon: Icon, title, body }) => (
             <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-6">
               <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-600/15 flex items-center justify-center mb-3">
@@ -169,11 +184,11 @@ export default function DescriptAlternativePage() {
         </section>
 
         {/* CTA */}
-        <section className="bg-gradient-to-br from-blue-600 via-blue-600 to-blue-700 rounded-xl p-8 sm:p-12 text-white text-center">
+        <section className="rounded-xl border border-white/[0.08] bg-gray-950 p-8 text-center sm:p-12">
           <h2 className="text-2xl sm:text-3xl font-medium mb-3">Switch from Descript in 2 minutes</h2>
-          <p className="text-white/70 mb-8 max-w-xl mx-auto">Paste a YouTube URL or upload an MP4. Get your transcript or subtitle file instantly. No editor to learn. Free tier, no credit card.</p>
+          <p className="text-white/55 mb-8 max-w-xl mx-auto">Paste a YouTube URL or upload an MP4. Get your transcript or subtitle file instantly. No editor to learn. Free tier, no credit card.</p>
           <Link to="/video-to-transcript">
-            <span className="inline-flex items-center gap-2 bg-white text-blue-700 px-8 py-3.5 rounded-xl font-bold text-[15px] shadow-lg hover:shadow-xl transition-all">
+            <span className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-8 py-3.5 text-[15px] font-bold text-white transition-colors hover:bg-blue-700">
               Transcribe my first video free
               <ChevronRight className="w-4 h-4" />
             </span>

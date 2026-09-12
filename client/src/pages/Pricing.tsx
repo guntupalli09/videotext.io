@@ -1,13 +1,17 @@
 import { useState, useEffect, useCallback } from 'react'
-import { motion } from 'framer-motion'
 import { Youtube, Mic, Building2 } from 'lucide-react'
-import { createCheckoutSession, createBillingPortalSession, rememberCheckoutAttribution } from '../lib/billing'
+import { createBillingPortalSession } from '../lib/billing'
+import { startCheckout } from '../lib/startCheckout'
 import { trackEvent } from '../lib/analytics'
 import type { BillingPlan } from '../lib/billing'
 import type { BillingInterval } from '../lib/billing'
 import { getCurrentUsage } from '../lib/api'
 import { logout, isLoggedIn } from '../lib/auth'
 import { trackAppEvent } from '../lib/feedbackEvents'
+import { getJobCompletedCount } from '../lib/jobCount'
+import CancellationReasonModal from '../components/CancellationReasonModal'
+import { hasSubmittedCancellationReason } from '../lib/cancellationFeedback'
+import { useProPricing } from '../contexts/PricingContext'
 
 function Check() {
   return (
@@ -29,19 +33,22 @@ function X() {
 }
 
 export default function Pricing() {
+  const { pricing } = useProPricing()
   const [currentPlan, setCurrentPlan] = useState<string | null>(null)
   const [usageResetDate, setUsageResetDate] = useState<string | null>(null)
-  const [subscriptionCancelingAt, setSubscriptionCancelingAt] = useState<string | null>(null)
+  const [cancelAtPeriodEnd, setCancelAtPeriodEnd] = useState(false)
   const [portalLoading, setPortalLoading] = useState(false)
   const [checkoutLoading, setCheckoutLoading] = useState<BillingPlan | null>(null)
   const [billingInterval, setBillingInterval] = useState<BillingInterval>('monthly')
+  const [cancelReasonOpen, setCancelReasonOpen] = useState(false)
+  const [pendingPortalRedirect, setPendingPortalRedirect] = useState(false)
 
   const refreshCurrentPlan = useCallback(() => {
     getCurrentUsage({ skipCache: true })
       .then((data) => {
         setCurrentPlan((data.plan || 'free').toLowerCase())
         setUsageResetDate(data.resetDate ?? data.billingPeriodEnd ?? null)
-        setSubscriptionCancelingAt((data as { subscriptionCancelingAt?: string | null }).subscriptionCancelingAt ?? null)
+        setCancelAtPeriodEnd(Boolean(data.cancelAtPeriodEnd && data.billingPeriodEnd))
       })
       .catch(() => {
         setCurrentPlan((localStorage.getItem('plan') || 'free').toLowerCase())
@@ -70,20 +77,34 @@ export default function Pricing() {
     try { return localStorage.getItem('videotext:signup_started_at') } catch { return null }
   })()
   const hoursSinceSignup = signupStartedAt ? Math.max(0, Math.round((Date.now() - new Date(signupStartedAt).getTime()) / 36e5)) : null
-  const jobCount = (() => {
-    try { return Number(localStorage.getItem('videotext:job_completed_count') || '0') || 0 } catch { return 0 }
-  })()
+  const jobCount = getJobCompletedCount()
 
-  async function handleManageSubscription() {
-    if (!isPaidPlan) return
+  async function openBillingPortal() {
     setPortalLoading(true)
     try {
       const { url } = await createBillingPortalSession(window.location.origin + '/pricing')
       window.location.href = url
     } catch (err: any) {
       alert(err.message || 'Failed to open billing')
-    } finally {
       setPortalLoading(false)
+    }
+  }
+
+  async function handleManageSubscription() {
+    if (!isPaidPlan) return
+    if (hasSubmittedCancellationReason('pre_portal')) {
+      await openBillingPortal()
+      return
+    }
+    setPendingPortalRedirect(true)
+    setCancelReasonOpen(true)
+  }
+
+  async function finishManageSubscriptionFlow() {
+    setCancelReasonOpen(false)
+    if (pendingPortalRedirect) {
+      setPendingPortalRedirect(false)
+      await openBillingPortal()
     }
   }
 
@@ -100,45 +121,20 @@ export default function Pricing() {
 
     setCheckoutLoading(plan)
     try {
-      trackEvent('upgrade_clicked', {
-        plan,
-        source: 'pricing_page',
-        billing_interval: billingInterval,
-        job_count: jobCount,
-        ...(hoursSinceSignup != null ? { hours_since_signup: hoursSinceSignup, cohort_date: signupStartedAt?.slice(0, 10) } : {}),
-      })
-      trackEvent('checkout_started', {
-        plan,
-        source: 'pricing_page',
-        billing_interval: billingInterval,
-        job_count: jobCount,
-        ...(hoursSinceSignup != null ? { hours_since_signup: hoursSinceSignup, cohort_date: signupStartedAt?.slice(0, 10) } : {}),
-      })
-      const { url } = await createCheckoutSession({
-        mode: 'subscription', plan, billingInterval,
-        returnToPath: '/pricing', frontendOrigin: window.location.origin,
-      })
-      trackEvent('checkout_session_created', {
-        plan,
-        source: 'pricing_page',
-        billing_interval: billingInterval,
-        job_count: jobCount,
-        ...(hoursSinceSignup != null ? { hours_since_signup: hoursSinceSignup, cohort_date: signupStartedAt?.slice(0, 10) } : {}),
-      })
-      trackEvent('stripe_redirect', {
-        plan,
-        source: 'pricing_page',
-        billing_interval: billingInterval,
-      })
-      try {
-        if (isLoggedIn()) {
-          trackAppEvent('checkout_session_created', { plan, source: 'pricing_page', billing_interval: billingInterval, job_count: jobCount })
-          trackAppEvent('stripe_redirect', { plan, source: 'pricing_page', billing_interval: billingInterval })
-        }
-      } catch { /* non-blocking */ }
       try { localStorage.setItem('videotext:checkout_billing_interval', billingInterval) } catch { /* non-blocking */ }
-      rememberCheckoutAttribution({ source: 'pricing_page', billing_interval: billingInterval })
-      window.location.href = url
+      await startCheckout({
+        plan,
+        billingInterval,
+        returnToPath: '/pricing',
+        attribution: {
+          source: 'pricing_page',
+          job_count: jobCount,
+          ...(hoursSinceSignup != null ? { hours_since_signup: hoursSinceSignup, cohort_date: signupStartedAt?.slice(0, 10) } : {}),
+          displayed_price: billingInterval === 'annual' ? pricing.annual.effectiveMonthly : pricing.monthly.amount,
+          pricing_tier: pricing.tier,
+          ...(pricing.country ? { pricing_country: pricing.country } : {}),
+        },
+      })
     } catch (e: any) {
       const msg: string = e.message || ''
       if (msg.includes('session has expired') || msg.includes('log out and log back in')) {
@@ -151,7 +147,7 @@ export default function Pricing() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-950 dark:to-gray-900 py-20 sm:py-28">
+    <div className="min-h-screen bg-gray-50 py-20 dark:bg-gray-950 sm:py-28">
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
 
         {/* Header */}
@@ -163,17 +159,22 @@ export default function Pricing() {
           <p className="mt-4 text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
             Transcribe · Subtitle · Translate · Format · QA · Process · Deliver
           </p>
+          {pricing.enabled && pricing.tier !== 'standard' && (
+            <p className="mt-3 text-sm font-medium text-blue-600 dark:text-blue-400">
+              Regional pricing for your area — same full Pro workflow
+            </p>
+          )}
 
           {isPaidPlan && (
             <div className="mt-8 flex flex-col items-center gap-2">
-              {subscriptionCancelingAt && (
+              {cancelAtPeriodEnd && usageResetDate && (
                 <div className="rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 px-4 py-3 text-sm text-amber-800 dark:text-amber-300 max-w-sm text-center">
                   Canceling on{' '}
-                  <strong>{new Date(subscriptionCancelingAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</strong>.
+                  <strong>{new Date(usageResetDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</strong>.
                   Reactivate below to keep your plan.
                 </div>
               )}
-              {!subscriptionCancelingAt && usageResetDate && (
+              {!cancelAtPeriodEnd && usageResetDate && (
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   Renews {new Date(usageResetDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                 </p>
@@ -207,7 +208,7 @@ export default function Pricing() {
               className={`min-h-11 rounded-lg px-3 sm:px-5 text-sm font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 ${billingInterval === 'annual' ? 'bg-blue-600 text-white shadow' : 'text-gray-300 hover:text-white'}`}
             >
               <span>Annual</span>
-              <span className="ml-2 inline-flex rounded-full bg-emerald-400 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wide text-emerald-950 shadow-sm">Save 27%</span>
+              <span className="ml-2 inline-flex rounded-full bg-blue-600 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wide text-white">Save 27%</span>
             </button>
           </div>
         </div>
@@ -235,7 +236,7 @@ export default function Pricing() {
 
             <ul className="space-y-3 flex-1 mb-8">
               {[
-                { label: '3 uploads per day', ok: true },
+                { label: '3 uploads per month', ok: true },
                 { label: 'Files up to 30 minutes', ok: true },
                 { label: 'Transcript & subtitle exports', ok: true },
                 { label: 'AI summaries & chapters', ok: true },
@@ -270,14 +271,18 @@ export default function Pricing() {
             <div className="mb-6">
               <h3 className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest">Pro</h3>
               <div className="mt-2 flex items-baseline gap-1">
-                <span className="text-5xl font-bold text-white">{billingInterval === 'annual' ? '$5.83' : '$7.99'}</span>
+                <span className="text-5xl font-bold text-white">
+                  {billingInterval === 'annual'
+                    ? pricing.annual.effectiveMonthlyDisplay
+                    : pricing.monthly.displayAmount}
+                </span>
                 <span className="text-sm text-gray-400">/mo</span>
               </div>
               <div className="min-h-[44px] pt-1 text-sm" aria-live="polite">
                 {billingInterval === 'annual' ? (
                   <>
-                    <p className="font-medium text-gray-200">$69.99 billed annually</p>
-                    <p className="text-emerald-400">Save $25.89/year</p>
+                    <p className="font-medium text-gray-200">{pricing.annual.billedLabel} billed annually</p>
+                    <p className="text-blue-400">Save {pricing.annual.savePercent}% vs monthly</p>
                   </>
                 ) : <span className="sr-only">Billed monthly</span>}
               </div>
@@ -314,7 +319,9 @@ export default function Pricing() {
               {isCurrentPlan('pro')
                 ? (portalLoading ? 'Opening…' : 'Manage subscription')
                 : checkoutLoading === 'pro' ? 'Redirecting…'
-                : billingInterval === 'annual' ? 'Unlock Pro — $69.99/year' : 'Unlock Pro — $7.99/mo'}
+                : billingInterval === 'annual'
+                  ? `Unlock Pro — ${pricing.annual.label}`
+                  : `Unlock Pro — ${pricing.monthly.label}`}
             </button>
             <p className="mt-3 text-center text-xs text-gray-400">Cancel anytime · All Pro tools included</p>
           </div>
@@ -349,13 +356,9 @@ export default function Pricing() {
                 Platform: Building2, platformColor: 'text-blue-500',
                 result: '12 clients served', resultBg: 'bg-blue-500/10 text-blue-500 border border-blue-500/20',
               },
-            ].map((t, i) => (
-              <motion.div
+            ].map((t) => (
+              <div
                 key={t.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-40px' }}
-                transition={{ delay: i * 0.1, duration: 0.5 }}
                 className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 flex flex-col"
               >
                 <div className="flex items-center justify-between mb-4">
@@ -381,7 +384,7 @@ export default function Pricing() {
                     <p className="text-xs text-gray-400 dark:text-gray-500">{t.role} · {t.meta}</p>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -394,7 +397,7 @@ export default function Pricing() {
         <div className="mt-10 flex flex-wrap justify-center gap-6 text-sm text-gray-400 dark:text-gray-500">
           {['Cancel any time', 'We don\'t store your files'].map((s) => (
             <span key={s} className="flex items-center gap-1.5">
-              <svg className="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
+              <svg className="w-4 h-4 text-blue-500 shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
               {s}
@@ -411,6 +414,17 @@ export default function Pricing() {
           </p>
         )}
       </div>
+
+      <CancellationReasonModal
+        open={cancelReasonOpen}
+        timing="pre_portal"
+        plan={currentPlan ?? 'pro'}
+        onClose={() => {
+          setCancelReasonOpen(false)
+          setPendingPortalRedirect(false)
+        }}
+        onComplete={finishManageSubscriptionFlow}
+      />
     </div>
   )
 }

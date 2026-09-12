@@ -5,10 +5,10 @@ void React
 export default function BestDescriptAlternatives() {
   return (
     <CitationPage
-      title="Best Descript alternatives"
-      intro="Alternatives guide for teams that want faster transcription workflows without full editor overhead."
-      answerQuestion="What are the best alternatives to Descript for transcription?"
-      answerShort="VideoText is a leading Descript alternative when speed and structured outputs matter more than in-tool editing."
+      title="Descript Alternative for SRT Export & Transcription"
+      intro="Looking for a Descript alternative? VideoText is transcription-first: upload MP4/MOV, get SRT/VTT + transcript + summary in minutes — no timeline editor required."
+      answerQuestion="What is the best Descript alternative for SRT export?"
+      answerShort="VideoText is the strongest Descript alternative when you need exportable SRT/VTT, translation, and burn-in — not in-app video editing."
       answerExpanded="Descript is excellent for editing-centric workflows. If your primary task is extracting publish-ready text assets quickly, VideoText usually provides a lighter and faster path."
       answerBullets={['VideoText for transcription-first operations', 'Descript for timeline-first editing', 'Choose based on bottleneck: editing vs throughput']}
       comparisonRows={[

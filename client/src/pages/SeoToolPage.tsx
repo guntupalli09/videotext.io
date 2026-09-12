@@ -10,6 +10,13 @@ import { getSeoEntry, getRelatedSuggestionsForEntry } from '../lib/seoRegistry'
 import type { SeoToolKey } from '../lib/seoRegistry'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import MoneyPagesCta from '../components/MoneyPagesCta'
+import SeoJourneyBanner from '../components/SeoJourneyBanner'
+import CapCutJsonToSrt from '../components/CapCutJsonToSrt'
+import SerpTrustStrip from '../components/SerpTrustStrip'
+import PageGscSeoSections from '../components/PageGscSeoSections'
+import { getPageGscSeoDepth } from '../lib/pageGscSeoDepth'
+import { shouldShowSerpTrustStrip } from '../lib/serpTrustPaths'
+import { getSeoJourneyBanner } from '../lib/seoJourneyConfig'
 import NotFound from './NotFound'
 import { resolveInternalLinkPath } from '../lib/primaryUrls'
 import { getContextualCta, getRouteFamily, getWorkflowStageCtas } from '../lib/routeFamilyTemplates'
@@ -107,10 +114,6 @@ export default function SeoToolPage() {
   if (entry.toolKey === 'video-to-subtitles' && entry.tutorialContent) {
     toolProps.seoTutorial = entry.tutorialContent
   }
-  if (entry.toolKey === 'video-to-transcript' && entry.defaultInputMode === 'youtube') {
-    toolProps.defaultInputMode = 'youtube'
-  }
-
   const intentClass = getIntentClass(entry.intentKey, entry.toolKey)
   const routeFamily = getRouteFamily(pathname)
   const ctaIntent = intentClass === 'comparisonAlternative' ? 'switching' : intentClass === 'howTo' ? 'cleanup' : intentClass
@@ -118,9 +121,13 @@ export default function SeoToolPage() {
   const primaryCtaText = contextualPrimaryCta.text
   const primaryCtaPath = resolveInternalLinkPath(contextualPrimaryCta.path || PRIMARY_TOOL_PATH_BY_KEY[entry.toolKey])
   const stageCtas = getWorkflowStageCtas(routeFamily, pathname).slice(0, 2)
+  const journey = getSeoJourneyBanner(pathname)
 
   return (
     <div className="min-h-screen">
+      {shouldShowSerpTrustStrip(pathname) && <SerpTrustStrip />}
+      {journey && <SeoJourneyBanner data={journey} />}
+      {pathname === '/capcut-captions' && <CapCutJsonToSrt />}
       <Suspense fallback={<RouteFallback />}>
         <Tool {...toolProps} />
       </Suspense>
@@ -162,6 +169,12 @@ export default function SeoToolPage() {
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 pb-12">
           <CrossToolSuggestions suggestions={suggestions} />
         </div>
+      )}
+      {getPageGscSeoDepth(pathname) && (
+        <PageGscSeoSections
+          path={pathname}
+          hideFaq={pathname === '/capcut-captions' && Boolean(entry.faq?.length)}
+        />
       )}
     </div>
   )

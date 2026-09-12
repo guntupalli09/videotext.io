@@ -1,28 +1,28 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
-import { ImageWithFallback } from "./ImageWithFallback";
+import { ArrowRight, Shield, CheckCircle2, Star } from "lucide-react";
 import TrustBadge from "../TrustBadge";
+import { api } from "../../lib/api";
+import {
+  formatPublicRatingCount,
+  formatPublicRatingValue,
+  parsePublicRating,
+  readBootstrappedPublicRating,
+  type PublicRating,
+} from "../../lib/publicRating";
 
-const CREATOR_AVATARS = [
-  "https://i.pravatar.cc/80?img=12",
-  "https://i.pravatar.cc/80?img=32",
-  "https://i.pravatar.cc/80?img=47",
-  "https://i.pravatar.cc/80?img=25",
-  "https://i.pravatar.cc/80?img=56",
-];
-
-function useAverageRating(): number | null {
-  const [rating, setRating] = useState<number | null>(null);
+function usePublicRating(): PublicRating | null {
+  const [rating, setRating] = useState<PublicRating | null>(readBootstrappedPublicRating);
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/stats/public/rating")
+    api("/api/stats/public/rating")
       .then((r) => (r.ok ? r.json() : null))
-      .then((data: { averageRating: number | null } | null) => {
-        if (!cancelled && data?.averageRating != null) setRating(data.averageRating);
+      .then((data: unknown) => {
+        const parsed = parsePublicRating(data);
+        if (!cancelled && parsed) setRating(parsed);
       })
-      .catch(() => {/* degrade silently — no rating shown */});
+      .catch(() => {/* degrade silently — keep bootstrap or hide */});
     return () => {
       cancelled = true;
     };
@@ -31,162 +31,110 @@ function useAverageRating(): number | null {
   return rating;
 }
 
+/** Three trust signals that cover all 8 tools + commercial conversion */
+const TRUST_CHIPS = [
+  {
+    icon: Shield,
+    title: "Files deleted after processing",
+    detail: "Zero retention on uploads",
+  },
+  {
+    icon: CheckCircle2,
+    title: "Transcript · subtitles · format · translate",
+    detail: "8 pro tools, one workflow",
+  },
+  {
+    icon: Star,
+    title: "98.5% accuracy",
+    detail: "Whisper AI · client-ready output",
+  },
+] as const;
+
 function HeroActions() {
   return (
-    <div className="flex flex-col items-center">
-      <div className="flex w-full max-w-3xl flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
-        <Link
-          to="/video-to-transcript"
-          className="group inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-orange-500 px-6 py-3 text-sm font-bold text-gray-950 shadow-[0_12px_35px_rgba(249,115,22,0.28)] transition hover:bg-orange-400 hover:shadow-[0_14px_40px_rgba(249,115,22,0.4)]"
-        >
-          Transcribe a Video/Audio
-          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-        </Link>
-        <Link
-          to="/video-to-subtitles"
-          className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/20 bg-white/[0.07] px-6 py-3 text-sm font-semibold text-white transition hover:border-white/35 hover:bg-white/[0.12]"
-        >
-          Create Subtitles
-        </Link>
-        <Link
-          to="/fix-subtitles"
-          className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/10 px-6 py-3 text-sm font-semibold text-white/75 transition hover:border-white/25 hover:bg-white/[0.06] hover:text-white"
-        >
-          Fix an SRT
-        </Link>
-      </div>
-      <p className="mt-3 text-center text-xs font-medium text-white/45">
-        No signup required <span aria-hidden>·</span> Results in minutes
-      </p>
+    <div className="flex w-full max-w-3xl flex-col items-stretch justify-center gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center">
+      <Link
+        to="/video-to-transcript"
+        className="group inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-accent transition hover:bg-blue-700 hover:shadow-accent-hover"
+      >
+        Get client-ready transcript
+        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+      </Link>
+      <Link
+        to="/video-to-subtitles"
+        className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/20 bg-white/[0.07] px-6 py-3 text-sm font-semibold text-white transition hover:border-white/35 hover:bg-white/[0.12]"
+      >
+        Create clean subtitles
+      </Link>
+      <Link
+        to="/guideline-format"
+        className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/10 px-6 py-3 text-sm font-semibold text-white/75 transition hover:border-white/25 hover:bg-white/[0.06] hover:text-white"
+      >
+        Format for client delivery
+      </Link>
     </div>
   );
 }
 
-export function Hero() {
-  const averageRating = useAverageRating();
+function HeroTrustChips({ publicRating }: { publicRating: PublicRating | null }) {
+  const chips = TRUST_CHIPS.map((chip, i) => {
+    if (i === 2 && publicRating) {
+      return {
+        ...chip,
+        title: `${formatPublicRatingValue(publicRating)} / 5 rated`,
+        detail: formatPublicRatingCount(publicRating),
+      };
+    }
+    return chip;
+  });
 
   return (
-    <section className="relative flex flex-col items-center overflow-hidden bg-gray-950">
-      {/* Dot grid background */}
-      <div
-        className="absolute inset-0 z-0"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 1px 1px, rgba(139,92,246,0.18) 1px, transparent 0)",
-          backgroundSize: "32px 32px",
-        }}
-      />
+    <ul className="mx-auto mt-6 grid w-full max-w-3xl grid-cols-1 gap-3 sm:grid-cols-3">
+      {chips.map(({ icon: Icon, title, detail }) => (
+        <li
+          key={title}
+          className="flex items-start gap-3 rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3"
+        >
+          <Icon className="mt-0.5 h-4 w-4 shrink-0 text-blue-400" aria-hidden />
+          <div className="min-w-0">
+            <p className="text-sm font-semibold leading-snug text-white">{title}</p>
+            <p className="mt-0.5 text-xs leading-snug text-white/40">{detail}</p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
-      {/* Ambient glow */}
-      <div className="absolute inset-0 z-[1] pointer-events-none overflow-hidden">
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[700px] bg-blue-600/[0.13] rounded-full blur-[160px]" />
-        <div className="absolute top-[20%] left-[5%] w-[450px] h-[450px] bg-blue-700/[0.08] rounded-full blur-[120px]" />
-        <div className="absolute top-[35%] right-[5%] w-[350px] h-[350px] bg-blue-700/[0.07] rounded-full blur-[100px]" />
-      </div>
+export function Hero() {
+  const publicRating = usePublicRating();
 
-      <div className="relative z-10 w-full max-w-5xl mx-auto px-6 pt-3 sm:pt-4 pb-8">
-        {/* Trust badge — live stats pill */}
+  return (
+    <section className="relative flex flex-col items-center bg-gray-950">
+      <div className="mx-auto flex w-full max-w-5xl flex-col items-center px-6 pt-3 pb-12 sm:pt-4 sm:pb-16">
         <TrustBadge className="mb-4" />
 
-        {/* H1 */}
         <h1
           className="mx-auto mb-3 max-w-4xl text-center font-display font-medium tracking-tight leading-[1.08]"
           style={{ fontSize: "clamp(2rem, 4.6vw, 3.75rem)" }}
         >
-          <span className="text-white">Turn Any Video Into a Clean Transcript or Perfect Subtitles — </span>
-          <span className="bg-gradient-to-r from-fuchsia-300 via-blue-300 to-blue-300 bg-clip-text text-transparent">Fast.</span>
+          <span className="text-white">Faster transcripts. Cleaner output. </span>
+          <span className="brand-moment">Client-ready.</span>
         </h1>
 
-        {/* Sub-headline */}
-        <p className="mx-auto mb-6 max-w-2xl text-center text-[15px] leading-relaxed text-white/60 sm:text-[17px]">
-          Transcribe videos, generate subtitles, or fix broken SRT files in minutes with accurate timing, clean formatting, and export-ready results.
+        <p className="mx-auto mb-2 max-w-xl text-center text-base leading-relaxed text-white/60 sm:text-lg">
+          Built to cut QA time. Upload once — get transcripts and subtitles your client can approve on the first pass.
+        </p>
+        <p className="mx-auto mb-6 max-w-lg text-center text-sm leading-relaxed text-white/45">
+          <span className="font-semibold text-white/70">VideoText</span> is the product at videotext.io — AI video-to-text software, not a generic &ldquo;video text&rdquo; paste box or YouTube URL tool.
         </p>
 
         <HeroActions />
+        <HeroTrustChips publicRating={publicRating} />
 
-        {/* Unified proof + trust block */}
-        <div className="mt-6 w-full max-w-xl mx-auto flex flex-col items-center gap-4">
-          {/* Operational proof grid */}
-          <div className="w-full grid grid-cols-3 gap-x-6 gap-y-2.5">
-            {(
-              [
-                { stat: "45 min → 8 min", label: "transcript cleanup" },
-                { stat: "Auto-applied", label: "client formatting rules" },
-                { stat: "QA-ready", label: "on first pass" },
-                { stat: "Rev · GoTranscript", label: "style guide support" },
-                { stat: "No repeated", label: "QA corrections" },
-                { stat: "Files deleted", label: "after processing" },
-              ] as const
-            ).map(({ stat, label }) => (
-              <div key={stat} className="flex flex-col gap-0.5">
-                <span className="text-[13px] font-bold text-white leading-tight">
-                  {stat}
-                </span>
-                <span className="text-[11px] text-white/35 leading-tight">
-                  {label}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          {/* Divider */}
-          <div className="w-full h-px bg-white/[0.07]" />
-
-          {/* Social proof + friction line */}
-          <div className="flex flex-col items-center gap-1.5">
-            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-[12px] text-white/35">
-              {/* Stars */}
-              <span className="flex items-center gap-1">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <svg
-                    key={i}
-                    className="w-3 h-3 text-amber-400"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                ))}
-                <span
-                  className="ml-1 font-semibold text-white/50 min-w-[3.5em] inline-block"
-                  aria-hidden={averageRating == null}
-                >
-                  {averageRating != null ? `${averageRating.toFixed(1)} / 5` : ""}
-                </span>
-              </span>
-              <span className="w-px h-3 bg-white/10" />
-              {/* Avatars + ICP claim */}
-              <span className="flex items-center gap-2">
-                <span className="flex items-center -space-x-2">
-                  {CREATOR_AVATARS.map((src, i) => (
-                    <ImageWithFallback
-                      key={i}
-                      src={src}
-                      alt=""
-                      width={22}
-                      height={22}
-                      className="w-[22px] h-[22px] rounded-full border-2 border-gray-950 object-cover"
-                    />
-                  ))}
-                  <span className="w-[22px] h-[22px] rounded-full border-2 border-gray-950 bg-blue-600/25 flex items-center justify-center">
-                    <span className="text-[7px] font-bold text-blue-300">
-                      12K+
-                    </span>
-                  </span>
-                </span>
-                <span>
-                  Built alongside{" "}
-                  <span className="text-white/55 font-semibold">
-                    professional transcriptionists &amp; QA reviewers
-                  </span>
-                </span>
-              </span>
-            </div>
-            <p className="text-[11px] text-white/20">
-              3 free imports · No card required
-            </p>
-          </div>
-        </div>
+        <p className="mt-4 text-center text-xs font-medium text-white/35">
+          3 free imports · No card required
+        </p>
       </div>
     </section>
   );

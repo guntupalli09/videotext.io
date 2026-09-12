@@ -6,12 +6,14 @@ import { ThemeProvider } from './lib/theme'
 import { identifyUser } from './lib/analytics'
 import { initSentry } from './lib/sentry'
 import { initWebMCP } from './lib/webmcp'
+import { captureAttributionFromUrl } from './lib/attribution'
 import { PostHogProvider } from '@posthog/react'
 import App from './App.tsx'
 import './index.css'
 
 initSentry()
 initWebMCP()
+captureAttributionFromUrl()
 
 // Expose release for debugging (correlation with API/worker logs)
 const release = import.meta.env.VITE_RELEASE ?? 'dev'

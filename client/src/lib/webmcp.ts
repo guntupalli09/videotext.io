@@ -120,15 +120,14 @@ export function initWebMCP() {
       {
         name: 'get_pricing',
         description:
-          'Get VideoText pricing information. Free: $0 (3 imports/mo), Basic: $19/mo (450 min), Pro: $49/mo (1200 min + batch), Agency: $129/mo (3000 min).',
+          'Get VideoText pricing information. Free: $0 (3 imports/mo). Pro: $7.99/mo (full workflow, longer uploads, batch processing). Annual: $69.99/year.',
         inputSchema: { type: 'object', properties: {} },
         execute: async () => {
           return {
             plans: [
-              { name: 'Free', price: '$0', minutes: '3 imports/day' },
-              { name: 'Basic', price: '$19/mo', minutes: '450 min/month' },
-              { name: 'Pro', price: '$49/mo', minutes: '1200 min/month' },
-              { name: 'Agency', price: '$129/mo', minutes: '3000 min/month' },
+              { name: 'Free', price: '$0', details: '3 imports/month, files up to 30 min' },
+              { name: 'Pro', price: '$7.99/mo', details: 'Full transcription, subtitle, translation, batch, and delivery workflow' },
+              { name: 'Pro Annual', price: '$69.99/year', details: 'Same Pro workflow, save 27% vs monthly' },
             ],
             url: 'https://videotext.io/pricing',
           }

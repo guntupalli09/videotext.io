@@ -120,6 +120,7 @@ export type AnalyticsEvent =
   | 'payment_completed'
   | 'soft_cap_shown'
   | 'daily_cap_hit'
+  | 'monthly_cap_hit'
   // Monetization tracking
   | 'transcript_copied'            // copy succeeded; props: { plan }
   | 'copy_gate_auth'               // copy blocked — user not logged in; shown auth modal
@@ -181,8 +182,17 @@ export type AnalyticsEvent =
   | 'checkout_started'
   | 'checkout_session_created'
   | 'stripe_redirect'
-
-
+  | 'checkout_abandoned'
+  | 'second_job_upgrade_nudge_seen'
+  | 'third_job_upgrade_nudge_seen'
+  | 'cancellation_reason_submitted'
+  | 'cancellation_reason_skipped'
+  | 'pro_onboarding_nudge_seen'
+  | 'result_upgrade_card_seen'
+  // SEO depth collapsibles
+  | 'how_it_works_open'
+  | 'faq_section_open'
+  | 'faq_question_open'
 
 const FIRST_OUTPUT_SEEN_KEY_PREFIX = 'videotext:first_output_seen'
 

@@ -254,11 +254,11 @@ const CTA_REGISTRY: Record<RouteFamily, CtaVariant[]> = {
     { text: 'Convert transcripts into multilingual deliverables', path: '/translate-subtitles', stages: ['output', 'footer'], intents: ['converter'], signals: ['deliverables', 'multilingual'] },
   ],
   youtube: [
-    { text: 'Paste a YouTube URL for an instant transcript', path: '/youtube-transcript-generator', stages: ['hero', 'workflow'], intents: ['converter'], signals: ['youtube', 'speed'] },
-    { text: 'Turn YouTube videos into searchable text', path: '/youtube-transcript-generator', stages: ['hero', 'output'], intents: ['generator'], signals: ['searchable', 'repurposing'] },
-    { text: 'Generate subtitles and chapters from YouTube videos', path: '/youtube-transcript-generator', stages: ['output', 'footer'], intents: ['repurposing'], signals: ['chapters', 'subtitles'] },
-    { text: 'Repurpose long YouTube videos into content briefs', path: '/youtube-transcript-generator', stages: ['workflow', 'footer'], intents: ['repurposing'], signals: ['long-video', 'creator'] },
-    { text: 'Extract transcript and summary from a YouTube link', path: '/youtube-transcript-generator', stages: ['proof', 'workflow'], intents: ['generator'], signals: ['summary', 'url'] },
+    { text: 'Upload MP4/MOV for an instant transcript', path: '/video-to-transcript', stages: ['hero', 'workflow'], intents: ['converter'], signals: ['youtube', 'speed'] },
+    { text: 'Turn video uploads into searchable text', path: '/video-to-transcript', stages: ['hero', 'output'], intents: ['generator'], signals: ['searchable', 'repurposing'] },
+    { text: 'Generate subtitles and chapters from video', path: '/video-to-subtitles', stages: ['output', 'footer'], intents: ['repurposing'], signals: ['chapters', 'subtitles'] },
+    { text: 'Repurpose long videos into content briefs', path: '/video-to-transcript', stages: ['workflow', 'footer'], intents: ['repurposing'], signals: ['long-video', 'creator'] },
+    { text: 'Extract transcript and summary from one upload', path: '/video-to-transcript', stages: ['proof', 'workflow'], intents: ['generator'], signals: ['summary', 'upload'] },
   ],
   alternative: [
     { text: 'Compare transcript exports side by side', path: '/video-to-transcript', stages: ['hero', 'comparison'], intents: ['switching'], signals: ['comparison', 'export'] },

@@ -27,6 +27,36 @@ function fmtDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' })
 }
 
+let regionNames: Intl.DisplayNames | null = null
+try {
+  regionNames = new Intl.DisplayNames(['en'], { type: 'region' })
+} catch {
+  regionNames = null
+}
+
+function countryFlag(code: string): string {
+  return code
+    .toUpperCase()
+    .replace(/./g, (c) => String.fromCodePoint(127397 + c.charCodeAt(0)))
+}
+
+function countryName(code: string | null): string {
+  if (!code) return ''
+  try {
+    return regionNames?.of(code.toUpperCase()) ?? code
+  } catch {
+    return code
+  }
+}
+
+function formatSource(u: Pick<DashboardUser, 'utmSource' | 'firstReferrer'>): string {
+  if (u.utmSource) return u.utmSource
+  if (u.firstReferrer) {
+    try { return new URL(u.firstReferrer).hostname } catch { return u.firstReferrer }
+  }
+  return 'direct'
+}
+
 type SortKey = 'createdAt' | 'lastActiveAt' | 'totalJobs' | 'jobCount30d'
 
 export default function UsersTable({ users }: { users: DashboardUser[] }) {
@@ -46,7 +76,13 @@ export default function UsersTable({ users }: { users: DashboardUser[] }) {
     let list = users
     if (search.trim()) {
       const q = search.toLowerCase()
-      list = list.filter((u) => u.email.toLowerCase().includes(q) || (u.name ?? '').toLowerCase().includes(q) || (u.utmSource ?? '').toLowerCase().includes(q))
+      list = list.filter((u) =>
+        u.email.toLowerCase().includes(q) ||
+        (u.name ?? '').toLowerCase().includes(q) ||
+        (u.utmSource ?? '').toLowerCase().includes(q) ||
+        (u.country ?? '').toLowerCase().includes(q) ||
+        countryName(u.country).toLowerCase().includes(q)
+      )
     }
     if (planFilter !== 'all') {
       list = list.filter((u) => u.plan === planFilter)
@@ -76,7 +112,7 @@ export default function UsersTable({ users }: { users: DashboardUser[] }) {
   }
 
   function handleExport() {
-    const headers = ['Name', 'Email', 'Plan', 'Jobs 30d', 'Total jobs', 'Last active', 'Signed up', 'Source']
+    const headers = ['Name', 'Email', 'Plan', 'Jobs 30d', 'Total jobs', 'Last active', 'Signed up', 'Source', 'Country']
     const rows = filtered.map((u) => [
       u.name ?? '',
       u.email,
@@ -85,7 +121,8 @@ export default function UsersTable({ users }: { users: DashboardUser[] }) {
       u.totalJobs,
       u.lastActiveAt ? new Date(u.lastActiveAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' }) : '—',
       new Date(u.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' }),
-      u.utmSource ?? (u.firstReferrer ? (() => { try { return new URL(u.firstReferrer!).hostname } catch { return u.firstReferrer } })() : '—'),
+      formatSource(u),
+      u.country ? `${u.country} — ${countryName(u.country)}` : 'Unknown',
     ])
     const csv = generateCSV(headers, rows as (string | number | null | undefined)[][])
     downloadCSV(csv, `users-export-${new Date().toISOString().split('T')[0]}.csv`)
@@ -99,7 +136,7 @@ export default function UsersTable({ users }: { users: DashboardUser[] }) {
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search email or UTM source…"
+          placeholder="Search email, UTM source, or country…"
           className="flex-1 min-w-48 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500"
         />
         <select
@@ -146,12 +183,13 @@ export default function UsersTable({ users }: { users: DashboardUser[] }) {
                 onClick={() => toggleSort('createdAt')}
               >Signed up<SortIcon k="createdAt" /></th>
               <th className="py-3 px-4 text-zinc-400 font-medium">Source</th>
+              <th className="py-3 px-4 text-zinc-400 font-medium">Country</th>
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={8} className="py-8 text-center text-zinc-600 text-sm">No users match.</td>
+                <td colSpan={9} className="py-8 text-center text-zinc-600 text-sm">No users match.</td>
               </tr>
             )}
             {filtered.map((u) => (
@@ -179,7 +217,16 @@ export default function UsersTable({ users }: { users: DashboardUser[] }) {
                 <td className="py-2.5 px-4 text-zinc-400 text-xs">{timeAgo(u.lastActiveAt)}</td>
                 <td className="py-2.5 px-4 text-zinc-500 text-xs">{fmtDate(u.createdAt)}</td>
                 <td className="py-2.5 px-4 text-zinc-500 text-xs truncate max-w-[120px]">
-                  {u.utmSource ?? (u.firstReferrer ? (() => { try { return new URL(u.firstReferrer!).hostname } catch { return u.firstReferrer } })() : '—')}
+                  {formatSource(u)}
+                </td>
+                <td className="py-2.5 px-4 text-zinc-400 text-xs whitespace-nowrap">
+                  {u.country ? (
+                    <span title={countryName(u.country)}>
+                      {countryFlag(u.country)} {u.country}
+                    </span>
+                  ) : (
+                    <span className="text-zinc-600">—</span>
+                  )}
                 </td>
               </tr>
             ))}
