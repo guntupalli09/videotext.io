@@ -59,6 +59,7 @@ export default function SubtitleCharacterChecker() {
 
   return (
     <FreeToolLayout
+      collapseSeoSections
       title="Netflix Subtitle CPL Checker — Check 42-Character Limits"
       description="Check subtitle cues against Netflix-published character-per-line guidelines (42 CPL), BBC (37), or a wide 80-character preset. VideoText is not affiliated with or endorsed by Netflix."
       hubLink={{ label: 'Free Subtitle Tools', path: '/subtitle-tools' }}

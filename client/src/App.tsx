@@ -13,6 +13,7 @@ import Footer from './components/Footer'
 import Seo from './components/Seo'
 import { ROUTE_SEO, ROUTE_BREADCRUMB, getOrganizationJsonLd, getWebApplicationJsonLd, getFaqJsonLd, getFaqJsonLdFromItems, getBreadcrumbJsonLd, getBlogPostingJsonLd, getAeoJsonLd, BLOG_POST_DATES } from './lib/seoMeta'
 import { getCoreToolFaq } from './lib/coreToolSeoDepth'
+import { getPageGscSeoFaq, getPageGscSupplementFaq } from './lib/pageGscSeoDepth'
 import { getCanonicalPathForRoute } from './lib/primaryUrls'
 import { getSeoEntry, getAllSeoPaths } from './lib/seoRegistry'
 import SessionErrorBoundary from './components/SessionErrorBoundary'
@@ -226,9 +227,17 @@ function AppSeo() {
     if (pathname === '/faq') return [getFaqJsonLd()]
     if (breadcrumb) schemas.push(getBreadcrumbJsonLd(pathname, breadcrumb))
     if (isBlogPost && blogPostingSchema) schemas.push(blogPostingSchema)
-    if (!isBlogPost && seoEntry?.faq?.length) schemas.push(getFaqJsonLdFromItems(seoEntry.faq))
+    const gscPageFaq = getPageGscSeoFaq(pathname).map(({ q, a }) => ({ q, a }))
+    if (!isBlogPost && gscPageFaq.length) {
+      schemas.push(getFaqJsonLdFromItems(gscPageFaq))
+    } else if (!isBlogPost && seoEntry?.faq?.length) {
+      schemas.push(getFaqJsonLdFromItems(seoEntry.faq))
+    }
     const coreFaq = getCoreToolFaq(pathname)
-    if (!isBlogPost && coreFaq.length) schemas.push(getFaqJsonLdFromItems(coreFaq))
+    const supplementFaq = getPageGscSupplementFaq(pathname).map(({ q, a }) => ({ q, a }))
+    if (!isBlogPost && coreFaq.length && !gscPageFaq.length) {
+      schemas.push(getFaqJsonLdFromItems([...coreFaq, ...supplementFaq]))
+    }
     const aeoSchemas = getAeoJsonLd(pathname)
     if (aeoSchemas?.length) schemas.push(...aeoSchemas)
     const normalizedSchemas = dedupeAndMergeFaqSchemas(schemas)

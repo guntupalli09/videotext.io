@@ -4,6 +4,7 @@ import Seo from '../../components/Seo'
 import OpenStatsStrip from '../../components/OpenStatsStrip'
 import SeoJourneyBanner from '../../components/SeoJourneyBanner'
 import SerpTrustStrip from '../../components/SerpTrustStrip'
+import PageGscSeoSections from '../../components/PageGscSeoSections'
 import { getSeoJourneyBanner } from '../../lib/seoJourneyConfig'
 
 const SUBTITLE_TOOLS = [
@@ -263,23 +264,7 @@ export default function SubtitleToolsHub() {
           </div>
         </section>
 
-        {/* FAQ */}
-        <section>
-          <h2 className="text-2xl font-display font-medium text-gray-900 dark:text-white mb-6">Frequently asked questions</h2>
-          <div className="space-y-5">
-            {[
-              { q: 'Are these subtitle tools really free?', a: 'Yes. Converters, timing, validator, reading-speed, and character-limit tools run in your browser. No account and no upload. If you need a new SRT from video, use the SRT file generator or the video to SRT converter (those use the AI workflow and include 3 free imports per month).' },
-              { q: 'Do subtitle files get uploaded to a server?', a: 'No. When you use tools like the Subtitle Validator or Shift Timing tool, your file is read by your browser locally using the HTML5 File API. The file content is processed in JavaScript in your browser tab and never leaves your device.' },
-              { q: 'What subtitle formats are supported?', a: 'Most tools support SRT (SubRip Text) and VTT (WebVTT) — the two most widely used formats. SRT is universally compatible with editing software and platforms. VTT is the web standard required for HTML5 players. Some tools only accept SRT, so if you have a VTT file, use the VTT to SRT converter first.' },
-              { q: 'How do I check Netflix-style or YouTube line limits?', a: 'Open the Netflix-style CPL Checker, upload an SRT or VTT, and pick Netflix-published TTSC (42 CPL) or BBC (37). YouTube does not publish a CPL limit — use Wide (80) only as a display-width check. You get a per-cue within/over preset report. VideoText is not affiliated with Netflix. Need the file in another language first? Translate Subtitles keeps timestamps intact.' },
-            ].map(({ q, a }) => (
-              <div key={q}>
-                <p className="font-semibold text-gray-900 dark:text-white text-sm mb-1">{q}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{a}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        <PageGscSeoSections path="/subtitle-tools" className="!max-w-3xl !px-0" />
 
         {/* Back to all tools */}
         <div className="text-center pt-4 border-t border-gray-100 dark:border-gray-800">

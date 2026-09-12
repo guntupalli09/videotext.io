@@ -1669,8 +1669,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
         />
       )}
 
-      {effectiveFaq.length > 0 && (
-        <CollapsibleFaqSection items={effectiveFaq} />
+      {effectiveFaq.length > 0 && !isSrtSibling && (
+        <CollapsibleFaqSection items={effectiveFaq} route={location.pathname} />
       )}
     </>
   )

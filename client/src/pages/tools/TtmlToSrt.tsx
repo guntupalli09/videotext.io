@@ -48,6 +48,7 @@ export default function TtmlToSrt() {
       title="TTML to SRT Converter — Free Online"
       description="Convert TTML, DFXP, or EBU-TT subtitle files to SRT format instantly. Used for Netflix, broadcast, and enterprise video. Runs entirely in your browser."
       hubLink={{ label: 'Free Subtitle Tools', path: '/subtitle-tools' }}
+      collapseSeoSections
       contentSections={[
         {
           heading: 'What is TTML (Timed Text Markup Language)?',

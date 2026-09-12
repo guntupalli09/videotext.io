@@ -189,8 +189,10 @@ export type AnalyticsEvent =
   | 'cancellation_reason_skipped'
   | 'pro_onboarding_nudge_seen'
   | 'result_upgrade_card_seen'
-
-
+  // SEO depth collapsibles
+  | 'how_it_works_open'
+  | 'faq_section_open'
+  | 'faq_question_open'
 
 const FIRST_OUTPUT_SEEN_KEY_PREFIX = 'videotext:first_output_seen'
 

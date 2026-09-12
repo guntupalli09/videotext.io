@@ -13,6 +13,8 @@ import MoneyPagesCta from '../components/MoneyPagesCta'
 import SeoJourneyBanner from '../components/SeoJourneyBanner'
 import CapCutJsonToSrt from '../components/CapCutJsonToSrt'
 import SerpTrustStrip from '../components/SerpTrustStrip'
+import PageGscSeoSections from '../components/PageGscSeoSections'
+import { getPageGscSeoDepth } from '../lib/pageGscSeoDepth'
 import { shouldShowSerpTrustStrip } from '../lib/serpTrustPaths'
 import { getSeoJourneyBanner } from '../lib/seoJourneyConfig'
 import NotFound from './NotFound'
@@ -167,6 +169,12 @@ export default function SeoToolPage() {
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 pb-12">
           <CrossToolSuggestions suggestions={suggestions} />
         </div>
+      )}
+      {getPageGscSeoDepth(pathname) && (
+        <PageGscSeoSections
+          path={pathname}
+          hideFaq={pathname === '/capcut-captions' && Boolean(entry.faq?.length)}
+        />
       )}
     </div>
   )

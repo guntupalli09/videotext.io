@@ -5,6 +5,7 @@ import { Languages, Copy, Check, Download, ArrowRight, Bold, Italic, AlignLeft, 
 import FailedState from '../components/FailedState'
 import CoreToolSeoDepth from '../components/CoreToolSeoDepth'
 import CollapsibleFaqSection from '../components/CollapsibleFaqSection'
+import PageGscSupplementFaq from '../components/PageGscSupplementFaq'
 import SamplesModule from '../components/SamplesModule'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
@@ -1312,6 +1313,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
       {location.pathname === '/translate-subtitles' && (
         <>
           <CoreToolSeoDepth path="/translate-subtitles" />
+          <PageGscSupplementFaq path="/translate-subtitles" title="More translation questions" />
           <TranslateLangCluster />
         </>
       )}
@@ -1340,7 +1342,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
       />
 
       {faq.length > 0 && location.pathname !== '/translate-subtitles' && (
-        <CollapsibleFaqSection items={faq} />
+        <CollapsibleFaqSection items={faq} route={location.pathname} />
       )}
     </>
   )

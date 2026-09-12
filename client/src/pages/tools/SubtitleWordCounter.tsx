@@ -41,6 +41,7 @@ export default function SubtitleWordCounter() {
 
   return (
     <FreeToolLayout
+      collapseSeoSections
       title="Subtitle Word Counter — Words, Characters & Speaking Stats"
       description="Count words and characters in any SRT or VTT subtitle file. Get estimated speaking rate (WPM), average CPS, and video duration stats instantly in your browser."
       hubLink={{ label: 'Free Subtitle Tools', path: '/subtitle-tools' }}

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import Seo from '../components/Seo'
 import SerpTrustStrip from '../components/SerpTrustStrip'
 import { NetflixTrademarkDisclaimer } from '../components/NetflixTrademarkDisclaimer'
+import CoreToolSeoDepth from '../components/CoreToolSeoDepth'
 
 /** B2B delivery checklist — links to existing free tools and grammar fixer, not a new product. */
 const CHECKLIST = [
@@ -140,6 +141,8 @@ export default function NetflixTtscChecklistPage() {
           </p>
         </section>
       </div>
+
+      <CoreToolSeoDepth path="/netflix-ttsc-checklist" />
     </div>
   )
 }

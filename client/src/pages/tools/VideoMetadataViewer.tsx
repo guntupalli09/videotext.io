@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import FreeToolLayout from '../../components/FreeToolLayout'
+import PageGscSeoSections from '../../components/PageGscSeoSections'
 
 interface VideoInfo {
   name: string
@@ -79,7 +80,9 @@ export default function VideoMetadataViewer() {
   ] : []
 
   return (
+    <>
     <FreeToolLayout
+      collapseSeoSections
       title="Video Metadata Viewer — Check Video Info Without Uploading"
       description="View video file details — duration, resolution, aspect ratio, file size, and format — directly in your browser. Nothing is uploaded. Works on all video files."
       hubLink={{ label: 'Free Video Tools', path: '/tools' }}
@@ -159,5 +162,7 @@ export default function VideoMetadataViewer() {
       </div>
       <video ref={videoRef} className="hidden" />
     </FreeToolLayout>
+    <PageGscSeoSections path="/tools/video-metadata-viewer" />
+    </>
   )
 }
