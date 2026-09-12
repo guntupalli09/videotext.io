@@ -62,7 +62,7 @@ const CORE: Record<string, CoreToolSeoDepth> = {
         { href: '/fix-subtitles', label: 'Fix Subtitles', note: 'After translation, check overlaps, long lines, and CPS.' },
         { href: '/burn-subtitles', label: 'Burn Subtitles', note: 'Hardcode the translated track into the video for social.' },
         { href: '/video-to-srt', label: 'Video to SRT', note: 'Need a new .srt from video, not a translation.' },
-        { href: '/video-to-srt', label: 'Video to SRT', note: 'Convert video to timed SRT — same engine as this hub.' },
+        { href: '/netflix-ttsc-checklist', label: 'Netflix TTSC checklist', note: 'CPL/CPS/overlap scan before vendor delivery.' },
         { href: '/subtitle-tools', label: 'Free subtitle tools', note: 'In-browser convert, validate, and check character limits.' },
       ],
     },
@@ -191,6 +191,8 @@ const CORE: Record<string, CoreToolSeoDepth> = {
         { href: '/translate-subtitles', label: 'Translate Subtitles', note: 'Localize the SRT with timestamps kept.' },
         { href: '/voice-recorder', label: 'Voice recorder', note: 'Live mic → text when you have no video file.' },
         { href: '/burn-subtitles', label: 'Burn Subtitles', note: 'Hardcode the SRT into the video for social.' },
+        { href: '/subtitle-tools', label: 'Free subtitle tools', note: 'Validate and check CPL/CPS on exported SRT.' },
+        { href: '/netflix-ttsc-checklist', label: 'Netflix TTSC checklist', note: 'Pre-delivery scan when captions go to a vendor.' },
       ],
     },
     faq: [
@@ -243,8 +245,9 @@ const CORE: Record<string, CoreToolSeoDepth> = {
       heading: 'File-maker siblings and next tools',
       links: [
         { href: '/video-to-srt', label: 'Video to SRT', note: 'Convert video to a timed .srt file (canonical URL).' },
-        { href: '/video-to-srt', label: 'Video to SRT', note: 'Verb-first page for “video to srt” and “srt file generator” intent.' },
         { href: '/video-to-transcript', label: 'Video to Transcript', note: 'Full text package: transcript + SRT + summary + chapters.' },
+        { href: '/netflix-ttsc-checklist', label: 'Netflix TTSC checklist', note: 'Pre-delivery CPL, CPS, and overlap workflow.' },
+        { href: '/subtitle-tools', label: 'Free subtitle tools', note: 'Validator, CPL checker, converters — browser-local.' },
         { href: '/fix-subtitles', label: 'Fix Subtitles', note: 'Overlaps, long lines, CPS, formatting.' },
         { href: '/translate-subtitles', label: 'Translate Subtitles', note: '70+ languages, timestamps kept.' },
         { href: '/burn-subtitles', label: 'Burn Subtitles', note: 'Hardcode the SRT into the video.' },
@@ -303,8 +306,10 @@ const CORE: Record<string, CoreToolSeoDepth> = {
         { href: '/translate-subtitles', label: 'Translate Subtitles', note: 'Localize, then re-check CPS on the new language.' },
         { href: '/burn-subtitles', label: 'Burn Subtitles', note: 'Hardcode the cleaned file into the video.' },
         { href: '/guideline-format', label: 'Client guidelines', note: 'Transcript style rules (verbatim, speakers) — different from cue QC.' },
+        { href: '/netflix-ttsc-checklist', label: 'Netflix TTSC checklist', note: 'Full pre-delivery scan workflow before vendor handoff.' },
         { href: '/tools/subtitle-validator', label: 'Subtitle validator', note: 'Free in-browser scan before or after a fix pass.' },
         { href: '/tools/subtitle-character-checker', label: 'Character limit checker', note: 'Netflix-style / BBC CPL presets — within or over limit per cue.' },
+        { href: '/subtitle-tools', label: 'Free subtitle tools hub', note: 'All validators and converters in one place.' },
       ],
     },
     faq: [
@@ -520,9 +525,11 @@ const CORE: Record<string, CoreToolSeoDepth> = {
     related: {
       heading: 'Linked checks in this checklist',
       links: [
+        { href: '/subtitle-tools', label: 'Free subtitle tools hub', note: 'Entry from high-traffic validator and converter pages.' },
         { href: '/tools/subtitle-character-checker', label: 'Netflix-style CPL checker', note: '42-character line preset.' },
         { href: '/tools/subtitle-reading-speed', label: 'Reading speed checker', note: '20 CPS adult / 17 CPS children presets.' },
         { href: '/tools/subtitle-validator', label: 'Subtitle validator', note: 'Overlaps, empty cues, structure.' },
+        { href: '/video-to-srt', label: 'Video to SRT', note: 'Generate a new timed file when QC fails on source video.' },
         { href: '/subtitle-grammar-fixer', label: 'Subtitle Grammar Fixer', note: 'Line breaks, timing, and CPS repair.' },
       ],
     },

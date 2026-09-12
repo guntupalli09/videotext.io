@@ -107,11 +107,11 @@ export default function SubtitleReadingSpeed() {
         { q: 'What if a cue has zero duration?', a: 'A zero-duration cue has infinite CPS (division by zero). The tool shows these as errors rather than a numeric CPS value. Fix the timing before delivery.' },
       ]}
       relatedTools={[
+        { label: 'Netflix TTSC Checklist', path: '/netflix-ttsc-checklist', desc: 'Full CPL + CPS + overlap pre-delivery workflow' },
         { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Full error & overlap validation' },
         { label: 'Character Limit Checker', path: '/tools/subtitle-character-checker', desc: 'Check Netflix/YouTube line length limits' },
         { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'AI auto-fix for reading speed violations' },
-        { label: 'Subtitle Word Counter', path: '/tools/subtitle-word-counter', desc: 'Overall speaking rate stats' },
-        { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate broadcast-ready subtitles with AI' },
+        { label: 'Video to SRT', path: '/video-to-srt', desc: 'Generate a timed SRT from video' },
         { label: 'Shift Subtitle Timing', path: '/tools/shift-subtitle-timing', desc: 'Adjust timing to bring CPS into range' },
       ]}
     >

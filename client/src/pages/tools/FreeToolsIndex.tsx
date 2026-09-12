@@ -25,6 +25,7 @@ const TOOLS = [
   {
     category: 'Subtitle Analysis & Validation',
     items: [
+      { path: '/netflix-ttsc-checklist', label: 'Netflix TTSC Checklist', desc: 'Pre-delivery CPL, CPS, and overlap workflow before vendor handoff', keywords: 'netflix ttsc checklist, subtitle qc workflow' },
       { path: '/tools/subtitle-validator', label: 'Subtitle Validator', desc: 'Check SRT/VTT files for overlaps, empty cues, and errors', keywords: 'validate srt, check subtitle file, srt validator' },
       { path: '/tools/subtitle-reading-speed', label: 'Reading Speed Checker', desc: 'Analyze CPS against Netflix, BBC, and EBU broadcast standards', keywords: 'subtitle cps checker, reading speed subtitles, netflix cps' },
       { path: '/tools/subtitle-character-checker', label: 'Netflix-style CPL Checker', desc: 'Check line lengths against Netflix-published TTSC (42 CPL), BBC (37), or a wide 80-char preset', keywords: 'netflix subtitle character limit, subtitle line length' },

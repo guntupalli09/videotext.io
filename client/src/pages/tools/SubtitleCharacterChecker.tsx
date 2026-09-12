@@ -69,6 +69,7 @@ export default function SubtitleCharacterChecker() {
         body: 'Lines over your preset? Subtitle Grammar Fixer reflows CPL and timing — then re-scan here.',
         primary: { label: 'Fix CPL & CPS in one pass', path: '/subtitle-grammar-fixer' },
         secondary: [
+          { label: 'Netflix TTSC checklist', path: '/netflix-ttsc-checklist' },
           { label: 'Translate', path: '/translate-subtitles' },
           { label: 'Burn', path: '/burn-subtitles' },
         ],
@@ -131,10 +132,10 @@ export default function SubtitleCharacterChecker() {
         { q: 'Can I set a custom character limit?', a: 'Yes. Select "Custom" from the platform options and enter any maximum characters per line value to check against your own style guide or broadcaster specification.' },
       ]}
       relatedTools={[
+        { label: 'Netflix TTSC Checklist', path: '/netflix-ttsc-checklist', desc: 'Full pre-delivery CPL, CPS, and overlap workflow' },
+        { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Overlaps, empty cues, and structure errors' },
+        { label: 'Reading Speed Checker', path: '/tools/subtitle-reading-speed', desc: 'Netflix 20 CPS / BBC 17 CPS presets' },
         { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'Auto-fix long lines, CPS, and formatting' },
-        { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Full caption hub: generate SRT/VTT from video' },
-        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT to 70+ languages' },
-        { label: 'Burn Subtitles', path: '/burn-subtitles', desc: 'Hardcode the checked file into video' },
         { label: 'Video to SRT', path: '/video-to-srt', desc: 'Convert video to a timed SRT file' },
         { label: 'Free Subtitle Tools', path: '/subtitle-tools', desc: 'Converters, timing, validator, and more' },
       ]}

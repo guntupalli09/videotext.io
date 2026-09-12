@@ -77,12 +77,12 @@ export default function AssToSrt() {
         { q: 'Why are some cues missing in the output?', a: 'This converter only extracts "Dialogue" event lines. Comment lines, signs marked as non-dialogue styles, and any lines in the [V4+ Styles] section are not included. If a Dialogue line has an empty text field after stripping tags, it is also skipped.' },
       ]}
       relatedTools={[
-        { label: 'SRT to VTT Converter', path: '/tools/srt-to-vtt', desc: 'Convert SRT to WebVTT for web players' },
+        { label: 'Netflix TTSC Checklist', path: '/netflix-ttsc-checklist', desc: 'QC converted SRT before delivery' },
         { label: 'TTML to SRT Converter', path: '/tools/ttml-to-srt', desc: 'Convert Netflix/broadcast TTML to SRT' },
-        { label: 'SBV to SRT Converter', path: '/tools/sbv-to-srt', desc: 'Convert YouTube SBV captions to SRT' },
         { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Check your converted SRT for errors' },
-        { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate SRT/VTT from any video with AI' },
-        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT to 70+ languages' },
+        { label: 'Character Limit Checker', path: '/tools/subtitle-character-checker', desc: 'CPL check after ASS → SRT' },
+        { label: 'Video to SRT', path: '/video-to-srt', desc: 'Generate SRT/VTT from video' },
+        { label: 'SRT to VTT Converter', path: '/tools/srt-to-vtt', desc: 'Convert SRT to WebVTT for web players' },
       ]}
     >
       <div className="space-y-4">

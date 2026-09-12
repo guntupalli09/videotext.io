@@ -55,10 +55,11 @@ const SUBTITLE_TOOLS = [
     icon: Zap,
     description: 'Check, validate, and analyze subtitles',
     links: [
-      { path: '/subtitle-validator', label: 'Subtitle Validator' },
-      { path: '/subtitle-word-counter', label: 'Subtitle Word Counter' },
-      { path: '/subtitle-character-checker', label: 'Subtitle Character Checker' },
-      { path: '/subtitle-reading-speed', label: 'Subtitle Reading Speed' },
+      { path: '/netflix-ttsc-checklist', label: 'Netflix TTSC Checklist' },
+      { path: '/tools/subtitle-validator', label: 'Subtitle Validator' },
+      { path: '/tools/subtitle-word-counter', label: 'Subtitle Word Counter' },
+      { path: '/tools/subtitle-character-checker', label: 'Subtitle Character Checker' },
+      { path: '/tools/subtitle-reading-speed', label: 'Subtitle Reading Speed' },
       { path: '/tools/merge-srt-files', label: 'Merge SRT Files' },
       { path: '/tools/srt-to-text', label: 'SRT to Text' },
       { path: '/tools/srt-to-sbv', label: 'SRT to SBV' },
@@ -72,6 +73,7 @@ const SUBTITLE_TOOLS = [
     icon: Wand2,
     description: 'Learn subtitle formats and best practices',
     links: [
+      { path: '/netflix-ttsc-checklist', label: 'Netflix TTSC pre-delivery checklist' },
       { path: '/tools/subtitle-character-checker', label: 'Netflix-style CPL Checker (42 chars)' },
       { path: '/open-captions-vs-closed-captions', label: 'Open vs Closed Captions' },
       { path: '/free-captions-and-subtitles', label: 'Free Captions & Subtitles' },
@@ -114,6 +116,9 @@ export default function SubtitleToolsHub() {
           <div className="mt-6 flex flex-wrap gap-3">
             <Link to="/video-to-srt" className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 transition-colors">
               Generate SRT from video →
+            </Link>
+            <Link to="/netflix-ttsc-checklist" className="inline-flex items-center rounded-lg border border-white/30 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10 transition-colors">
+              Netflix TTSC checklist
             </Link>
             <Link to="/subtitle-grammar-fixer" className="inline-flex items-center rounded-lg border border-white/30 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10 transition-colors">
               Fix CPL & CPS in one pass

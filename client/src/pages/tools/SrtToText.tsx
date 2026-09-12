@@ -92,12 +92,12 @@ export default function SrtToText() {
         { q: 'Is there a word limit for the extraction?', a: 'No. The extraction runs in your browser with no server limits. Feature-length film subtitle files with thousands of cues process in under a second.' },
       ]}
       relatedTools={[
+        { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Validate file before extraction' },
+        { label: 'Netflix TTSC Checklist', path: '/netflix-ttsc-checklist', desc: 'QC the source SRT before extracting text' },
         { label: 'Subtitle Word Counter', path: '/tools/subtitle-word-counter', desc: 'Get word count and speaking stats' },
         { label: 'Video to Transcript', path: '/video-to-transcript', desc: 'AI transcript with speakers, chapters & summary' },
-        { label: 'SRT to VTT Converter', path: '/tools/srt-to-vtt', desc: 'Convert between subtitle formats' },
-        { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'Clean up timing and text before extraction' },
+        { label: 'Video to SRT', path: '/video-to-srt', desc: 'Regenerate timed SRT from video' },
         { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT to 70+ languages' },
-        { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Validate file before extraction' },
       ]}
     >
       <div className="space-y-4">

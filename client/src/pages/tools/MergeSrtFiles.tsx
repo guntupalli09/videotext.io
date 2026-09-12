@@ -86,12 +86,12 @@ export default function MergeSrtFiles() {
         { q: 'Does the output format match the input?', a: 'The output is always SRT format regardless of whether the inputs were SRT or VTT. If you need VTT output, run the result through the SRT to VTT converter.' },
       ]}
       relatedTools={[
+        { label: 'Netflix TTSC Checklist', path: '/netflix-ttsc-checklist', desc: 'Validate merged file before delivery' },
         { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Check merged file for overlaps and errors' },
         { label: 'Shift Subtitle Timing', path: '/tools/shift-subtitle-timing', desc: 'Align timestamps before merging' },
+        { label: 'Character Limit Checker', path: '/tools/subtitle-character-checker', desc: 'CPL scan after merge' },
         { label: 'SRT to VTT Converter', path: '/tools/srt-to-vtt', desc: 'Convert merged SRT output to VTT' },
-        { label: 'Subtitle Word Counter', path: '/tools/subtitle-word-counter', desc: 'Count words in the merged file' },
-        { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate subtitles from video with AI' },
-        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate the merged file to 70+ languages' },
+        { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'Repair overlaps at merge boundaries' },
       ]}
     >
       <div className="space-y-4">
