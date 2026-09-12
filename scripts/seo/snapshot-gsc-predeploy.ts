@@ -76,11 +76,24 @@ function loadTargetPaths(pagesFile: string): string[] {
     .map((p) => (p.startsWith('/') ? p : `/${p}`))
 }
 
-function normalizeGscPage(url: string, siteUrl: string): string | null {
+function siteHostname(siteUrl: string): string | null {
+  if (siteUrl.startsWith('sc-domain:')) {
+    return siteUrl.slice('sc-domain:'.length).replace(/^www\./, '')
+  }
   try {
     const site = new URL(siteUrl.endsWith('/') ? siteUrl : `${siteUrl}/`)
+    return site.hostname.replace(/^www\./, '')
+  } catch {
+    return null
+  }
+}
+
+function normalizeGscPage(url: string, siteUrl: string): string | null {
+  try {
+    const expectedHost = siteHostname(siteUrl)
+    if (!expectedHost) return null
     const parsed = new URL(url)
-    if (parsed.hostname.replace(/^www\./, '') !== site.hostname.replace(/^www\./, '')) {
+    if (parsed.hostname.replace(/^www\./, '') !== expectedHost) {
       return null
     }
     let pathname = parsed.pathname || '/'
