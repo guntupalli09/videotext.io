@@ -16,25 +16,13 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
   - Replace generic AI-style transitions with concrete examples and constraints.
 
-## /batch-process
+## /
 
-- **Missing subtopics:** timing and synchronization, line length and reading speed, platform export compatibility
-- **Weak sections:** Generic H2s such as “How it works”, “Features”, or “Use cases” need route-specific framing
+- **Missing subtopics:** timing and synchronization, line length and reading speed
+- **Weak sections:** Generic H2s such as “How it works”, “Features”, or “Use cases” need route-specific framing; Several paragraphs are too short to add standalone informational value
 - **Expansion opportunities:**
   - Add timing/sync guidance with common subtitle edge cases.
   - Discuss line length, reading speed, and accessibility constraints.
-  - Add platform-specific export and compatibility notes.
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-  - Replace generic AI-style transitions with concrete examples and constraints.
-
-## /blog/processing-speed-breakdown
-
-- **Missing subtopics:** timing and synchronization, line length and reading speed, platform export compatibility
-- **Weak sections:** Generic H2s such as “How it works”, “Features”, or “Use cases” need route-specific framing
-- **Expansion opportunities:**
-  - Add timing/sync guidance with common subtitle edge cases.
-  - Discuss line length, reading speed, and accessibility constraints.
-  - Add platform-specific export and compatibility notes.
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
   - Replace generic AI-style transitions with concrete examples and constraints.
 
@@ -60,11 +48,12 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
   - Replace generic AI-style transitions with concrete examples and constraints.
 
-## /
+## /tools/timestamp-converter
 
-- **Missing subtopics:** line length and reading speed, platform export compatibility
+- **Missing subtopics:** timing and synchronization, line length and reading speed, platform export compatibility
 - **Weak sections:** Generic H2s such as “How it works”, “Features”, or “Use cases” need route-specific framing
 - **Expansion opportunities:**
+  - Add timing/sync guidance with common subtitle edge cases.
   - Discuss line length, reading speed, and accessibility constraints.
   - Add platform-specific export and compatibility notes.
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
@@ -96,16 +85,6 @@ Important routes are evaluated against obvious user-intent subtopics for their r
 - **Weak sections:** Generic H2s such as “How it works”, “Features”, or “Use cases” need route-specific framing; Several paragraphs are too short to add standalone informational value
 - **Expansion opportunities:**
   - Add guidance for long recordings, large files, and batching.
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-  - Replace generic AI-style transitions with concrete examples and constraints.
-
-## /blog/best-video-captioning-tools-2026
-
-- **Missing subtopics:** timing and synchronization, line length and reading speed
-- **Weak sections:** Generic H2s such as “How it works”, “Features”, or “Use cases” need route-specific framing
-- **Expansion opportunities:**
-  - Add timing/sync guidance with common subtitle edge cases.
-  - Discuss line length, reading speed, and accessibility constraints.
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
   - Replace generic AI-style transitions with concrete examples and constraints.
 
@@ -177,15 +156,14 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
   - Replace generic AI-style transitions with concrete examples and constraints.
 
-## /voice-recorder
+## /youtube-auto-captions-alternative
 
-- **Missing subtopics:** microphone and audio quality, privacy and storage
-- **Weak sections:** Generic H2s such as “How it works”, “Features”, or “Use cases” need route-specific framing
+- **Missing subtopics:** feature-by-feature comparison, pricing or plan limits
+- **Weak sections:** Several paragraphs are too short to add standalone informational value
 - **Expansion opportunities:**
-  - Add microphone, noise, and recording quality guidance.
-  - Clarify recording privacy, storage, and retention behavior.
+  - Add a feature-by-feature comparison with tradeoffs.
+  - Discuss pricing, plan limits, or usage constraints.
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-  - Replace generic AI-style transitions with concrete examples and constraints.
 
 ## /aac-to-text
 
@@ -396,21 +374,21 @@ Important routes are evaluated against obvious user-intent subtopics for their r
 - **Expansion opportunities:**
   - Identify which user types each option fits best.
 
-## /vimeo-transcription
-
-- **Missing subtopics:** long recordings
-- **Weak sections:** Generic H2s such as “How it works”, “Features”, or “Use cases” need route-specific framing
-- **Expansion opportunities:**
-  - Add guidance for long recordings, large files, and batching.
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-  - Replace generic AI-style transitions with concrete examples and constraints.
-
 ## /voice-notes-to-text
 
 - **Missing subtopics:** privacy and storage
 - **Weak sections:** Generic H2s such as “How it works”, “Features”, or “Use cases” need route-specific framing
 - **Expansion opportunities:**
   - Clarify recording privacy, storage, and retention behavior.
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+  - Replace generic AI-style transitions with concrete examples and constraints.
+
+## /voice-recorder
+
+- **Missing subtopics:** microphone and audio quality
+- **Weak sections:** Generic H2s such as “How it works”, “Features”, or “Use cases” need route-specific framing
+- **Expansion opportunities:**
+  - Add microphone, noise, and recording quality guidance.
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
   - Replace generic AI-style transitions with concrete examples and constraints.
 
@@ -439,14 +417,6 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Add guidance for long recordings, large files, and batching.
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
   - Replace generic AI-style transitions with concrete examples and constraints.
-
-## /youtube-auto-captions-alternative
-
-- **Missing subtopics:** pricing or plan limits
-- **Weak sections:** Several paragraphs are too short to add standalone informational value
-- **Expansion opportunities:**
-  - Discuss pricing, plan limits, or usage constraints.
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
 ## /youtube-video-transcription
 
@@ -482,14 +452,6 @@ Important routes are evaluated against obvious user-intent subtopics for their r
 - **Missing subtopics:** None detected
 - **Weak sections:** Several paragraphs are too short to add standalone informational value
 - **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /blog/how-to-get-youtube-transcript
-
-- **Missing subtopics:** long recordings
-- **Weak sections:** None detected
-- **Expansion opportunities:**
-  - Add guidance for long recordings, large files, and batching.
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
 ## /caption-video-online
@@ -877,80 +839,7 @@ Important routes are evaluated against obvious user-intent subtopics for their r
 - **Expansion opportunities:**
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
-## /blog/batch-subtitles-for-creators
-
-- **Missing subtopics:** None detected
-- **Weak sections:** None detected
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-  - Replace generic AI-style transitions with concrete examples and constraints.
-
-## /blog/clean-verbatim-vs-full-verbatim
-
-- **Missing subtopics:** None detected
-- **Weak sections:** None detected
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-  - Replace generic AI-style transitions with concrete examples and constraints.
-
-## /blog/freelance-transcription-style-guide-cheatsheet
-
-- **Missing subtopics:** None detected
-- **Weak sections:** None detected
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /blog/how-to-add-captions-youtube-video
-
-- **Missing subtopics:** None detected
-- **Weak sections:** None detected
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /blog/how-to-add-subtitles-to-video-free
-
-- **Missing subtopics:** None detected
-- **Weak sections:** None detected
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /blog/how-to-transcribe-audio-to-text-free
-
-- **Missing subtopics:** None detected
-- **Weak sections:** None detected
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /blog/how-to-translate-subtitles
-
-- **Missing subtopics:** None detected
-- **Weak sections:** None detected
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /blog/rev-style-guide-transcript-formatter
-
-- **Missing subtopics:** None detected
-- **Weak sections:** None detected
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /blog/srt-vs-vtt-subtitle-formats
-
-- **Missing subtopics:** None detected
-- **Weak sections:** None detected
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-  - Replace generic AI-style transitions with concrete examples and constraints.
-
 ## /burn-subtitles
-
-- **Missing subtopics:** None detected
-- **Weak sections:** None detected
-- **Expansion opportunities:**
-  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
-
-## /burn-subtitles-into-video
 
 - **Missing subtopics:** None detected
 - **Weak sections:** None detected
@@ -1247,6 +1136,14 @@ Important routes are evaluated against obvious user-intent subtopics for their r
 - **Expansion opportunities:**
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
+## /srt-generator
+
+- **Missing subtopics:** None detected
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+  - Replace generic AI-style transitions with concrete examples and constraints.
+
 ## /srt-to-word
 
 - **Missing subtopics:** None detected
@@ -1353,6 +1250,13 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
 ## /tools/ass-to-srt
+
+- **Missing subtopics:** None detected
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /tools/html-to-srt
 
 - **Missing subtopics:** None detected
 - **Weak sections:** None detected
@@ -1479,6 +1383,13 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Replace generic AI-style transitions with concrete examples and constraints.
 
 ## /video-captions
+
+- **Missing subtopics:** None detected
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /video-to-srt
 
 - **Missing subtopics:** None detected
 - **Weak sections:** None detected
