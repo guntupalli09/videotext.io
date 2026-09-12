@@ -9,7 +9,6 @@ import {
   ArrowRight,
   BookOpen,
   FileText,
-  Zap,
   ChevronDown,
   ChevronRight,
   ClipboardList,
@@ -19,6 +18,15 @@ import {
 import { useState } from 'react'
 import { getBrandDataForPath, type BrandData } from '../data/brandGuidelineData'
 import type { FaqItem, SeoDeepContent } from '../lib/seoRegistry'
+import GuidelineFormatApplyCta from '../components/GuidelineFormatApplyCta'
+import { presetForGuidelinePage } from '../lib/guidelineFormatCta'
+import {
+  getGoTranscriptSpoke,
+  GOTRANSCRIPT_HUB_SPOKE_LINKS,
+  isGoTranscriptHub,
+  type SpokeExample,
+  type SpokeSection,
+} from '../data/gotranscriptSpokeContent'
 
 interface BrandGuidelinePageProps {
   seoH1?: string
@@ -76,6 +84,56 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   )
 }
 
+/** Bing AI top citations — guideline → tool conversion test (no A/B). */
+function showGuidelineToolCta(pathname: string): boolean {
+  return pathname.startsWith('/gotranscript')
+}
+
+function SpokeExampleBlock({ example }: { example: SpokeExample }) {
+  return (
+    <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 px-4 py-2 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+        {example.label}
+      </p>
+      {example.wrong && (
+        <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800">
+          <p className="text-xs font-semibold text-red-600 dark:text-red-400 mb-1">Wrong</p>
+          <pre className="text-xs font-mono text-red-700/90 dark:text-red-300/90 whitespace-pre-wrap">{example.wrong}</pre>
+        </div>
+      )}
+      <div className="px-4 py-3">
+        <p className="text-xs font-semibold text-green-600 dark:text-green-400 mb-1">Correct</p>
+        <pre className="text-xs font-mono text-green-700/90 dark:text-green-300/90 whitespace-pre-wrap">{example.right}</pre>
+      </div>
+    </div>
+  )
+}
+
+function SpokeSectionBlock({ section }: { section: SpokeSection }) {
+  return (
+    <div>
+      <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-3">{section.heading}</h3>
+      {section.paragraphs.map((p) => (
+        <p key={p.slice(0, 40)} className="text-gray-600 dark:text-gray-300 leading-relaxed mb-3 last:mb-0">
+          {p}
+        </p>
+      ))}
+      {section.codeBlock && (
+        <pre className="mt-4 text-sm font-mono text-green-400 bg-gray-900 dark:bg-gray-950 rounded-xl p-5 border border-gray-700 whitespace-pre-wrap leading-relaxed">
+          {section.codeBlock}
+        </pre>
+      )}
+      {section.examples && section.examples.length > 0 && (
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          {section.examples.map((ex) => (
+            <SpokeExampleBlock key={ex.label} example={ex} />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 const BRAND_PAGE_LINKS: { label: string; path: string; brand: string }[] = [
   { label: 'Rev Guidelines', path: '/rev-transcript-guidelines', brand: 'Rev' },
   { label: 'Rev Format Guide', path: '/rev-transcription-format', brand: 'Rev' },
@@ -84,9 +142,10 @@ const BRAND_PAGE_LINKS: { label: string; path: string; brand: string }[] = [
   { label: 'Rev Requirements', path: '/rev-transcription-requirements', brand: 'Rev' },
   { label: 'Rev AI Guide', path: '/rev-ai-transcription-guide', brand: 'Rev' },
   { label: 'GoTranscript Guidelines', path: '/gotranscript-guidelines', brand: 'GoTranscript' },
-  { label: 'GoTranscript Format', path: '/gotranscript-transcription-format', brand: 'GoTranscript' },
-  { label: 'GoTranscript Style Guide', path: '/gotranscript-style-guide', brand: 'GoTranscript' },
-  { label: 'GoTranscript Rules', path: '/gotranscript-transcription-rules', brand: 'GoTranscript' },
+  { label: 'GoTranscript Timestamps', path: '/gotranscript-transcription-format', brand: 'GoTranscript' },
+  { label: 'GoTranscript Speaker Labels', path: '/gotranscript-style-guide', brand: 'GoTranscript' },
+  { label: 'GoTranscript Inaudible Tags', path: '/gotranscript-inaudible-tags', brand: 'GoTranscript' },
+  { label: 'GoTranscript Verbatim Rules', path: '/gotranscript-transcription-rules', brand: 'GoTranscript' },
   { label: 'GoTranscript Test Guide', path: '/gotranscript-test-guide', brand: 'GoTranscript' },
   { label: 'TranscribeMe Guidelines', path: '/transcribeme-guidelines', brand: 'TranscribeMe' },
   { label: 'TranscribeMe Style', path: '/transcribeme-transcription-style', brand: 'TranscribeMe' },
@@ -134,6 +193,8 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
   const faqs = faq ?? []
 
   const otherBrandLinks = BRAND_PAGE_LINKS.filter((l) => l.path !== pathname).slice(0, 8)
+  const gotranscriptSpoke = getGoTranscriptSpoke(pathname)
+  const showHubSpokeLinks = isGoTranscriptHub(pathname)
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors duration-500">
@@ -173,34 +234,7 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
           </h1>
           <p className="text-lg text-gray-500 dark:text-white/50 max-w-3xl mb-6">{intro}</p>
 
-          <div className="mb-6 rounded-2xl border-2 border-blue-400 dark:border-blue-600 bg-white/90 dark:bg-gray-900/80 p-5 max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-widest text-blue-700 dark:text-blue-300">
-              Skip the manual reformat
-            </p>
-            <p className="mt-1 text-lg font-medium text-gray-900 dark:text-white">
-              Format your file to these guidelines in one click
-            </p>
-            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-              Paste the transcript on Guideline Format and apply a {brand.shortName} preset. Free: 3 imports/mo, no card. Files deleted after processing.
-            </p>
-            <Link
-              to="/guideline-format"
-              className="mt-3 inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-lg shadow-blue-500/20 hover:shadow-xl transition-all"
-            >
-              <Zap className="w-4 h-4" />
-              Format your file to these guidelines in one click
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-            <Link
-              to="/guideline-format"
-              className="inline-flex items-center gap-2 text-blue-700 dark:text-blue-300 font-semibold text-sm hover:underline"
-            >
-              Open Guideline Format
-              <ArrowRight className="w-4 h-4" />
-            </Link>
             <a
               href="#quick-rules"
               className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 font-semibold text-sm hover:underline"
@@ -213,6 +247,57 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
       </section>
 
       <div className="max-w-5xl mx-auto px-6 pb-24 space-y-16">
+
+        {showHubSpokeLinks && (
+          <section aria-labelledby="gotranscript-spokes-heading">
+            <h2 id="gotranscript-spokes-heading" className="text-2xl font-medium text-gray-900 dark:text-white mb-3">
+              GoTranscript rule lookup by topic
+            </h2>
+            <p className="text-gray-500 dark:text-gray-400 mb-5">
+              Deep dives on the rules transcribers look up most often. Each page links back here and to the official GoTranscript guidelines.
+            </p>
+            <div className="grid sm:grid-cols-2 gap-3">
+              {GOTRANSCRIPT_HUB_SPOKE_LINKS.map((spoke) => (
+                <Link
+                  key={spoke.path}
+                  to={spoke.path}
+                  className="flex flex-col gap-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-all"
+                >
+                  <span className="font-semibold text-gray-900 dark:text-white">{spoke.label}</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{spoke.description}</span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {gotranscriptSpoke && (
+          <section aria-labelledby="spoke-deep-dive-heading" className="space-y-8">
+            <div>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                <Link to="/gotranscript-guidelines" className="text-blue-600 dark:text-blue-400 hover:underline">
+                  ← GoTranscript guidelines hub
+                </Link>
+              </p>
+              <h2 id="spoke-deep-dive-heading" className="text-2xl font-medium text-gray-900 dark:text-white mb-2">
+                {gotranscriptSpoke.hubLabel}
+              </h2>
+              <p className="text-gray-500 dark:text-gray-400">{gotranscriptSpoke.hubDescription}</p>
+            </div>
+            {gotranscriptSpoke.sections.map((section) => (
+              <SpokeSectionBlock key={section.heading} section={section} />
+            ))}
+          </section>
+        )}
+
+        {showGuidelineToolCta(pathname) && gotranscriptSpoke && (
+          <GuidelineFormatApplyCta
+            sourcePage={pathname}
+            brandName={brand.brandName}
+            preset={presetForGuidelinePage(pathname)}
+            presetLabel={brand.shortName}
+          />
+        )}
 
         {/* Brand Overview */}
         <section aria-labelledby="overview-heading">
@@ -246,7 +331,7 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
                   </li>
                   <li className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-300">
                     <span className="text-gray-400 dark:text-gray-500 mt-0.5">•</span>
-                    <span><strong className="text-gray-900 dark:text-white">Timestamps:</strong> {brand.timestampRequired ? 'Required' : 'Optional'} — {brand.timestampFormat}</span>
+                    <span><strong className="text-gray-900 dark:text-white">Timestamps:</strong> {brand.timestampSummary ?? `${brand.timestampRequired ? 'Required' : 'Optional'} — ${brand.timestampFormat}`}</span>
                   </li>
                   <li className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-300">
                     <span className="text-gray-400 dark:text-gray-500 mt-0.5">•</span>
@@ -280,6 +365,15 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
             Format: <code className="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs font-mono">{brand.speakerLabelFormat}</code>
           </p>
         </section>
+
+        {showGuidelineToolCta(pathname) && !gotranscriptSpoke && (
+          <GuidelineFormatApplyCta
+            sourcePage={pathname}
+            brandName={brand.brandName}
+            preset={presetForGuidelinePage(pathname)}
+            presetLabel={brand.shortName}
+          />
+        )}
 
         {/* Quick Rules Table */}
         <section id="quick-rules" aria-labelledby="quick-rules-heading">
@@ -479,7 +573,7 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
               <tbody>
                 {[
                   { platform: 'Rev', verbatim: 'Clean verbatim', timestamps: 'Optional', speaker: '[Name]:' },
-                  { platform: 'GoTranscript', verbatim: 'Clean verbatim', timestamps: 'Required (every segment)', speaker: 'Speaker 1:' },
+                  { platform: 'GoTranscript', verbatim: 'Clean verbatim', timestamps: 'Job-dependent (2 min or speaker change)', speaker: 'Speaker 1: (bold)' },
                   { platform: 'TranscribeMe', verbatim: 'Intelligent verbatim', timestamps: 'Optional', speaker: '[Name]:' },
                   { platform: 'Scribie', verbatim: 'Full / strict verbatim', timestamps: 'Required (every paragraph)', speaker: 'Speaker 1:' },
                   { platform: 'Daily Transcripts', verbatim: 'Clean verbatim', timestamps: 'Optional', speaker: 'Name:' },
@@ -516,6 +610,30 @@ export default function BrandGuidelinePage({ seoH1, seoIntro, faq }: BrandGuidel
                 <FaqItem key={i} q={item.q} a={item.a} />
               ))}
             </div>
+          </section>
+        )}
+
+        {/* Official source attribution */}
+        {brand.officialSourceUrl && brand.lastVerified && (
+          <section
+            aria-labelledby="source-heading"
+            className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 px-6 py-5"
+          >
+            <h2 id="source-heading" className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
+              Source &amp; verification
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+              Rules verified against{' '}
+              <a
+                href={brand.officialSourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 dark:text-blue-400 font-medium hover:underline"
+              >
+                official {brand.brandName} transcription guidelines
+              </a>
+              . Last verified: {brand.lastVerified}.
+            </p>
           </section>
         )}
 

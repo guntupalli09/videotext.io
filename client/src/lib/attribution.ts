@@ -20,42 +20,71 @@ const CLICK_ID_SOURCES: Array<[param: string, source: string]> = [
   ['ttclid', 'tiktok_ads'],
 ]
 
+function readAttributionParams(search?: string): {
+  utmSource: string | null
+  utmMedium: string | null
+  utmCampaign: string | null
+  resolvedSource: string | null
+  hasExplicitUtm: boolean
+} {
+  const params = new URLSearchParams(search ?? (typeof window !== 'undefined' ? window.location.search : ''))
+  const utmSource = params.get('utm_source')?.trim() || null
+  const utmMedium = params.get('utm_medium')?.trim() || null
+  const utmCampaign = params.get('utm_campaign')?.trim() || null
+  const hasExplicitUtm = !!(utmSource || utmMedium || utmCampaign)
+
+  let resolvedSource = utmSource
+  if (!resolvedSource) {
+    for (const [param, source] of CLICK_ID_SOURCES) {
+      if (params.get(param)) {
+        resolvedSource = source
+        break
+      }
+    }
+  }
+
+  return { utmSource, utmMedium, utmCampaign, resolvedSource, hasExplicitUtm }
+}
+
 /**
- * Capture first-touch UTM params + referrer into localStorage. Called on every page
- * load; only writes once per browser so later internal navigation never overwrites the
- * original acquisition source. Safe to call repeatedly.
+ * Capture UTM params + referrer into localStorage.
+ * - First touch: write once when external referrer or click-id appears.
+ * - Campaign links (explicit UTMs, e.g. guideline CTAs): always refresh so signup
+ *   and job events attribute to the page that sent the user to the tool.
  */
 export function captureAttributionFromUrl(search?: string): void {
   if (typeof window === 'undefined') return
   try {
-    if (localStorage.getItem(ATTRIBUTION_STORAGE_KEY)) return
-
-    const params = new URLSearchParams(search ?? window.location.search)
-    const utmSource = params.get('utm_source')?.trim() || null
-    const utmMedium = params.get('utm_medium')?.trim() || null
-    const utmCampaign = params.get('utm_campaign')?.trim() || null
-
-    let resolvedSource = utmSource
-    if (!resolvedSource) {
-      for (const [param, source] of CLICK_ID_SOURCES) {
-        if (params.get(param)) {
-          resolvedSource = source
-          break
-        }
-      }
-    }
+    const { utmMedium, utmCampaign, resolvedSource, hasExplicitUtm } = readAttributionParams(search)
+    const existing = getStoredAttribution()
 
     const referrer = document.referrer?.trim() || null
-    // Skip same-site referrers (internal navigation before signup) so "direct" isn't
-    // misreported for a visitor who just clicked around the site first.
     const referrerIsExternal = referrer ? !referrer.startsWith(window.location.origin) : false
 
-    if (!resolvedSource && !utmMedium && !utmCampaign && !referrerIsExternal) return
+    if (hasExplicitUtm) {
+      const attribution: StoredAttribution = {
+        utmSource: resolvedSource ?? existing?.utmSource ?? null,
+        utmMedium: utmMedium ?? existing?.utmMedium ?? null,
+        utmCampaign: utmCampaign ?? existing?.utmCampaign ?? null,
+        referrer:
+          utmMedium === 'guideline_cta' && referrer
+            ? referrer
+            : referrerIsExternal
+              ? referrer
+              : existing?.referrer ?? null,
+      }
+      localStorage.setItem(ATTRIBUTION_STORAGE_KEY, JSON.stringify(attribution))
+      return
+    }
+
+    if (existing) return
+
+    if (!resolvedSource && !utmCampaign && !referrerIsExternal) return
 
     const attribution: StoredAttribution = {
       utmSource: resolvedSource,
-      utmMedium,
-      utmCampaign,
+      utmMedium: null,
+      utmCampaign: null,
       referrer: referrerIsExternal ? referrer : null,
     }
     localStorage.setItem(ATTRIBUTION_STORAGE_KEY, JSON.stringify(attribution))
@@ -72,5 +101,23 @@ export function getStoredAttribution(): StoredAttribution | null {
     return JSON.parse(raw) as StoredAttribution
   } catch {
     return null
+  }
+}
+
+/** Payload shape for signup API (maps stored fields to server body keys). */
+export function getSignupAttributionPayload(): {
+  utmSource?: string
+  utmMedium?: string
+  utmCampaign?: string
+  referrer?: string
+} | null {
+  const a = getStoredAttribution()
+  if (!a) return null
+  if (!a.utmSource && !a.utmMedium && !a.utmCampaign && !a.referrer) return null
+  return {
+    ...(a.utmSource ? { utmSource: a.utmSource } : {}),
+    ...(a.utmMedium ? { utmMedium: a.utmMedium } : {}),
+    ...(a.utmCampaign ? { utmCampaign: a.utmCampaign } : {}),
+    ...(a.referrer ? { referrer: a.referrer } : {}),
   }
 }

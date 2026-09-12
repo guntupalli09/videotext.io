@@ -142,6 +142,7 @@ export type AnalyticsEvent =
   | 'nav_cta_clicked'              // props: { label, destination }
   | 'tool_nav_clicked'             // user clicked a tool from nav dropdown; props: { tool, path }
   | 'samples_module_clicked'       // user clicked "See real output samples"; props: { source_path, target_path }
+  | 'guideline_cta_clicked'        // guideline page → /guideline-format CTA; props: { source_page, preset, destination }
   // Tool configuration
   | 'format_changed'               // props: { tool, format }
   | 'language_selected'            // props: { tool, language, additional?: boolean }

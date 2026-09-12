@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   ChevronDown,
   ChevronRight,
@@ -40,6 +40,8 @@ import {
   PRESET_DATA,
   type GuidelinePresetKey,
 } from "./guidelineFormatPresetData";
+import { captureAttributionFromUrl, getStoredAttribution } from "../lib/attribution";
+import { trackEvent } from "../lib/analytics";
 
 type EditableRule = {
   id: string;
@@ -225,6 +227,8 @@ function applyReviewEditsToOutputText(
 }
 
 export default function GuidelineFormat() {
+  const [searchParams] = useSearchParams();
+  const presetFromUrlApplied = useRef(false);
   const [transcript, setTranscript] = useState("");
   const [prefillBanner, setPrefillBanner] = useState(false);
   const [selectValue, setSelectValue] = useState<SelectValue>("");
@@ -293,6 +297,26 @@ export default function GuidelineFormat() {
       setPrefillBanner(true);
     }
   }, []);
+
+  useEffect(() => {
+    captureAttributionFromUrl();
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (presetFromUrlApplied.current) return;
+    const raw = searchParams.get("preset")?.trim();
+    if (!raw || !(raw in PRESET_DATA)) return;
+    presetFromUrlApplied.current = true;
+    const key = raw as GuidelinePresetKey;
+    setSelectValue(key);
+    setSelectedPreset(key);
+    setRules(rulesFromPreset(PRESET_DATA[key]));
+    setCustomFile(null);
+    requestAnimationFrame(() => {
+      transcriptTextareaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      transcriptTextareaRef.current?.focus();
+    });
+  }, [searchParams]);
 
   useEffect(() => {
     if (!transcript.trim()) setTranscriptLoadedFromFile(null);
@@ -530,6 +554,20 @@ export default function GuidelineFormat() {
       }
       setJobToken(data.jobToken || null);
       setJobId(data.jobId);
+      try {
+        const attribution = getStoredAttribution();
+        trackEvent("job_started", {
+          job_id: data.jobId,
+          tool_type: "guideline-format",
+          preset_id: selectedPreset,
+          utm_source: attribution?.utmSource ?? undefined,
+          utm_medium: attribution?.utmMedium ?? undefined,
+          utm_campaign: attribution?.utmCampaign ?? undefined,
+          referrer_page: attribution?.referrer ?? undefined,
+        });
+      } catch {
+        /* non-blocking */
+      }
     } catch (e) {
       setSubmitError(e instanceof Error ? e.message : "Network error");
       setIsSubmitting(false);
@@ -2856,7 +2894,7 @@ export default function GuidelineFormat() {
                 stage: "5",
                 title: "Timestamp validation",
                 detail:
-                  "GoTranscript requires timestamps every 2 minutes; TranscribeMe requires them every paragraph. VideoText validates that required timestamps are present, correctly formatted ([00:02:00] not 00:02:00), and fall on speaker turns rather than mid-sentence. Missing or malformed timestamps are flagged before export.",
+                  "When a GoTranscript job requires timestamping, stamps are every 2 minutes or at every speaker change (per job instructions). TranscribeMe requires them every paragraph. VideoText validates that required timestamps are present, correctly formatted ([00:02:00] not 00:02:00), and fall on speaker turns rather than mid-sentence. Missing or malformed timestamps are flagged before export.",
                 label: "Automated here",
                 blue: true,
               },
@@ -2864,7 +2902,7 @@ export default function GuidelineFormat() {
                 stage: "6",
                 title: "Human reviewer QA pass",
                 detail:
-                  "A human reviewer reads through the formatted transcript against the original audio. Focus areas: proper nouns the AI may have misheard, inaudible sections that need [inaudible] tags, and any segments flagged as below the QA confidence threshold. VideoText surfaces exactly which segments need manual review — no need to scan the whole document.",
+                  "A human reviewer reads through the formatted transcript against the original audio. Focus areas: proper nouns the AI may have misheard, inaudible sections that need [inaudible 00:00:00] or [unintelligible 00:00:00] tags, and any segments flagged as below the QA confidence threshold. VideoText surfaces exactly which segments need manual review — no need to scan the whole document.",
                 label: "Manual",
                 blue: false,
               },
@@ -3216,7 +3254,7 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
             },
             {
               title: "Timestamp integrity validation",
-              body: "For formats that require timestamps (GoTranscript every 2 min, TranscribeMe every paragraph), the validator checks that: timestamps are present at required intervals, the format matches the platform spec exactly ([HH:MM:SS] vs HH:MM:SS), and timestamps fall on speaker turn boundaries rather than mid-sentence. Missing or misplaced timestamps are flagged by position in the transcript.",
+              body: "For formats that require timestamps (GoTranscript: every 2 min or speaker change when job requires; TranscribeMe: every paragraph), the validator checks that: timestamps are present at required intervals, the format matches the platform spec exactly ([HH:MM:SS] vs HH:MM:SS), and timestamps fall on speaker turn boundaries rather than mid-sentence. Missing or misplaced timestamps are flagged by position in the transcript.",
             },
             {
               title: "Formatting conflict detection",
@@ -3347,15 +3385,19 @@ Speaker 1: The first 30 days we had 4,000 signups, which is above projections.`}
                 path: "/gotranscript-guidelines",
               },
               {
-                label: "GoTranscript Format",
+                label: "GoTranscript Timestamps",
                 path: "/gotranscript-transcription-format",
               },
               {
-                label: "GoTranscript Style Guide",
+                label: "GoTranscript Speaker Labels",
                 path: "/gotranscript-style-guide",
               },
               {
-                label: "GoTranscript Rules",
+                label: "GoTranscript Inaudible Tags",
+                path: "/gotranscript-inaudible-tags",
+              },
+              {
+                label: "GoTranscript Verbatim Rules",
                 path: "/gotranscript-transcription-rules",
               },
               {
