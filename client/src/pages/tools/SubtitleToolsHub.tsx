@@ -117,9 +117,6 @@ export default function SubtitleToolsHub() {
             <Link to="/video-to-srt" className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 transition-colors">
               Generate SRT from video →
             </Link>
-            <Link to="/netflix-ttsc-checklist" className="inline-flex items-center rounded-lg border border-white/30 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10 transition-colors">
-              Netflix TTSC checklist
-            </Link>
             <Link to="/subtitle-grammar-fixer" className="inline-flex items-center rounded-lg border border-white/30 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10 transition-colors">
               Fix CPL & CPS in one pass
             </Link>

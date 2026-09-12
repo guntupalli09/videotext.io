@@ -195,12 +195,6 @@ export default function FreeToolLayout({
               >
                 Video to Subtitles
               </Link>
-              <Link
-                to="/netflix-ttsc-checklist"
-                className="inline-flex items-center justify-center rounded-xl border border-blue-200 dark:border-blue-800 bg-white dark:bg-gray-900 text-blue-800 dark:text-blue-200 text-sm font-semibold px-4 py-2.5"
-              >
-                Netflix TTSC checklist
-              </Link>
             </div>
           </section>
         )}

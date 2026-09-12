@@ -78,11 +78,11 @@ export default function TtmlToSrt() {
         { q: 'Will the SRT work for Netflix or YouTube upload?', a: 'SRT files converted from TTML will work for YouTube subtitle uploads. Netflix does not accept external SRT uploads from content creators — they use their own delivery pipeline. For standard platform uploads (YouTube, Vimeo, Wistia), the converted SRT is fully compatible.' },
       ]}
       relatedTools={[
-        { label: 'Netflix TTSC Checklist', path: '/netflix-ttsc-checklist', desc: 'QC converted SRT against TTSC-style limits' },
+        { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'Auto-correct overlaps, long lines, and CPS after convert' },
         { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Check your converted SRT for errors' },
         { label: 'Character Limit Checker', path: '/tools/subtitle-character-checker', desc: '42 CPL after TTML → SRT convert' },
-        { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'Auto-correct overlaps, long lines, and CPS after convert' },
-        { label: 'Video to SRT', path: '/video-to-srt', desc: 'Generate SRT from video instead of TTML' },
+        { label: 'Netflix TTSC Checklist', path: '/netflix-ttsc-checklist', desc: 'QC converted SRT against TTSC-style limits' },
+        { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Full caption hub: video → SRT/VTT, then fix or burn' },
         { label: 'ASS to SRT Converter', path: '/tools/ass-to-srt', desc: 'Convert ASS/SSA anime subtitles to SRT' },
       ]}
     >

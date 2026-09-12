@@ -76,11 +76,11 @@ export default function SrtToVtt() {
         { q: 'What if my SRT has HTML formatting like <b> or <i>?', a: 'HTML tags are preserved in the output VTT. VTT officially supports <b>, <i>, <u>, and <ruby> tags, so formatted text will carry through correctly to players that support it.' },
       ]}
       relatedTools={[
-        { label: 'Netflix TTSC Checklist', path: '/netflix-ttsc-checklist', desc: 'Validate before platform upload' },
-        { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Check your SRT/VTT for errors before converting' },
         { label: 'VTT to SRT Converter', path: '/tools/vtt-to-srt', desc: 'Convert WebVTT back to SubRip format' },
-        { label: 'Character Limit Checker', path: '/tools/subtitle-character-checker', desc: 'CPL check after convert' },
-        { label: 'Video to SRT', path: '/video-to-srt', desc: 'Generate SRT/VTT from video' },
+        { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Check your SRT/VTT for errors before converting' },
+        { label: 'Merge SRT Files', path: '/tools/merge-srt-files', desc: 'Combine two subtitle files into one' },
+        { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate SRT/VTT from any video with AI' },
+        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT to 70+ languages' },
         { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'Auto-correct timing, overlaps & long lines' },
       ]}
     >

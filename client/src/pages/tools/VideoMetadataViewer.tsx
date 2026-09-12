@@ -118,12 +118,10 @@ export default function VideoMetadataViewer() {
         { q: 'What is a container format vs codec?', a: 'A container format (like MP4, MKV, or MOV) is the wrapper that holds video, audio, subtitles, and metadata tracks together in a single file. A codec is the compression algorithm used for each individual track inside the container. For example, an MP4 file (container) might contain H.264 video (codec) and AAC audio (codec). The same H.264 video could also be stored inside an MKV or MOV container. Understanding this distinction matters when troubleshooting compatibility — a device might support the MP4 container but not the H.265 codec inside it.' },
       ]}
       relatedTools={[
-        { label: 'Video to SRT', path: '/video-to-srt', desc: 'Generate timed SRT after checking metadata' },
-        { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Full caption hub from your video' },
-        { label: 'Netflix TTSC Checklist', path: '/netflix-ttsc-checklist', desc: 'QC subtitles before platform delivery' },
-        { label: 'Compress Video', path: '/compress-video', desc: 'Reduce video file size online' },
         { label: 'Video Bitrate Calculator', path: '/tools/video-bitrate-calculator', desc: 'Calculate ideal bitrate for file size' },
-        { label: 'Subtitle Tools Hub', path: '/subtitle-tools', desc: 'Validators, converters, and CPL checkers' },
+        { label: 'Aspect Ratio Calculator', path: '/tools/aspect-ratio-calculator', desc: 'Crop and resize dimensions' },
+        { label: 'Compress Video', path: '/compress-video', desc: 'Reduce video file size online' },
+        { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate AI subtitles from your video' },
       ]}
     >
       <div className="space-y-4">

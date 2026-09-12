@@ -97,12 +97,12 @@ export default function ShiftSubtitleTiming() {
         { q: 'Does this work for ASS/SSA subtitle formats?', a: 'No. This tool supports SRT and VTT only. For ASS/SSA formats, use Aegisub or Subtitle Edit on desktop.' },
       ]}
       relatedTools={[
-        { label: 'Netflix TTSC Checklist', path: '/netflix-ttsc-checklist', desc: 'Re-scan CPL and CPS after the shift' },
         { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Check for overlaps after shifting' },
-        { label: 'Reading Speed Checker', path: '/tools/subtitle-reading-speed', desc: 'CPS may change after timing shift' },
+        { label: 'SRT to VTT Converter', path: '/tools/srt-to-vtt', desc: 'Convert between subtitle formats' },
         { label: 'Merge SRT Files', path: '/tools/merge-srt-files', desc: 'Combine two subtitle tracks' },
         { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'AI-powered subtitle timing correction' },
-        { label: 'Video to SRT', path: '/video-to-srt', desc: 'Generate fresh subtitles from video' },
+        { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate fresh subtitles from video with AI' },
+        { label: 'Subtitle Word Counter', path: '/tools/subtitle-word-counter', desc: 'Analyze word count and speaking stats' },
       ]}
     >
       <div className="space-y-4">

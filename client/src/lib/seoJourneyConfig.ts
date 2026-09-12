@@ -68,8 +68,8 @@ const SUBTITLE_QA_JOURNEYS: Record<string, SeoJourneyBannerData> = {
     steps: SUBTITLE_QA_STEPS,
     primary: { label: 'Fix timing, CPL & grammar in one pass', href: GRAMMAR_FIXER_EXIT },
     secondary: [
-      { label: 'Netflix TTSC checklist', href: '/netflix-ttsc-checklist' },
       { label: 'Character limit checker', href: '/tools/subtitle-character-checker' },
+      { label: 'Netflix TTSC checklist', href: '/netflix-ttsc-checklist' },
     ],
   },
   '/tools/subtitle-character-checker': {
@@ -123,8 +123,8 @@ const SUBTITLE_QA_JOURNEYS: Record<string, SeoJourneyBannerData> = {
     steps: SUBTITLE_QA_STEPS,
     primary: { label: 'Fix reading speed & overlaps', href: GRAMMAR_FIXER_EXIT },
     secondary: [
-      { label: 'Netflix TTSC checklist', href: '/netflix-ttsc-checklist' },
       { label: 'Character limit checker', href: '/tools/subtitle-character-checker' },
+      { label: 'Netflix TTSC checklist', href: '/netflix-ttsc-checklist' },
     ],
   },
   '/subtitle-reading-speed': {
@@ -134,8 +134,8 @@ const SUBTITLE_QA_JOURNEYS: Record<string, SeoJourneyBannerData> = {
     steps: SUBTITLE_QA_STEPS,
     primary: { label: 'Fix reading speed & overlaps', href: GRAMMAR_FIXER_EXIT },
     secondary: [
-      { label: 'Netflix TTSC checklist', href: '/netflix-ttsc-checklist' },
       { label: 'Character limit checker', href: '/tools/subtitle-character-checker' },
+      { label: 'Netflix TTSC checklist', href: '/netflix-ttsc-checklist' },
     ],
   },
   '/tools/subtitle-word-counter': {
@@ -144,10 +144,7 @@ const SUBTITLE_QA_JOURNEYS: Record<string, SeoJourneyBannerData> = {
     body: 'Problem: the word count looks fine but characters-per-second on dense cues will get rejected — extending display time manually fights the next overlap.',
     steps: SUBTITLE_QA_STEPS,
     primary: { label: 'Fix reading speed & overlaps', href: GRAMMAR_FIXER_EXIT },
-    secondary: [
-      { label: 'Netflix TTSC checklist', href: '/netflix-ttsc-checklist' },
-      { label: 'Reading speed checker', href: '/tools/subtitle-reading-speed' },
-    ],
+    secondary: [{ label: 'Reading speed checker', href: '/tools/subtitle-reading-speed' }],
   },
   '/subtitle-word-counter': {
     kicker: 'CPS report → repair',
@@ -155,10 +152,7 @@ const SUBTITLE_QA_JOURNEYS: Record<string, SeoJourneyBannerData> = {
     body: 'Problem: the word count looks fine but characters-per-second on dense cues will get rejected — extending display time manually fights the next overlap.',
     steps: SUBTITLE_QA_STEPS,
     primary: { label: 'Fix reading speed & overlaps', href: GRAMMAR_FIXER_EXIT },
-    secondary: [
-      { label: 'Netflix TTSC checklist', href: '/netflix-ttsc-checklist' },
-      { label: 'Reading speed checker', href: '/tools/subtitle-reading-speed' },
-    ],
+    secondary: [{ label: 'Reading speed checker', href: '/tools/subtitle-reading-speed' }],
   },
   '/tools/merge-srt-files': {
     kicker: 'Merge → validate → fix → generate',
@@ -167,7 +161,6 @@ const SUBTITLE_QA_JOURNEYS: Record<string, SeoJourneyBannerData> = {
     steps: UTILITY_TOOL_EXIT_STEPS,
     primary: { label: 'Validate merged file', href: '/tools/subtitle-validator' },
     secondary: [
-      { label: 'Netflix TTSC checklist', href: '/netflix-ttsc-checklist' },
       { label: 'Auto-fix QC', href: GRAMMAR_FIXER_EXIT },
       { label: 'Convert video to SRT', href: '/video-to-srt' },
     ],
@@ -186,7 +179,6 @@ const SUBTITLE_QA_JOURNEYS: Record<string, SeoJourneyBannerData> = {
     body: 'Problem: checkers flagged mechanical failures. Enable Fix timing for CPS/overlaps and Line breaks (CPL) for long rows — overlaps are always repaired.',
     primary: { label: 'Upload & fix this file', href: GRAMMAR_FIXER_EXIT },
     secondary: [
-      { label: 'Netflix TTSC checklist', href: '/netflix-ttsc-checklist' },
       { label: 'Character checker', href: '/tools/subtitle-character-checker' },
       { label: 'Subtitle validator', href: '/tools/subtitle-validator' },
     ],
@@ -201,7 +193,6 @@ export const SEO_JOURNEY_BANNERS: Record<string, SeoJourneyBannerData> = {
     body: 'This page converts video to a timed SRT file. The full product — fix, translate, and burn — lives on Video to Subtitles.',
     primary: { label: 'Open the Video to Subtitles hub', href: '/video-to-subtitles' },
     secondary: [
-      { label: 'Netflix TTSC checklist', href: '/netflix-ttsc-checklist' },
       { label: 'Translate', href: '/translate-subtitles' },
     ],
   },
@@ -216,7 +207,6 @@ export const SEO_JOURNEY_BANNERS: Record<string, SeoJourneyBannerData> = {
     ],
     primary: { label: 'Generate SRT from this video', href: '/video-to-subtitles' },
     secondary: [
-      { label: 'Netflix TTSC checklist', href: '/netflix-ttsc-checklist' },
       { label: 'Fix Subtitles', href: '/fix-subtitles' },
       { label: 'Burn Subtitles', href: '/burn-subtitles' },
       { label: 'Translate', href: '/translate-subtitles' },
@@ -320,9 +310,9 @@ export const SEO_JOURNEY_BANNERS: Record<string, SeoJourneyBannerData> = {
     steps: SUBTITLE_QA_STEPS,
     primary: { label: 'Convert video to SRT', href: '/video-to-srt' },
     secondary: [
-      { label: 'Netflix TTSC checklist', href: '/netflix-ttsc-checklist' },
-      { label: 'Character limit checker', href: '/tools/subtitle-character-checker' },
       { label: 'Subtitle grammar fixer', href: '/subtitle-grammar-fixer' },
+      { label: 'Character limit checker', href: '/tools/subtitle-character-checker' },
+      { label: 'Netflix TTSC checklist', href: '/netflix-ttsc-checklist' },
     ],
   },
   '/tools/shift-subtitle-timing': {
@@ -332,7 +322,6 @@ export const SEO_JOURNEY_BANNERS: Record<string, SeoJourneyBannerData> = {
     steps: UTILITY_TOOL_EXIT_STEPS,
     primary: { label: 'Validate shifted file', href: '/tools/subtitle-validator' },
     secondary: [
-      { label: 'Netflix TTSC checklist', href: '/netflix-ttsc-checklist' },
       { label: 'Auto-fix QC', href: GRAMMAR_FIXER_EXIT },
       { label: 'Convert video to SRT', href: '/video-to-srt' },
     ],
@@ -344,7 +333,6 @@ export const SEO_JOURNEY_BANNERS: Record<string, SeoJourneyBannerData> = {
     steps: UTILITY_TOOL_EXIT_STEPS,
     primary: { label: 'Validate converted file', href: '/tools/subtitle-validator' },
     secondary: [
-      { label: 'Netflix TTSC checklist', href: '/netflix-ttsc-checklist' },
       { label: 'Auto-fix QC', href: GRAMMAR_FIXER_EXIT },
       { label: 'Convert video to SRT', href: '/video-to-srt' },
     ],

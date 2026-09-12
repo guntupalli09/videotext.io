@@ -83,12 +83,12 @@ export default function SubtitleWordCounter() {
         { q: 'What is the "longest cue" stat?', a: 'It shows the single subtitle cue with the most characters. This is useful for checking whether any cue has unusually long text that might cause display issues.' },
       ]}
       relatedTools={[
-        { label: 'Netflix TTSC Checklist', path: '/netflix-ttsc-checklist', desc: 'CPL and CPS checks after word-count review' },
-        { label: 'Reading Speed Checker', path: '/tools/subtitle-reading-speed', desc: 'Detailed CPS per-cue analysis' },
-        { label: 'Character Limit Checker', path: '/tools/subtitle-character-checker', desc: 'Netflix-style 42 CPL line limits' },
-        { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Check file for errors before counting' },
-        { label: 'Video to SRT', path: '/video-to-srt', desc: 'Generate subtitles from video' },
         { label: 'SRT to Plain Text', path: '/tools/srt-to-text', desc: 'Extract clean text for repurposing' },
+        { label: 'Reading Speed Checker', path: '/tools/subtitle-reading-speed', desc: 'Detailed CPS per-cue analysis' },
+        { label: 'Video Script Timer', path: '/tools/video-script-timer', desc: 'Estimate video length from word count' },
+        { label: 'Video to Transcript', path: '/video-to-transcript', desc: 'AI transcript with full word data' },
+        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT to 70+ languages' },
+        { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Check file for errors before counting' },
       ]}
     >
       <div className="space-y-4">

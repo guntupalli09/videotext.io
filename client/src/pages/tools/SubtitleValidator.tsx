@@ -48,7 +48,6 @@ export default function SubtitleValidator() {
         body: 'Out of sync, overlapping, or CPS fail → the Fix tool auto-corrects timing, lines, and reading speed.',
         primary: { label: 'Fix overlaps & CPS in one pass', path: '/subtitle-grammar-fixer' },
         secondary: [
-          { label: 'Netflix TTSC checklist', path: '/netflix-ttsc-checklist' },
           { label: 'Translate', path: '/translate-subtitles' },
           { label: 'Burn', path: '/burn-subtitles' },
         ],
@@ -91,12 +90,12 @@ export default function SubtitleValidator() {
         { q: 'I have 50 warnings but no errors — is my file usable?', a: 'Yes. Warnings indicate best-practice violations (like slightly long lines) but won\'t cause playback failures. Errors (overlapping timestamps, bad timing) may cause visible issues. Fix errors first; address warnings if the file is for broadcast delivery.' },
       ]}
       relatedTools={[
-        { label: 'Netflix TTSC Checklist', path: '/netflix-ttsc-checklist', desc: 'CPL, CPS, and overlap checks before delivery' },
+        { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'Auto-correct overlaps, timing & long lines' },
         { label: 'Character Limit Checker', path: '/tools/subtitle-character-checker', desc: 'Netflix-style 42 CPL / BBC 37 presets' },
         { label: 'Reading Speed Checker', path: '/tools/subtitle-reading-speed', desc: '20 CPS adult / 17 CPS children presets' },
-        { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'Auto-correct overlaps, timing & long lines' },
-        { label: 'Video to SRT', path: '/video-to-srt', desc: 'Generate a fresh SRT from video' },
+        { label: 'Netflix TTSC Checklist', path: '/netflix-ttsc-checklist', desc: 'CPL, CPS, and overlap checks before delivery' },
         { label: 'Shift Subtitle Timing', path: '/tools/shift-subtitle-timing', desc: 'Bulk-adjust all timestamps' },
+        { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate timed SRT/VTT from video' },
       ]}
     >
       <div className="space-y-4">

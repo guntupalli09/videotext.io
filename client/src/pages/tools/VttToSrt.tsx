@@ -72,12 +72,12 @@ export default function VttToSrt() {
         { q: 'Is there a file size limit?', a: 'No. Since conversion runs entirely in your browser, there is no server-side size restriction. Very large files (thousands of cues) may take a second to process but will complete successfully.' },
       ]}
       relatedTools={[
-        { label: 'Netflix TTSC Checklist', path: '/netflix-ttsc-checklist', desc: 'Validate SRT before editor import' },
         { label: 'SRT to VTT Converter', path: '/tools/srt-to-vtt', desc: 'Convert SRT → WebVTT format' },
-        { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Check for errors before converting' },
-        { label: 'Character Limit Checker', path: '/tools/subtitle-character-checker', desc: 'CPL check on converted SRT' },
-        { label: 'Video to SRT', path: '/video-to-srt', desc: 'Generate SRT/VTT from video' },
         { label: 'Fix Subtitles', path: '/fix-subtitles', desc: 'AI auto-correct timing & overlaps in SRT/VTT' },
+        { label: 'Subtitle Validator', path: '/tools/subtitle-validator', desc: 'Check for errors before converting' },
+        { label: 'Merge SRT Files', path: '/tools/merge-srt-files', desc: 'Combine two subtitle tracks into one' },
+        { label: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate SRT/VTT from video with AI' },
+        { label: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT to 70+ languages' },
       ]}
     >
       <div className="space-y-4">

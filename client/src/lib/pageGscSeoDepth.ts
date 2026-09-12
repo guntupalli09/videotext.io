@@ -75,7 +75,7 @@ const DEPTH: Record<string, PageGscSeoDepth> = {
         { title: 'Export from CapCut without burned text', detail: 'In CapCut, export MP4 with captions disabled as a picture overlay so VideoText can read clean audio.' },
         { title: 'Or paste CapCut caption JSON', detail: 'If CapCut gave you a captions JSON export, use the in-browser JSON → SRT converter at the top of this page.' },
         { title: 'Generate or convert to SRT', detail: 'Upload the MP4 for Whisper SRT, or convert JSON locally — both produce a sidecar file CapCut cannot export natively.' },
-        { title: 'Continue on a core tool', detail: 'Run the Netflix TTSC checklist or free validators, fix timing on Fix Subtitles, translate on Translate Subtitles, or hardcode on Burn Subtitles — this page is the CapCut entry only.' },
+        { title: 'Continue on a core tool', detail: 'Fix timing on Fix Subtitles, translate on Translate Subtitles, or hardcode on Burn Subtitles — this page is the CapCut entry only.' },
       ],
     },
     faq: [
@@ -114,7 +114,7 @@ const DEPTH: Record<string, PageGscSeoDepth> = {
       steps: [
         { title: 'Pick the file task', detail: 'Converters (TTML, VTT, ASS), checkers (CPL, CPS, validator), and timing utilities each solve one step — no account for browser tools.' },
         { title: 'Run the check or conversion locally', detail: 'Most utilities parse in your browser. Your subtitle file stays on-device unless you choose an AI upload tool.' },
-        { title: 'Exit to AI tools when needed', detail: 'Generate captions on Video to SRT, run the Netflix TTSC checklist before delivery, repair on Subtitle Grammar Fixer, or translate on Translate Subtitles.' },
+        { title: 'Exit to AI tools when needed', detail: 'Generate captions from video on Video to SRT, repair QC issues on Subtitle Grammar Fixer, or translate on Translate Subtitles.' },
       ],
     },
     faq: [
@@ -136,7 +136,7 @@ const DEPTH: Record<string, PageGscSeoDepth> = {
       {
         id: 'which-tool-first',
         q: 'Which free tool should I run first?',
-        a: 'Validator for structure, character checker for CPL, reading-speed for CPS — then the Netflix TTSC checklist for the full pre-delivery pass. Use grammar fixer if anything fails. Generate from video on Video to SRT if you do not have an SRT yet.',
+        a: 'Validator for structure, character checker for CPL, reading-speed for CPS — then grammar fixer if anything fails. Use the Netflix TTSC checklist when you need a full pre-delivery pass. Generate from video first if you do not have an SRT yet.',
       },
     ],
   },
@@ -148,7 +148,7 @@ const DEPTH: Record<string, PageGscSeoDepth> = {
       steps: [
         { title: 'Select a local video file', detail: 'Drop MP4, MOV, WebM, or MKV. Metadata is read from container headers in the browser — nothing uploads.' },
         { title: 'Inspect codec, resolution, and duration', detail: 'See frame size, frame rate, audio channels, and duration before you send a file to transcription or burn-in.' },
-        { title: 'Decide the next step', detail: 'Long files may need compression; silent intros affect subtitle start; wrong frame rate hints at re-encode issues. Then generate SRT on Video to SRT or run the Netflix TTSC checklist on an existing file.' },
+        { title: 'Decide the next step', detail: 'Long files may need compression; silent intros affect subtitle start; wrong frame rate hints at re-encode issues before platform QC.' },
       ],
     },
     faq: [
