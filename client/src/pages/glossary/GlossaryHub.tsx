@@ -59,6 +59,10 @@ export default function GlossaryHub() {
           <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
             {terms.length} published definitions. Written by the VideoText editorial team. Updated {formatDate(GLOSSARY_PUBLISHED_AT)}.
           </p>
+          <p className="mt-3 max-w-3xl text-gray-600 dark:text-gray-300">
+            Use the topic groups or the A–Z index to open a definition. Each page starts with a direct answer, then
+            explains how the term is used in transcription and subtitle work.
+          </p>
         </header>
 
         <section>
