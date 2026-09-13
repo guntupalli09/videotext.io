@@ -1,4 +1,7 @@
+import React from 'react'
 import { Link } from 'react-router-dom'
+
+void React
 import { CLUSTER_LABELS, type GlossaryCluster } from '../../data/glossary/types'
 import { GLOSSARY_PUBLISHED_AT, getPublishedGlossaryTerms } from '../../data/glossary/inventory'
 

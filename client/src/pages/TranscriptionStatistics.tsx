@@ -1,4 +1,7 @@
+import React from 'react'
 import { Link } from 'react-router-dom'
+
+void React
 import {
   CITATION_HUB_AUTHOR,
   CITATION_HUB_PUBLISHED_AT,

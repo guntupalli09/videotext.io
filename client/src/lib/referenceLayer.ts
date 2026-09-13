@@ -178,6 +178,7 @@ export function getReferenceLayerPrerenderMeta(): Array<{
   description: string
   h1: string
   breadcrumbLabel: string
+  faq?: Array<{ q: string; a: string }>
 }> {
   const seo = getReferenceLayerSeo()
   return getReferenceLayerPaths().map((path) => {
@@ -189,6 +190,7 @@ export function getReferenceLayerPrerenderMeta(): Array<{
       description: meta.description,
       h1: path === CITATION_HUB_PATH ? getCitationHubH1() : path === GLOSSARY_HUB_PATH ? 'Transcription and subtitle glossary' : term?.h1 || meta.title,
       breadcrumbLabel: term?.term || (path === CITATION_HUB_PATH ? 'Transcription statistics' : 'Glossary'),
+      faq: term?.faqs,
     }
   })
 }

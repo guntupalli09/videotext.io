@@ -1,6 +1,14 @@
-import { Link, useParams } from 'react-router-dom'
+import React from 'react'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import { getGlossaryTermBySlug, getPublishedGlossaryTerms } from '../../data/glossary/inventory'
 import NotFound from '../NotFound'
+
+void React
+
+function slugFromPath(pathname: string): string | undefined {
+  const match = pathname.match(/^\/glossary\/([^/]+)\/?$/)
+  return match?.[1]
+}
 
 function formatDate(iso: string): string {
   const [year, month, day] = iso.split('-').map(Number)
@@ -13,7 +21,9 @@ function formatDate(iso: string): string {
 }
 
 export default function GlossaryTermPage() {
-  const { slug } = useParams<{ slug: string }>()
+  const { slug: paramSlug } = useParams<{ slug: string }>()
+  const { pathname } = useLocation()
+  const slug = paramSlug || slugFromPath(pathname)
   const term = slug ? getGlossaryTermBySlug(slug) : undefined
   if (!term) return <NotFound />
 
@@ -49,6 +59,10 @@ export default function GlossaryTermPage() {
         <section>
           <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Direct definition</h2>
           <p className="mt-3 text-lg leading-relaxed text-gray-800 dark:text-gray-200">{term.definition}</p>
+          <p className="mt-3 leading-relaxed text-gray-700 dark:text-gray-300">
+            The sections below explain how {term.term} is used in transcription and subtitle work, what people often mix
+            up, and which VideoText workflow applies when the next step is a file or review pass.
+          </p>
         </section>
 
         <section>

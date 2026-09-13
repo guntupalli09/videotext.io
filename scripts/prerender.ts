@@ -27,7 +27,7 @@ import { getCoreToolFaq, getCoreToolSeoDepth } from '../client/src/lib/coreToolS
 import { getIndexablePaths } from './seo/registry'
 import { stripTopLevelSoftwareApplicationScripts } from './seo/jsonLdUtils'
 import { renderPageToHtml } from '../client/src/ssr-render'
-import { getReferenceLayerJsonLd, getReferenceLayerPrerenderMeta } from '../client/src/lib/referenceLayer'
+import { getReferenceLayerJsonLd, getReferenceLayerPrerenderMeta, isReferenceLayerPath } from '../client/src/lib/referenceLayer'
 import { getContextualCta, getRouteFamily } from '../client/src/lib/routeFamilyTemplates'
 import slugMapJson from '../client/src/data/hashnode-slug-map.json'
 
@@ -1114,6 +1114,7 @@ function buildBreadcrumbJsonLd(routePath: string, routeMeta: RouteMeta): object 
 
 function resolveFaqItems(routePath: string, meta: RouteMeta): Array<{ q: string; a: string }> {
   if (meta.faq?.length) return meta.faq
+  if (isReferenceLayerPath(routePath)) return []
   return getCoreToolFaq(routePath)
 }
 
@@ -1362,6 +1363,8 @@ function buildH1Html(meta: RouteMeta): string {
     { path: '/translate-subtitles', label: 'Translate Subtitles' },
     { path: '/subtitle-tools', label: 'Subtitle Tools' },
     { path: '/transcription-tools', label: 'Transcription Tools' },
+    { path: '/transcription-statistics', label: 'Transcription statistics' },
+    { path: '/glossary', label: 'Transcription glossary' },
   ].filter((item) => item.path !== meta.path)
   const keywordList = (meta.keywords?.length ? meta.keywords : generateKeywordsFromTitle(meta.title, meta.path)).slice(0, 6)
 
@@ -1925,6 +1928,8 @@ async function main() {
     const ssrHtml = renderPageToHtml(routePath)
     if (ssrHtml) {
       html = html.replace('<div id="root"></div>', `<div id="root">${ssrHtml}</div>`)
+    } else if (isReferenceLayerPath(routePath)) {
+      throw new Error(`[prerender] Reference-layer SSR failed for ${routePath}. Refusing to inject the generic workflow template.`)
     } else if (meta.h1) {
       // For all other pages: inject minimal H1 + description for non-JS crawlers.
       html = html.replace('</body>', `${buildH1Html(meta)}\n</body>`)

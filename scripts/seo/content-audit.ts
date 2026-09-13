@@ -1309,6 +1309,12 @@ function assertReferenceLayerHtml(pages: PageAudit[]): void {
     if (!page?.exists) failures.push(`${route}: missing prerendered reference-layer HTML`)
     if (page && !page.title) failures.push(`${route}: missing title`)
     if (page && !page.h1) failures.push(`${route}: missing H1`)
+    if (page?.htmlPath) {
+      const html = fs.readFileSync(path.join(REPO_ROOT, page.htmlPath), 'utf8')
+      if (html.includes('vt-workflow-document') || html.includes('Recommended workflow')) {
+        failures.push(`${route}: prerendered body is the generic workflow template, not the reference-layer document`)
+      }
+    }
   }
   const glossaryPages = pages.filter((page) => page.path.startsWith('/glossary/'))
   for (const page of glossaryPages) {
@@ -1316,6 +1322,12 @@ function assertReferenceLayerHtml(pages: PageAudit[]): void {
     if (!page.h1) failures.push(`${page.path}: missing H1`)
     const hasDefinition = page.h2s.some((heading) => /direct definition/i.test(heading)) || /what is/i.test(page.h1)
     if (!hasDefinition) failures.push(`${page.path}: missing definition heading or What Is H1`)
+    if (page.htmlPath) {
+      const html = fs.readFileSync(path.join(REPO_ROOT, page.htmlPath), 'utf8')
+      if (html.includes('vt-workflow-document') || html.includes('Recommended workflow')) {
+        failures.push(`${page.path}: prerendered body is the generic workflow template, not the glossary definition`)
+      }
+    }
   }
   if (failures.length) {
     console.error(color('[content-audit] Reference-layer indexability failures:', 'critical'))

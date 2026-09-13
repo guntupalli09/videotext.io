@@ -111,12 +111,13 @@ Verified first-party benchmark data exists only as the Phase 1 LibriSpeech pilot
 1. **Reuse, do not replace** existing `Seo`, canonical helpers, sitemap generator, prerender pipeline, and registry validation.
 2. **New pages are static informational routes**, not `seoRegistry` tool landings. They must not render uploaders or inherit tool-page template copy.
 3. **Full SSR** for hub + glossary so numbers and definitions are in the HTML DOM.
-4. **Inbound links** from Footer, `/transcription-tools`, `/subtitle-tools`, `/open`, and the research page are justified to prevent orphans (`validate-discoverability` requires ≤3 hops from `/`). Existing titles/H1s/metadata on those pages are unchanged; only additive links.
+4. **Inbound links** from Footer, `/transcription-tools`, `/subtitle-tools`, `/open`, and the research page are justified to prevent orphans (`validate-discoverability` requires ≤3 hops from `/`). Existing titles/H1s/metadata on those pages are unchanged; only additive links. Home's prerendered `StaticSeoDocument` related-link list also gained `/glossary` and `/transcription-statistics` so crawlers that never execute the React Footer can still reach the hubs from `/`.
 5. **Noindex unfinished terms.** Unpublished inventory slugs have no route HTML.
 6. **Schema restraint:** Article + BreadcrumbList + ItemList on the hub; DefinedTerm + BreadcrumbList + Article on glossary terms. No Dataset schema (this is an aggregation, not an original dataset).
 7. **Author:** VideoText editorial team (Organization). Named-person bylines are not invented.
 8. **Search volume:** left UNKNOWN wherever no reliable first-party/tool export exists.
 9. **First-party numbers** from `/open` and the Phase 1 pilot are excluded from the citation hub body except as clearly labeled pointers to those pages.
+10. **Prerender safety:** `buildH1Html()` is a generic VideoText workflow template. If React SSR for a reference-layer path fails, prerender now errors instead of publishing that template under a statistics or glossary URL.
 
 ## Existing architecture left untouched
 

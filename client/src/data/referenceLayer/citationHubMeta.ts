@@ -16,7 +16,7 @@ export function getCitationHubTitle(): string {
 
 export function getCitationHubMetaTitle(): string {
   const n = getCitationHubCount()
-  return `Transcription Statistics: ${n} Sourced Facts for 2026`
+  return `Transcription Statistics: ${n} Facts (2026)`
 }
 
 export function getCitationHubDescription(): string {
