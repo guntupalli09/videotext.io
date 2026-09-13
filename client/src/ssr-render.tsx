@@ -23,6 +23,10 @@ import BestOtterAlternatives from './pages/BestOtterAlternatives'
 import BestDescriptAlternatives from './pages/BestDescriptAlternatives'
 import ApiDocs from './pages/ApiDocs'
 import ZapierIntegration from './pages/ZapierIntegration'
+import TranscriptionStatistics from './pages/TranscriptionStatistics'
+import GlossaryHub from './pages/glossary/GlossaryHub'
+import GlossaryTermPage from './pages/glossary/GlossaryTermPage'
+import { getPublishedGlossaryPaths } from './lib/referenceLayer'
 import { ROUTE_SEO } from './lib/seoMeta'
 import { getAllSeoEntries, getPageLabel, getRelatedSuggestionsForEntry, getSeoEntry, type FaqItem, type SeoDeepContent, type SeoRegistryEntry, type SeoTutorialContent } from './lib/seoRegistry'
 import { getCanonicalPathForRoute, resolveInternalLinkPath } from './lib/primaryUrls'
@@ -68,6 +72,9 @@ const SSR_PAGES: Record<string, React.ComponentType> = {
   // would duplicate/CTA-mismatch on a technical reference and an integration guide.
   '/docs/api': ApiDocs,
   '/integrations/zapier': ZapierIntegration,
+  '/transcription-statistics': TranscriptionStatistics,
+  '/glossary': GlossaryHub,
+  ...Object.fromEntries(getPublishedGlossaryPaths().map((path) => [path, GlossaryTermPage])),
 }
 
 const CORE_STATIC_CONTENT: Record<string, Omit<StaticRouteContent, 'path' | 'title' | 'description'>> = {

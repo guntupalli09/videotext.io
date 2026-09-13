@@ -1301,6 +1301,29 @@ function assertBuildQuality(pages: PageAudit[]): void {
   }
 }
 
+function assertReferenceLayerHtml(pages: PageAudit[]): void {
+  const required = ['/transcription-statistics', '/glossary']
+  const failures: string[] = []
+  for (const route of required) {
+    const page = pages.find((item) => item.path === route)
+    if (!page?.exists) failures.push(`${route}: missing prerendered reference-layer HTML`)
+    if (page && !page.title) failures.push(`${route}: missing title`)
+    if (page && !page.h1) failures.push(`${route}: missing H1`)
+  }
+  const glossaryPages = pages.filter((page) => page.path.startsWith('/glossary/'))
+  for (const page of glossaryPages) {
+    if (!page.exists) failures.push(`${page.path}: missing prerendered glossary HTML`)
+    if (!page.h1) failures.push(`${page.path}: missing H1`)
+    const hasDefinition = page.h2s.some((heading) => /direct definition/i.test(heading)) || /what is/i.test(page.h1)
+    if (!hasDefinition) failures.push(`${page.path}: missing definition heading or What Is H1`)
+  }
+  if (failures.length) {
+    console.error(color('[content-audit] Reference-layer indexability failures:', 'critical'))
+    for (const failure of failures) console.error(`  - ${failure}`)
+    process.exit(1)
+  }
+}
+
 function main(): void {
   if (!fs.existsSync(DIST_DIR) || !fs.existsSync(path.join(DIST_DIR, 'index.html'))) {
     console.error(color('[content-audit] dist/index.html not found. Run npm run build or npm run prerender before auditing local prerendered HTML.', 'critical'))
@@ -1321,6 +1344,7 @@ function main(): void {
   generateReports(pages, repeated)
   logCliSummary(pages)
   assertBuildQuality(pages)
+  assertReferenceLayerHtml(pages)
 }
 
 main()

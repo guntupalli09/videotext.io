@@ -27,6 +27,7 @@ import { getCoreToolFaq, getCoreToolSeoDepth } from '../client/src/lib/coreToolS
 import { getIndexablePaths } from './seo/registry'
 import { stripTopLevelSoftwareApplicationScripts } from './seo/jsonLdUtils'
 import { renderPageToHtml } from '../client/src/ssr-render'
+import { getReferenceLayerJsonLd, getReferenceLayerPrerenderMeta } from '../client/src/lib/referenceLayer'
 import { getContextualCta, getRouteFamily } from '../client/src/lib/routeFamilyTemplates'
 import slugMapJson from '../client/src/data/hashnode-slug-map.json'
 
@@ -1187,6 +1188,8 @@ function injectStructuredData(template: string, routePath: string, meta: RouteMe
   if (softwareApp) schemas.push(softwareApp)
   if (howTo) schemas.push(howTo)
   if (product) schemas.push(product)
+  const referenceLayer = getReferenceLayerJsonLd(routePath)
+  if (referenceLayer) schemas.push(...referenceLayer)
   if (!schemas.length) return html
   const scripts = dedupeSchemas(schemas)
     .map((schema) => `<script type="application/ld+json">${JSON.stringify(schema)}</script>`)
@@ -1286,6 +1289,8 @@ const HUB_PAGE_LINKS: Record<string, Array<{ path: string; label: string }>> = {
     { path: '/best-youtube-transcription-tool', label: 'Best YouTube Transcription Tool' },
     { path: '/best-podcast-transcription-tool', label: 'Best Podcast Transcription Tool' },
     { path: '/transcription-benchmark', label: 'Transcription Benchmark' },
+    { path: '/transcription-statistics', label: 'Transcription statistics' },
+    { path: '/glossary', label: 'Transcription & subtitle glossary' },
     { path: '/otter-vs-videotext', label: 'Otter vs VideoText' },
     { path: '/descript-vs-videotext', label: 'Descript vs VideoText' },
     { path: '/videotext-vs-rev', label: 'VideoText vs Rev' },
@@ -1338,6 +1343,8 @@ const HUB_PAGE_LINKS: Record<string, Array<{ path: string; label: string }>> = {
     { path: '/ada-video-captions', label: 'ADA Video Captions' },
     { path: '/sdh-subtitles', label: 'SDH Subtitles' },
     { path: '/hardcoded-captions', label: 'Hardcoded Captions' },
+    { path: '/glossary', label: 'Transcription & subtitle glossary' },
+    { path: '/transcription-statistics', label: 'Transcription statistics' },
   ],
 }
 
@@ -1902,6 +1909,8 @@ async function main() {
     // Keep static routes last so canonical core pages (e.g. /video-to-transcript)
     // are not overwritten by registry aliases that resolve to the same primary URL.
     ...STATIC_META,
+    // Reference-layer pages last so citation-hub and glossary meta win any conflict.
+    ...getReferenceLayerPrerenderMeta(),
   ])
 
   let count = 0
