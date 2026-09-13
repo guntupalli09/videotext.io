@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Video to Transcript — VideoText</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="brand">
+        <img src="icons/icon-32.png" alt="" width="24" height="24" class="brand-mark" />
+        <div class="brand-text">
+          <span class="brand-name">VideoText</span>
+          <h1 class="brand-title">Video to Transcript</h1>
+        </div>
+      </div>
+      <div id="account" class="account" hidden>
+        <span id="account-plan" class="pill"></span>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- Signed out -->
+      <section id="view-signed-out" class="view" hidden>
+        <p class="lede">Turn audio or video into an accurate, editable transcript.</p>
+        <p class="muted">
+          Sign in with your VideoText account to transcribe. Your plan, allowance and limits are
+          the same as on videotext.io.
+        </p>
+        <button id="sign-in" class="btn btn-primary">Sign in to VideoText</button>
+        <p class="muted small">
+          Opens videotext.io in a new tab. Come back here once you are signed in.
+        </p>
+        <button id="sign-in-recheck" class="btn btn-link">I've signed in — check again</button>
+      </section>
+
+      <!-- Pick a file -->
+      <section id="view-idle" class="view" hidden>
+        <p class="lede">Turn audio or video into an accurate, editable transcript.</p>
+
+        <div id="dropzone" class="dropzone" tabindex="0" role="button"
+             aria-label="Drop an audio or video file here, or select a file">
+          <svg class="dropzone-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 16V4m0 0L8 8m4-4 4 4" fill="none" stroke="currentColor" stroke-width="1.8"
+                  stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor"
+                  stroke-width="1.8" stroke-linecap="round" />
+          </svg>
+          <p class="dropzone-title">Drop a file here</p>
+          <p class="dropzone-sub">MP4, MOV, MKV, AVI, WebM, MP3, WAV, M4A, FLAC, AAC</p>
+          <button id="select-file" class="btn btn-secondary" type="button">Select File</button>
+          <input id="file-input" type="file" hidden />
+        </div>
+
+        <div id="file-card" class="file-card" hidden>
+          <div class="file-card-main">
+            <span id="file-name" class="file-name"></span>
+            <span id="file-meta" class="muted small"></span>
+          </div>
+          <button id="clear-file" class="btn btn-icon" type="button" aria-label="Remove file">×</button>
+        </div>
+
+        <label class="field">
+          <span class="field-label">Audio language <span class="muted">(optional)</span></span>
+          <select id="language"></select>
+        </label>
+
+        <p id="idle-error" class="alert alert-error" hidden></p>
+        <button id="transcribe" class="btn btn-primary" disabled>Transcribe</button>
+        <p id="allowance" class="muted small center"></p>
+      </section>
+
+      <!-- Working -->
+      <section id="view-processing" class="view" hidden>
+        <div class="spinner" aria-hidden="true"></div>
+        <p id="processing-title" class="processing-title">Transcribing your file…</p>
+        <p id="processing-detail" class="muted small center"></p>
+        <div id="progress-track" class="progress-track" hidden>
+          <div id="progress-bar" class="progress-bar"></div>
+        </div>
+        <p id="processing-file" class="muted small center"></p>
+        <button id="cancel-upload" class="btn btn-link" hidden>Cancel upload</button>
+      </section>
+
+      <!-- Result -->
+      <section id="view-result" class="view" hidden>
+        <div class="result-head">
+          <p id="result-meta" class="muted small"></p>
+        </div>
+        <div id="transcript" class="transcript" tabindex="0"></div>
+        <div class="actions">
+          <button id="copy" class="btn btn-secondary">Copy Transcript</button>
+          <button id="download" class="btn btn-secondary">Download .TXT</button>
+        </div>
+        <button id="new-transcription" class="btn btn-primary">New Transcription</button>
+      </section>
+
+      <!-- Error -->
+      <section id="view-error" class="view" hidden>
+        <p id="error-message" class="alert alert-error"></p>
+        <a id="error-upgrade" class="btn btn-primary" href="https://videotext.io/pricing"
+           target="_blank" rel="noopener noreferrer" hidden>See plans</a>
+        <button id="error-retry" class="btn btn-secondary">Try again</button>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <a id="open-videotext" href="https://videotext.io" target="_blank" rel="noopener noreferrer">Open VideoText</a>
+      <span class="footer-sep">·</span>
+      <a href="https://videotext.io/privacy" target="_blank" rel="noopener noreferrer">Privacy</a>
+      <span class="footer-sep">·</span>
+      <a href="https://videotext.io/terms" target="_blank" rel="noopener noreferrer">Terms</a>
+    </footer>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

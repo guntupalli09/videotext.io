@@ -85,6 +85,7 @@ const NON_INDEXABLE_REACT_PATHS = new Set([
   '/forgot-password',
   '/reset-password',
   '/magic-login',
+  '/extension-auth',
   '/refer',
   '/feedback',
   '/survey',

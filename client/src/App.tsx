@@ -41,6 +41,7 @@ const Signup = lazy(() => import('./pages/Signup'))
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
 const ResetPassword = lazy(() => import('./pages/ResetPassword'))
 const MagicLogin = lazy(() => import('./pages/MagicLogin'))
+const ExtensionAuth = lazy(() => import('./pages/ExtensionAuth'))
 const Refer = lazy(() => import('./pages/Refer'))
 const ApiKeysSettings = lazy(() => import('./pages/ApiKeysSettings'))
 const ApiDocs = lazy(() => import('./pages/ApiDocs'))
@@ -557,6 +558,7 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/magic-login" element={<MagicLogin />} />
+            <Route path="/extension-auth" element={<ExtensionAuth />} />
             <Route path="/refer" element={<Refer />} />
             <Route path="/settings/api-keys" element={<ApiKeysSettings />} />
             <Route path="/docs/api" element={<ApiDocs />} />
