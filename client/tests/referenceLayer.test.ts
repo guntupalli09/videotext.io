@@ -15,12 +15,45 @@ test('citation hub count matches retained statistics and appears in the H1', () 
   assert.equal(STATISTIC_CANDIDATES.length, retained.length + getRejectedStatistics().length)
 })
 
-test('every retained statistic has source metadata', () => {
+test('every retained statistic has source metadata and a source locator', () => {
   for (const item of getRetainedStatistics()) {
     assert.ok(item.sourceUrl, item.id)
     assert.ok(item.sourceOrganization, item.id)
     assert.ok(item.verifiedAt, item.id)
     assert.ok(item.publicationDate || item.publicationDateUnavailableReason, item.id)
+    assert.ok(item.sourceLocator, `${item.id} missing sourceLocator`)
+  }
+})
+
+test('unpublished speech-to-text stays out of published routes and sitemap SEO', () => {
+  const published = getPublishedGlossaryTerms()
+  assert.equal(published.some((term) => term.slug === 'speech-to-text'), false)
+  const inventory = GLOSSARY_INVENTORY.find((row) => row.slug === 'speech-to-text')
+  assert.ok(inventory)
+  assert.equal(inventory.status, 'draft')
+  assert.equal(ROUTE_SEO['/glossary/speech-to-text'], undefined)
+  assert.equal(getPublishedGlossaryPaths().includes('/glossary/speech-to-text'), false)
+  for (const term of published) {
+    assert.equal(term.relatedTerms.includes('speech-to-text'), false, term.slug)
+  }
+})
+
+test('published glossary prose has no editorial-leak phrases', () => {
+  const leaks = [
+    /this page only/i,
+    /transactional/i,
+    /commercial intent/i,
+    /definition intent/i,
+    /confirm in the product UI/i,
+    /do not invent/i,
+  ]
+  for (const term of getPublishedGlossaryTerms()) {
+    const prose = [term.definition, ...term.takeaways, ...(term.faqs || []).flatMap((faq) => [faq.q, faq.a])]
+      .concat(term.sections.flatMap((section) => [section.heading, ...(section.paragraphs || []), ...(section.bullets || [])]))
+      .join('\n')
+    for (const leak of leaks) {
+      assert.equal(leak.test(prose), false, `${term.slug} matched ${leak}`)
+    }
   }
 })
 

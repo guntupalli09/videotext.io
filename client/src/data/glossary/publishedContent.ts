@@ -50,7 +50,7 @@ export const PUBLISHED_GLOSSARY_CONTENT: Record<string, GlossaryPublishedContent
       { q: 'Is transcription the same as captioning?', a: 'No. Transcription is the text record. Captioning adds timing and on-screen presentation for viewers who cannot or do not hear the audio.' },
       { q: 'Can software replace a human transcript?', a: 'Automatic speech recognition can produce a strong first draft on clean audio. Names, overlap, punctuation, and style-guide rules still need a review pass for delivery-quality work.' },
     ],
-    relatedTerms: ['speech-to-text', 'automatic-speech-recognition', 'verbatim-transcription', 'clean-verbatim', 'word-error-rate', 'speaker-diarization'],
+    relatedTerms: ['automatic-speech-recognition', 'verbatim-transcription', 'clean-verbatim', 'word-error-rate', 'speaker-diarization'],
     relatedTools: [{ path: '/video-to-transcript', label: 'Turn a video into a transcript' }],
     sources: [
       { organization: 'W3C', title: 'Making Audio and Video Media Accessible', url: 'https://www.w3.org/WAI/media/av/' },
@@ -96,7 +96,7 @@ export const PUBLISHED_GLOSSARY_CONTENT: Record<string, GlossaryPublishedContent
     faqs: [
       { q: 'Is ASR the same as transcription?', a: 'ASR is the recognition step. Transcription also includes formatting, speaker labels, and any human review.' },
     ],
-    relatedTerms: ['speech-to-text', 'transcription', 'word-error-rate', 'speech-recognition-model', 'hallucination', 'confidence-score'],
+    relatedTerms: ['transcription', 'word-error-rate', 'speech-recognition-model', 'hallucination', 'confidence-score'],
     relatedTools: [{ path: '/video-to-transcript', label: 'Transcribe video with speech recognition' }],
     sources: [
       { organization: 'OpenAI', title: 'Robust Speech Recognition via Large-Scale Weak Supervision', url: 'https://arxiv.org/abs/2212.04356' },
@@ -113,7 +113,7 @@ export const PUBLISHED_GLOSSARY_CONTENT: Record<string, GlossaryPublishedContent
     metaDescription: 'Speech-to-text converts spoken audio into words. See how it differs from a finished transcript and from on-screen captions.',
     takeaways: [
       'Speech-to-text is the conversion step; transcription is the finished text product.',
-      'VideoText’s /speech-to-text page is a product workflow. This page only defines the term.',
+      'Speech-to-text is the conversion step; a finished transcript still needs formatting and review.',
       'Output may still need punctuation, speakers, and a quality pass.',
     ],
     sections: [
@@ -244,7 +244,7 @@ export const PUBLISHED_GLOSSARY_CONTENT: Record<string, GlossaryPublishedContent
       {
         heading: 'The thing people often get wrong',
         paragraphs: [
-          'Full verbatim is not “type every breath.” Style guides still drop coughs or specify brackets. Read the guide; do not invent symbols.',
+          'Full verbatim is not “type every breath.” Style guides still drop coughs or specify brackets. Use only the notation the assigned guide lists.',
         ],
       },
     ],
@@ -288,7 +288,7 @@ export const PUBLISHED_GLOSSARY_CONTENT: Record<string, GlossaryPublishedContent
       },
     ],
     faqs: [
-      { q: 'Is VideoText’s 2.52% pilot the same as Whisper’s 2.5%?', a: 'No. The VideoText research page reports a small Phase 1 pilot on Whisper small. The Whisper paper’s 2.5% figure is a different model and evaluation. Do not average them.' },
+      { q: 'Is VideoText’s 2.52% pilot the same as Whisper’s LibriSpeech score?', a: 'No. The VideoText research page reports a small Phase 1 pilot on Whisper small. The Whisper paper’s Table 2 LibriSpeech Clean figure for Large V2 is 2.7% WER — a different model and evaluation. The two numbers are not interchangeable.' },
     ],
     relatedTerms: ['character-error-rate', 'transcription-accuracy', 'automatic-speech-recognition', 'hallucination'],
     relatedTools: [{ path: '/research/transcription-accuracy-benchmark-2026', label: 'VideoText WER pilot (first-party)' }],
@@ -308,7 +308,7 @@ export const PUBLISHED_GLOSSARY_CONTENT: Record<string, GlossaryPublishedContent
     takeaways: [
       'Ask for the metric, the audio condition, and the sample.',
       'Names and numbers can be “wrong” even when WER looks low.',
-      'VideoText product accuracy claims live on /open and the research page — not on this definition.',
+      'A product accuracy figure is only useful when it names the dataset, sample, and metric — not as a standalone percentage.',
     ],
     sections: [
       {
@@ -375,7 +375,7 @@ export const PUBLISHED_GLOSSARY_CONTENT: Record<string, GlossaryPublishedContent
     takeaways: [
       'Diarization produces anonymous speaker labels, not legal identities.',
       'Overlapping speech is a common failure mode.',
-      'VideoText can attach speaker labels when diarization is enabled on a transcript job — confirm in the product UI; this page does not add features.',
+      'Speaker labels are most useful after a review pass that names Speaker 1 and Speaker 2 from the recording.',
     ],
     sections: [
       {
@@ -496,7 +496,7 @@ export const PUBLISHED_GLOSSARY_CONTENT: Record<string, GlossaryPublishedContent
     takeaways: [
       'SRT is widely supported by editors, YouTube, and most subtitle tools.',
       'Timestamps use a comma before milliseconds, not a dot.',
-      'Creating an SRT from video is a workflow (/video-to-srt). This page only defines the file.',
+      'An SRT stores timed cues. Creating one from a video is a separate step from understanding the format.',
     ],
     sections: [
       {
@@ -518,7 +518,7 @@ export const PUBLISHED_GLOSSARY_CONTENT: Record<string, GlossaryPublishedContent
       },
     ],
     faqs: [
-      { q: 'Can I just change .srt to .vtt?', a: 'No. VTT needs a header and usually dot milliseconds. Use a converter such as /tools/srt-to-vtt.' },
+      { q: 'Can I just change .srt to .vtt?', a: 'No. VTT needs a header and usually dot milliseconds. Convert the file rather than renaming the extension.' },
     ],
     relatedTerms: ['webvtt', 'caption-file', 'timecode', 'subtitle-synchronization'],
     relatedTools: [
@@ -630,7 +630,7 @@ export const PUBLISHED_GLOSSARY_CONTENT: Record<string, GlossaryPublishedContent
     takeaways: [
       'Closed means the viewer can toggle the track.',
       'U.S. television captioning is regulated in 47 C.F.R. § 79.1.',
-      'The comparison of open vs closed captions already lives at /open-captions-vs-closed-captions.',
+      'Closed captions travel as a separate track; open captions are painted into the picture.',
     ],
     sections: [
       {
@@ -697,7 +697,7 @@ export const PUBLISHED_GLOSSARY_CONTENT: Record<string, GlossaryPublishedContent
     takeaways: [
       'A subtitle file is timed; a transcript may not be.',
       'Language subtitles and SDH/captions can share a format (SRT, WebVTT) with different content rules.',
-      '/subtitles-vs-closed-captions is the on-site comparison page.',
+      'In U.S. accessibility usage, captions include non-speech sounds; language subtitles often do not.',
     ],
     sections: [
       {
@@ -726,7 +726,7 @@ export const PUBLISHED_GLOSSARY_CONTENT: Record<string, GlossaryPublishedContent
     metaDescription: 'SDH subtitles include dialogue, speakers, and non-speech sounds. See how SDH relates to closed captions.',
     takeaways: [
       'SDH is a content profile, not a file extension.',
-      'The VideoText page /sdh-subtitles is the create-SDH workflow. This page is the definition.',
+      'SDH describes who the text is written for; “closed” describes whether the viewer can toggle the track.',
       'Sound effects belong in SDH/captions; they are usually omitted from translation-only subtitles.',
     ],
     sections: [
@@ -785,7 +785,7 @@ export const PUBLISHED_GLOSSARY_CONTENT: Record<string, GlossaryPublishedContent
       {
         heading: 'How caption files are used',
         paragraphs: [
-          'Upload the sidecar to YouTube, a streaming packager, or an HTML5 <track> element. Fix-subtitles and translate-subtitles workflows in VideoText operate on these files, not on baked-in pixels.',
+          'Upload the sidecar to YouTube, a streaming packager, or an HTML5 track. Timing repairs and translation work on these files, not on text burned into the picture.',
         ],
       },
     ],
@@ -809,7 +809,7 @@ export const PUBLISHED_GLOSSARY_CONTENT: Record<string, GlossaryPublishedContent
     takeaways: [
       'A constant offset is different from progressive drift.',
       'Frame-rate mismatches (23.976 vs 24, drop-frame vs non-drop) are a common cause.',
-      '/fix-subtitles is the VideoText action page for repairing files.',
+      'A constant offset is easier to repair than progressive drift across a long file.',
     ],
     sections: [
       {
@@ -943,7 +943,7 @@ export const PUBLISHED_GLOSSARY_CONTENT: Record<string, GlossaryPublishedContent
     takeaways: [
       'AD describes images; captions represent audio.',
       'Ofcom reports AD on a far smaller share of on-demand hours than subtitles.',
-      'VideoText does not claim to generate audio description on this page.',
+      'Audio description is a spoken access service; it is not a caption file or a transcript.',
     ],
     sections: [
       {
@@ -971,7 +971,7 @@ export const PUBLISHED_GLOSSARY_CONTENT: Record<string, GlossaryPublishedContent
     takeaways: [
       'WCAG is a standard, not a law — laws often reference it.',
       '1.2.2 Captions (Prerecorded) is the usual starting point for recorded video.',
-      '/video-accessibility is VideoText’s compliance-oriented product page; this page defines the standard.',
+      'WCAG 1.2.2 is the usual starting criterion for captions on recorded web video.',
     ],
     sections: [
       {
@@ -1084,7 +1084,7 @@ export const PUBLISHED_GLOSSARY_CONTENT: Record<string, GlossaryPublishedContent
     takeaways: [
       'Recognition quality depends on the audio track, not the video resolution.',
       'A 4K file with a noisy mic still yields a noisy transcript.',
-      'VideoText’s documented pipeline extracts audio with FFmpeg before Whisper — that is an implementation detail, not a user-facing product name.',
+      'Recognition quality depends on the extracted soundtrack, not on the video’s pixel resolution.',
     ],
     sections: [
       {
@@ -1094,7 +1094,7 @@ export const PUBLISHED_GLOSSARY_CONTENT: Record<string, GlossaryPublishedContent
         ],
       },
     ],
-    relatedTerms: ['transcription', 'automatic-speech-recognition', 'video-transcription'],
+    relatedTerms: ['transcription', 'automatic-speech-recognition', 'srt-file'],
     relatedTools: [{ path: '/video-to-transcript', label: 'Transcribe a video file or URL' }],
     sources: [
       { organization: 'FFmpeg', title: 'FFmpeg documentation', url: 'https://ffmpeg.org/documentation.html' },
@@ -1111,17 +1111,17 @@ export const PUBLISHED_GLOSSARY_CONTENT: Record<string, GlossaryPublishedContent
     takeaways: [
       'Recognizing Spanish audio is not the same as translating an English SRT into Spanish.',
       'Code-switching inside one conversation is harder than a single-language file.',
-      'VideoText translation tools operate on subtitle files; do not read this page as a claim about every language pair.',
+      'Recognizing speech in another language is not the same job as translating existing subtitle cues.',
     ],
     sections: [
       {
         heading: 'Multilingual transcription vs subtitle translation',
         paragraphs: [
-          'Transcription starts from audio. Translation starts from existing text cues and should preserve timecodes. /translate-subtitles is the latter.',
+          'Transcription starts from audio. Translation starts from existing text cues and should preserve timecodes.',
         ],
       },
     ],
-    relatedTerms: ['localization', 'speech-to-text', 'automatic-speech-recognition'],
+    relatedTerms: ['localization', 'transcription', 'automatic-speech-recognition'],
     relatedTools: [
       { path: '/video-to-transcript', label: 'Transcribe source-language audio' },
       { path: '/translate-subtitles', label: 'Translate existing SRT/VTT' },
@@ -1168,7 +1168,7 @@ export const PUBLISHED_GLOSSARY_CONTENT: Record<string, GlossaryPublishedContent
     takeaways: [
       'QA is a job step, not a confidence score.',
       'Proper nouns and glossary terms are the usual first search.',
-      '/guideline-format is VideoText’s style-guide workspace; the Hashnode “what is transcript QA” post is narrative.',
+      'Proper nouns, speaker labels, and style-guide tags are the usual first checks on a QA pass.',
     ],
     sections: [
       {
@@ -1223,7 +1223,7 @@ export const PUBLISHED_GLOSSARY_CONTENT: Record<string, GlossaryPublishedContent
     takeaways: [
       '3Play’s 2024 survey found subtitling was the most common localization method among respondents.',
       'Preserving cue times is part of subtitle localization quality.',
-      '/translate-subtitles is VideoText’s file-translation workflow.',
+      'Subtitle localization keeps cue times and adapts the words for another market.',
     ],
     sections: [
       {
@@ -1250,7 +1250,7 @@ export const PUBLISHED_GLOSSARY_CONTENT: Record<string, GlossaryPublishedContent
     takeaways: [
       'Model cards and papers report WER on named sets.',
       '“Powered by Whisper” is not a WER number.',
-      'VideoText documents Whisper large-v3 in product copy; this definition does not add unpublished model comparisons.',
+      'A model name is not a WER result until the dataset and decoding settings are named.',
     ],
     sections: [
       {

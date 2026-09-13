@@ -6,6 +6,7 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import { GLOSSARY_INVENTORY, getDraftInventory, getNextGlossaryTerms, getPublishedGlossaryTerms } from '../../client/src/data/glossary/inventory'
+import { getCitationHubDescription, getCitationHubH1 } from '../../client/src/data/referenceLayer/citationHubMeta'
 import { getRejectedStatistics, getRetainedStatistics, STATISTIC_CANDIDATES } from '../../client/src/data/referenceLayer/statistics'
 import { ROUTE_BREADCRUMB, ROUTE_SEO } from '../../client/src/lib/seoMeta'
 import {
@@ -22,6 +23,30 @@ const REPO_ROOT = path.resolve(__dirname, '..', '..')
 const CSV_PATH = path.join(REPO_ROOT, 'docs', 'seo', 'glossary-inventory.csv')
 const PLACEHOLDER_RE = /\b(TODO|TBD|FIXME|xxx+|lorem ipsum|PLACEHOLDER)\b/i
 const URL_RE = /^https?:\/\/[^\s]+$/i
+
+/** Developer/SEO notes that must not reach published glossary prose. */
+const EDITORIAL_LEAK_PATTERNS: Array<{ id: string; re: RegExp }> = [
+  { id: 'this page only', re: /\bthis page only\b/i },
+  { id: 'this page does not', re: /\bthis page does not\b/i },
+  { id: 'transactional', re: /\btransactional\b/i },
+  { id: 'commercial intent', re: /\bcommercial intent\b/i },
+  { id: 'definition intent', re: /\bdefinition intent\b/i },
+  { id: 'confirm in the product UI', re: /\bconfirm in the product UI\b/i },
+  { id: 'do not invent', re: /\bdo not invent\b/i },
+]
+
+function publishedProse(term: { definition: string; takeaways: string[]; sections: Array<{ heading: string; paragraphs?: string[]; bullets?: string[] }>; faqs?: Array<{ q: string; a: string }> }): string {
+  const parts = [term.definition, ...term.takeaways]
+  for (const section of term.sections || []) {
+    parts.push(section.heading)
+    if (section.paragraphs) parts.push(...section.paragraphs)
+    if (section.bullets) parts.push(...section.bullets)
+  }
+  for (const faq of term.faqs || []) {
+    parts.push(faq.q, faq.a)
+  }
+  return parts.join('\n')
+}
 
 interface Issue {
   level: 'error' | 'warning'
@@ -146,9 +171,20 @@ function main(): void {
     if (relatedPublished.length === 0) {
       issues.push({ level: 'error', message: `${pathName} is an orphan glossary term (no published related terms)` })
     }
+    for (const relatedSlug of term.relatedTerms) {
+      if (!published.some((item) => item.slug === relatedSlug)) {
+        issues.push({ level: 'error', message: `${pathName} links to unpublished or missing glossary term /glossary/${relatedSlug}` })
+      }
+    }
     const jsonLd = getGlossaryTermJsonLd(term.slug)
     if (!jsonLd || !jsonLd.every(isValidJsonLd)) {
       issues.push({ level: 'error', message: `${pathName} JSON-LD is invalid` })
+    }
+    const prose = publishedProse(term)
+    for (const leak of EDITORIAL_LEAK_PATTERNS) {
+      if (leak.re.test(prose)) {
+        issues.push({ level: 'error', message: `${pathName} contains internal/SEO language (“${leak.id}”)` })
+      }
     }
   }
 
@@ -183,6 +219,16 @@ function main(): void {
   for (const item of retained) {
     if (!item.sourceUrl || !item.sourceOrganization || !item.verifiedAt) {
       issues.push({ level: 'error', message: `Statistic ${item.id} missing source metadata` })
+    }
+    if (!item.sourceLocator) {
+      issues.push({ level: 'error', message: `Statistic ${item.id} missing sourceLocator` })
+    }
+  }
+
+  const hubCopy = `${getCitationHubDescription()}\n${getCitationHubH1()}`
+  for (const leak of EDITORIAL_LEAK_PATTERNS) {
+    if (leak.re.test(hubCopy)) {
+      issues.push({ level: 'error', message: `Citation hub copy contains internal/SEO language (“${leak.id}”)` })
     }
   }
 

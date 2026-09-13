@@ -1,3 +1,4 @@
+import { SOURCE_LOCATORS } from './sourceLocators'
 import { CITATION_HUB_VERIFIED_AT, type StatisticCandidate } from './types'
 
 const V = CITATION_HUB_VERIFIED_AT
@@ -6,7 +7,8 @@ export const STATISTIC_CANDIDATES: StatisticCandidate[] = [
   // ── Hearing loss / caption audience (WHO, NIDCD, CDC) ─────────────────────
   {
     id: 'who-15b-some-hearing-loss',
-    status: 'retained',
+    status: 'rejected',
+    rejectReason: 'The live WHO fact sheet dated 3 March 2026 no longer states the 1.5 billion / nearly 20% “some degree of hearing loss” figure. Current key facts lead with 2050 projections and the 430 million disabling-loss estimate.',
     category: 'hearing-loss-and-caption-audience',
     claim: 'More than 1.5 billion people — nearly 20% of the global population — live with some degree of hearing loss.',
     value: '1.5 billion',
@@ -754,7 +756,8 @@ export const STATISTIC_CANDIDATES: StatisticCandidate[] = [
   },
   {
     id: 'ofcom-68pct-svod',
-    status: 'retained',
+    status: 'rejected',
+    rejectReason: 'Ofcom Media Nations 2024 PDF returned HTTP 403; the number could not be confirmed in an accessible primary document.',
     category: 'video-consumption',
     claim: 'In Q1 2024, just over two-thirds (68%) of UK households received a subscription video-on-demand service.',
     value: '68%',
@@ -771,7 +774,8 @@ export const STATISTIC_CANDIDATES: StatisticCandidate[] = [
   },
   {
     id: 'ofcom-netflix-58pct',
-    status: 'retained',
+    status: 'rejected',
+    rejectReason: 'Ofcom Media Nations 2024 PDF returned HTTP 403; the number could not be confirmed in an accessible primary document.',
     category: 'video-consumption',
     claim: 'Netflix remained the leading UK SVoD service in the Media Nations 2024 reporting window, in 58% of households.',
     value: '58%',
@@ -787,7 +791,8 @@ export const STATISTIC_CANDIDATES: StatisticCandidate[] = [
   },
   {
     id: 'ofcom-odps-859-subtitles-2024',
-    status: 'retained',
+    status: 'rejected',
+    rejectReason: 'Ofcom access-services report page returned HTTP 403; hours percentages could not be confirmed on the original document.',
     category: 'broadcast-and-legal-captioning',
     claim: 'Among UK on-demand providers that offered subtitles and responded to Ofcom, 85.9% of programme hours carried subtitles in 2024.',
     value: '85.9%',
@@ -806,7 +811,8 @@ export const STATISTIC_CANDIDATES: StatisticCandidate[] = [
   },
   {
     id: 'ofcom-odps-207-ad-2024',
-    status: 'retained',
+    status: 'rejected',
+    rejectReason: 'Ofcom access-services report page returned HTTP 403; hours percentages could not be confirmed on the original document.',
     category: 'broadcast-and-legal-captioning',
     claim: 'Among responding UK on-demand services that offered audio description, 20.7% of programme hours carried audio description in 2024.',
     value: '20.7%',
@@ -822,7 +828,8 @@ export const STATISTIC_CANDIDATES: StatisticCandidate[] = [
   },
   {
     id: 'ofcom-odps-32-signing-2024',
-    status: 'retained',
+    status: 'rejected',
+    rejectReason: 'Ofcom access-services report page returned HTTP 403; hours percentages could not be confirmed on the original document.',
     category: 'broadcast-and-legal-captioning',
     claim: 'Among responding UK on-demand services that offered signing, 3.2% of programme hours carried signing in 2024.',
     value: '3.2%',
@@ -838,7 +845,8 @@ export const STATISTIC_CANDIDATES: StatisticCandidate[] = [
   },
   {
     id: 'ofcom-odps-851-subtitles-2025',
-    status: 'retained',
+    status: 'rejected',
+    rejectReason: 'Ofcom access-services report page returned HTTP 403; hours percentages could not be confirmed on the original document.',
     category: 'broadcast-and-legal-captioning',
     claim: 'In 2025, the comparable Ofcom ODPS hours figure for subtitles was 85.1%, down slightly from 85.9% in 2024.',
     value: '85.1%',
@@ -855,7 +863,8 @@ export const STATISTIC_CANDIDATES: StatisticCandidate[] = [
   },
   {
     id: 'ofcom-providers-offering-subtitles',
-    status: 'retained',
+    status: 'rejected',
+    rejectReason: 'Ofcom access-services report page returned HTTP 403; provider-share percentages could not be confirmed on the original document.',
     category: 'broadcast-and-legal-captioning',
     claim: 'The share of responding UK ODPS providers who offered subtitles was 95.5% in 2024 and 88.9% in 2025.',
     value: '95.5% → 88.9%',
@@ -976,7 +985,8 @@ export const STATISTIC_CANDIDATES: StatisticCandidate[] = [
   // ── Podcasts (Edison) ─────────────────────────────────────────────────────
   {
     id: 'edison-70pct-ever-listened',
-    status: 'retained',
+    status: 'rejected',
+    rejectReason: 'The Infinite Dial 2025 landing page returned HTTP 403. The accessible Podcast Consumer 2025 PDF states 73% of U.S. 12+ have ever consumed a podcast, not 70% have listened.',
     category: 'podcasts-and-spoken-word',
     claim: '70% of Americans age 12+ have listened to a podcast, according to Edison Research’s Infinite Dial 2025.',
     value: '70%',
@@ -1058,7 +1068,8 @@ export const STATISTIC_CANDIDATES: StatisticCandidate[] = [
   },
   {
     id: 'edison-youtube-33pct',
-    status: 'retained',
+    status: 'rejected',
+    rejectReason: 'The 33% YouTube “service used most often” figure is not in the accessible Podcast Consumer 2025 PDF, and the Infinite Dial 2025 page could not be fetched (HTTP 403).',
     category: 'podcasts-and-spoken-word',
     claim: 'YouTube is the service used most often to listen to podcasts among U.S. weekly podcast listeners, at 33%.',
     value: '33%',
@@ -1125,7 +1136,8 @@ export const STATISTIC_CANDIDATES: StatisticCandidate[] = [
   },
   {
     id: 'whisper-25-librispeech-clean',
-    status: 'retained',
+    status: 'rejected',
+    rejectReason: 'The 2.5% LibriSpeech clean WER is not in Table 2. Large V2 is 2.7% WER on LibriSpeech Clean. The string “2.5” in the PDF is “2.5X more epochs,” not a WER.',
     category: 'ai-speech-recognition',
     claim: 'The best zero-shot Whisper model in the 2022 paper had a LibriSpeech clean-test word error rate of 2.5%.',
     value: '2.5% WER',
@@ -1564,7 +1576,11 @@ function rejected(
 }
 
 export function getRetainedStatistics(): StatisticCandidate[] {
-  return STATISTIC_CANDIDATES.filter((item) => item.status === 'retained')
+  return STATISTIC_CANDIDATES.filter((item) => item.status === 'retained').map((item) => {
+    const locator = SOURCE_LOCATORS[item.id]
+    if (!locator) return item
+    return { ...item, sourceLocator: locator.sourceLocator, verificationNote: locator.verificationNote }
+  })
 }
 
 export function getRejectedStatistics(): StatisticCandidate[] {

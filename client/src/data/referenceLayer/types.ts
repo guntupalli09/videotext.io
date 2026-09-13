@@ -36,6 +36,8 @@ export interface StatisticCandidate {
   methodologyNote?: string
   caveat?: string
   verifiedAt?: string
+  sourceLocator?: string
+  verificationNote?: string
   tier?: StatisticTier
   rejectReason?: string
 }

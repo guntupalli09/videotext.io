@@ -47,7 +47,7 @@ function row(
 export const GLOSSARY_INVENTORY: GlossaryInventoryRow[] = [
   row('transcription', 'transcription', 'transcription-asr', 'what is transcription', 5, 5, 5, 5, 'none — definition vs /video-to-transcript action', 'published', 'present in GSC tool queries; volume UNKNOWN'),
   row('automatic speech recognition', 'automatic-speech-recognition', 'transcription-asr', 'what is ASR', 5, 5, 5, 5, 'none', 'published'),
-  row('speech-to-text', 'speech-to-text', 'transcription-asr', 'what is speech-to-text', 5, 5, 4, 5, '/speech-to-text is transactional; glossary is definitional', 'published'),
+  row('speech-to-text', 'speech-to-text', 'transcription-asr', 'what is speech-to-text', 5, 5, 4, 5, '/speech-to-text is transactional; glossary is definitional', 'draft'),
   row('verbatim transcription', 'verbatim-transcription', 'transcription-asr', 'what is verbatim transcription', 4, 5, 5, 5, 'blog clean vs full verbatim is off-site narrative', 'published'),
   row('clean verbatim', 'clean-verbatim', 'transcription-asr', 'what is clean verbatim', 4, 4, 5, 5, 'Hashnode comparison post; on-site definition still needed', 'published'),
   row('full verbatim', 'full-verbatim', 'transcription-asr', 'what is full verbatim', 4, 4, 5, 5, 'Hashnode comparison post', 'published'),

@@ -30,7 +30,9 @@ function isMalformedUrl(url: string): boolean {
   }
 }
 
-async function checkUrl(url: string): Promise<'ok' | 'failed' | 'unverified'> {
+type UrlCheckState = 'ok' | 'restricted' | 'rate_limited' | 'failed' | 'unverified'
+
+async function checkUrl(url: string): Promise<UrlCheckState> {
   try {
     const controller = new AbortController()
     const timer = setTimeout(() => controller.abort(), 12000)
@@ -41,11 +43,17 @@ async function checkUrl(url: string): Promise<'ok' | 'failed' | 'unverified'> {
       headers: { 'User-Agent': 'VideoTextCitationHubValidator/1.0' },
     })
     clearTimeout(timer)
-    if (res.ok || res.status === 429 || res.status === 403) return 'ok'
+    if (res.status === 401 || res.status === 403) return 'restricted'
+    if (res.status === 429) return 'rate_limited'
+    if (res.ok) return 'ok'
     return 'failed'
   } catch {
     return 'unverified'
   }
+}
+
+function urlHasHumanVerification(url: string, retained: StatisticCandidate[]): boolean {
+  return retained.some((item) => item.sourceUrl === url && Boolean(item.sourceLocator))
 }
 
 async function main(): Promise<void> {
@@ -79,6 +87,9 @@ async function main(): Promise<void> {
     if (!item.sourceOrganization) issues.push({ level: 'error', id: item.id, message: 'Missing sourceOrganization' })
     if (!hasDate(item)) issues.push({ level: 'error', id: item.id, message: 'Missing publicationDate or publicationDateUnavailableReason' })
     if (!item.verifiedAt) issues.push({ level: 'error', id: item.id, message: 'Missing verifiedAt' })
+    if (!item.sourceLocator) {
+      issues.push({ level: 'error', id: item.id, message: 'Missing sourceLocator — HTTP success is not evidence the number is correct' })
+    }
     if (!item.category || item.category === 'rejected-unverified') {
       issues.push({ level: 'error', id: item.id, message: 'Missing or invalid category' })
     }
@@ -103,6 +114,8 @@ async function main(): Promise<void> {
 
   const uniqueUrls = [...new Set(retained.map((item) => item.sourceUrl).filter(Boolean))] as string[]
   let urlOk = 0
+  let urlRestricted = 0
+  let urlRateLimited = 0
   let urlFailed = 0
   let urlUnverified = 0
   const skipNetwork = process.env.CITATION_HUB_SKIP_NETWORK === '1'
@@ -113,8 +126,22 @@ async function main(): Promise<void> {
   } else {
     for (const url of uniqueUrls) {
       const result = await checkUrl(url)
-      if (result === 'ok') urlOk += 1
-      else if (result === 'failed') {
+      const verified = urlHasHumanVerification(url, retained)
+      if (result === 'ok') {
+        urlOk += 1
+      } else if (result === 'restricted') {
+        urlRestricted += 1
+        issues.push({
+          level: verified ? 'warning' : 'error',
+          message: `Source URL restricted (HTTP 401/403); not counted as successful: ${url}`,
+        })
+      } else if (result === 'rate_limited') {
+        urlRateLimited += 1
+        issues.push({
+          level: verified ? 'warning' : 'error',
+          message: `Source URL rate-limited (HTTP 429); not counted as successful: ${url}`,
+        })
+      } else if (result === 'failed') {
         urlFailed += 1
         issues.push({ level: 'warning', message: `Source URL did not return a successful response: ${url}` })
       } else {
@@ -133,7 +160,8 @@ async function main(): Promise<void> {
   console.log(`Retained: ${retained.length}`)
   console.log(`Rejected: ${rejected.length}`)
   console.log(`Unique source URLs: ${uniqueUrls.length}`)
-  console.log(`URL checks: ok=${urlOk} failed=${urlFailed} unverified=${urlUnverified}`)
+  console.log(`URL checks: successful=${urlOk} restricted=${urlRestricted} rate-limited=${urlRateLimited} failed=${urlFailed} unverified=${urlUnverified}`)
+  console.log('HTTP 403/429 are not successful checks.')
   console.log(`Errors: ${errors.length}`)
   console.log(`Warnings: ${warnings.length}`)
   console.log('Note: HTTP success does not prove the quoted number is correct.')

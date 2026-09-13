@@ -21,7 +21,7 @@ import {
 import { CATEGORY_LABELS, CATEGORY_ORDER, type StatisticCandidate } from '../data/referenceLayer/types'
 
 const TAKEAWAY_IDS = [
-  'who-15b-some-hearing-loss',
+  'who-430m-disabling',
   '3play-90pct-caption-some',
   'whisper-680k-hours',
   'pew-youtube-85-2024',
@@ -239,13 +239,13 @@ export default function TranscriptionStatistics() {
               published. They are labeled with their data period.
             </li>
             <li>
-              Statistics from incompatible studies were not averaged or combined. VideoText operational numbers from{' '}
+              Statistics from incompatible studies were not averaged or combined.               VideoText operational numbers from{' '}
               <Link to="/open" className="text-blue-700 hover:underline dark:text-blue-400">
-                /open
+                VideoText's operational stats
               </Link>{' '}
               and the Phase 1 WER pilot on{' '}
               <Link to="/research/transcription-accuracy-benchmark-2026" className="text-blue-700 hover:underline dark:text-blue-400">
-                the accuracy benchmark
+                the first-party accuracy benchmark
               </Link>{' '}
               are not mixed into these third-party tables.
             </li>
@@ -277,7 +277,7 @@ export default function TranscriptionStatistics() {
         <section className="rounded-xl border border-gray-200 p-5 dark:border-gray-800">
           <h2 className="text-2xl font-medium text-gray-900 dark:text-white">Related VideoText resources</h2>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Definitions live in the glossary. Product pages remain the place to run a workflow.
+            Related definitions are in the glossary. VideoText product pages are available if you want to start from a video.
           </p>
           <ul className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
             <li>
