@@ -9,6 +9,7 @@ import PageGscSupplementFaq from '../components/PageGscSupplementFaq'
 import SamplesModule from '../components/SamplesModule'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
+import { freeImportLimitReason } from '../lib/quotaPaywall'
 import JobAuthGateModal from '../components/JobAuthGateModal'
 import UpgradeBanner from '../components/UpgradeBanner'
 import FreePlanNudge from '../components/FreePlanNudge'
@@ -496,7 +497,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
       const used = isImports ? (usageData.used ?? usageData.usage?.importCount ?? 0) : usageData.usage.totalMinutes
       const atOrOverLimit = isImports ? used >= (usageData.limit ?? 3) : (totalAvailable > 0 && used >= totalAvailable)
       if (atOrOverLimit) {
-        setPaywallReason('FREE_DAILY_LIMIT_REACHED')
+        setPaywallReason(freeImportLimitReason())
         setShowPaywall(true)
         return
       }
@@ -882,7 +883,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                   <Select label="Translate to" options={LANGUAGES} value={targetLanguage} onChange={setTargetLanguage} />
                   {!isPaidPlan && (
                     <p className="text-xs text-gray-400 dark:text-gray-500">
-                      Free plan: 3 translations per month ·{' '}
+                      Free plan: 3 translations per day ·{' '}
                       <ProCheckoutLink source="translate_subtitles_upload" />
                     </p>
                   )}
@@ -902,7 +903,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                 />
                 {!isPaidPlan && (
                   <p className="text-xs text-gray-400 dark:text-gray-500">
-                    Free plan: 3 translations per month ·{' '}
+                    Free plan: 3 translations per day ·{' '}
                     <ProCheckoutLink source="translate_subtitles_paste" />
                   </p>
                 )}
@@ -1052,7 +1053,8 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                         type="button"
                         onClick={() => requireAuthForDownload(async () => {
                           if (!isPaidPlan && freeExportsUsed >= 2) {
-                            toast('You\'ve used your 2 free downloads. Upgrade for more.')
+                            setPaywallReason('EXPORT_LIMIT_REACHED')
+                            setShowPaywall(true)
                             return
                           }
                           try {
@@ -1169,7 +1171,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                 <Select label="Translate to" options={LANGUAGES} value={targetLanguage} onChange={setTargetLanguage} />
                 {!isPaidPlan && (
                   <p className="text-xs text-gray-400 dark:text-gray-500">
-                    Free plan: 3 translations per month ·{' '}
+                    Free plan: 3 translations per day ·{' '}
                     <ProCheckoutLink source="translate_documents_upload" />
                   </p>
                 )}
@@ -1196,7 +1198,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                 />
                 {!isPaidPlan && (
                   <p className="text-xs text-gray-400 dark:text-gray-500">
-                    Free plan: 3 translations per month ·{' '}
+                    Free plan: 3 translations per day ·{' '}
                     <ProCheckoutLink source="translate_documents_paste" />
                   </p>
                 )}

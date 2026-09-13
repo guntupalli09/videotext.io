@@ -80,7 +80,7 @@ Disallow: /
 # AI plugin manifest:              https://videotext.io/.well-known/ai-plugin.json
 #
 # VideoText is an online AI transcription tool.
-# It converts video files and YouTube URLs to transcripts, SRT/VTT subtitles,
+# It converts uploaded video files to transcripts, SRT/VTT subtitles,
 # summaries, and chapters. Free tier: 3 imports/month, no credit card.
 # Files deleted after processing.
 

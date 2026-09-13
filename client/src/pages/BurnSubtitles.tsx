@@ -8,7 +8,7 @@ import CoreToolSeoDepth from '../components/CoreToolSeoDepth'
 import CollapsibleFaqSection from '../components/CollapsibleFaqSection'
 import SamplesModule from '../components/SamplesModule'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
-import PaywallModal from '../components/PaywallModal'
+import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
 import FreePlanNudge from '../components/FreePlanNudge'
 import SecondJobUpgradeNudge from '../components/SecondJobUpgradeNudge'
 import { isPaidPlan } from '../lib/plans'
@@ -88,6 +88,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
   const [queuePosition, setQueuePosition] = useState<number | undefined>(undefined)
   const [result, setResult] = useState<{ downloadUrl: string; fileName?: string } | null>(null)
   const [showPaywall, setShowPaywall] = useState(false)
+  const [paywallReason, setPaywallReason] = useState<PaywallReason>('EXPORT_LIMIT_REACHED')
   const [freeExportsUsed, setFreeExportsUsed] = useState(0)
   const [lastProcessingMs, setLastProcessingMs] = useState<number | null>(null)
   const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null)
@@ -552,7 +553,8 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
                       !hasPaidPlan
                         ? async () => {
                             if (freeExportsUsed >= 2) {
-                              toast('You\'ve used your 2 free downloads. Upgrade for more.')
+                              setPaywallReason('EXPORT_LIMIT_REACHED')
+                              setShowPaywall(true)
                               return
                             }
                             try {
@@ -598,6 +600,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
       <PaywallModal
         isOpen={showPaywall}
         onClose={() => setShowPaywall(false)}
+        reason={paywallReason}
         tool="burn-subtitles"
       />
 

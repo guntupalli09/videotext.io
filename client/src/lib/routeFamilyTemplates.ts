@@ -19,7 +19,7 @@ export type RouteFamily =
   | 'translation'    // subtitle/transcript translation, multilingual workflows
   | 'alternative'    // competitor alternatives, versus pages, comparison pages
   | 'benchmark'      // accuracy tests, speed benchmarks, performance validation
-  | 'youtube'        // YouTube URL → transcript/subtitle/chapter workflows
+  | 'youtube'        // Video file → transcript/subtitle/chapter workflows
   | 'transcription'  // core transcription: meetings, podcasts, interviews, long-video
   | 'generic'        // catch-all for pages that don't match a specific family
 
@@ -431,7 +431,7 @@ export function buildFamilyDeepContent(
         workflowSteps: [
           {
             title: '1. Generate subtitle file with word-level timestamps',
-            detail: 'Upload the video or paste a public URL. Word-level timestamp alignment produces more accurate line breaks than sentence-level alignment — each subtitle break falls at a natural pause rather than a word boundary mid-phrase.',
+            detail: 'Upload the video file. Word-level timestamp alignment produces more accurate line breaks than sentence-level alignment — each subtitle break falls at a natural pause rather than a word boundary mid-phrase.',
           },
           {
             title: '2. Review CPS on every subtitle line',
@@ -903,8 +903,8 @@ export function buildFamilyDeepContent(
         ],
         workflowSteps: [
           {
-            title: '1. Paste the YouTube URL — no download required',
-            detail: 'Copy any public YouTube URL and paste it directly. VideoText streams the audio from YouTube without requiring a file download. Age-restricted videos require an optional cookie export from your logged-in browser session.',
+            title: '1. Download the YouTube video, then upload the file',
+            detail: 'Save the video from YouTube (or export it from YouTube Studio), then upload the MP4/MOV here. VideoText transcribes the uploaded audio. URL paste is not in the live product UI.',
           },
           {
             title: '2. Generate structured transcript with chapters and summary',
@@ -1269,11 +1269,11 @@ export function buildFamilyFaq(
         },
         {
           q: 'How do I transcribe a YouTube Shorts video?',
-          a: 'Shorts URLs (youtube.com/shorts/VIDEO_ID) work exactly like regular YouTube URLs in VideoText — paste the URL and process normally. Transcription quality is the same as regular videos. Note that Shorts are 60 seconds maximum, so the transcript is short. For subtitle re-upload to a Shorts video, use shorter line lengths (30 characters or fewer) to fit the vertical 9:16 aspect ratio without clipping at the frame edges.',
+          a: 'Download the Short first, then upload the file. Transcription quality is the same as regular videos. Note that Shorts are 60 seconds maximum, so the transcript is short. For subtitle re-upload to a Shorts video, use shorter line lengths (30 characters or fewer) to fit the vertical 9:16 aspect ratio without clipping at the frame edges.',
         },
         {
           q: 'Can I get a transcript from a YouTube video without downloading it?',
-          a: 'Yes. Paste any public YouTube URL (youtube.com/watch?v=, youtu.be/, youtube.com/shorts/, or youtube.com/embed/ format) into VideoText. We stream the audio directly without requiring a file download. The transcript is ready within minutes for videos up to 4 hours. Age-restricted videos work when you provide optional browser cookies from a logged-in YouTube session.',
+          a: 'No. Download the video first (youtube.com/watch?v=, youtu.be/, youtube.com/shorts/, or youtube.com/embed/), then upload the file. VideoText transcribes the uploaded audio. The transcript is ready within minutes for videos up to 4 hours.',
         },
       ]
 

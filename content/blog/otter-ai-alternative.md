@@ -116,7 +116,7 @@ Blog comparison: [Otter vs Descript vs TurboScribe →](https://videotext.io/blo
 VideoText free tier: 3 imports/month, transcript + subtitle exports. TurboScribe: 3 transcriptions/day (30 min each).
 
 **Is VideoText better than Otter for YouTube?**  
-Yes for file-based YouTube workflows — URL paste, SRT upload, chapters. [YouTube transcript generator →](https://videotext.io/youtube-transcript-generator)
+Yes for file-based YouTube workflows — download then upload, SRT export, chapters. [YouTube transcript generator →](https://videotext.io/youtube-transcript-generator)
 
 **Can I use Otter for meetings and VideoText for video?**  
 Common stack: Otter for live calls, VideoText for long-form publish pipeline.
@@ -128,7 +128,7 @@ VideoText and Descript export SRT/VTT; Otter and TurboScribe are weak here.
 
 ## Start here (Otter alternative workflow)
 
-1. **[Paste URL or upload file →](https://videotext.io/video-to-transcript)**  
+1. **[Upload file →](https://videotext.io/video-to-transcript)**  
 2. **[Export SRT for YouTube →](https://videotext.io/video-to-subtitles)**  
 3. **[Apply client style rules →](https://videotext.io/guideline-format)** (freelancers)  
 4. **[Compare all tools →](https://videotext.io/compare)**

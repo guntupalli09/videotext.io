@@ -14,7 +14,7 @@ export default function Samples() {
         <div className="mt-4 rounded-xl border border-zinc-200 bg-zinc-50 p-5 overflow-x-auto">
           <pre className="text-sm leading-6 whitespace-pre-wrap">
 {`[00:00:02] Speaker 1: Welcome to the product walkthrough. In this video, we’ll cover setup, exports, and automation.
-[00:00:09] Speaker 2: Great. Let’s start with upload. Drag your MP4 or paste a YouTube URL and processing begins immediately.
+[00:00:09] Speaker 2: Great. Let’s start with upload. Drag your MP4  and processing begins immediately.
 [00:00:18] Speaker 1: After transcription, you’ll get a clean text transcript, summary bullets, and chapter markers.
 [00:00:27] Speaker 2: You can export TXT, DOCX, PDF, JSON, and subtitles as SRT or VTT.`}
           </pre>
@@ -36,8 +36,8 @@ and automation.
 
 3
 00:00:10,501 --> 00:00:14,500
-Drag your MP4 or paste
-a YouTube URL to begin.`}
+Drag your MP4 onto
+Video to Transcript to begin.`}
           </pre>
         </div>
       </section>

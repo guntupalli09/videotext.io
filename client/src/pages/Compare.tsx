@@ -135,7 +135,7 @@ const FEATURE_ROWS: FeatureSection[] = [
       },
       {
         label: 'YouTube URL direct processing',
-        videotext: 'Coming Soon',
+        videotext: false,
         descript: false,
         otter: false,
         trint: false,
@@ -179,7 +179,7 @@ const FEATURE_ROWS: FeatureSection[] = [
       },
       {
         label: 'Paste YouTube / URL (no download)',
-        videotext: 'Coming Soon',
+        videotext: false,
         descript: false,
         otter: false,
         trint: false,
@@ -1260,7 +1260,7 @@ export default function Compare() {
               { to: '/podcast-transcription', label: 'Podcast Transcription', desc: 'Transcribe podcasts with speaker labels and full timestamps.' },
               { to: '/meeting-transcription', label: 'Meeting Transcription', desc: 'Record Zoom, Teams, Google Meet meetings and get instant transcripts.' },
               { to: '/interview-transcription', label: 'Interview Transcription', desc: 'Capture every word from interviews with automatic speaker identification.' },
-              { to: '/youtube-transcript', label: 'YouTube Transcript', desc: 'Paste any YouTube URL and get a transcript in seconds.' },
+              { to: '/youtube-transcript', label: 'YouTube Transcript', desc: 'Download the YouTube video, then upload the file and get a transcript in seconds.' },
               { to: '/webinar-transcript', label: 'Webinar Transcript', desc: 'Transcribe webinars and export as SRT, TXT, or VTT subtitles.' },
               { to: '/google-meet-transcript', label: 'Google Meet Transcript', desc: 'Record and transcribe Google Meet calls automatically.' },
               { to: '/korean-transcription', label: 'Korean Transcription', desc: 'Transcribe Korean audio and video with high accuracy.' },

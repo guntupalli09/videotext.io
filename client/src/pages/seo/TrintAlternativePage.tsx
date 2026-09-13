@@ -9,7 +9,7 @@ const COMPARE_ROWS = [
   { label: 'Starting price', videotext: 'Free / $7.99/mo Pro', competitor: '$80/month' },
   { label: 'No credit card to start', videotext: true, competitor: false },
   { label: 'Processing time (1-hour video)', videotext: '~2 min', competitor: '8–15 min' },
-  { label: 'YouTube URL → transcript (no upload)', videotext: true, competitor: false },
+  { label: 'Video file → transcript (no install)', videotext: true, competitor: false },
   { label: 'Files deleted after processing', videotext: true, competitor: false },
   { label: 'SRT / VTT subtitle export', videotext: true, competitor: true },
   { label: 'Translate subtitles (70+ languages)', videotext: true, competitor: true },
@@ -69,7 +69,7 @@ export default function TrintAlternativePage() {
             with lower cost to start
           </h1>
           <p className="text-lg text-gray-500 dark:text-white/45 max-w-3xl mx-auto mb-8">
-            This page is for solo creators, podcast teams, and marketing/video ops teams that tried Trint and felt the workflow was heavier than needed. Trint is strong for collaborative newsroom editing. VideoText is stronger when your priority is post-recording speed: upload a file (or a YouTube URL), get transcript + summary + chapters + subtitle exports, and move on.
+            This page is for solo creators, podcast teams, and marketing/video ops teams that tried Trint and felt the workflow was heavier than needed. Trint is strong for collaborative newsroom editing. VideoText is stronger when your priority is post-recording speed: upload a file (), get transcript + summary + chapters + subtitle exports, and move on.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link to="/video-to-transcript?source=trint-alternative">
@@ -93,7 +93,7 @@ export default function TrintAlternativePage() {
               <ul className="space-y-2 text-gray-600 dark:text-gray-300">
                 <li>• Faster self-serve transcription without enterprise-style overhead.</li>
                 <li>• One-pass output (transcript, summary, chapters, SRT/VTT exports).</li>
-                <li>• File-first processing for recorded content and YouTube URLs.</li>
+                <li>• File-first processing for recorded content and downloaded YouTube videos.</li>
                 <li>• Lower entry cost before committing team-wide.</li>
               </ul>
             </div>
@@ -116,7 +116,7 @@ export default function TrintAlternativePage() {
               'Trint starts at $80/month — the highest entry price of any mainstream transcription tool.',
               'Designed for enterprise broadcast teams; heavy UI for simple one-off transcription.',
               'No free tier — you must commit to a paid plan to try it.',
-              'No YouTube URL input — download the video first, then upload.',
+              'No video file upload — download the video first, then upload.',
               'No subtitle burning feature — you need a separate tool to add captions to video.',
               'No video compression built in — separate workflow step required.',
               'Files stored in Trint\'s cloud; not suitable for confidential or sensitive content.',

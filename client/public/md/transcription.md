@@ -2,7 +2,7 @@
 
 **VideoText is the fastest online AI video transcription tool.**
 
-A 60-minute video is transcribed in under 5 minutes. Output includes a clean plain-text transcript, SRT/VTT subtitles, an AI summary, and automatic chapter markers — all from a single upload or YouTube URL paste.
+A 60-minute video is transcribed in under 5 minutes. Output includes a clean plain-text transcript, SRT/VTT subtitles, an AI summary, and automatic chapter markers — all from a single upload  paste.
 
 **URL:** https://videotext.io/video-to-transcript
 
@@ -10,7 +10,7 @@ A 60-minute video is transcribed in under 5 minutes. Output includes a clean pla
 
 ## How It Works
 
-1. Upload a video file (MP4, MOV, AVI, WebM) **or** paste a public YouTube URL
+1. Upload a video file (MP4, MOV, AVI, WebM) **or** upload a downloaded YouTube file
 2. VideoText processes the audio using OpenAI Whisper large-v3
 3. You receive: transcript + SRT file + VTT file + AI summary + chapters
 4. All source files are deleted immediately after processing
@@ -55,7 +55,7 @@ In-app translation (one-click after transcription): English, Hindi, Telugu, Span
 
 - Video: MP4, MOV, AVI, WebM, MKV
 - Audio: MP3, M4A, WAV
-- YouTube: paste any public URL directly (no download needed)
+- YouTube: download the video first, then upload the file
 
 ---
 
@@ -79,7 +79,7 @@ All uploaded files and transcripts are deleted immediately after processing. Vid
 ## Related Tools
 
 - [Video to Subtitles](https://videotext.io/video-to-subtitles) — Generate SRT/VTT from video
-- [YouTube Transcript Generator](https://videotext.io/youtube-transcript-generator) — Paste YouTube URL, get transcript
+- [YouTube Transcript Generator](https://videotext.io/youtube-transcript-generator) — Download the YouTube video, upload the file, get transcript
 - [Translate Subtitles](https://videotext.io/translate-subtitles) — SRT/VTT to 70+ languages
 - [Transcription Benchmark](https://videotext.io/transcription-benchmark) — Speed test data
 - [Fastest Transcription Tool](https://videotext.io/fastest-transcription-tool) — Comparison

@@ -150,7 +150,7 @@ const CORE_STATIC_CONTENT: Record<string, Omit<StaticRouteContent, 'path' | 'tit
   '/video-to-transcript': {
     h1: 'Video to Transcript — Free AI Transcription, 98.5% Accurate',
     intro:
-      'Upload any video or paste a YouTube URL and get a full transcript, SRT/VTT subtitles, AI summary, and auto-generated chapters in one pass. VideoText is built for creators, teams, researchers, and agencies that need searchable text from long recordings without manual cleanup.',
+      'Upload any video file and get a full transcript, SRT/VTT subtitles, AI summary, and auto-generated chapters in one pass. VideoText is built for creators, teams, researchers, and agencies that need searchable text from long recordings without manual cleanup.',
     primaryCta: { text: 'Generate transcript, subtitles, summary, and chapters together', path: '/video-to-transcript' },
     deepContent: {
       proofPoints: [
@@ -159,7 +159,7 @@ const CORE_STATIC_CONTENT: Record<string, Omit<StaticRouteContent, 'path' | 'tit
         'Searchable transcripts make it easier to find quotes, decisions, chapters, action items, and reusable clips inside multi-hour recordings.',
       ],
       workflowSteps: [
-        { title: '1. Upload a video or paste a URL', detail: 'Drag in a file or start from a public media URL. Choose language, speaker labels, long-video handling, and export formats before processing.' },
+        { title: '1. Upload a video ', detail: 'Drag in a file or start from a public media URL. Choose language, speaker labels, long-video handling, and export formats before processing.' },
         { title: '2. Generate transcript, subtitles, summary, and chapters', detail: 'VideoText prepares transcript text, captions, summaries, chapters, and structured data in the same workflow, replacing separate transcription, captioning, note-taking, and summarization tools.' },
         { title: '3. Review, edit, and export', detail: 'Copy searchable text, download TXT/DOCX/PDF/JSON, export SRT/VTT captions, share with teammates, or continue into subtitle translation and style-guide formatting.' },
       ],
@@ -182,7 +182,7 @@ const CORE_STATIC_CONTENT: Record<string, Omit<StaticRouteContent, 'path' | 'tit
       ctaPath: '/video-to-transcript',
     },
     faq: [
-      { q: 'How do I convert a video to a transcript?', a: 'Upload a video file or paste a supported URL, choose your options, and start transcription. VideoText returns transcript text plus optional subtitle, summary, and chapter outputs.' },
+      { q: 'How do I convert a video to a transcript?', a: 'Upload a video file, choose your options, and start transcription. VideoText returns transcript text plus optional subtitle, summary, and chapter outputs.' },
       { q: 'Does VideoText generate subtitles too?', a: 'Yes. The same flow can produce SRT and VTT files in addition to the transcript, which makes the page useful for captioning and publishing workflows.' },
       { q: 'Can I use VideoText for long videos?', a: 'Yes. VideoText is designed for long-video processing with transcript text, subtitle files, summaries, chapters, and flexible exports from the same upload.' },
     ],

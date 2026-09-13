@@ -10,7 +10,7 @@
 
 | Tool | 60-min video speed | Starting price | Video upload | YouTube URL | SRT/VTT export | Summary + Chapters | File deletion |
 |------|--------------------|----------------|--------------|-------------|----------------|--------------------|---------------|
-| **VideoText** | ~3 min | **Free ($0)** | Yes | **Yes (direct)** | Yes | **Yes** | **Yes (immediate)** |
+| **VideoText** | ~3 min | **Free ($0)** | Yes | **No (download then upload)** | Yes | **Yes** | **Yes (immediate)** |
 | Otter.ai | ~8 min | Free (meetings) | No | No | No | No | No |
 | Descript | ~18 min | $24/mo | Yes | No | Yes | No | No |
 | Rev AI | ~5 min | $0.25/min | Yes | No | Yes | No | No |
@@ -30,10 +30,10 @@
 
 Otter.ai is a live meeting transcription tool. It integrates with Zoom, Google Meet, and Microsoft Teams to transcribe calls in real time. It does not accept uploaded video files, does not accept YouTube URLs, and does not export SRT or VTT subtitle files.
 
-VideoText accepts uploaded videos (MP4/MOV/AVI/WebM), YouTube URLs, and audio files. It exports SRT, VTT, and plain-text transcripts. It also translates subtitles to 70+ languages and can burn subtitles into video.
+VideoText accepts uploaded videos (MP4/MOV/AVI/WebM) and audio files. For YouTube, download the video first, then upload the file. It exports SRT, VTT, and plain-text transcripts. It also translates subtitles to 70+ languages and can burn subtitles into video.
 
 **Choose Otter.ai if:** You need automatic live transcription of Zoom/Meet/Teams calls.
-**Choose VideoText if:** You have a video file or YouTube URL and need a transcript, subtitles, or both.
+**Choose VideoText if:** You have a video file and need a transcript, subtitles, or both.
 
 More: https://videotext.io/otter-vs-videotext | https://videotext.io/otter-ai-alternative
 
@@ -82,10 +82,10 @@ More: https://videotext.io/trint-alternative
 ### VideoText vs HappyScribe
 **Winner on free tier:** VideoText
 
-HappyScribe has no free tier — it starts at $17/month. VideoText has a free tier with 3 full imports per month. Both support SRT/VTT export and translation. HappyScribe does not accept YouTube URLs.
+HappyScribe has no free tier — it starts at $17/month. VideoText has a free tier with 3 full imports per month. Both support SRT/VTT export and translation. Neither product accepts a pasted YouTube URL — download the video, then upload the file.
 
 **Choose HappyScribe if:** You need a fully-featured European-focused transcription platform with strong editorial tools.
-**Choose VideoText if:** You want to start free or need YouTube URL support.
+**Choose VideoText if:** You want to start free or need video file upload.
 
 More: https://videotext.io/happyscribe-alternative
 

@@ -142,7 +142,7 @@ export default function TemiVsVideoText() {
                   <li>✓ You want summaries and chapters automatically</li>
                   <li>✓ Your content is not English-only</li>
                   <li>✓ You care about data privacy and compliance</li>
-                  <li>✓ You want to process <Link to="/youtube-transcript-generator" className="text-blue-600 hover:underline">YouTube URLs directly</Link></li>
+                  <li>✓ You want to process <Link to="/youtube-transcript-generator" className="text-blue-600 hover:underline">video files</Link></li>
                 </ul>
               </div>
               <div className="bg-white dark:bg-gray-900 rounded-xl border border-amber-200 dark:border-amber-800 p-4">
@@ -258,7 +258,7 @@ export default function TemiVsVideoText() {
                     ['Broadcast-safe subtitle line formatting', CROSS, CROSS, CHECK],
                     ['AI-generated summary', CROSS, CROSS, CHECK],
                     ['Chapter markers with timestamps', CROSS, CROSS, CHECK],
-                    ['YouTube URL direct processing', CROSS, CROSS, CHECK],
+                    ['Video file upload', CROSS, CROSS, CHECK],
                     ['Batch processing (multiple files)', CROSS, PARTIAL, CHECK],
                     ['Language support', <span key="t-lang" className="text-red-600 font-semibold text-xs">English only</span>, <span key="r-lang" className="text-gray-500 dark:text-gray-400 font-semibold text-xs">36 languages</span>, <span key="v-lang" className="text-emerald-700 dark:text-emerald-400 font-bold text-xs">90+ languages</span>],
                     ['Zero data retention (files deleted instantly)', CROSS, CROSS, CHECK],
@@ -587,7 +587,7 @@ export default function TemiVsVideoText() {
                 </div>
                 <ol className="space-y-2 text-sm">
                   {[
-                    { text: 'Paste a YouTube URL or upload your file directly', link: null },
+                    { text: 'Upload your video file', link: null },
                     { text: 'Click Process — transcript + subtitles + summary + chapters run in parallel', link: null },
                     { text: 'In 3–5 min: all outputs are ready simultaneously', link: null },
                     { text: 'Download SRT, VTT, DOCX, PDF, JSON — all in one ZIP', link: null },
@@ -655,7 +655,7 @@ export default function TemiVsVideoText() {
             </p>
             <div className="grid md:grid-cols-2 gap-4 text-sm">
               {[
-                { q: 'Do I need to configure anything?', a: 'No. Create a free account, upload a file or paste a URL, and you\'re done. No API keys, no project setup.' },
+                { q: 'Do I need to configure anything?', a: 'No. Create a free account, upload a file , and you\'re done. No API keys, no project setup.' },
                 { q: 'What about my existing Temi/Rev transcripts?', a: 'Keep them. VideoText generates new transcripts from source files. Your historical files stay wherever they are.' },
                 { q: 'Is the VideoText free tier actually useful?', a: '3 uploads per month — no credit card. You can transcribe a full podcast interview free on the monthly plan (3 uploads per month).' },
                 { q: 'What if I need to cancel?', a: 'Cancel anytime. No cancellation fees. Unlike Temi\'s per-minute model, you never owe more than the current billing period.' },
@@ -695,7 +695,7 @@ export default function TemiVsVideoText() {
                     { issue: 'English only', detail: 'Temi only supports English. Non-English audio produces unreliable output or fails silently. There is no language selection.' },
                     { issue: 'Pay-per-minute forever', detail: 'No subscription path. Every file costs $0.25/min regardless of volume. At 8 hrs/month, that\'s $120 — vs VideoText Pro\'s $7.99 flat rate.' },
                     { issue: 'Raw SRT with no line formatting', detail: 'Temi\'s SRT output ignores broadcast-safe line lengths and reading speed. Manual editing is required before using on any platform.' },
-                    { issue: 'No YouTube URL input', detail: 'You must download video files manually before uploading. VideoText accepts YouTube URLs directly.' },
+                    { issue: 'No video file upload', detail: 'You must download video files manually before uploading. VideoText accepts video files.' },
                     { issue: 'No summaries, chapters, or structured outputs', detail: 'You get a transcript document only. Content repurposing requires additional paid tools.' },
                     { issue: 'Near-real-time processing = slow', detail: 'A 90-minute file takes ~90 minutes. VideoText completes the same file in 5–8 minutes.' },
                   ].map(({ issue, detail }) => (
@@ -799,7 +799,7 @@ export default function TemiVsVideoText() {
                 },
                 {
                   q: 'Can VideoText process YouTube videos directly?',
-                  a: 'Yes. Paste a YouTube URL into VideoText and it downloads, processes, and transcribes automatically. Temi and Rev require you to download the file manually first.',
+                  a: 'Yes. Download the YouTube video, then upload the file. VideoText transcribes that upload. Temi and Rev require you to download the file manually first.',
                 },
                 {
                   q: 'Does VideoText generate AI summaries and chapter markers?',
@@ -841,7 +841,7 @@ export default function TemiVsVideoText() {
               Stop Paying Per Minute. Start Getting More Per File.
             </h2>
             <p className="text-blue-200 text-sm max-w-xl mx-auto mb-6">
-              Upload a file or paste a YouTube URL. Get transcript, broadcast-safe SRT/VTT subtitles, an AI summary, and chapter markers — in under 5 minutes.
+              Upload a file. Get transcript, broadcast-safe SRT/VTT subtitles, an AI summary, and chapter markers — in under 5 minutes.
               3 uploads/month free, no credit card needed.
             </p>
             <div className="flex flex-wrap justify-center gap-4">

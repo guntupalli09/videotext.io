@@ -8,7 +8,7 @@ import { CheckCircle2, XCircle, ChevronRight, Zap, Shield, DollarSign } from 'lu
 const COMPARE_ROWS = [
   { label: 'Starting price', videotext: 'Free / $7.99/mo Pro', competitor: '$17/month (120 min)' },
   { label: 'Free tier (no credit card)', videotext: true, competitor: false },
-  { label: 'YouTube URL → transcript (no upload)', videotext: true, competitor: false },
+  { label: 'Video file → transcript (no install)', videotext: true, competitor: false },
   { label: 'Video file transcription (MP4, MOV)', videotext: true, competitor: true },
   { label: 'SRT / VTT subtitle export', videotext: true, competitor: true },
   { label: 'Translate subtitles (70+ languages)', videotext: true, competitor: true },
@@ -31,7 +31,7 @@ const FAQ = [
   },
   {
     q: 'Can VideoText transcribe YouTube videos like HappyScribe?',
-    a: 'Yes — and VideoText goes further. Paste any YouTube URL and VideoText streams and transcribes the audio without requiring you to download the video. HappyScribe requires you to download and upload the video file manually.',
+    a: 'Yes — and VideoText goes further. Download the YouTube video, then upload the file. VideoText transcribes the audio from that upload. HappyScribe requires you to download and upload the video file manually.',
   },
   {
     q: 'Does VideoText have a subtitle editor like HappyScribe?',
@@ -73,7 +73,7 @@ export default function HappyScribeAlternativePage() {
             for transcription
           </h1>
           <p className="text-lg text-gray-500 dark:text-white/45 max-w-2xl mx-auto mb-8">
-            HappyScribe charges $17/month with no free tier. VideoText starts free — paste a YouTube URL or upload any video file, get an accurate transcript or SRT file in minutes.
+            HappyScribe charges $17/month with no free tier. VideoText starts free — upload any video file, get an accurate transcript or SRT file in minutes.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link to="/video-to-transcript">
@@ -99,7 +99,7 @@ export default function HappyScribeAlternativePage() {
             {[
               'No permanent free tier — only a 10-minute one-time trial before you must pay.',
               'Starts at $17/month for just 120 minutes, making it expensive for occasional users.',
-              'No YouTube URL input — you must download the video and re-upload it manually.',
+              'No video file upload — you must download the video and re-upload it manually.',
               'No subtitle burning — you get an SRT file but need a separate tool to hardcode it.',
               'No batch processing — videos must be uploaded and submitted one at a time.',
               'Files are retained in their cloud; no automatic deletion after processing.',
@@ -146,7 +146,7 @@ export default function HappyScribeAlternativePage() {
         <section className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           {[
             { icon: DollarSign, title: 'Actually free to start', body: 'HappyScribe has no permanent free tier — only a 10-minute trial. VideoText gives you 3 free imports every month, no credit card needed, forever.' },
-            { icon: Zap, title: 'YouTube URL support', body: 'Paste any YouTube link and VideoText streams and transcribes it. HappyScribe requires you to download the video locally and re-upload it — extra steps, extra time.' },
+            { icon: Zap, title: 'Video file upload', body: 'Download the YouTube video, then upload the file. VideoText transcribes the uploaded audio. HappyScribe also requires a local file — there is no pasted-URL shortcut in VideoText.' },
             { icon: Shield, title: 'Files deleted instantly', body: 'VideoText removes your file from our servers the moment processing finishes. HappyScribe retains all your media in their cloud until you manually delete it.' },
           ].map(({ icon: Icon, title, body }) => (
             <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-6">
@@ -175,7 +175,7 @@ export default function HappyScribeAlternativePage() {
         {/* CTA */}
         <section className="rounded-xl border border-white/[0.08] bg-gray-950 p-8 text-center sm:p-12">
           <h2 className="text-2xl sm:text-3xl font-medium mb-3">Switch from HappyScribe in 2 minutes</h2>
-          <p className="text-white/55 mb-8 max-w-xl mx-auto">Upload any video or paste a YouTube URL. Get a transcript or SRT file in minutes. Free tier, no credit card, files deleted after processing.</p>
+          <p className="text-white/55 mb-8 max-w-xl mx-auto">Upload any video file. Get a transcript or SRT file in minutes. Free tier, no credit card, files deleted after processing.</p>
           <Link to="/video-to-transcript">
             <span className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-8 py-3.5 text-[15px] font-bold text-white transition-colors hover:bg-blue-700">
               Transcribe my first video free

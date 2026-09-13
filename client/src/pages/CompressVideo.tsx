@@ -9,7 +9,7 @@ import CollapsibleFaqSection from '../components/CollapsibleFaqSection'
 import SamplesModule from '../components/SamplesModule'
 import CrossToolSuggestions from '../components/CrossToolSuggestions'
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
-import PaywallModal from '../components/PaywallModal'
+import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
 import FreePlanNudge from '../components/FreePlanNudge'
 import SecondJobUpgradeNudge from '../components/SecondJobUpgradeNudge'
 import { isPaidPlan } from '../lib/plans'
@@ -83,6 +83,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
   const [queuePosition, setQueuePosition] = useState<number | undefined>(undefined)
   const [result, setResult] = useState<{ downloadUrl: string; fileName?: string } | null>(null)
   const [showPaywall, setShowPaywall] = useState(false)
+  const [paywallReason, setPaywallReason] = useState<PaywallReason>('EXPORT_LIMIT_REACHED')
   const [showAuthGate, setShowAuthGate] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [authModalMode, setAuthModalMode] = useState<'signup-combo' | 'login'>('signup-combo')
@@ -490,7 +491,8 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
                       !hasPaidPlan
                         ? async () => {
                             if (freeExportsUsed >= 2) {
-                              toast('You\'ve used your 2 free downloads. Upgrade for more.')
+                              setPaywallReason('EXPORT_LIMIT_REACHED')
+                              setShowPaywall(true)
                               return
                             }
                             try {
@@ -538,6 +540,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
       <PaywallModal
         isOpen={showPaywall}
         onClose={() => setShowPaywall(false)}
+        reason={paywallReason}
         tool="compress-video"
       />
 

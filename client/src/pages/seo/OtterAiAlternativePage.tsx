@@ -8,7 +8,7 @@ import { CheckCircle2, XCircle, ChevronRight, Zap, Shield, DollarSign } from 'lu
 const COMPARE_ROWS = [
   { label: 'Starting price', videotext: 'Free / $7.99/mo Pro', competitor: 'Free (300 min/mo) / $16.99/mo Pro' },
   { label: 'Video file transcription (MP4, MOV)', videotext: true, competitor: false },
-  { label: 'YouTube URL → transcript (no upload)', videotext: true, competitor: false },
+  { label: 'Video file → transcript (no install)', videotext: true, competitor: false },
   { label: 'SRT / VTT subtitle export', videotext: true, competitor: false },
   { label: 'Translate subtitles (70+ languages)', videotext: true, competitor: false },
   { label: 'Burn subtitles into video', videotext: true, competitor: false },
@@ -177,7 +177,7 @@ export default function OtterAiAlternativePage() {
         {/* Key advantages */}
         <section className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           {[
-            { icon: Zap, title: 'Video files supported', body: 'Otter.ai does not accept MP4 or MOV uploads. VideoText handles any video format and YouTube URLs directly.' },
+            { icon: Zap, title: 'Video files supported', body: 'Otter.ai does not accept MP4 or MOV uploads. VideoText handles any video format and video files.' },
             { icon: Shield, title: 'Subtitle export included', body: 'VideoText exports SRT and VTT files with accurate timestamps. Otter only produces plain-text transcripts.' },
             { icon: DollarSign, title: 'Translation in 70+ languages', body: 'Translate your transcript or subtitle file to any language. Otter.ai has no subtitle translation feature.' },
           ].map(({ icon: Icon, title, body }) => (

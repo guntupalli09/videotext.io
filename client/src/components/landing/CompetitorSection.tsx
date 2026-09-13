@@ -63,8 +63,8 @@ const FEATURE_COMPARISON = [
     trint: true,
   },
   {
-    feature: 'YouTube URL → direct transcript',
-    videotext: 'Soon',
+    feature: 'Video file → transcript',
+    videotext: true,
     descript: false,
     otter: false,
     trint: false,

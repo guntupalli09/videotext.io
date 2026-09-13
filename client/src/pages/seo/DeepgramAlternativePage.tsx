@@ -12,7 +12,7 @@ const COMPARE_ROWS = [
   { label: 'API key required', videotext: false, competitor: true },
   { label: 'Programming knowledge required', videotext: false, competitor: true },
   { label: 'Upload video files (MP4, MOV)', videotext: true, competitor: false },
-  { label: 'YouTube URL → transcript', videotext: true, competitor: false },
+  { label: 'Video file → transcript', videotext: true, competitor: false },
   { label: 'Speaker labels in transcript', videotext: true, competitor: true },
   { label: 'SRT / VTT subtitle export', videotext: true, competitor: false },
   { label: 'Translate subtitles (70+ languages)', videotext: true, competitor: false },
@@ -31,7 +31,7 @@ const FAQ = [
   },
   {
     q: 'Can I use VideoText without writing any code?',
-    a: 'Yes. VideoText is entirely browser-based. Upload your file (or paste a YouTube URL), click Transcribe, and download the result. No API key, no programming language, no command line.',
+    a: 'Yes. VideoText is entirely browser-based. Upload your file (), click Transcribe, and download the result. No API key, no programming language, no command line.',
   },
   {
     q: 'Is Deepgram or Whisper (VideoText) more accurate?',

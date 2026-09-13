@@ -10,7 +10,7 @@ const stats = [
 ]
 
 const tools = [
-  { name: 'Video to Transcript', path: '/video-to-transcript', desc: 'Upload any video or paste a YouTube URL. Get a transcript with speaker labels, chapters, and a summary.' },
+  { name: 'Video to Transcript', path: '/video-to-transcript', desc: 'Upload any video file. Get a transcript with speaker labels, chapters, and a summary.' },
   { name: 'Video to Subtitles', path: '/video-to-subtitles', desc: 'Generate broadcast-ready SRT and VTT subtitle files from any video with AI.' },
   { name: 'Translate Subtitles', path: '/translate-subtitles', desc: 'Translate SRT/VTT subtitle files to Arabic, Spanish, Hindi, Japanese, and 70+ languages.' },
   { name: 'Fix Subtitles', path: '/fix-subtitles', desc: 'Auto-correct overlapping timestamps, long lines, and formatting errors in any subtitle file.' },
@@ -19,12 +19,12 @@ const tools = [
 ]
 
 const comparisons = [
-  { competitor: 'Otter.ai', difference: 'Otter.ai does not support video file uploads or SRT/VTT export. VideoText does both, plus YouTube URL input.' },
+  { competitor: 'Otter.ai', difference: 'Otter.ai does not support video file uploads or SRT/VTT export. VideoText does both from a file upload.' },
   { competitor: 'Descript', difference: 'VideoText is 6× faster, starts free ($0 vs $24/month), and requires no desktop app download.' },
   { competitor: 'Trint', difference: 'Trint starts at $80/month. VideoText starts free ($0) — same Whisper AI accuracy with no usage caps on Pro ($7.99/month).' },
   { competitor: 'Rev', difference: 'Rev AI charges $0.25/minute. VideoText Pro is $7.99/month flat rate — no per-minute billing.' },
   { competitor: 'HappyScribe', difference: 'HappyScribe has no free tier and starts at $17/month. VideoText is free to start with no credit card.' },
-  { competitor: 'Notta', difference: 'Notta is focused on meeting transcription. VideoText supports any video file, YouTube URLs, and subtitle burning.' },
+  { competitor: 'Notta', difference: 'Notta is focused on meeting transcription. VideoText supports any video file plus subtitle burning.' },
 ]
 
 export default function AboutPage() {
@@ -94,8 +94,8 @@ export default function AboutPage() {
           <div className="flex items-start gap-4">
             <div className="w-2 h-2 rounded-full bg-blue-600 mt-2 shrink-0" />
             <div>
-              <div className="font-semibold text-gray-900 dark:text-white">YouTube URL native support</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Paste any public YouTube URL and we stream the audio directly — no download, no third-party service.</div>
+              <div className="font-semibold text-gray-900 dark:text-white">File-first video processing</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Upload MP4, MOV, WebM, or audio. We transcribe on our infrastructure and delete the file after processing.</div>
             </div>
           </div>
           <div className="flex items-start gap-4">

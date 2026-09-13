@@ -126,7 +126,7 @@ export function Hero() {
           Built to cut QA time. Upload once — get transcripts and subtitles your client can approve on the first pass.
         </p>
         <p className="mx-auto mb-6 max-w-lg text-center text-sm leading-relaxed text-white/45">
-          <span className="font-semibold text-white/70">VideoText</span> is the product at videotext.io — AI video-to-text software, not a generic &ldquo;video text&rdquo; paste box or YouTube URL tool.
+          <span className="font-semibold text-white/70">VideoText</span> is the product at videotext.io — AI video-to-text software, not a generic &ldquo;video text&rdquo; paste box.
         </p>
 
         <HeroActions />

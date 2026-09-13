@@ -1,5 +1,9 @@
 # Activation Friction Ranking (Code-Based)
 
+Deep four-stage analysis (activation → second session → paywall → paid) across all 89 highest-leverage tool surfaces: [FUNNEL_FRICTION_ACTIVATION_TO_PAID.md](./FUNNEL_FRICTION_ACTIVATION_TO_PAID.md) and [funnel-friction-89-surfaces.json](./funnel-friction-89-surfaces.json).
+
+P0/P1 product fixes from that audit (magic login keys, quota copy, YouTube product promises, jobSession toolKey, export/batch paywall, Voice/Guideline persist, onboarding targeting) shipped in the same PR. YouTube ingest, a job library, and SEO alternative-page claims are still open.
+
 ## P0 (Highest friction)
 
 1. **Signup requires 3-step auth (email → OTP → password) before account is fully usable.**

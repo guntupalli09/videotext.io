@@ -111,7 +111,7 @@ export default function FreeToolsIndex() {
             Generate subtitles from any video — automatically
           </h2>
           <p className="text-sm text-blue-200 mb-6 max-w-lg mx-auto">
-            Upload a video or paste a YouTube URL. VideoText generates accurate SRT and VTT files in seconds using AI. Free tier included.
+            Upload a video file. VideoText generates accurate SRT and VTT files in minutes using AI. Free tier included.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link to="/video-to-subtitles" className="inline-block rounded-lg bg-white text-blue-700 font-semibold px-6 py-3 text-sm hover:bg-blue-50 transition-colors">

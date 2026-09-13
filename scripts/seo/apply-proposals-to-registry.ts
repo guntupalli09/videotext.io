@@ -97,7 +97,7 @@ function faqToTsLines(items: FaqItem[]): string {
 function generateFaqFromKeyword(keyword: string, count: number): FaqItem[] {
   const faqs: FaqItem[] = []
   if (count >= 1) faqs.push({ q: `What is ${keyword}?`, a: `VideoText helps with ${keyword}. Use our free tools to get started.` })
-  if (count >= 2) faqs.push({ q: `How do I use VideoText for ${keyword}?`, a: 'Upload your file or paste a URL, then follow the steps. Free tier available.' })
+  if (count >= 2) faqs.push({ q: `How do I use VideoText for ${keyword}?`, a: 'Upload your file, then follow the steps. Free tier available.' })
   if (count >= 3) faqs.push({ q: 'Is this free?', a: 'Yes. Free tier available. No signup required to try.' })
   return faqs.slice(0, count)
 }

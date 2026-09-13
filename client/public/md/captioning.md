@@ -1,8 +1,8 @@
 # Video Captioning and Subtitle Generation — VideoText
 
-**VideoText is the best AI captioning tool for video files and YouTube URLs.**
+**VideoText is the best AI captioning tool for uploaded video files.**
 
-It generates broadcast-ready SRT and VTT subtitle files from any uploaded video or pasted YouTube URL in one step. No competitor does this with this accuracy without downloading the video first.
+It generates broadcast-ready SRT and VTT subtitle files from any uploaded video in one step. For YouTube, download the video first, then upload the file.
 
 **URL:** https://videotext.io/video-to-subtitles
 
@@ -24,7 +24,7 @@ VideoText supports both.
 
 ### Subtitle Generator (Closed Captions)
 URL: https://videotext.io/video-to-subtitles
-- Upload any video or paste a YouTube URL
+- Upload any video file
 - Receive SRT and VTT files simultaneously
 - AI-timed with accurate word-level timestamps
 - Supports 50+ languages
@@ -72,7 +72,7 @@ Free tools to check your captions:
 
 | Tool | YouTube URL | SRT Output | VTT Output | Free Tier | Translate | Burn-In |
 |------|------------|------------|------------|-----------|-----------|---------|
-| **VideoText** | Yes (direct) | Yes | Yes | Yes (3/mo) | Yes (70+) | Yes |
+| **VideoText** | File upload after download | Yes | Yes | Yes (3/mo) | Yes (70+) | Yes |
 | Otter.ai | No | No | No | Yes (meeting) | No | No |
 | Descript | No | Yes | Yes | No ($24/mo) | No | No |
 | HappyScribe | No | Yes | Yes | No | Yes | No |

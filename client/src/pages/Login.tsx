@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { login, storeLoginResult } from '../lib/auth'
 import { identifyUser, trackEvent } from '../lib/analytics'
 import { loginWithGoogle } from '../lib/api'
-import { FileText, Youtube, Zap, ChevronRight } from 'lucide-react'
+import { FileText, Shield, Zap, ChevronRight } from 'lucide-react'
 import GoogleSignInButton, { GOOGLE_CLIENT_ID } from '../components/GoogleSignInButton'
 
 export default function Login() {
@@ -81,10 +81,10 @@ export default function Login() {
           <div>
             <h2 className="text-3xl xl:text-4xl font-medium text-white leading-tight mb-4">
               Welcome back.
-              <span className="block text-white/60 text-2xl xl:text-3xl mt-1">Your transcripts are waiting.</span>
+              <span className="block text-white/60 text-2xl xl:text-3xl mt-1">Start your next transcript.</span>
             </h2>
             <p className="text-white/55 text-[15px] leading-relaxed">
-              Log in to access your transcripts, manage your plan, and continue where you left off.
+              Log in to manage your plan and start a new job. Open results stay in this browser until files expire.
             </p>
           </div>
 
@@ -93,7 +93,7 @@ export default function Login() {
             {[
               { icon: Zap, text: '6–8x faster than Descript or Otter.ai' },
               { icon: FileText, text: 'Accurate transcripts in minutes' },
-              { icon: Youtube, text: 'YouTube URL → transcript in one click' },
+              { icon: Shield, text: 'Files deleted after processing' },
             ].map((item) => {
               const Icon = item.icon;
               return (

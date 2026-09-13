@@ -8,7 +8,7 @@ import { CheckCircle2, XCircle, ChevronRight, Zap, Shield, DollarSign } from 'lu
 const COMPARE_ROWS = [
   { label: 'Starting price', videotext: 'Free / $7.99/mo Pro', competitor: 'Paid plans only' },
   { label: 'Free tier (no credit card)', videotext: true, competitor: false },
-  { label: 'YouTube URL → transcript (no upload)', videotext: true, competitor: false },
+  { label: 'Video file → transcript (no install)', videotext: true, competitor: false },
   { label: 'Video file transcription (MP4, MOV)', videotext: true, competitor: true },
   { label: 'SRT / VTT subtitle export', videotext: true, competitor: false },
   { label: 'Translate subtitles (70+ languages)', videotext: true, competitor: false },
@@ -23,7 +23,7 @@ const COMPARE_ROWS = [
 const FAQ = [
   {
     q: 'What is a good EasyScribe alternative for video transcription?',
-    a: 'VideoText is the most fully-featured EasyScribe alternative. Where EasyScribe focuses on basic audio transcription, VideoText handles video files natively, supports YouTube URL input, generates SRT/VTT subtitle files, translates to 70+ languages, and burns subtitles into video — all from a single tool.',
+    a: 'VideoText is the most fully-featured EasyScribe alternative. Where EasyScribe focuses on basic audio transcription, VideoText handles video files natively, supports video file upload, generates SRT/VTT subtitle files, translates to 70+ languages, and burns subtitles into video — all from a single tool.',
   },
   {
     q: 'Is VideoText free unlike EasyScribe?',
@@ -39,7 +39,7 @@ const FAQ = [
   },
   {
     q: 'Can I transcribe YouTube videos with VideoText?',
-    a: 'Yes. Paste any YouTube URL and VideoText streams and transcribes the audio directly — no need to download the video first. EasyScribe requires you to download and upload audio files manually.',
+    a: 'Yes. Download the YouTube video, then upload the file. VideoText transcribes the audio from that upload. EasyScribe requires you to download and upload audio files manually.',
   },
   {
     q: 'What makes VideoText better for content creators than EasyScribe?',
@@ -73,7 +73,7 @@ export default function EasyScribeAlternativePage() {
             for video &amp; subtitles
           </h1>
           <p className="text-lg text-gray-500 dark:text-white/45 max-w-2xl mx-auto mb-8">
-            EasyScribe handles basic audio transcription. VideoText goes further — upload any video or paste a YouTube URL, get a transcript, SRT subtitle file, translation, or burned-in captions. Free tier available.
+            EasyScribe handles basic audio transcription. VideoText goes further — upload any video file, get a transcript, SRT subtitle file, translation, or burned-in captions. Free tier available.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link to="/video-to-transcript">
@@ -98,7 +98,7 @@ export default function EasyScribeAlternativePage() {
           <ul className="space-y-3">
             {[
               'No SRT or VTT subtitle export — transcripts are plain text only, with no timestamp data.',
-              'No YouTube URL input — audio or video must be downloaded and uploaded manually.',
+              'No video file upload — audio or video must be downloaded and uploaded manually.',
               'No subtitle translation — useful only for English-language output.',
               'No subtitle burning — cannot hard-code captions into a video file.',
               'No batch processing — every file must be submitted individually.',
@@ -147,7 +147,7 @@ export default function EasyScribeAlternativePage() {
           {[
             { icon: Zap, title: 'Full subtitle workflow', body: 'VideoText generates SRT and VTT files with accurate timestamps, translates them to 70+ languages, and can burn them directly into video. EasyScribe produces plain text only.' },
             { icon: DollarSign, title: 'Free tier included', body: 'Start with 3 free imports per month — no credit card, no trial expiry. EasyScribe requires payment to get started.' },
-            { icon: Shield, title: 'YouTube URL support', body: 'Paste any YouTube link and VideoText transcribes it directly. No need to download the video. EasyScribe has no YouTube integration.' },
+            { icon: Shield, title: 'video file upload', body: 'Download the YouTube video, then upload the file. No need to download the video. EasyScribe has no YouTube integration.' },
           ].map(({ icon: Icon, title, body }) => (
             <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-6">
               <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-600/15 flex items-center justify-center mb-3">
@@ -175,7 +175,7 @@ export default function EasyScribeAlternativePage() {
         {/* CTA */}
         <section className="rounded-xl border border-white/[0.08] bg-gray-950 p-8 text-center sm:p-12">
           <h2 className="text-2xl sm:text-3xl font-medium mb-3">Go beyond basic transcription</h2>
-          <p className="text-white/55 mb-8 max-w-xl mx-auto">Upload any video or paste a YouTube URL. Transcript, SRT file, subtitle translation, or burned-in captions — all from one tool. Free tier, no credit card.</p>
+          <p className="text-white/55 mb-8 max-w-xl mx-auto">Upload any video file. Transcript, SRT file, subtitle translation, or burned-in captions — all from one tool. Free tier, no credit card.</p>
           <Link to="/video-to-transcript">
             <span className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-8 py-3.5 text-[15px] font-bold text-white transition-colors hover:bg-blue-700">
               Transcribe my first video free

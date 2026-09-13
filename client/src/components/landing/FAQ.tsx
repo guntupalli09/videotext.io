@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 const FAQS = [
   {
     q: 'What is VideoText — is it the same as “video text”?',
-    a: 'VideoText is one word: AI software that turns video into a transcript, SRT/VTT subtitles, a summary, and chapters. It is not a generic “video text” site. Upload a video or YouTube URL to try 3 free imports this month — no card; watermark on free exports.',
+    a: 'VideoText is one word: AI software that turns video into a transcript, SRT/VTT subtitles, a summary, and chapters. It is not a generic “video text” site. Upload a video to try 3 free imports this month — no card; watermark on free exports.',
   },
   {
     q: 'What is Voice to Text and do I need an account?',
@@ -26,7 +26,7 @@ const FAQS = [
   },
   {
     q: 'Can I transcribe a YouTube video?',
-    a: 'Yes. Use the YouTube Transcript Generator, paste a public YouTube URL, and generate transcript output directly without downloading the video first.',
+    a: 'Yes. Download the YouTube video first, then use the YouTube Transcript Generator to upload the file and generate transcript plus subtitle exports.',
   },
   {
     q: 'What video and audio formats do you support?',

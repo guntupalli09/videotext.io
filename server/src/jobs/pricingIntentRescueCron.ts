@@ -8,6 +8,7 @@ import {
   isUserConverted,
   type IntentEventRecord,
 } from '../services/conversionIntent'
+import { proPriceLabelFromIntent } from '../utils/growthEmailCopy'
 
 const log = getLogger('worker')
 const redis = createRedisClient('client')
@@ -46,7 +47,7 @@ function escapeHtml(s: string): string {
   return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
 }
 
-function emailHtml(bodyHtml: string, ctaUrl: string, unsubLink: string): string {
+function emailHtml(bodyHtml: string, ctaUrl: string, unsubLink: string, priceLabel: string): string {
   return `
 <!DOCTYPE html>
 <html>
@@ -59,7 +60,7 @@ function emailHtml(bodyHtml: string, ctaUrl: string, unsubLink: string): string 
           <p style="margin:0;color:#e5e5f5;font-size:15px;line-height:1.65">${bodyHtml}</p>
         </td></tr>
         <tr><td style="padding:0 36px 30px">
-          <a href="${ctaUrl}" style="display:block;background:#2563EB;color:#fff;text-decoration:none;text-align:center;padding:14px 24px;border-radius:10px;font-size:15px;font-weight:700">See Pro — $7.99/mo</a>
+            <a href="${ctaUrl}" style="display:block;background:#2563EB;color:#fff;text-decoration:none;text-align:center;padding:14px 24px;border-radius:10px;font-size:15px;font-weight:700">See Pro — ${priceLabel}</a>
         </td></tr>
         <tr><td style="padding:16px 36px 24px;border-top:1px solid #2d2d4e;text-align:center">
           <p style="margin:0;color:#404060;font-size:11px">VideoText.io · <a href="${unsubLink}" style="color:#404060">unsubscribe</a></p>
@@ -104,7 +105,7 @@ export async function runPricingIntentRescueCron(opts?: { lookbackMs?: number; d
   const userIds = [...byUser.keys()]
   const users = await prisma.user.findMany({
     where: { id: { in: userIds } },
-    select: { id: true, email: true, name: true, plan: true, newsletterSubscribed: true },
+    select: { id: true, email: true, name: true, plan: true, newsletterSubscribed: true, country: true },
   })
 
   let eligible = 0
@@ -138,6 +139,8 @@ export async function runPricingIntentRescueCron(opts?: { lookbackMs?: number; d
 
     const firstName = (user.name || '').trim().split(/\s+/)[0] || ''
     const greeting = firstName ? `Hi ${escapeHtml(firstName)},` : 'Hi,'
+    const userEvents = byUser.get(user.id) ?? []
+    const priceLabel = proPriceLabelFromIntent(userEvents, user.country)
 
     let bodyHtml: string
     if (jobs.length > 0) {
@@ -151,17 +154,17 @@ export async function runPricingIntentRescueCron(opts?: { lookbackMs?: number; d
       bodyHtml =
         `${greeting}<br><br>` +
         `Santhosh here, founder of VideoText. Saw you were just looking at pricing. You've already run ${jobs.length} ${toolLabel} job${jobs.length === 1 ? '' : 's'} through the free plan${durationClause}, so I'm guessing you know exactly what Pro would remove: the length caps and watermark.<br><br>` +
-        `Pro is $7.99/month — same ${toolLabel} tool, no limits.`
+        `Pro is ${priceLabel} — same ${toolLabel} tool, no limits.`
     } else {
       bodyHtml =
         `${greeting}<br><br>` +
         `Santhosh here, founder of VideoText. Saw you were just looking at pricing. Happy to answer anything before you commit — what are you looking to use VideoText for?<br><br>` +
-        `Pro is $7.99/month if you're ready, no complicated tiers.`
+        `Pro is ${priceLabel} if you're ready, no complicated tiers.`
     }
 
     const unsubToken = generateUnsubscribeToken(user.email)
     const apiUnsubLink = `${apiBaseUrl}/api/newsletter/unsubscribe?email=${encodeURIComponent(user.email)}&token=${unsubToken}`
-    const html = emailHtml(bodyHtml, `${baseUrl}/pricing`, apiUnsubLink)
+    const html = emailHtml(bodyHtml, `${baseUrl}/pricing`, apiUnsubLink, priceLabel)
     const subject = jobs.length > 0 ? 'Saw you checking out Pro pricing' : 'Any questions on VideoText pricing?'
 
     if (opts?.dryRun) {

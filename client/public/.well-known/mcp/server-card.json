@@ -2,7 +2,7 @@
   "serverInfo": {
     "name": "VideoText",
     "version": "1.0.0",
-    "description": "AI video transcription, subtitle generation, and translation. Upload a video or paste a YouTube URL to get a transcript, SRT/VTT subtitles, summary, and chapters in minutes."
+    "description": "AI video transcription, subtitle generation, and translation. Upload a video file to get a transcript, SRT/VTT subtitles, summary, and chapters in minutes."
   },
   "url": "https://videotext.io",
   "transport": {
@@ -31,7 +31,7 @@
       },
       {
         "name": "transcribe_youtube",
-        "description": "Transcribe a YouTube video by URL. No download required.",
+        "description": "Transcribe a YouTube video after the user downloads the file and uploads it.",
         "inputSchema": {
           "type": "object",
           "properties": {
@@ -45,13 +45,13 @@
       },
       {
         "name": "generate_subtitles",
-        "description": "Generate SRT or VTT subtitle files from a video file or YouTube URL.",
+        "description": "Generate SRT or VTT subtitle files from a video file .",
         "inputSchema": {
           "type": "object",
           "properties": {
             "file": {
               "type": "string",
-              "description": "Video file (MP4, MOV, AVI, WebM) or YouTube URL"
+              "description": "Video file (MP4, MOV, AVI, WebM) "
             },
             "format": {
               "type": "string",

@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { trackEvent, identifyUser } from '../lib/analytics'
+import { storeLoginResult } from '../lib/auth'
 
 /**
  * Handles magic login links sent via daily email.
  * URL format: /magic-login?token=xxx&next=/video-to-transcript
  *
- * Exchanges the one-time token for a JWT, saves it to localStorage (same as
- * regular login), then redirects to `next` (default: /video-to-transcript).
+ * Exchanges the one-time token for a JWT, saves it with storeLoginResult
+ * (same keys as password / Google login), then redirects to `next`.
  */
 export default function MagicLogin() {
   const [searchParams] = useSearchParams()
@@ -28,12 +29,15 @@ export default function MagicLogin() {
       .then(async (res) => {
         const data = await res.json()
         if (!res.ok) throw new Error(data.message || 'Invalid or expired link.')
-        // Save auth the same way regular login does
-        if (data.token) localStorage.setItem('auth_token', data.token)
-        if (data.plan)  localStorage.setItem('plan', data.plan)
-        if (data.userId) localStorage.setItem('user_id', data.userId)
+        if (!data.token || !data.userId) throw new Error('Invalid magic login response.')
+        storeLoginResult({
+          token: data.token,
+          userId: data.userId,
+          plan: data.plan || 'free',
+          email: data.email || '',
+        })
         try {
-          if (data.userId) identifyUser(data.userId, { plan: data.plan })
+          identifyUser(data.userId, { plan: data.plan, email: data.email })
           trackEvent('magic_login_completed', { plan: data.plan })
         } catch { /* non-blocking */ }
         navigate(next, { replace: true })

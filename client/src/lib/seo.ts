@@ -19,5 +19,5 @@ export function getCanonicalUrlForPath(pathOrUrl: string): string {
 
 export const SITE_NAME = 'VideoText'
 export const DEFAULT_DESCRIPTION =
-  'VideoText: AI-powered video to text and subtitle tools. Paste a YouTube URL or upload a file — get a transcript in seconds. Transcribe, view in 6 languages, generate SRT/VTT, translate subtitles. No download for YouTube. Free tier.'
+  'VideoText: AI-powered video to text and subtitle tools. Upload a file — get a transcript in seconds. Transcribe, view in 6 languages, generate SRT/VTT, translate subtitles. Free tier.'
 export const DEFAULT_OG_IMAGE = '/og-image.png'

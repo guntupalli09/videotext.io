@@ -138,7 +138,7 @@ export default function VideoTextVsRev() {
                     ['Broadcast-safe subtitle formatting', CROSS, CROSS, CHECK],
                     ['AI-generated summary', CROSS, CROSS, CHECK],
                     ['Chapter markers', CROSS, CROSS, CHECK],
-                    ['YouTube URL direct input', CROSS, CROSS, CHECK],
+                    ['Video file upload', CROSS, CROSS, CHECK],
                     ['Batch processing', PARTIAL, PARTIAL, CHECK],
                     ['Language support', <span key="r-lang" className="text-gray-500 dark:text-gray-400 text-xs font-semibold">~36 languages</span>, <span key="rh-lang" className="text-red-600 text-xs">English primary</span>, <span key="v-lang" className="text-emerald-700 dark:text-emerald-400 text-xs font-bold">90+ languages</span>],
                     ['Zero data retention', CROSS, CROSS, CHECK],

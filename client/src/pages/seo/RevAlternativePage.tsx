@@ -19,7 +19,7 @@ const COMPARE_ROWS = [
   { label: 'Starting price', videotext: 'Free / $7.99/mo Pro', competitor: '$0.25/minute (AI) or $1.99/min (human)' },
   { label: 'Flat-rate monthly plan available', videotext: true, competitor: false },
   { label: 'Processing time (1-hour video)', videotext: '~2 min', competitor: '~5 min (AI) / 12+ hrs (human)' },
-  { label: 'YouTube URL → transcript (no upload)', videotext: true, competitor: false },
+  { label: 'Video file → transcript (no install)', videotext: true, competitor: false },
   { label: 'Files deleted after processing', videotext: true, competitor: false },
   { label: 'SRT / VTT subtitle export', videotext: true, competitor: true },
   { label: 'Translate subtitles (70+ languages)', videotext: true, competitor: false },
@@ -143,8 +143,8 @@ export default function RevAlternativePage() {
             },
             {
               icon: Shield,
-              title: 'YouTube URL support',
-              body: 'Rev requires a file upload. VideoText lets you paste any YouTube URL and processes it directly — no download step.',
+              title: 'video file upload',
+              body: 'Rev requires a file upload. VideoText does too: download the YouTube video first, then upload the file to transcribe it.',
             },
           ]}
         />
