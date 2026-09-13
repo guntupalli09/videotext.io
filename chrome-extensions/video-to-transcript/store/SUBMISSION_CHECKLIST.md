@@ -40,7 +40,7 @@ Package to upload: **`artifacts/videotext-video-to-transcript-v1.0.0.zip`**
 | --- | --- |
 | **Name** | `Video to Transcript — VideoText` |
 | **Short description** | See `LISTING.md` → *Short description* (116 chars) |
-| **Detailed description** | See `LISTING.md` → *Detailed description* |
+| **Detailed description** | Paste **`store/DESCRIPTION.txt`** verbatim (12,184 of 16,000 characters) |
 | **Category** | Productivity |
 | **Language** | English (United States) |
 

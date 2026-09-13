@@ -35,57 +35,29 @@ Turn audio or video into an accurate, editable transcript with VideoText. Copy i
 
 *(Limit: 16,000 characters)*
 
-```
-Turn audio or video into an accurate, editable transcript — without leaving your browser.
+The full text lives in **[`DESCRIPTION.txt`](DESCRIPTION.txt)** — paste it into the Description field
+as-is. It is **12,184 characters**, leaving headroom for edits.
 
-Video to Transcript is the official Chrome extension for VideoText (videotext.io). Pick a file, choose the spoken language or let it detect one, and get a clean, readable transcript you can copy or save as a .TXT file.
+What it covers, in order: what the extension does · how it works in six steps · what you get ·
+every supported file format · the 72 languages (49 named) · twelve audience sections
+(journalists, podcasters, students, researchers, sales/support, product teams, marketers, course
+creators, legal, medical, accessibility, and everyone else) · a list of concrete tasks people come
+looking for · why VideoText · account and plans · privacy and permissions · what the extension
+deliberately does not do · getting started.
 
-HOW IT WORKS
+**On keywords.** High-intent search terms — *convert video to text*, *transcribe MP4*, *audio to
+text*, *meeting transcript*, *transcribe interview*, *podcast transcription*, *transcribe lecture*,
+*MP3 to text*, *voice memo to text* and so on — are carried by the use-case and "things people use
+it for" sections, phrased the way someone would actually search. They are not listed as a keyword
+block: the Chrome Web Store's **Keyword Spam** policy rejects listings with repetitive or irrelevant
+keyword lists, and a rejection on those grounds is slow to appeal.
 
-1. Click the VideoText icon and sign in with your VideoText account.
-2. Drop in an audio or video file, or use Select File.
-3. Optionally choose the spoken language — or leave it on Auto-detect.
-4. Click Transcribe. The file is sent to VideoText for processing.
-5. Read the transcript in the popup, then Copy Transcript or Download .TXT.
-
-WHAT YOU GET
-
-• A full transcript, shown right in the extension
-• One-click Copy Transcript
-• Download .TXT for the file you just transcribed
-• Auto-detect, or pick from 72 spoken languages
-• New Transcription to start the next file straight away
-• Close the popup while a file is processing and reopen it later — the job carries on
-
-SUPPORTED FILE TYPES
-
-Video: MP4, MOV, MKV, AVI, WebM, MPEG, MPG, OGV, 3GP, 3G2, FLV, WMV, TS, M4V
-Audio: MP3, WAV, OGG, M4A, FLAC, AAC
-
-File size and length limits are whatever your VideoText plan allows — the extension reads them from your account, so what works on videotext.io works here.
-
-WHO IT IS FOR
-
-• Journalists and researchers turning interviews into quotable text
-• Podcasters who need show notes and searchable episodes
-• Students and academics transcribing lectures and field recordings
-• Support, sales and product teams turning recorded calls into notes
-• Course creators and marketers repurposing video into written content
-• Anyone who would rather read a recording than sit through it
-
-YOUR ACCOUNT, YOUR LIMITS
-
-This extension is a client for VideoText — it is not a separate product and not a second account. It uses the VideoText account you already have, with the same plan, the same allowance and the same limits as the website. Sign in once and the extension uses that session; manage your plan at videotext.io whenever you like.
-
-PRIVACY
-
-The file you choose and your VideoText session are sent to VideoText and nowhere else. The extension includes no analytics, no tracking and no third-party code. It cannot read your tabs, your history or your other websites — it asks for one host permission, for the VideoText API, and one page, the VideoText sign-in hand-off.
-
-Privacy policy: https://videotext.io/privacy
-Terms: https://videotext.io/terms
-
-A free VideoText account is required. Full tool at https://videotext.io/video-to-transcript
-```
+**Every claim is verified against this repository.** Formats come from
+`server/src/utils/fileValidation.ts`; the language names are checked one by one against
+`client/src/lib/languages.ts`; the permission and privacy statements match `manifest.json` and the
+bundle audit. Limits are described as "whatever your plan allows" rather than quoted, because they
+are per-plan and read live from the account. There is no accuracy percentage, no speed claim and no
+"unlimited", because nothing in the repository substantiates a specific number.
 
 ---
 

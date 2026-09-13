@@ -1,0 +1,189 @@
+Turn any audio or video file into an accurate, editable transcript — right from your Chrome toolbar.
+
+Video to Transcript is the official Chrome extension for VideoText. Click the icon, drop in a recording, and get clean, readable text back. Copy it, or download it as a .TXT file. No timeline to scrub, no player to sit through, no copy-pasting between tabs.
+
+If you have ever needed to convert video to text, transcribe an audio file, pull a transcript out of a recorded meeting, or turn an interview recording into something you can actually search and quote, this is the two-click version of that job.
+
+════════════════════════════════
+HOW IT WORKS
+════════════════════════════════
+
+1. Click the VideoText icon in your Chrome toolbar.
+2. Sign in with your VideoText account (free to create).
+3. Drag and drop an audio or video file into the extension — or click Select File.
+4. Choose the spoken language, or leave it on Auto-detect.
+5. Click Transcribe.
+6. Read the transcript in the popup, then Copy Transcript or Download .TXT.
+
+That is the whole flow. There is no timeline editor to learn, no project to set up, and no export wizard. You pick a file and you get text.
+
+════════════════════════════════
+WHAT YOU GET
+════════════════════════════════
+
+• A full transcript, displayed directly inside the extension
+• One-click Copy Transcript — straight to your clipboard, ready to paste into Google Docs, Notion, Word, email, or your notes app
+• Download .TXT — a plain text file named after your recording, saved to your computer
+• Auto-detect language, or choose from 72 spoken languages
+• Word count and segment count so you know what you are looking at
+• New Transcription to move straight on to the next file
+• Close the popup while a file is processing and reopen it later — your job carries on and picks up where it left off
+• Your VideoText plan, allowance and limits, shown in the extension
+
+════════════════════════════════
+SUPPORTED FILE FORMATS
+════════════════════════════════
+
+Video files: MP4, MOV, MKV, AVI, WebM, MPEG, MPG, OGV, 3GP, 3G2, FLV, WMV, TS, M4V
+
+Audio files: MP3, WAV, OGG, M4A, FLAC, AAC
+
+So whether you are working with an MP4 screen recording, a MOV clip straight off an iPhone, an MP3 podcast episode, an M4A voice memo, a WAV field recording, or an MKV export from a video editor, you can drop it in as-is. There is no need to convert your file first, extract the audio yourself, or re-encode anything.
+
+Maximum file size and maximum recording length depend on your VideoText plan. The extension reads those limits live from your account, so whatever works on videotext.io works here — and it tells you before you upload if a file is too big or too long, instead of failing halfway through.
+
+════════════════════════════════
+LANGUAGES
+════════════════════════════════
+
+Leave the picker on Auto-detect and the language is identified for you, or set it yourself for better accuracy when you already know what was spoken.
+
+72 spoken languages are supported, including English, Spanish, French, German, Italian, Portuguese, Dutch, Polish, Russian, Ukrainian, Czech, Swedish, Norwegian, Danish, Finnish, Greek, Turkish, Arabic, Hebrew, Persian (Farsi), Hindi, Bengali, Tamil, Telugu, Marathi, Gujarati, Kannada, Malayalam, Punjabi, Urdu, Chinese (Simplified), Chinese (Traditional), Japanese, Korean, Vietnamese, Thai, Indonesian, Malay, Filipino (Tagalog), Swahili, Afrikaans, Romanian, Hungarian, Bulgarian, Croatian, Serbian, Slovak, Slovenian, Catalan, and many more.
+
+Setting the language yourself is optional but it helps — auto-detection has to work the language out before it can transcribe, so telling it up front usually gives you a cleaner result on accented speech, technical vocabulary, or recordings with background noise.
+
+════════════════════════════════
+WHO USES THIS
+════════════════════════════════
+
+JOURNALISTS AND WRITERS
+Record the interview, transcribe it, and search the text for the quote you half-remember. Turning a one-hour interview recording into a searchable transcript takes a click instead of an afternoon of typing, scrubbing, and rewinding.
+
+PODCASTERS AND AUDIO PRODUCERS
+Transcribe your episode to produce show notes, pull quote cards, write an episode summary, build a searchable episode archive, or publish the full text on your site so people can find your episode from a search engine. Drop in the MP3 or WAV master and get the words back.
+
+STUDENTS AND ACADEMICS
+Transcribe lectures, seminars, tutorials, research interviews, focus groups, oral histories, and field recordings. Get a text version you can quote, annotate, code, and cite instead of scrubbing back and forth through a recording to find a single sentence.
+
+RESEARCHERS AND UX TEAMS
+Turn user interviews, usability sessions, and customer discovery calls into transcripts you can tag, search, and share with the rest of the team. Qualitative analysis is far quicker when your data is text.
+
+SALES, SUPPORT AND CUSTOMER SUCCESS
+Transcribe a recorded call and turn it into notes, follow-ups, and action items. Search across what a customer actually said instead of relying on memory or half-written notes.
+
+PRODUCT AND ENGINEERING TEAMS
+Transcribe recorded standups, design reviews, retrospectives, demos, and architecture discussions so the people who missed the session can read it in three minutes instead of re-watching forty.
+
+MARKETERS AND CONTENT TEAMS
+Repurpose video into written content. A single webinar transcript becomes a blog post, a newsletter, a set of social posts, and a landing page. Transcribe your video ads, testimonials, and customer stories to reuse the words elsewhere.
+
+COURSE CREATORS AND EDUCATORS
+Transcribe lessons and modules to produce handouts, reading versions, workbooks, and searchable course material — and to make your content accessible to learners who prefer or need to read.
+
+LAWYERS, PARALEGALS AND COMPLIANCE
+Turn recorded statements, depositions, hearings, and client calls into text you can review, search, and reference.
+
+MEDICAL AND CLINICAL PROFESSIONALS
+Transcribe dictated notes and recorded consultations into text you can edit and file.
+
+ACCESSIBILITY TEAMS
+A transcript is the starting point for making video and audio content usable by people who are deaf or hard of hearing, and by anyone who would simply rather read.
+
+ANYONE WITH A RECORDING THEY DO NOT WANT TO SIT THROUGH
+Voice memos, family history recordings, recorded phone calls, church services, conference talks, sermons, panels, town halls, YouTube videos you have downloaded, screen recordings, and every "I'll listen to it later" file sitting in your Downloads folder.
+
+════════════════════════════════
+THINGS PEOPLE USE IT FOR
+════════════════════════════════
+
+• Convert a video to text without installing desktop software
+• Convert an audio file to text in the browser
+• Get the transcript of a recorded meeting, webinar, or online class
+• Transcribe an MP4 file to text
+• Transcribe an MP3 or M4A voice memo to text
+• Transcribe a WAV recording from a field recorder or microphone
+• Transcribe a MOV clip recorded on an iPhone or iPad
+• Turn a long video into a written summary you can skim
+• Pull quotes out of an interview without retyping them
+• Make a video searchable by turning it into text
+• Write show notes and episode descriptions from a podcast recording
+• Produce meeting notes from a call recording
+• Create a reading version of a lecture or presentation
+• Draft a blog post from a webinar you already ran
+• Turn a screen recording or product demo into documentation
+• Get a text version of a recording in a language you do not speak well
+• Save a transcript as a .TXT file to keep, email, or import elsewhere
+
+════════════════════════════════
+WHY VIDEOTEXT
+════════════════════════════════
+
+VideoText is a transcription product, not a general-purpose AI toolbox with transcription bolted on. The extension is a client for that product — the same transcription engine, the same accuracy, and the same account you use on videotext.io.
+
+FAST WITHOUT THE FRICTION
+Drop a file, get text. No timeline, no template, no setup, no project folder, no export queue.
+
+BUILT INTO YOUR BROWSER
+The whole job happens in a popup in your toolbar. You do not have to open a new tab, find the right page, sign in again, or leave whatever you were doing.
+
+REAL STATUS, NOT A FAKE PROGRESS BAR
+While your file is processing, the extension shows what is genuinely happening — your position in the queue, and real processing progress reported by the server. It does not invent a spinner percentage to look busy.
+
+YOUR JOB SURVIVES A CLOSED POPUP
+Chrome closes an extension popup the moment it loses focus. Start a transcription, go do something else, and when you open the extension again it picks the same job back up and shows you the result. You do not have to sit and stare at it.
+
+CLEAR, USEFUL ERRORS
+If a file is too large, too long, in a format that is not supported, or your plan's allowance is used up, the extension tells you plainly what happened and what to do about it — before it wastes your time uploading a file that was never going to work.
+
+ONE ACCOUNT, EVERYWHERE
+This is not a separate product with its own subscription. Sign in with the VideoText account you already have. Your plan, your allowance and your limits are exactly the same as on the website. Nothing to reconcile, nothing to pay for twice.
+
+════════════════════════════════
+ACCOUNT AND PLANS
+════════════════════════════════
+
+A VideoText account is required, and creating one is free. Sign in once from the extension and it remembers you.
+
+The free plan includes a monthly allowance of transcriptions, and the extension shows how many you have left. Paid plans raise your limits — longer recordings, larger files, and more transcriptions. You can see and manage all of it at videotext.io, and the extension links you straight there when you want to change plan.
+
+The extension never takes payment itself and never handles your card details. Billing lives on videotext.io, where it belongs.
+
+════════════════════════════════
+PRIVACY AND PERMISSIONS
+════════════════════════════════
+
+We took a deliberately narrow approach here, and you can verify all of it.
+
+WHAT IT ASKS FOR
+• Storage — so you stay signed in and do not lose a transcription in progress
+• Access to the VideoText API (api.videotext.io) — so it can upload your file and fetch the transcript
+• One single page on videotext.io — the sign-in hand-off page, and nothing else
+
+WHAT IT DOES NOT ASK FOR
+No access to all websites. No reading your tabs, your browsing history, your bookmarks, or your cookies. No permission to run code on the pages you visit.
+
+WHAT IT SENDS
+The file you choose to transcribe and your VideoText sign-in, to VideoText. That is the entire list. There is no analytics SDK, no tracking, no telemetry, and no third-party code in this extension. It contacts exactly one server — VideoText's own.
+
+WHAT IT NEVER TOUCHES
+Your password. Sign-in happens on videotext.io in a normal browser tab, and the extension never sees it.
+
+Privacy policy: https://videotext.io/privacy
+Terms: https://videotext.io/terms
+
+════════════════════════════════
+WHAT THIS EXTENSION DOES NOT DO
+════════════════════════════════
+
+It has one job: audio and video in, transcript out. It does not record your screen, capture tab audio, download videos from websites, or transcribe live speech as you talk. You bring a file, it gives you text.
+
+If you need more — subtitles and caption files, SRT and VTT export, subtitle translation, fixing broken subtitle timing, burning subtitles into video, speaker labels, or batch processing — those live in the full VideoText product at videotext.io/video-to-transcript and across the rest of the toolset. The extension stays deliberately small so the thing it does, it does in two clicks.
+
+════════════════════════════════
+GETTING STARTED
+════════════════════════════════
+
+Install the extension, pin it to your toolbar, and click it. Sign in or create a free VideoText account, drop in a recording, and you will have a transcript to read, copy, and download.
+
+Full tool on the web: https://videotext.io/video-to-transcript
+VideoText: https://videotext.io
