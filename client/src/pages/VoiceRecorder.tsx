@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
+import { useLocation } from 'react-router-dom'
 import UpgradeBanner from '../components/UpgradeBanner'
 import FreePlanNudge from '../components/FreePlanNudge'
 import SecondJobUpgradeNudge from '../components/SecondJobUpgradeNudge'
 import ResultUpgradeCard from '../components/ResultUpgradeCard'
 import ResultHeader from '../components/ResultHeader'
 import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
+import { freeImportLimitReason } from '../lib/quotaPaywall'
 import { isPaidPlan as hasPaidPlan } from '../lib/plans'
 import { startCheckout } from '../lib/startCheckout'
 import { useProPricing } from '../contexts/PricingContext'
@@ -36,12 +38,14 @@ import JobAuthGateModal from '../components/JobAuthGateModal'
 import {
   uploadFileWithProgress,
   subscribeJobStatus,
+  getJobStatus,
   BACKEND_TOOL_TYPES,
   getAuthToken,
   claimGuestJob,
   getCurrentUsage,
   invalidateUsageCache,
 } from '../lib/api'
+import { persistJobId, getPersistedJobId, getPersistedJobToken } from '../lib/jobSession'
 import { isLoggedIn } from '../lib/auth'
 import { getAbsoluteDownloadUrl, getApiBase, API_ORIGIN, getWsBase } from '../lib/apiBase'
 import { formatTimestamp, type Segment } from '../lib/srtExport'
@@ -96,6 +100,7 @@ function convertToPCM16(samples: Float32Array): ArrayBuffer {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 export default function VoiceRecorder() {
+  const location = useLocation()
   const [phase, setPhase] = useState<Phase>('idle')
   const [recSecs, setRecSecs] = useState(0)
   const [uploadPct, setUploadPct] = useState(0)
@@ -247,6 +252,76 @@ export default function VoiceRecorder() {
     []
   )
 
+  // Rehydrate a voice job after reload (same tab / same tool family)
+  useEffect(() => {
+    const pathname = location.pathname
+    const jobId = getPersistedJobId(pathname)
+    if (!jobId) return
+    const jobToken = getPersistedJobToken(pathname)
+    setVoiceJobId(jobId)
+    setVoiceJobToken(jobToken)
+    let cancelled = false
+    ;(async () => {
+      try {
+        const s = await getJobStatus(jobId, jobToken ? { jobToken } : undefined)
+        if (cancelled) return
+        if (s.status === 'completed') {
+          if (s.requiresAuth && !isLoggedIn()) {
+            setShowAuthGate(true)
+          }
+          const segs = s.result?.segments?.length ? s.result.segments : null
+          setVoiceSegments(segs)
+          setVoiceAudioUrl(s.result?.audioUrl ?? null)
+          let text = ''
+          if (segs?.length) text = segs.map((seg) => seg.text).join('\n\n')
+          else if (s.result?.downloadUrl) {
+            try {
+              text = await fetch(getAbsoluteDownloadUrl(s.result.downloadUrl)).then((r) => r.text())
+            } catch {
+              /* ignore */
+            }
+          }
+          if (text) {
+            setTranscript(text)
+            setPhase('result')
+          }
+        } else if (s.status === 'queued' || s.status === 'processing') {
+          setPhase('processing')
+          stopPollRef.current = subscribeJobStatus(jobId, { jobToken: jobToken ?? undefined }, async (status) => {
+            if (status.partialTranscript) setPartial(status.partialTranscript)
+            if (status.status === 'completed' && status.result) {
+              stopPollRef.current?.()
+              setVoiceSegments(status.result.segments?.length ? status.result.segments : null)
+              setVoiceAudioUrl(status.result.audioUrl ?? null)
+              let text = ''
+              if (status.result.segments?.length) {
+                text = status.result.segments.map((seg) => seg.text).join('\n\n')
+              } else if (status.result.downloadUrl) {
+                try {
+                  text = await fetch(getAbsoluteDownloadUrl(status.result.downloadUrl)).then((r) => r.text())
+                } catch {
+                  /* ignore */
+                }
+              }
+              setTranscript(text)
+              setPhase('result')
+            } else if (status.status === 'failed') {
+              stopPollRef.current?.()
+              setErrMsg('Transcription failed. Please try again.')
+              setPhase('error')
+            }
+          })
+        }
+      } catch {
+        /* expired or unreachable — stay idle */
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // ── Audio resource cleanup ─────────────────────────────────────────────────
   function releaseAudio() {
     if (timerRef.current) {
@@ -374,7 +449,7 @@ export default function VoiceRecorder() {
       const usage = await getCurrentUsage({ skipCache: true })
       const remaining = usage.remaining ?? (usage.limit ?? 3) - (usage.used ?? usage.usage?.importCount ?? 0)
       if (usage.plan === 'free' && usage.quotaType === 'imports' && remaining <= 0) {
-        setPaywallReason('FREE_DAILY_LIMIT_REACHED')
+        setPaywallReason(freeImportLimitReason())
         setShowPaywall(true)
         return false
       }
@@ -626,6 +701,7 @@ export default function VoiceRecorder() {
         )
         setVoiceJobId(res.jobId)
         setVoiceJobToken(res.jobToken ?? null)
+        persistJobId(location.pathname, res.jobId, res.jobToken)
         invalidateUsageCache()
         trackEvent('processing_completed', { tool: 'voice-recorder', words })
       } catch (e: unknown) {
@@ -638,7 +714,7 @@ export default function VoiceRecorder() {
           // jobId/jobToken is set, FreePlanNudge never mounts (gated on voiceJobId), and
           // processing_completed is never fired, so this never counts as, or is billed
           // toward, a successful quota-consuming result.
-          setPaywallReason('FREE_DAILY_LIMIT_REACHED')
+          setPaywallReason(freeImportLimitReason())
           setShowPaywall(true)
         }
         // Non-entitlement failures (network hiccup, server error, etc.) are handled the
@@ -666,6 +742,7 @@ export default function VoiceRecorder() {
 
       setVoiceJobId(res.jobId)
       setVoiceJobToken(res.jobToken ?? null)
+      persistJobId(location.pathname, res.jobId, res.jobToken)
 
       setPhase('processing')
       setPartial('')
@@ -727,7 +804,7 @@ export default function VoiceRecorder() {
         // fallback has no live Deepgram preview), so there is nothing to preserve — go
         // straight to the canonical paywall instead of a generic error state.
         setPhase('idle')
-        setPaywallReason('FREE_DAILY_LIMIT_REACHED')
+        setPaywallReason(freeImportLimitReason())
         setShowPaywall(true)
         return
       }

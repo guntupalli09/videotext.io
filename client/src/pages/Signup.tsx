@@ -7,7 +7,7 @@ import { getSamplesModuleAttribution } from '../lib/samplesAttribution'
 import { captureReferralFromUrl, getStoredReferralCode, clearStoredReferralCode } from '../lib/referral'
 import { celebrateReferralReward } from '../lib/referralReward'
 import ReferralSignupBanner from '../components/ReferralSignupBanner'
-import { FileText, Youtube, Shield, ChevronRight, CheckCircle2 } from 'lucide-react'
+import { FileText, Shield, Zap, ChevronRight, CheckCircle2 } from 'lucide-react'
 import GoogleSignInButton, { GOOGLE_CLIENT_ID } from '../components/GoogleSignInButton'
 
 type Step = 'email' | 'otp' | 'password'
@@ -187,19 +187,19 @@ export default function Signup() {
       : 'Enter your email to get a verification code. No credit card needed.',
     otp: `We sent a 6-digit code to ${normalizedEmail || 'your email'}.`,
     password: fromGuestJob
-      ? `You have 2 free imports remaining (1 used for your trial). Create your password to continue.`
+      ? `You have 2 free imports remaining this month (1 used for your trial). Create your password to continue.`
       : 'Choose a password to secure your account.',
   }
 
   const PERKS = fromGuestJob
     ? [
-        { icon: CheckCircle2, text: '2 free imports left today', highlight: true },
+        { icon: CheckCircle2, text: '2 free imports left this month', highlight: true },
         { icon: FileText, text: 'Download your transcript now' },
         { icon: Shield, text: 'Files deleted after processing' },
       ]
     : [
         { icon: FileText, text: 'Try free — no credit card needed' },
-        { icon: Youtube, text: 'YouTube URL → transcript instantly' },
+        { icon: Zap, text: 'Accurate transcripts from any video file' },
         { icon: Shield, text: 'Files deleted right after processing' },
       ]
 

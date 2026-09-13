@@ -19,6 +19,9 @@ import {
   Languages,
   Pencil,
   Copy as CopyIcon,
+  Subtitles,
+  Film,
+  Minimize2,
 } from "lucide-react";
 import ProCheckoutLink from "../components/ProCheckoutLink";
 import FailedState from "../components/FailedState";
@@ -31,6 +34,8 @@ import { MakeClientReadyTranscriptButton } from "../components/SuccessState";
 import SamplesModule from "../components/SamplesModule";
 // import WorkflowChainSuggestion from '../components/WorkflowChainSuggestion'
 import PaywallModal, { type PaywallReason } from "../components/PaywallModal";
+import CrossToolSuggestions from "../components/CrossToolSuggestions";
+import { freeImportLimitReason } from "../lib/quotaPaywall";
 import UpgradeBanner from "../components/UpgradeBanner";
 import FreePlanNudge from "../components/FreePlanNudge";
 import SecondJobUpgradeNudge from "../components/SecondJobUpgradeNudge";
@@ -1283,11 +1288,8 @@ export default function VideoToTranscript(
       return;
     }
     if (!batchUploadEligible()) {
-      handleFileSelect(files[0]);
-      toast(
-        "Batch upload is on Pro and Business — upgrade to process multiple videos at once.",
-        { icon: "📦", duration: 5500 },
-      );
+      setPaywallReason("BATCH_NOT_AVAILABLE");
+      setShowPaywall(true);
       return;
     }
     setBatchFiles(files.slice(0, 20));
@@ -1451,6 +1453,7 @@ export default function VideoToTranscript(
         ? used >= (usageData.limit ?? 3)
         : totalAvailable > 0 && used >= totalAvailable;
       if (atOrOverLimit) {
+        setPaywallReason(freeImportLimitReason());
         setShowPaywall(true);
         trackEvent("upgrade_prompt_seen", getFunnelProps("quota_gate"));
         return;
@@ -2742,9 +2745,8 @@ export default function VideoToTranscript(
       return;
     }
     if (!isPaidPlan && freeExportsUsed >= 2) {
-      toast(
-        "You've used your 2 free exports. Unlock continued downloads with Pro — $7.99/mo.",
-      );
+      setPaywallReason("EXPORT_LIMIT_REACHED");
+      setShowPaywall(true);
       return;
     }
     const watermark = isPaidPlan ? undefined : WATERMARK_DOC_FOOTER;
@@ -2802,9 +2804,8 @@ export default function VideoToTranscript(
       return;
     }
     if (!isPaidPlan && freeExportsUsed >= 2) {
-      toast(
-        "You've used your 2 free exports. Unlock continued downloads with Pro — $7.99/mo.",
-      );
+      setPaywallReason("EXPORT_LIMIT_REACHED");
+      setShowPaywall(true);
       return;
     }
     const watermark = isPaidPlan ? undefined : WATERMARK_DOC_FOOTER;
@@ -2858,9 +2859,8 @@ export default function VideoToTranscript(
       return;
     }
     if (!isPaidPlan && freeExportsUsed >= 2) {
-      toast(
-        "You've used your 2 free exports. Unlock continued downloads with Pro — $7.99/mo.",
-      );
+      setPaywallReason("EXPORT_LIMIT_REACHED");
+      setShowPaywall(true);
       return;
     }
     const watermark = isPaidPlan ? undefined : WATERMARK_DOC_FOOTER;
@@ -2916,9 +2916,8 @@ export default function VideoToTranscript(
       return;
     }
     if (!isPaidPlan && freeExportsUsed >= 2) {
-      toast(
-        "You've used your 2 free exports. Unlock continued downloads with Pro — $7.99/mo.",
-      );
+      setPaywallReason("EXPORT_LIMIT_REACHED");
+      setShowPaywall(true);
       return;
     }
     const watermark = isPaidPlan ? undefined : WATERMARK_DOC_FOOTER;
@@ -2978,9 +2977,8 @@ export default function VideoToTranscript(
       return;
     }
     if (!isPaidPlan && freeExportsUsed >= 2) {
-      toast(
-        "You've used your 2 free exports. Unlock continued downloads with Pro — $7.99/mo.",
-      );
+      setPaywallReason("EXPORT_LIMIT_REACHED");
+      setShowPaywall(true);
       return;
     }
     const watermark = isPaidPlan ? undefined : WATERMARK_DOC_FOOTER;
@@ -3038,9 +3036,8 @@ export default function VideoToTranscript(
       return;
     }
     if (!isPaidPlan && freeExportsUsed >= 2) {
-      toast(
-        "You've used your 2 free exports. Unlock continued downloads with Pro — $7.99/mo.",
-      );
+      setPaywallReason("EXPORT_LIMIT_REACHED");
+      setShowPaywall(true);
       return;
     }
     const watermark = isPaidPlan ? undefined : WATERMARK_DOC_FOOTER;
@@ -3098,9 +3095,8 @@ export default function VideoToTranscript(
         return;
       }
       if (!isPaidPlan && freeExportsUsed >= 2) {
-        toast(
-          "You've used your 2 free exports. Unlock continued downloads with Pro — $7.99/mo.",
-        );
+        setPaywallReason("EXPORT_LIMIT_REACHED");
+        setShowPaywall(true);
         return;
       }
       const resolved = withResolvedSpeakers(segs, speakerNameMap);
@@ -3433,7 +3429,7 @@ export default function VideoToTranscript(
                               className="h-4 w-4 shrink-0"
                               aria-hidden
                             />
-                            Step 1: Upload a video or paste URL
+                            Step 1: Upload a video file
                           </li>
                           <li className="flex items-center gap-2">
                             <CheckCircle2
@@ -5579,9 +5575,8 @@ export default function VideoToTranscript(
                                           return;
                                         }
                                         if (!freeCanDownload || freeUsedAll) {
-                                          toast(
-                                            "You've used your 2 free exports. Unlock continued downloads with Pro — $7.99/mo.",
-                                          );
+                                          setPaywallReason("EXPORT_LIMIT_REACHED");
+                                          setShowPaywall(true);
                                           return;
                                         }
                                         const blob = new Blob(
@@ -5710,9 +5705,8 @@ export default function VideoToTranscript(
                                             return;
                                           }
                                           if (freeUsedAll) {
-                                            toast(
-                                              "You've used your 2 free exports. Unlock continued downloads with Pro — $7.99/mo.",
-                                            );
+                                            setPaywallReason("EXPORT_LIMIT_REACHED");
+                                            setShowPaywall(true);
                                             return;
                                           }
                                           const blob = new Blob(
@@ -5856,9 +5850,8 @@ export default function VideoToTranscript(
                                                   },
                                                 );
                                       if (freeUsedAll) {
-                                        toast(
-                                          "You've used your 2 free exports. Unlock continued downloads with Pro — $7.99/mo.",
-                                        );
+                                        setPaywallReason("EXPORT_LIMIT_REACHED");
+                                        setShowPaywall(true);
                                         return;
                                       }
                                       const mimeType =
@@ -6218,24 +6211,14 @@ export default function VideoToTranscript(
                 />
               )}
 
-              {/* <CrossToolSuggestions
-              workflowHint="Your last file is pre-filled on the next tool."
-              suggestions={[
-                { icon: Subtitles, title: 'Video → Subtitles', path: '/video-to-subtitles', description: 'Generate SRT/VTT', state: { useWorkflowVideo: true } },
-                {
-                  icon: Film,
-                  title: 'Burn Subtitles',
-                  path: '/burn-subtitles',
-                  description: 'Burn captions (video + SRT pre-filled)',
-                  state: { useWorkflowVideo: true, useWorkflowSrt: true },
-                  onBeforeNavigate: () => {
-                    // if (segmentsForExport?.length) workflow.setSrt(segmentsToSrt(segmentsForExport))
-                    // if (selectedFile) workflow.setVideo(selectedFile)
-                  },
-                },
-                { icon: Minimize2, title: 'Compress Video', path: '/compress-video', description: 'Reduce file size', state: { useWorkflowVideo: true } },
-              ]}
-            /> */}
+              <CrossToolSuggestions
+                workflowHint="Upload the same video file or SRT on the next tool — we do not keep your last file."
+                suggestions={[
+                  { icon: Subtitles, title: 'Video → Subtitles', path: '/video-to-subtitles', description: 'Generate SRT/VTT from the same video' },
+                  { icon: Film, title: 'Burn Subtitles', path: '/burn-subtitles', description: 'Hardcode captions into a video' },
+                  { icon: Minimize2, title: 'Compress Video', path: '/compress-video', description: 'Reduce file size before you share' },
+                ]}
+              />
             </div>
           </>
         )}

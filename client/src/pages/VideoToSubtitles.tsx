@@ -7,6 +7,7 @@ import CollapsibleFaqSection from '../components/CollapsibleFaqSection'
 import SamplesModule from '../components/SamplesModule'
 import TranscriptSharePanel from '../components/TranscriptSharePanel'
 import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
+import { freeImportLimitReason } from '../lib/quotaPaywall'
 import JobAuthGateModal from '../components/JobAuthGateModal'
 import UpgradeBanner from '../components/UpgradeBanner'
 import FreePlanNudge from '../components/FreePlanNudge'
@@ -737,7 +738,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       setAvailableMinutes(totalAvailable)
       const atOrOverLimit = isImports ? used >= (usageData.limit ?? 3) : (totalAvailable > 0 && used >= totalAvailable)
       if (atOrOverLimit) {
-        setPaywallReason('FREE_DAILY_LIMIT_REACHED')
+        setPaywallReason(freeImportLimitReason())
         setShowPaywall(true)
         return
       }
@@ -1413,7 +1414,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                             const lane = exportLanes.find((l) => l.id === laneId)
                             if (!lane) return
                             if (plan === 'free' && freeExportsUsed >= 2) {
-                              toast.error("You've used your 2 free downloads. Upgrade for more.")
+                              setPaywallReason('EXPORT_LIMIT_REACHED')
+                              setShowPaywall(true)
                               return
                             }
                             const slug =

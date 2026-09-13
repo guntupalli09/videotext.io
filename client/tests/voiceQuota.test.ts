@@ -35,9 +35,9 @@ test('2: startRecording runs the preflight before requesting the microphone and 
   assert.match(fn, /if \(!\(await ensureVoiceQuotaAvailable\(\)\)\) return/)
 })
 
-test('preflight opens the canonical PaywallModal with FREE_DAILY_LIMIT_REACHED', () => {
+test('preflight opens the canonical PaywallModal with the logged-in monthly quota reason', () => {
   const preflight = section('async function ensureVoiceQuotaAvailable', 'async function startRecording')
-  assert.match(preflight, /setPaywallReason\('FREE_DAILY_LIMIT_REACHED'\)/)
+  assert.match(preflight, /setPaywallReason\(freeImportLimitReason\(\)\)/)
   assert.match(preflight, /setShowPaywall\(true\)/)
 })
 
@@ -101,7 +101,7 @@ test('8+10: both catch blocks detect the daily-limit error and open the paywall 
   const handleUpload = section('async function handleUpload', '// ── Actions')
   const guardMatches = [...handleUpload.matchAll(/if \(isFreeDailyLimitError\(m(?:essage|sg)\)\) \{/g)]
   assert.equal(guardMatches.length, 2, 'expected the daily-limit guard in both the fast-path and fallback-path catch blocks')
-  assert.match(handleUpload, /setPaywallReason\('FREE_DAILY_LIMIT_REACHED'\)\s*\n\s*setShowPaywall\(true\)/)
+  assert.match(handleUpload, /setPaywallReason\(freeImportLimitReason\(\)\)\s*\n\s*setShowPaywall\(true\)/)
   // Old silent-catch comment must be gone.
   assert.doesNotMatch(handleUpload, /Silent failure — transcript already shown, download still works client-side/)
 })

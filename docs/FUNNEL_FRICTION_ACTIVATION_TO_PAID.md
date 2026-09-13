@@ -1,5 +1,9 @@
 # Funnel friction: activation → second session → paywall → paid conversion
 
+**Shipped in this PR (product code):** Magic login now writes the same `authToken` / `userId` keys as password login; job sessions key by engine (`toolKey`) so SEO aliases can resume; quota copy is daily for guests and monthly for signed-up Free; product CTAs no longer promise YouTube URL paste; export/batch limits open `PaywallModal`; Voice and Guideline persist jobs; login/onboarding copy is honest; onboarding emails target last-used tool and return users; rescue email uses geo/event price instead of hardcoded `$7.99`.
+
+**Still open:** SEO alternative-page YouTube claims, consumer job library, re-enable YouTube ingest, `business_conversion` metrics.
+
 **Scope:** every public surface that users treat as a “core tool” — 9 processing engines, their SEO aliases, guideline hubs, and free browser utilities.  
 **Method:** code-path audit of client + server + crons + GSC (2026-08-13 → 2026-09-09). Not a live cohort study: `business_conversion` is still unbuilt, so this is a friction map, not a conversion-rate report.  
 **Canonical quota (code, 2026-09):** guests = **3 imports / IP / UTC day**; signed-up Free = **3 imports / calendar month** (1st UTC); Pro = no hard import cap, 120 min / 10 GB, batch 20.  

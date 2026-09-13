@@ -17,6 +17,7 @@ export type PaywallReason =
   | 'BATCH_NOT_AVAILABLE'
   | 'MULTI_LANGUAGE_NOT_AVAILABLE'
   | 'COPY_LIMIT_REACHED'
+  | 'EXPORT_LIMIT_REACHED'
   | 'AI_FEATURES'
   | 'PDF_EXPORT'
   | 'WORD_EXPORT'
@@ -70,6 +71,14 @@ function getContent(reason: PaywallReason | undefined, priceLabel: string) {
         secondaryLabel: null,
         secondary: null,
       }
+    case 'EXPORT_LIMIT_REACHED':
+      return {
+        title: "You've used your 2 free downloads",
+        body: 'Your result stays on this page. Pro unlocks unlimited watermark-free downloads.',
+        cta: `Unlock continued downloads — ${priceLabel}`,
+        secondaryLabel: null,
+        secondary: null,
+      }
     case 'AI_FEATURES':
       return {
         title: 'You asked for AI summary and chapters',
@@ -90,8 +99,16 @@ function getContent(reason: PaywallReason | undefined, priceLabel: string) {
       return { title: 'Unlock this professional workflow', body: 'Keep your result and unlock this Pro delivery option.', cta: `Unlock Pro — ${priceLabel}`, secondaryLabel: null, secondary: null }
     case 'DOCUMENT_TRANSLATION_LIMIT':
       return { title: "Today's 3 free document translations are used", body: 'This separate translation allowance resets daily, or continue with Pro.', cta: `Continue with Pro — ${priceLabel}`, secondaryLabel: null, secondary: null }
-    case 'FREE_MONTHLY_LIMIT_REACHED':
     case 'FREE_DAILY_LIMIT_REACHED':
+      return {
+        title: "You've used all 3 free imports today",
+        body: 'Guest imports reset at midnight UTC. Create a free account for 3 imports per calendar month — or upgrade to Pro.',
+        cta: `Continue without limits — ${priceLabel}`,
+        bullets: PRO_BENEFIT_BULLETS,
+        secondaryLabel: null,
+        secondary: null,
+      }
+    case 'FREE_MONTHLY_LIMIT_REACHED':
     default:
       return {
         title: "You've used all 3 free imports this month",

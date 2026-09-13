@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import {
   ChevronDown,
   ChevronRight,
@@ -26,6 +26,7 @@ import ResultHeader from "../components/ResultHeader";
 import { ProcessingStateShell } from "../components/figma/ProcessingStateShell";
 import { ProcessingProgress } from "../components/figma/ProcessingProgress";
 import { isLoggedIn } from "../lib/auth";
+import { persistJobId, getPersistedJobId, getPersistedJobToken } from "../lib/jobSession";
 import { isPaidPlan as hasPaidPlan } from "../lib/plans";
 import {
   drawPdfFreePlanWatermark,
@@ -227,6 +228,7 @@ function applyReviewEditsToOutputText(
 }
 
 export default function GuidelineFormat() {
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const presetFromUrlApplied = useRef(false);
   const [transcript, setTranscript] = useState("");
@@ -383,6 +385,14 @@ export default function GuidelineFormat() {
     }
     return [];
   };
+
+  useEffect(() => {
+    const persisted = getPersistedJobId(location.pathname);
+    if (!persisted) return;
+    setJobId(persisted);
+    setJobToken(getPersistedJobToken(location.pathname));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (!jobId) return;
@@ -554,6 +564,7 @@ export default function GuidelineFormat() {
       }
       setJobToken(data.jobToken || null);
       setJobId(data.jobId);
+      persistJobId(location.pathname, data.jobId, data.jobToken);
       try {
         const attribution = getStoredAttribution();
         trackEvent("job_started", {

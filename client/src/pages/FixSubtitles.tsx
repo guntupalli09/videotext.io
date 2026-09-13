@@ -14,6 +14,7 @@ import PageGscSupplementFaq from '../components/PageGscSupplementFaq'
 import FreePlanNudge from '../components/FreePlanNudge'
 import SecondJobUpgradeNudge from '../components/SecondJobUpgradeNudge'
 import PaywallModal, { type PaywallReason } from '../components/PaywallModal'
+import { freeImportLimitReason } from '../lib/quotaPaywall'
 import { isPaidPlan } from '../lib/plans'
 import { WATERMARK_DOC_FOOTER, WATERMARK_DOC_HEADER, watermarkTextExport, drawPdfFreePlanWatermark } from '../lib/watermark'
 import SamplesModule from '../components/SamplesModule'
@@ -335,7 +336,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
       const usage = await getCurrentUsage({ skipCache: true })
       const remaining = usage.remaining ?? (usage.limit ?? 3) - (usage.used ?? usage.usage.importCount ?? 0)
       if (usage.plan === 'free' && usage.quotaType === 'imports' && remaining <= 0) {
-        setProPaywallReason('FREE_DAILY_LIMIT_REACHED'); setShowProPaywall(true); return false
+        setProPaywallReason(freeImportLimitReason()); setShowProPaywall(true); return false
       }
     } catch { /* Usage failure must not block processing. */ }
     return true
@@ -556,7 +557,8 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
     }
 
     if (plan === 'free' && freeExportsUsed >= 2) {
-      toast('You\'ve used your 2 free downloads. Upgrade for more.')
+      setProPaywallReason('EXPORT_LIMIT_REACHED')
+      setShowProPaywall(true)
       return
     }
 
