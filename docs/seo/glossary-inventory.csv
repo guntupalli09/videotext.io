@@ -1,7 +1,7 @@
 term,slug,cluster,definition_intent,search_demand_if_known,commercial_relevance,entity_centrality,internal_link_value,source_confidence,existing_page_conflict,priority,status
 transcription,transcription,transcription-asr,what is transcription,present in GSC tool queries; volume UNKNOWN,5,5,5,5,none — definition vs /video-to-transcript action,100,published
 automatic speech recognition,automatic-speech-recognition,transcription-asr,what is ASR,UNKNOWN,5,5,5,5,none,100,published
-speech-to-text,speech-to-text,transcription-asr,what is speech-to-text,UNKNOWN,5,5,4,5,/speech-to-text is transactional; glossary is definitional,95,published
+speech-to-text,speech-to-text,transcription-asr,what is speech-to-text,UNKNOWN,5,5,4,5,/speech-to-text is transactional; glossary is definitional,95,draft
 verbatim transcription,verbatim-transcription,transcription-asr,what is verbatim transcription,UNKNOWN,4,5,5,5,blog clean vs full verbatim is off-site narrative,95,published
 clean verbatim,clean-verbatim,transcription-asr,what is clean verbatim,UNKNOWN,4,4,5,5,Hashnode comparison post; on-site definition still needed,89,published
 full verbatim,full-verbatim,transcription-asr,what is full verbatim,UNKNOWN,4,4,5,5,Hashnode comparison post,89,published

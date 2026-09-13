@@ -71,7 +71,7 @@ Observed (do not treat as live baselines for the new URLs):
 | `/research/transcription-accuracy-benchmark-2026` | First-party WER methodology + pilot | A stats page presenting VideoText/Whisper pilot WER as industry truth | Keep research page. Hub may *cite* the public Whisper paper and *link* to the VideoText study; it will not blend first-party results into third-party tables. |
 | `/transcription-benchmark`, `/accuracy-test` | First-party speed/accuracy placeholders | `/transcription-benchmark-2026` or renaming those URLs | Do not rename, redirect, or replace. Different intent from industry statistics. |
 | `/best-transcription-tool`, `/fastest-transcription-*` | Commercial comparison | A “best tools” stats article | Out of scope. |
-| `/speech-to-text`, `/voice-to-text` | Commercial / workflow | Glossary targeting the same transactional query | Glossary uses `/glossary/speech-to-text` for **definition** intent only. |
+| `/speech-to-text`, `/voice-to-text` | Commercial / workflow | Glossary targeting the same tool/action query | **Unpublished.** `/glossary/speech-to-text` stays in inventory as draft. VideoText already owns `/speech-to-text`; the head query has strong tool intent. No redirect. |
 | `/video-to-srt`, `/srt-generator` | Transactional “make SRT” | Glossary “video to SRT” | Do not create a glossary term for the workflow. Create `/glossary/srt-file` (what an SRT file is). |
 | `/how-to-create-srt-file` | How-to | Duplicate how-to | Keep how-to. Glossary answers “what is SRT?” |
 | `/open-captions-vs-closed-captions`, `/subtitles-vs-closed-captions` | Comparison | Another vs page | Keep comparisons. Glossary publishes single-entity definitions and links to the vs pages. |
