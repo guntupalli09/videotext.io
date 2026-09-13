@@ -42,6 +42,8 @@ const MORE_GUIDES = [
   { label: 'AI transcription workflow', path: '/ai-transcription-workflow' },
   { label: 'YouTube video to transcript', path: '/youtube-video-to-transcript' },
   { label: 'Transcription benchmark', path: '/transcription-benchmark' },
+  { label: 'Transcription statistics', path: '/transcription-statistics' },
+  { label: 'Transcription & subtitle glossary', path: '/glossary' },
 ];
 
 const ALL_FEATURES = [

@@ -6,6 +6,7 @@ import * as path from 'path'
 import * as fs from 'fs'
 import { getProgrammaticSeoEntries } from '../../client/src/lib/generateSeoPages'
 import { getCanonicalPathForRoute } from '../../client/src/lib/primaryUrls'
+import { CITATION_HUB_PATH, GLOSSARY_HUB_PATH, getPublishedGlossaryPaths } from '../../client/src/lib/referenceLayer'
 export { SLUG_TO_PRIMARY } from '../../client/src/lib/slugToPrimary'
 
 const SCRIPT_DIR = __dirname
@@ -47,6 +48,8 @@ export const STATIC_ROUTES = [
   '/subtitle-reading-speed',
   '/subtitle-character-checker',
   '/subtitle-word-counter',
+  CITATION_HUB_PATH,
+  GLOSSARY_HUB_PATH,
 ]
 
 export function loadRoutesInventory(): string[] {
@@ -114,6 +117,8 @@ export const CORE_PATHS: string[] = [
   '/subtitle-character-checker',
   '/subtitle-word-counter',
   '/netflix-ttsc-checklist',
+  CITATION_HUB_PATH,
+  GLOSSARY_HUB_PATH,
   // Cluster A — Platform-specific (high-intent) - moved to Sitemap 2 via seoRegistry.ts
   // Cluster B — Language-specific - moved to Sitemap 2 via seoRegistry.ts
   // Cluster C — Competitor alternatives
@@ -227,7 +232,8 @@ export function getSitemap2Paths(): string[] {
   const otherManual = registry.filter((p) => !coreSet.has(getCanonicalPathForRoute(p)))
   const otherProgrammatic = programmatic.filter((p) => !coreSet.has(getCanonicalPathForRoute(p)))
   const freeTools = FREE_TOOL_AND_HUB_PATHS.filter((p) => !coreSet.has(getCanonicalPathForRoute(p)))
-  return [...new Set([...otherManual, ...otherProgrammatic, ...freeTools])]
+  const glossaryTerms = getPublishedGlossaryPaths().filter((p) => !coreSet.has(getCanonicalPathForRoute(p)))
+  return [...new Set([...otherManual, ...otherProgrammatic, ...freeTools, ...glossaryTerms])]
     .map((p) => getCanonicalPathForRoute(p))
     .filter(Boolean)
     .filter((p, i, arr) => arr.indexOf(p) === i)

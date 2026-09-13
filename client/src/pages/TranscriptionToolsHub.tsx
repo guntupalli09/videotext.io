@@ -63,6 +63,8 @@ const TRANSCRIPTION_TOOLS = [
       { path: '/free-speech-to-text', label: 'Free Speech to Text' },
       { path: '/free-video-transcription-tool', label: 'Free Video Transcription Tool' },
       { path: '/accuracy-test', label: 'Accuracy Test' },
+      { path: '/transcription-statistics', label: 'Transcription statistics' },
+      { path: '/glossary', label: 'Transcription & subtitle glossary' },
     ],
   },
   {

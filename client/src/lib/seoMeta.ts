@@ -7,6 +7,7 @@ import { ENTITY_DESCRIPTION, PRODUCT_CATEGORY, PRIMARY_DEFINITION } from './prod
 import { getAllSeoEntries } from './seoRegistry'
 import { resolveInternalLinkPath } from './primaryUrls'
 import { getAggregateRatingJsonLd, type PublicRating } from './publicRating'
+import { getReferenceLayerBreadcrumbs, getReferenceLayerSeo } from './referenceLayer'
 
 /** Core conversion URLs that must emit at most one SoftwareApplication and no HowTo. */
 export const MONEY_CORE_PATHS = [
@@ -642,6 +643,7 @@ const STATIC_ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> 
 /** Per-route SEO meta. SEO pages from registry; rest from static. */
 export const ROUTE_SEO: Record<string, { title: string; description: string }> = {
   ...STATIC_ROUTE_SEO,
+  ...getReferenceLayerSeo(),
   ...Object.fromEntries(
     getAllSeoEntries().map((e) => [e.path, { title: e.title, description: e.description }])
   ),
@@ -650,6 +652,7 @@ export const ROUTE_SEO: Record<string, { title: string; description: string }> =
 /** Breadcrumb items per path. SEO pages from registry; rest from static. */
 export const ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> = {
   ...STATIC_ROUTE_BREADCRUMB,
+  ...getReferenceLayerBreadcrumbs(),
   ...Object.fromEntries(
     getAllSeoEntries().map((e) => [
       e.path,

@@ -80,6 +80,8 @@ const SUBTITLE_TOOLS = [
       { path: '/ada-video-captions', label: 'ADA Video Captions' },
       { path: '/sdh-subtitles', label: 'SDH Subtitles' },
       { path: '/hardcoded-captions', label: 'Hardcoded Captions' },
+      { path: '/glossary', label: 'Transcription & subtitle glossary' },
+      { path: '/transcription-statistics', label: 'Transcription statistics' },
     ],
   },
 ]

@@ -97,6 +97,13 @@ export default function Open() {
           <p className="text-lg text-gray-500 dark:text-white/45 max-w-2xl leading-relaxed">
             We publish our processing stats, accuracy benchmarks, and technology choices publicly. These are numbers we measured — not marketing claims. Updated monthly.
           </p>
+          <p className="text-sm text-gray-500 dark:text-white/40 mt-4 max-w-2xl leading-relaxed">
+            These figures are VideoText’s own operations. For third-party industry statistics on captions, hearing loss, and speech recognition, see{' '}
+            <Link to="/transcription-statistics" className="text-blue-600 hover:underline dark:text-blue-400">
+              transcription statistics
+            </Link>
+            .
+          </p>
           <p className="text-sm text-gray-400 dark:text-white/30 mt-3">Last updated: {OPEN_STATS_LAST_UPDATED}</p>
         </div>
       </section>
@@ -237,6 +244,8 @@ export default function Open() {
         <section>
           <h2 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">Benchmark hub links</h2>
           <div className="flex flex-wrap gap-3 text-sm">
+            <Link to="/transcription-statistics" className="text-blue-600 dark:text-blue-400 underline underline-offset-2 hover:text-blue-700">Industry transcription statistics →</Link>
+            <Link to="/glossary" className="text-blue-600 dark:text-blue-400 underline underline-offset-2 hover:text-blue-700">Transcription glossary →</Link>
             <Link to="/transcription-benchmark" className="text-blue-600 dark:text-blue-400 underline underline-offset-2 hover:text-blue-700">Transcription benchmark →</Link>
             <Link to="/accuracy-test" className="text-blue-600 dark:text-blue-400 underline underline-offset-2 hover:text-blue-700">Accuracy test →</Link>
             <Link to="/fastest-transcription-software" className="text-blue-600 dark:text-blue-400 underline underline-offset-2 hover:text-blue-700">Fastest transcription software →</Link>
