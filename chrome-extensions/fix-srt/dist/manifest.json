@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "Fix SRT — VideoText",
+  "version": "1.0.0",
+  "description": "Repair SRT subtitle files with VideoText: overlaps, timing, line length, and optional grammar.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "Fix SRT — VideoText",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": ["storage"],
+  "host_permissions": ["https://api.videotext.io/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://videotext.io/*", "https://www.videotext.io/*"],
+      "js": ["content-auth.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

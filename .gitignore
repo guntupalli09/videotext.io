@@ -10,6 +10,12 @@ coverage/
 dist/
 build/
 
+# Chrome extension packages are committed so store builds stay inspectable
+!chrome-extensions/**/dist/
+!chrome-extensions/**/dist/**
+!artifacts/
+!artifacts/**
+
 # Misc
 .DS_Store
 .env
