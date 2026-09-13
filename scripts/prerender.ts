@@ -1862,7 +1862,9 @@ function injectHomepageVisibleRating(html: string, rating: PublicRating | null):
 
 async function main() {
   const templatePath = path.join(DIST_DIR, 'index.html')
-  if (!fs.existsSync(templatePath)) {
+  const clientTemplatePath = path.join(REPO_ROOT, 'client', 'dist', 'index.html')
+  const templateSource = fs.existsSync(clientTemplatePath) ? clientTemplatePath : templatePath
+  if (!fs.existsSync(templateSource)) {
     console.error('[prerender] dist/index.html not found — run the client build first.')
     process.exit(1)
   }
@@ -1873,7 +1875,11 @@ async function main() {
     console.log('[prerender] Removed stale dist/blog/ (Hashnode is canonical; vercel.json redirects /blog/*)')
   }
 
-  const template = fs.readFileSync(templatePath, 'utf8')
+  const template = fs.readFileSync(templateSource, 'utf8')
+  if (!template.includes('<div id="root"></div>')) {
+    console.error(`[prerender] ${templateSource} does not contain an empty #root. Re-run the Vite build before prerender so route HTML is not copied from a previous homepage snapshot.`)
+    process.exit(1)
+  }
   const publicRating = await fetchPublicRatingForPrerender()
   if (publicRating) {
     console.log(`[prerender] public rating ${publicRating.averageRating.toFixed(1)} from ${publicRating.ratingCount} ratings`)

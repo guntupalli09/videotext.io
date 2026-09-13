@@ -117,7 +117,7 @@ Verified first-party benchmark data exists only as the Phase 1 LibriSpeech pilot
 7. **Author:** VideoText editorial team (Organization). Named-person bylines are not invented.
 8. **Search volume:** left UNKNOWN wherever no reliable first-party/tool export exists.
 9. **First-party numbers** from `/open` and the Phase 1 pilot are excluded from the citation hub body except as clearly labeled pointers to those pages.
-10. **Prerender safety:** `buildH1Html()` is a generic VideoText workflow template. If React SSR for a reference-layer path fails, prerender now errors instead of publishing that template under a statistics or glossary URL.
+10. **Prerender safety:** `buildH1Html()` is a generic VideoText workflow template. If React SSR for a reference-layer path fails, prerender now errors instead of publishing that template under a statistics or glossary URL. Prerender also reads the empty Vite shell from `client/dist/index.html` when present, so a previously written homepage `#root` cannot leak into every other URL.
 
 ## Existing architecture left untouched
 
