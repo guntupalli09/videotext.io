@@ -1,5 +1,7 @@
 # Activation Friction Ranking (Code-Based)
 
+Deep four-stage analysis (activation → second session → paywall → paid) across all 89 highest-leverage tool surfaces: [FUNNEL_FRICTION_ACTIVATION_TO_PAID.md](./FUNNEL_FRICTION_ACTIVATION_TO_PAID.md) and [funnel-friction-89-surfaces.json](./funnel-friction-89-surfaces.json).
+
 ## P0 (Highest friction)
 
 1. **Signup requires 3-step auth (email → OTP → password) before account is fully usable.**
