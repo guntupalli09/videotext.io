@@ -36,20 +36,50 @@ test('Login copy does not claim a transcript library', () => {
   assert.match(source, /Start your next transcript/)
 })
 
+const YOUTUBE_PASTE_PROMISE = /paste a YouTube URL|Paste URL and generate|Paste URL directly|Paste any public YouTube|Paste any video URL|streams the audio from YouTube|YouTube URL → transcript|Paste URL → transcript|no download required:\s*paste|Paste the YouTube URL/i
+
 test('product surfaces stop promising YouTube URL paste', () => {
   for (const file of [
     'src/pages/Signup.tsx',
     'src/pages/Login.tsx',
     'src/pages/AboutPage.tsx',
+    'src/pages/Guide.tsx',
+    'src/pages/Blog.tsx',
+    'src/pages/Compare.tsx',
+    'src/pages/Samples.tsx',
+    'src/pages/TranscriptionToolsHub.tsx',
+    'src/pages/YoutubeTranscriptGenerator.tsx',
+    'src/pages/YoutubeVideoToTranscript.tsx',
     'src/pages/tools/FreeToolsIndex.tsx',
+    'src/components/landing/FAQ.tsx',
+    'src/components/figma/Hero.tsx',
+    'src/lib/seoRegistry.ts',
+    'src/lib/seoMeta.ts',
+    'src/lib/routeFamilyTemplates.ts',
+    'src/lib/generateSeoPages.ts',
+    'src/lib/webmcp.ts',
+    'src/ssr-render.tsx',
+    'public/md/youtube-transcript.md',
+    'public/md/transcription.md',
+    'public/md/captioning.md',
+    'public/md/comparison.md',
+    'public/llms-full.txt',
+    'public/robots.txt',
+    'public/.well-known/mcp/server-card.json',
+    'public/.well-known/agent-skills/index.json',
   ]) {
     const source = src(file)
     assert.doesNotMatch(source, /YouTube URL → transcript/)
-    assert.doesNotMatch(source, /paste a YouTube URL/i)
+    assert.doesNotMatch(source, YOUTUBE_PASTE_PROMISE, `${file} still promises YouTube URL paste`)
   }
   const wizard = src('src/pages/VideoToTranscript.tsx')
   assert.match(wizard, /Step 1: Upload a video file/)
   assert.doesNotMatch(wizard, /Step 1: Upload a video or paste URL/)
+  const youtubePage = src('src/pages/YoutubeTranscriptGenerator.tsx')
+  assert.match(youtubePage, /defaultInputMode="file"/)
+  const compare = src('src/pages/Compare.tsx')
+  assert.match(compare, /label: 'YouTube URL direct processing',\s+videotext: false/)
+  assert.match(compare, /label: 'Paste YouTube \/ URL \(no download\)',\s+videotext: false/)
 })
 
 test('Voice and Guideline persist job sessions', () => {

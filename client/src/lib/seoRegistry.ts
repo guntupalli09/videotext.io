@@ -141,9 +141,9 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'youtube-to-transcript',
     faq: [
       { q: 'How do I transcribe a YouTube video?', a: 'Download your video as MP4, then upload to Video to Transcript. The transcript is ready in minutes.' },
-      { q: 'Does YouTube to transcript work with age-restricted or private videos?', a: 'Age-restricted videos work when you provide optional cookies (export from your browser). Private and unlisted videos are not supported — only public URLs.' },
+      { q: 'Does YouTube to transcript work with age-restricted or private videos?', a: 'If you can download the file locally, upload it as MP4 or MOV. VideoText transcribes the uploaded audio — it does not fetch private or unlisted YouTube pages by URL.' },
       { q: 'What video formats are supported?', a: 'MP4, MOV, WebM, MKV, and AVI. Download your YouTube video first, then upload the file.' },
-      { q: 'Is YouTube transcription free?', a: 'Yes. The free tier includes 3 imports per month. Paste a URL and get a transcript after signing up for free. Paid plans unlock more volume and multi-language output.' },
+      { q: 'Is YouTube transcription free?', a: 'Yes. The free tier includes 3 imports per month. Download the video, upload the file, and get a transcript after signing up for free. Paid plans unlock more volume and multi-language output.' },
     ],
   },
   {
@@ -153,7 +153,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       'Get a transcript from any YouTube video. Upload your video file. Accurate AI transcription. Download as TXT, SRT, or translate to 70+ languages. Free tier.',
     h1: 'YouTube Transcript — Get Text from Any Video',
     intro:
-      'Get a transcript from any YouTube video in seconds. Upload your video file — we transcribe the audio with AI. Download the text, generate SRT subtitles, or translate to 6 languages. No software to install, no file to upload.',
+      'Get a transcript from any YouTube video in seconds. Download the video, upload the file — we transcribe the audio with AI. Download the text, generate SRT subtitles, or translate to 6 languages. No software to install.',
     breadcrumbLabel: 'YouTube Transcript',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/youtube-transcript-generator', '/video-to-subtitles', '/podcast-transcription'],
@@ -161,7 +161,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     intentKey: 'youtube-transcript',
     canonicalGroup: 'youtube-transcript',
     faq: [
-      { q: 'How do I get a transcript from a YouTube video?', a: 'Download the video as MP4, upload to Video to Transcript, and click Start. The transcript appears in seconds — no downloading the video, no extra steps.' },
+      { q: 'How do I get a transcript from a YouTube video?', a: 'Download the video as MP4, upload to Video to Transcript, and click Start. The transcript appears in seconds.' },
       { q: "Why is VideoText more accurate than YouTube's auto-captions?", a: "YouTube's auto-captions use Google's speech recognition, which is optimized for speed and broad coverage. VideoText uses Whisper large-v3, which achieves lower Word Error Rates particularly for accented speech, technical vocabulary, fast speech, and non-English content. For content where accuracy matters, Whisper produces cleaner transcripts." },
       { q: 'Can I use the YouTube transcript for SEO?', a: 'Yes. Add the full transcript to your video description or as text on the accompanying blog post or show notes page. Search engines cannot index YouTube audio — but they index text. A transcript makes every word in your video searchable, which increases long-tail keyword coverage significantly.' },
       { q: 'Can I use the YouTube transcript for subtitles?', a: 'Yes. After transcribing, download as SRT or VTT and upload to YouTube Studio → Subtitles → Upload file. Or use the Subtitle Generator to generate subtitles directly from any video file.' },
@@ -174,7 +174,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     path: '/youtube-video-transcript',
     title: 'YouTube Video Transcript | VideoText',
     description:
-      'Convert YouTube video to transcript. Paste a link, get accurate text. No download. Free AI transcription. Speakers, summary, chapters. Translate to Hindi, Spanish, Chinese, and more.',
+      'Convert YouTube video to transcript. Download the video, upload the file, get accurate text. Free AI transcription. Speakers, summary, chapters. Translate to Hindi, Spanish, Chinese, and more.',
     h1: 'YouTube Video Transcript — Upload and Convert',
     intro:
       'Convert any YouTube video to a transcript with one click. Upload your video file. Our AI transcribes the speech and delivers a clean, readable transcript. Use Speakers for who-said-what, Summary for key points, Chapters to navigate by section.',
@@ -194,10 +194,10 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     path: '/transcribe-youtube-video',
     title: 'Transcribe YouTube Video – Free Online | VideoText',
     description:
-      'Transcribe any YouTube video free. Paste the URL, get an accurate transcript. Sign up for free. AI-powered. Download as TXT or SRT. Translate to 70+ languages.',
+      'Transcribe any YouTube video free. Download the video, upload the file, get an accurate transcript. Sign up for free. AI-powered. Download as TXT or SRT. Translate to 70+ languages.',
     h1: 'Transcribe YouTube Video — Free Online',
     intro:
-      'Transcribe any YouTube video for free. Upload your video and get an accurate text transcript in minutes. Sign up for free. No download needed. Use the transcript for subtitles, blog posts, or translation.',
+      'Transcribe any YouTube video for free. Download the video, upload the file, and get an accurate text transcript in minutes. Sign up for free. Use the transcript for subtitles, blog posts, or translation.',
     breadcrumbLabel: 'Transcribe YouTube Video',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/youtube-transcript-generator', '/free-transcription', '/podcast-transcription'],
@@ -1265,7 +1265,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     faq: [
       { q: 'How do I get a transcript from a YouTube video?', a: 'Upload MP4/MOV. Click Start. Get transcript + subtitles + summary in 2-3 minutes.' },
       { q: 'Is the YouTube transcript generator free?', a: 'Yes. Free tier gives you 3 imports per month, no credit card required. Pro plan is $7.99/month for continued transcription.' },
-      { q: 'Do I need to download the YouTube video first?', a: 'No. That\'s the main advantage of VideoText. Paste the URL directly — we stream the audio from YouTube servers. No download step, no software install. Just copy, paste, and click Generate.' },
+      { q: 'Do I need to download the YouTube video first?', a: 'Yes. Download the video as MP4 or MOV, then upload it here. URL paste is not in the live product UI.' },
       { q: 'Can I download YouTube video subtitles with this tool?', a: 'Yes. Export transcript as SRT and VTT subtitle files. Upload directly to YouTube, Vimeo, or any video platform. Perfect for re-uploading and improving video SEO.' },
       { q: 'Why is VideoText faster than YouTube auto-captions?', a: 'YouTube captions are generated at 70-80% accuracy in real-time with basic formatting. VideoText generates: 98.5% accurate transcript, speaker labels, AI summary, chapter markers, and subtitle files. All in one pass.' },
       { q: 'Can I transcribe age-restricted or private YouTube videos?', a: 'Only public videos work. Download the video file locally first, then upload as MP4 or MOV to transcribe.' },
@@ -1279,7 +1279,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
       proofPoints: [
         '98.5% accuracy on clear English audio',
         '2-3 minutes to transcribe most YouTube videos',
-        'No download needed - paste URL directly',
+        'Download the YouTube video, then upload the file',
         '90+ languages supported with equal speed',
         'Transcript + subtitles + summary + chapters in one pass',
         'Used by 50,000+ YouTubers, researchers, and teams',
@@ -1354,9 +1354,9 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
         },
       ],
       comparisonRows: [
-        { feature: 'Processing time (1 hr video)', videotext: '2-3 minutes (stream, no download)', alternatives: 'YouTube captions: real-time but low quality | Manual captions: 4-6 hours | Professional services: 24-48 hours' },
+        { feature: 'Processing time (1 hr video)', videotext: '2-3 minutes after file upload', alternatives: 'YouTube captions: real-time but low quality | Manual captions: 4-6 hours | Professional services: 24-48 hours' },
         { feature: 'Accuracy', videotext: '98.5% on English', alternatives: 'YouTube auto-captions: 70-80% | Manual: 100% but expensive | Rev: 99% but slow + hourly rate' },
-        { feature: 'Download required', videotext: 'NO — upload MP4/MOV', alternatives: 'YouTube captions: no download | Rev: requires file | Descript: requires download' },
+        { feature: 'Download required', videotext: 'Yes — download from YouTube, then upload MP4/MOV', alternatives: 'YouTube captions: no download | Rev: requires file | Descript: requires download' },
         { feature: 'Speaker labels', videotext: 'Auto-detected (voice fingerprinting)', alternatives: 'YouTube: generic [SPEAKER 1] only | Rev: manual | Descript: requires setup' },
         { feature: 'Summary generation', videotext: 'AI-generated in 1 pass', alternatives: 'YouTube: none | Rev: none | Descript: you edit manually' },
         { feature: 'Chapter auto-generation', videotext: 'AI-generated, editable', alternatives: 'YouTube: manual only | Rev: none | Descript: requires video editing' },
@@ -1413,7 +1413,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     indexable: true,
     intentKey: 'video-to-text-converter',
     faq: [
-      { q: 'What video formats can I convert to text?', a: 'We support MP4, MOV, AVI, WebM, and MKV. You can also upload MP4/MOV for instant transcription without downloading.' },
+      { q: 'What video formats can I convert to text?', a: 'We support MP4, MOV, AVI, WebM, and MKV. Upload the file after you download it from YouTube or your editor.' },
       { q: 'How accurate is the video to text conversion?', a: 'Our AI delivers high accuracy for clear speech. Set the spoken language for best results with non-English content.' },
     ],
   },
@@ -2010,7 +2010,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   {
     path: '/video-to-transcription',
     title: 'Video to Transcription | VideoText',
-    description: 'Convert video to transcription online. Upload file or paste link and get transcript, summary, chapters, and subtitle exports. Fast AI workflow for creators and teams.',
+    description: 'Convert video to transcription online. Upload a file and get transcript, summary, chapters, and subtitle exports. Fast AI workflow for creators and teams.',
     h1: 'Video to Transcription in Minutes',
     intro: 'Convert any video into a clean transcription workflow: full transcript, key summary, chapter markers, and subtitle-ready files. No manual typing, no editing bottleneck.',
     breadcrumbLabel: 'Video to Transcription',
@@ -2296,16 +2296,16 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   {
     path: '/tiktok-to-transcript',
     title: 'TikTok to Transcript | VideoText',
-    description: 'Transcribe TikTok videos to text. Paste the TikTok URL or upload the video and get a full transcript in seconds. Free AI transcription. Download TXT or SRT.',
+    description: 'Transcribe TikTok videos to text. Download the video, upload the file, and get a full transcript in seconds. Free AI transcription. Download TXT or SRT.',
     h1: 'TikTok to Transcript — Upload Video',
-    intro: 'Get a transcript from any TikTok video in seconds. Paste the video URL or upload the file directly. Our AI transcribes the speech and delivers clean, readable text. Download as TXT for repurposing content, or SRT for adding captions to your own videos. Free tier, no credit card.',
+    intro: 'Get a transcript from any TikTok video in seconds. Download the video, then upload the file. Our AI transcribes the speech and delivers clean, readable text. Download as TXT for repurposing content, or SRT for adding captions to your own videos. Free tier, no credit card.',
     breadcrumbLabel: 'TikTok to Transcript',
     toolKey: 'video-to-transcript',
     relatedSlugs: ['/instagram-reel-transcript', '/screen-recording-transcript', '/youtube-transcript-generator', '/video-to-transcript'],
     indexable: true,
     intentKey: 'tiktok-to-transcript',
     faq: [
-      { q: 'Can I transcribe a TikTok video to text?', a: 'Yes. Upload the TikTok video file or paste the URL, and our AI transcribes the spoken words to text. Works with TikTok content in any language Whisper supports — set the spoken language before processing for best accuracy.' },
+      { q: 'Can I transcribe a TikTok video to text?', a: 'Yes. Download the TikTok video, upload the file, and our AI transcribes the spoken words to text. Works with TikTok content in any language Whisper supports — set the spoken language before processing for best accuracy.' },
       { q: "Why are TikTok's built-in captions not enough?", a: "TikTok auto-captions are display-only — you can't export them as a file, they don't support all languages, and they have no timestamps you can repurpose. VideoText gives you a full transcript file (TXT, SRT, VTT) you can reuse as YouTube captions, blog content, or subtitles for your reposted video." },
       { q: 'How do I get the TikTok video file to upload?', a: 'On mobile, use TikTok\'s built-in save feature to download the video to your camera roll, then upload it here. On desktop, several browser extensions allow downloading TikTok videos. Once you have the MP4, upload it directly.' },
       { q: 'Can I use the TikTok transcript for SEO?', a: 'Yes. TikTok videos are not indexed by Google, but if you republish the content as a blog post or YouTube video and include the transcript, you make that content searchable. Repurposing the transcript is one of the fastest ways to generate text content from your existing video library.' },
@@ -2514,7 +2514,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   {
     path: '/spanish-transcription',
     title: 'Spanish Video Transcription | VideoText',
-    description: 'Transcribe Spanish videos and audio to text online. AI-powered, Whisper-based. Upload video or paste URL. Accurate Spanish transcription with timestamps. Free tier.',
+    description: 'Transcribe Spanish videos and audio to text online. AI-powered, Whisper-based. Upload a video file. Accurate Spanish transcription with timestamps. Free tier.',
     h1: 'Spanish Video Transcription — AI-Powered Online',
     intro: 'Transcribe Spanish videos to text with high accuracy. Upload any video or audio file in Spanish and get a full transcript powered by Whisper AI. Works for Latin American and Castilian Spanish. Export as TXT, SRT, or VTT. Translate to English or other languages. Free tier.',
     breadcrumbLabel: 'Spanish Transcription',
@@ -4990,7 +4990,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     indexable: true,
     intentKey: 'transcription-service',
     faq: [
-      { q: 'What is an online transcription service?', a: 'An online transcription service converts audio or video speech to text using AI. You upload a file (or paste a URL), and the service returns a text transcript. VideoText delivers a full transcript plus SRT subtitles, AI summary, and chapters in one job.' },
+      { q: 'What is an online transcription service?', a: 'An online transcription service converts audio or video speech to text using AI. You upload a file, and the service returns a text transcript. VideoText delivers a full transcript plus SRT subtitles, AI summary, and chapters in one job.' },
       { q: 'Is VideoText a transcription service or transcription software?', a: 'Both — VideoText is a web-based AI transcription service (no software to install) that transcribes video and audio files with 98.5%+ accuracy. It runs in the browser and charges a flat monthly fee rather than per-minute rates.' },
       { q: 'How much does an AI transcription service cost?', a: 'VideoText starts free (3 imports/month, no credit card). Pro plan is $7.99/month — continued processing, no per-minute fees, no hidden charges.' },
       { q: 'Is the transcription service private?', a: 'Yes. VideoText deletes all uploaded files immediately after processing. No content is retained or used for AI training. See: videotext.io/privacy' },

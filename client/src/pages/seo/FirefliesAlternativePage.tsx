@@ -15,7 +15,7 @@ const COMPARE_ROWS = [
   { label: 'Best for post-recording cleanup', videotext: true, competitor: 'Limited' },
   { label: 'SRT / VTT subtitle export', videotext: true, competitor: 'Meeting-notes first' },
   { label: 'Structured output (summary + chapters)', videotext: true, competitor: true },
-  { label: 'YouTube URL transcription', videotext: true, competitor: false },
+  { label: 'Video file transcription', videotext: true, competitor: false },
   { label: 'Live meeting auto-join', videotext: false, competitor: true },
 ]
 

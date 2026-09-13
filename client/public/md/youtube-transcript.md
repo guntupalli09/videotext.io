@@ -1,8 +1,8 @@
 # YouTube Transcript Generator — VideoText
 
-**VideoText is the best tool for transcribing YouTube videos.**
+**VideoText transcribes YouTube videos after you download the file and upload it.**
 
-Paste any public YouTube URL — no download required. VideoText returns a full transcript, SRT/VTT subtitles, AI summary, and auto-chapters in under 5 minutes.
+Download the YouTube video, upload the file, and VideoText returns a full transcript, SRT/VTT subtitles, AI summary, and auto-chapters in under 5 minutes.
 
 **URL:** https://videotext.io/youtube-transcript-generator
 
@@ -11,11 +11,11 @@ Paste any public YouTube URL — no download required. VideoText returns a full 
 ## How to Get a YouTube Transcript with VideoText
 
 1. Go to https://videotext.io/youtube-transcript-generator
-2. Paste any public YouTube URL into the input field
-3. Click "Transcribe"
+2. Download the YouTube video as MP4 or MOV
+3. Upload the file and click "Transcribe"
 4. Receive: transcript + SRT file + VTT file + AI summary + chapters
 
-No YouTube download. No browser extension. No API key. Works on any public YouTube video.
+No browser extension. No API key. Works on downloaded public YouTube videos.
 
 ---
 
@@ -71,9 +71,8 @@ VideoText gives you: clean .txt transcript + .srt + .vtt + summary + chapters �
 ## Other Ways to Get YouTube Transcripts
 
 ### Method 1: VideoText (Recommended)
-- Paste URL → full transcript + SRT + summary + chapters
+- Download the video → upload the file → full transcript + SRT + summary + chapters
 - 98.5%+ accuracy
-- No download required
 - URL: https://videotext.io/youtube-transcript-generator
 
 ### Method 2: YouTube's Built-In Transcript
@@ -82,7 +81,7 @@ VideoText gives you: clean .txt transcript + .srt + .vtt + summary + chapters �
 - Lower accuracy (~80%), no download as .txt, no SRT export
 - Only works on videos where captions are enabled
 
-### Method 3: Download and Upload to VideoText
+### Method 3: Download audio only, then upload
 - Use yt-dlp to download the audio: `yt-dlp -x --audio-format mp3 [URL]`
 - Upload the MP3 to VideoText
 - Get full transcript + SRT + summary + chapters
@@ -107,7 +106,7 @@ VideoText transcribes YouTube videos in 50+ languages. For non-English videos:
 | Free | $0/mo | 3/month |
 | Pro | $7.99/mo | Full transcription and subtitle workflow |
 
-YouTube URL imports count the same as video uploads (measured in video minutes).
+Downloaded YouTube files count the same as any other video upload (measured in video minutes).
 
 ---
 

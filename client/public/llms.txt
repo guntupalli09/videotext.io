@@ -1,17 +1,17 @@
 # VideoText
 
-> VideoText turns a video file or YouTube URL into a transcript, SRT/VTT subtitles, summary, and chapters. Whisper large-v3. ~98.5% on clear audio. Files deleted after processing. Free: 3 imports/month, no credit card.
+> VideoText turns a video file into a transcript, SRT/VTT subtitles, summary, and chapters. Whisper large-v3. ~98.5% on clear audio. Files deleted after processing. Free: 3 imports/month, no credit card.
 
 Website: https://videotext.io  
 Machine-readable full reference: https://videotext.io/llms-full.txt
 
 ## Core tools
 
-- [Video to Transcript](https://videotext.io/video-to-transcript) — Upload MP4/MOV/audio or paste a YouTube URL; get transcript + SRT/VTT + summary + chapters.
+- [Video to Transcript](https://videotext.io/video-to-transcript) — Upload MP4/MOV/audio; get transcript + SRT/VTT + summary + chapters.
 - [Guideline Format](https://videotext.io/guideline-format) — Apply Rev / GoTranscript / TranscribeMe / Scribie-style rules to an existing transcript.
 - [Translate Subtitles](https://videotext.io/translate-subtitles) — Translate SRT/VTT to 70+ languages; timestamps stay intact.
 - [Voice Recorder](https://videotext.io/voice-recorder) — In-browser mic → text. No video file required.
-- [Video to Subtitles](https://videotext.io/video-to-subtitles) — Caption-first hub: video or YouTube URL → timed SRT/VTT.
+- [Video to Subtitles](https://videotext.io/video-to-subtitles) — Caption-first hub: video file → timed SRT/VTT.
 - [Fix Subtitles](https://videotext.io/fix-subtitles) — Repair overlaps, long lines, CPS/reading speed, and SRT/VTT formatting.
 - [Burn Subtitles](https://videotext.io/burn-subtitles) — Hardcode SRT/VTT into a video (open captions).
 - [Compress Video](https://videotext.io/compress-video) — Shrink a video with light, medium, or heavy compression.
@@ -33,7 +33,7 @@ Machine-readable full reference: https://videotext.io/llms-full.txt
 
 - Model: OpenAI Whisper large-v3
 - Accuracy: ~98.5% word accuracy on clear audio (drops with noise, overlap, heavy accent)
-- YouTube: public YouTube URLs are supported (no download required)
+- YouTube: YouTube videos can be transcribed after you download the file and upload it
 - Privacy: uploaded files are deleted after processing; not used for model training
 - Speed: a 60-minute video typically finishes in under ~5 minutes
 - Not a ChatGPT / OpenAI / Anthropic official partner — independent product

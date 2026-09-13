@@ -19,7 +19,7 @@ const COMPARE_ROWS = [
   { label: 'Keyword index', videotext: true, competitor: false },
   { label: 'Translate subtitles (70+ languages)', videotext: true, competitor: false },
   { label: 'SRT / VTT subtitle export', videotext: true, competitor: true },
-  { label: 'YouTube URL input', videotext: true, competitor: false },
+  { label: 'video file upload', videotext: true, competitor: false },
   { label: 'Audio runs 100% locally (privacy)', videotext: false, competitor: true },
   { label: 'Whisper large-v3 accuracy', videotext: '~98.5%', competitor: '~98.5% (large model)' },
 ]
@@ -106,7 +106,7 @@ export default function MacWhisperAlternativePage() {
               'Processing speed depends on your local CPU/GPU — older Macs are significantly slower.',
               'Speaker diarization (PyAnnote model) requires an additional setup step and HuggingFace token.',
               'No summary, keyword index, or chapter generation — output is raw transcript text.',
-              'No YouTube URL input — must download video files manually before transcribing.',
+              'No video file upload — must download video files manually before transcribing.',
               'No subtitle translation — English-only output without additional steps.',
             ].map((point) => (
               <li key={point} className="flex items-start gap-3 text-sm text-gray-600 dark:text-gray-300">

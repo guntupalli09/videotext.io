@@ -40,7 +40,7 @@ const INTENT_PATTERNS: Array<{
 ]
 
 const DEFAULT_FAQ: FaqItem[] = [
-  { q: 'How do I transcribe this?', a: 'Upload or paste a URL. Click Transcribe and get a full transcript in seconds. Export as SRT, TXT.' },
+  { q: 'How do I transcribe this?', a: 'Upload . Click Transcribe and get a full transcript in seconds. Export as SRT, TXT.' },
   { q: 'How do I test the workflow?', a: 'Use a short real recording first, then compare transcript structure, speaker labels, subtitles, and cleanup time before moving longer files through the same workflow.' },
   { q: 'What formats can I export?', a: 'TXT, SRT, VTT. Paid plans add JSON, CSV, Markdown.' },
 ]
@@ -179,15 +179,15 @@ export function getProgrammaticSeoEntries(): SeoRegistryEntry[] {
     youtube: {
       proofPoints: [
         '10+ million YouTube videos transcribed',
-        'Paste URL directly — no download required',
+        'Download the video, then upload the file',
         'Whisper technology: 98.5% accuracy',
         'Works with YouTube Shorts, playlists, and live streams',
         'Results in 1-3 minutes regardless of video length',
       ],
       workflowSteps: [
-        { title: 'Step 1: Copy your YouTube URL', detail: 'Get the link from youtube.com, youtu.be, or YouTube app. Works with Shorts and regular videos.' },
-        { title: 'Step 2: Paste into VideoText', detail: 'Paste the URL directly. No video download needed.' },
-        { title: 'Step 3: Get instant transcript', detail: 'AI streams audio directly from YouTube and transcribes in parallel. Ready in 1-3 minutes.' },
+        { title: 'Step 1: Download your YouTube video', detail: 'Save the file from youtube.com, youtu.be, or the YouTube app. Works with Shorts and regular videos.' },
+        { title: 'Step 2: Upload the file into VideoText', detail: 'Upload the downloaded MP4 or MOV. URL paste is not in the live product UI.' },
+        { title: 'Step 3: Get the transcript', detail: 'AI transcribes the uploaded audio. Ready in 1-3 minutes for most files.' },
         { title: 'Step 4: Download or share', detail: 'Export as TXT, SRT, VTT, or share a read-only link. All formats include timestamps.' },
         { title: 'Step 5: Repurpose for SEO', detail: 'Add transcript to video description or companion blog post. Every word now searchable by Google.' },
       ],

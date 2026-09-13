@@ -8,7 +8,7 @@ import { CheckCircle2, XCircle, ChevronRight, Zap, Shield, DollarSign } from 'lu
 const COMPARE_ROWS = [
   { label: 'Starting price', videotext: 'Free / $7.99/mo Pro', competitor: '$22/month or $10/hour' },
   { label: 'Free tier (no credit card)', videotext: true, competitor: false },
-  { label: 'YouTube URL → transcript (no upload)', videotext: true, competitor: false },
+  { label: 'Video file → transcript (no install)', videotext: true, competitor: false },
   { label: 'Video file transcription (MP4, MOV)', videotext: true, competitor: true },
   { label: 'SRT / VTT subtitle export', videotext: true, competitor: true },
   { label: 'Translate subtitles (70+ languages)', videotext: true, competitor: true },
@@ -34,8 +34,8 @@ const FAQ = [
     a: 'Both use Whisper-based AI. VideoText uses Whisper large-v3 and reports 98.5% word accuracy on clean audio. Sonix uses a custom model built on similar technology. For most real-world content (interviews, podcasts, webinars), output quality is comparable. VideoText is typically faster because it does not run an interactive editor as part of the pipeline.',
   },
   {
-    q: 'Can VideoText transcribe YouTube videos without downloading them?',
-    a: 'Yes. Paste any YouTube URL and VideoText streams the audio directly — no download, no file upload. Sonix requires you to download the video file and upload it manually, which adds steps for any YouTube-based workflow.',
+    q: 'Can VideoText transcribe YouTube videos?',
+    a: 'Yes. Download the YouTube video, then upload the file. VideoText transcribes the audio from that upload. Sonix also requires you to download the video file and upload it manually.',
   },
   {
     q: 'Does Sonix store my transcription files?',
@@ -73,7 +73,7 @@ export default function SonixAlternativePage() {
             with no per-minute fees
           </h1>
           <p className="text-lg text-gray-500 dark:text-white/45 max-w-2xl mx-auto mb-8">
-            Sonix charges $22/month plus $0.10 per minute over your plan. VideoText starts free — upload any video or paste a YouTube URL, get an accurate transcript with no overage billing ever.
+            Sonix charges $22/month plus $0.10 per minute over your plan. VideoText starts free — upload any video file, get an accurate transcript with no overage billing ever.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link to="/video-to-transcript">
@@ -99,7 +99,7 @@ export default function SonixAlternativePage() {
             {[
               'No free tier — only a limited 30-minute trial before requiring payment.',
               '$22/month base plan includes ~100 minutes, then $0.10/minute extra — costs spike for longer content.',
-              'No YouTube URL input — every video must be downloaded and uploaded manually.',
+              'No video file upload — every video must be downloaded and uploaded manually.',
               'No subtitle burning into video — requires a separate tool after export.',
               'Files retained in cloud until manually deleted — a risk for sensitive or confidential recordings.',
               'Per-seat pricing on team plans means costs multiply quickly for small agencies.',
@@ -146,7 +146,7 @@ export default function SonixAlternativePage() {
         <section className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           {[
             { icon: DollarSign, title: 'No per-minute billing', body: 'Sonix charges $0.10/minute over your plan. VideoText Pro is a flat $7.99/month — no surprise invoices for longer podcasts or webinars.' },
-            { icon: Zap, title: 'YouTube URL in one click', body: 'Paste any YouTube link and VideoText transcribes it directly. Sonix requires you to download the file and upload it — an extra step for every YouTube video.' },
+            { icon: Zap, title: 'Browser file upload', body: 'Download the YouTube video, then upload the file. Sonix requires you to download the file and upload it — an extra step for every YouTube video.' },
             { icon: Shield, title: 'Deleted after processing', body: 'VideoText removes your file the instant the job finishes. Sonix retains all media and transcripts in their cloud. Critical difference for legal, HR, or medical audio.' },
           ].map(({ icon: Icon, title, body }) => (
             <div key={title} className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/[0.06] p-6">
@@ -175,7 +175,7 @@ export default function SonixAlternativePage() {
         {/* CTA */}
         <section className="rounded-xl border border-white/[0.08] bg-gray-950 p-8 text-center sm:p-12">
           <h2 className="text-2xl sm:text-3xl font-medium mb-3">Switch from Sonix — start free today</h2>
-          <p className="text-white/55 mb-8 max-w-xl mx-auto">Upload a video or paste a YouTube URL. Accurate transcript, SRT, or VTT in minutes. No per-minute fees. No file retention. Free tier, no credit card.</p>
+          <p className="text-white/55 mb-8 max-w-xl mx-auto">Upload a video file. Accurate transcript, SRT, or VTT in minutes. No per-minute fees. No file retention. Free tier, no credit card.</p>
           <Link to="/video-to-transcript">
             <span className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-8 py-3.5 text-[15px] font-bold text-white transition-colors hover:bg-blue-700">
               Transcribe my first video free

@@ -171,7 +171,7 @@ export default function TranscriptionToolsHub() {
               Start Transcribing
             </h3>
             <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
-              Ready to transcribe? Upload a video, paste a link, or record your voice.
+              Ready to transcribe? Upload a video or record your voice.
             </p>
             <Link
               to="/video-to-transcript"

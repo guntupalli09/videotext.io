@@ -14,7 +14,7 @@ const COMPARE_ROWS = [
   { label: 'No Zoom account required', videotext: true, competitor: false },
   { label: 'SRT / VTT subtitle export', videotext: true, competitor: false },
   { label: 'Translate subtitles (70+ languages)', videotext: true, competitor: false },
-  { label: 'YouTube URL → transcript', videotext: true, competitor: false },
+  { label: 'Video file → transcript', videotext: true, competitor: false },
   { label: 'Burn captions into video', videotext: true, competitor: false },
   { label: 'Keyword index across transcript', videotext: true, competitor: false },
   { label: 'Speaker detection', videotext: true, competitor: true },

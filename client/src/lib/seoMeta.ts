@@ -1306,7 +1306,7 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
       '@context': 'https://schema.org',
       '@type': 'HowTo',
       name: 'How to convert a YouTube video to a transcript',
-      description: 'Convert any YouTube video to a searchable transcript without downloading. Paste URL, get transcript plus subtitles and summary in 2-3 minutes.',
+      description: 'Convert any YouTube video to a searchable transcript after you download the file and upload it. Get transcript plus subtitles and summary in 2-3 minutes.',
       step: [
         {
           '@type': 'HowToStep',
@@ -1328,8 +1328,8 @@ const AEO_ROUTE_SCHEMAS: Record<string, object[]> = {
     {
       '@context': 'https://schema.org',
       '@type': 'SoftwareApplication',
-      name: 'Free YouTube Transcript Generator — No Download, Instant Results',
-      description: 'Free YouTube transcript generator. Paste any video URL — get complete transcript, SRT/VTT subtitles, AI summary, and auto-generated chapters in 2-3 minutes. No downloading required. 98.5% accurate. 50,000+ creators use VideoText.',
+      name: 'Free YouTube Transcript Generator — Download, Upload, Instant Results',
+      description: 'Free YouTube transcript generator. Download the video, upload the file — get complete transcript, SRT/VTT subtitles, AI summary, and auto-generated chapters in 2-3 minutes. 98.5% accurate. 50,000+ creators use VideoText.',
       applicationCategory: 'MultimediaApplication',
       operatingSystem: 'Web Browser',
       url: 'https://videotext.io/youtube-transcript-generator',
@@ -1392,8 +1392,8 @@ const TOOL_SOFTWARE_SCHEMAS: Record<string, { name: string; description: string;
     featureList: 'Rev style guide preset, GoTranscript style guide preset, TranscribeMe style guide preset, Scribie style guide preset, Custom client style guide upload (PDF/DOCX/TXT), Verbatim and non-verbatim rule enforcement, Speaker label format validation, Filler word detection and removal, False start and stutter handling, Punctuation rule application, Number formatting rules, Profanity handling options, QA compliance scoring, Diff view (original vs formatted), Flagged segment review queue, TXT and DOCX export',
   },
   '/youtube-transcript-generator': {
-    name: 'Free YouTube Transcript Generator — No Download, Instant Results',
-    description: 'Free YouTube transcript generator. Paste any video URL — get complete transcript, SRT/VTT subtitles, AI summary, and auto-generated chapters in 2-3 minutes. No downloading required. 98.5% accurate. 50,000+ creators use VideoText.',
+    name: 'Free YouTube Transcript Generator — Download, Upload, Instant Results',
+    description: 'Free YouTube transcript generator. Download the video, upload the file — get complete transcript, SRT/VTT subtitles, AI summary, and auto-generated chapters in 2-3 minutes. 98.5% accurate. 50,000+ creators use VideoText.',
     featureList: 'MP4/MOV file upload, 98.5% accuracy (OpenAI Whisper large-v3), Instant transcript generation, SRT and VTT subtitle export, AI-generated summary, Auto-generated chapters from transcript, Speaker diarization (speaker labels), 90+ language support, Free tier: 3 imports/month (no credit card), Pro tier: continued transcription ($7.99/month), Zero data retention (files deleted after processing)',
   },
   '/video-to-subtitles': {
@@ -1554,11 +1554,11 @@ const HOWTO_SCHEMAS: Record<string, { name: string; description: string; steps: 
   },
   '/youtube-transcript-generator': {
     name: 'How to get a YouTube video transcript',
-    description: 'Step-by-step guide to generating a transcript from any YouTube video. Paste URL, get clean transcript with timestamps, subtitles, and summary — no downloading required.',
+    description: 'Step-by-step guide to generating a transcript from any YouTube video. Download the video, upload the file, and get a clean transcript with timestamps, subtitles, and summary.',
     steps: [
-      { name: 'Copy your YouTube video URL', text: 'Find any public YouTube video (youtube.com or youtu.be links work). Copy the full URL from the address bar. Works with long-form content like podcasts, lectures, webinars, and interviews.' },
+      { name: 'Download your YouTube video', text: 'Save any public YouTube video as MP4 or MOV. Works with long-form content like podcasts, lectures, webinars, and interviews.' },
       { name: 'Upload to VideoText', text: 'Go to videotext.io/video-to-transcript. Upload your MP4/MOV file and click Start.' },
-      { name: 'Start transcript generation', text: 'Click "Generate Transcript". VideoText streams the audio directly from YouTube servers (no download step). Processing time: ~1 minute per 10 minutes of video. A typical 20-minute video finishes in 2-3 minutes.' },
+      { name: 'Start transcript generation', text: 'Click "Generate Transcript". VideoText transcribes the uploaded audio. Processing time: ~1 minute per 10 minutes of video. A typical 20-minute video finishes in 2-3 minutes.' },
       { name: 'Review and export transcript', text: 'View the clean transcript with [timestamps] and speaker labels. Export as TXT/PDF for notes or DOCX for editing. Download SRT/VTT subtitle files for re-uploading to YouTube or other platforms.' },
       { name: 'Use outputs for SEO, content, or distribution', text: 'Repurpose transcript into blog posts, social snippets, email newsletters, or knowledge base articles. Subtitle files improve video SEO and accessibility on any platform.' },
     ],

@@ -151,7 +151,7 @@ Clean transcription removes fillers for readability. [Clean verbatim vs full ver
 
 ## Start here
 
-1. **[Upload audio or paste a YouTube URL →](https://videotext.io/video-to-transcript)** — get the cleanest AI draft first  
+1. **[Upload audio →](https://videotext.io/video-to-transcript)** — get the cleanest AI draft first  
 2. **[Apply client style rules →](https://videotext.io/guideline-format)** — cut the formatting pass in half  
 3. Need subtitles after cleanup? **[Video → Subtitles](https://videotext.io/video-to-subtitles)** · **[Translate subtitles](https://videotext.io/translate-subtitles)**
 

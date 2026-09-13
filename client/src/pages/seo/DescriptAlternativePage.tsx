@@ -9,7 +9,7 @@ const COMPARE_ROWS = [
   { label: 'Starting price', videotext: 'Free / $7.99 Pro', competitor: '$24/month' },
   { label: 'No credit card to start', videotext: true, competitor: false },
   { label: 'Processing time (1-hour video)', videotext: '~2 min', competitor: '8–12 min' },
-  { label: 'YouTube URL → transcript (no upload)', videotext: true, competitor: false },
+  { label: 'Video file → transcript (no install)', videotext: true, competitor: false },
   { label: 'Files deleted after processing', videotext: true, competitor: false },
   { label: 'No heavy video editor required', videotext: true, competitor: false },
   { label: 'SRT / VTT subtitle export', videotext: true, competitor: true },
@@ -31,7 +31,7 @@ const FAQ = [
   },
   {
     q: 'How do I switch from Descript to VideoText?',
-    a: 'Export your video from Descript as MP4, then upload to VideoText. You can also paste any YouTube URL directly. For existing subtitle files, upload them to Translate Subtitles or Fix Subtitles. No import of Descript project files is needed — just the video.',
+    a: 'Export your video from Descript as MP4, then upload to VideoText. You can also download the YouTube video, then upload the file directly. For existing subtitle files, upload them to Translate Subtitles or Fix Subtitles. No import of Descript project files is needed — just the video.',
   },
   {
     q: 'Is VideoText\'s transcription as accurate as Descript\'s?',
@@ -64,7 +64,7 @@ export default function DescriptAlternativePage() {
           <h1 className="text-4xl sm:text-5xl font-medium text-gray-900 dark:text-white mb-5 leading-tight">
             Descript alternative —{' '}
             <span className="text-blue-600 dark:text-blue-400">
-              upload or paste a YouTube URL
+              upload 
             </span>
           </h1>
           <p className="text-lg text-gray-500 dark:text-white/45 max-w-2xl mx-auto mb-6">
@@ -72,8 +72,8 @@ export default function DescriptAlternativePage() {
           </p>
           <ol className="grid sm:grid-cols-3 gap-3 text-left max-w-3xl mx-auto mb-8">
             <li className="rounded-xl border border-blue-100 dark:border-blue-900 bg-white/80 dark:bg-gray-900/60 p-3">
-              <p className="text-xs font-semibold text-blue-700 dark:text-blue-300">1. Upload or paste URL</p>
-              <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">Video file or public YouTube URL. No desktop install.</p>
+              <p className="text-xs font-semibold text-blue-700 dark:text-blue-300">1. Upload a video file</p>
+              <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">MP4, MOV, or WebM. No desktop install.</p>
             </li>
             <li className="rounded-xl border border-blue-100 dark:border-blue-900 bg-white/80 dark:bg-gray-900/60 p-3">
               <p className="text-xs font-semibold text-blue-700 dark:text-blue-300">2. Whisper large-v3</p>
@@ -113,7 +113,7 @@ export default function DescriptAlternativePage() {
               'The editor is slow to load and has a steep learning curve for non-editors.',
               'Processing a 2-hour video can take 15–20 minutes; VideoText does the same in ~3 minutes.',
               'Descript stores your project files in their cloud — problematic for confidential content.',
-              'No direct YouTube URL input — you must download the video and upload it manually.',
+              'No direct video file upload — you must download the video and upload it manually.',
               'Subtitle translation requires a third-party integration; VideoText includes it.',
             ].map((point) => (
               <li key={point} className="flex items-start gap-3 text-sm text-gray-600 dark:text-gray-300">
@@ -186,7 +186,7 @@ export default function DescriptAlternativePage() {
         {/* CTA */}
         <section className="rounded-xl border border-white/[0.08] bg-gray-950 p-8 text-center sm:p-12">
           <h2 className="text-2xl sm:text-3xl font-medium mb-3">Switch from Descript in 2 minutes</h2>
-          <p className="text-white/55 mb-8 max-w-xl mx-auto">Paste a YouTube URL or upload an MP4. Get your transcript or subtitle file instantly. No editor to learn. Free tier, no credit card.</p>
+          <p className="text-white/55 mb-8 max-w-xl mx-auto">Upload an MP4. Get your transcript or subtitle file instantly. No editor to learn. Free tier, no credit card.</p>
           <Link to="/video-to-transcript">
             <span className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-8 py-3.5 text-[15px] font-bold text-white transition-colors hover:bg-blue-700">
               Transcribe my first video free

@@ -584,7 +584,7 @@ export default function Guide() {
               { to: '/podcast-transcription', label: 'Podcast Transcription', desc: 'Get transcripts with speaker labels for podcasts.' },
               { to: '/meeting-transcription', label: 'Meeting Transcription', desc: 'Transcribe Zoom, Teams, Google Meet meetings.' },
               { to: '/interview-transcription', label: 'Interview Transcription', desc: 'Capture interviews with automatic speaker ID.' },
-              { to: '/youtube-transcript', label: 'YouTube Transcript', desc: 'Paste a URL and get a transcript instantly.' },
+              { to: '/youtube-transcript', label: 'YouTube Transcript', desc: 'Download the video, upload the file, and get a transcript.' },
               { to: '/webinar-transcript', label: 'Webinar Transcript', desc: 'Record and transcribe webinars with SRT export.' },
               { to: '/google-meet-transcript', label: 'Google Meet Transcript', desc: 'Transcribe Google Meet calls automatically.' },
               { to: '/korean-transcription', label: 'Korean Transcription', desc: 'High-accuracy Korean to text transcription.' },

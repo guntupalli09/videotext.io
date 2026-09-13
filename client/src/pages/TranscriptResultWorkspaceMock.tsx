@@ -108,7 +108,7 @@ const COLLAB_COMMENTS = [
 ]
 
 const INGESTION_SOURCES = [
-  { source: 'YouTube URL', state: 'Imported', eta: 'Done', icon: Youtube },
+  { source: 'YouTube MP4', state: 'Imported', eta: 'Done', icon: Youtube },
   { source: 'Loom link', state: 'Imported', eta: 'Done', icon: Link2 },
   { source: 'Google Drive file', state: 'Syncing', eta: '~16s', icon: FolderGit2 },
   { source: 'Zoom cloud recording', state: 'Queued', eta: '~48s', icon: Clock3 },
@@ -455,7 +455,7 @@ export default function TranscriptResultWorkspaceMock() {
           <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/70 p-4 space-y-3">
             <div>
               <h3 className="text-base font-medium text-gray-900 dark:text-white">4) Drop-anything ingestion</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Paste links from anywhere and continue creating while ingestion runs in parallel.</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Upload files from anywhere and continue creating while ingestion runs in parallel.</p>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-2">
               {INGESTION_SOURCES.map((source) => {

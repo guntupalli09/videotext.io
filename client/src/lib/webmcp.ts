@@ -21,43 +21,27 @@ export function initWebMCP() {
       {
         name: 'transcribe_video',
         description:
-          'Navigate to the VideoText video transcription page where users can upload a video file (MP4, MOV, AVI, WebM) or paste a YouTube URL to get a transcript with speaker labels, chapters, and AI summary.',
+          'Navigate to the VideoText video transcription page where users can upload a video file (MP4, MOV, AVI, WebM) to get a transcript with speaker labels, chapters, and AI summary.',
         inputSchema: {
           type: 'object',
-          properties: {
-            youtubeUrl: {
-              type: 'string',
-              description: 'Optional YouTube URL to pre-fill',
-            },
-          },
+          properties: {},
         },
-        execute: async (input) => {
-          const url = input.youtubeUrl
-            ? `/video-to-transcript?url=${encodeURIComponent(String(input.youtubeUrl))}`
-            : '/video-to-transcript'
-          window.location.href = url
-          return { navigated: url }
+        execute: async () => {
+          window.location.href = '/video-to-transcript'
+          return { navigated: '/video-to-transcript' }
         },
       },
       {
         name: 'generate_subtitles',
         description:
-          'Navigate to the VideoText subtitle generator where users can create SRT or VTT subtitle files from video files or YouTube URLs.',
+          'Navigate to the VideoText subtitle generator where users can create SRT or VTT subtitle files from video files.',
         inputSchema: {
           type: 'object',
-          properties: {
-            youtubeUrl: {
-              type: 'string',
-              description: 'Optional YouTube URL to pre-fill',
-            },
-          },
+          properties: {},
         },
-        execute: async (input) => {
-          const url = input.youtubeUrl
-            ? `/video-to-subtitles?url=${encodeURIComponent(String(input.youtubeUrl))}`
-            : '/video-to-subtitles'
-          window.location.href = url
-          return { navigated: url }
+        execute: async () => {
+          window.location.href = '/video-to-subtitles'
+          return { navigated: '/video-to-subtitles' }
         },
       },
       {

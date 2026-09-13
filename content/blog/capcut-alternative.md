@@ -200,7 +200,7 @@ Yes on long-form and technical speech — Whisper large-v3 (~98.5%) vs CapCut's 
 Yes — [Burn Subtitles](https://videotext.io/burn-subtitles) embeds captions permanently when platforms require it.
 
 **CapCut alternative for YouTube creators?**  
-VideoText.io — paste URL or upload file, export SRT, upload to YouTube Studio. See [transcription tool for YouTube →](https://videotext.io/blog/transcription-tool-youtube).
+VideoText.io — download the YouTube video, upload the file, export SRT, upload to YouTube Studio. See [transcription tool for YouTube →](https://videotext.io/blog/transcription-tool-youtube).
 
 **Is VideoText.io cheaper than CapCut Pro?**  
 Yes — VideoText Pro is **$7.99/mo** vs CapCut Pro **$9.99/mo**, and VideoText includes SRT export, speaker mapping, chapters, and translation CapCut cannot deliver as files.

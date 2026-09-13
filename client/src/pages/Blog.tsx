@@ -76,14 +76,14 @@ const POSTS: BlogPost[] = [
     content: (
       <div className="space-y-4 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
         <p>
-          If you search “best way to get YouTube transcript,” most advice still tells you to copy captions manually, clean punctuation by hand, and then reformat the text for actual use. That works for one short clip, but it breaks at scale. Teams publishing weekly videos, podcasts, webinars, and tutorials need a system that starts with a URL and ends with reusable content.
+          If you search “best way to get YouTube transcript,” most advice still tells you to copy captions manually, clean punctuation by hand, and then reformat the text for actual use. That works for one short clip, but it breaks at scale. Teams publishing weekly videos, podcasts, webinars, and tutorials need a system that starts with a downloaded file and ends with reusable content.
         </p>
         <p>
-          The fastest workflow is: paste URL, generate transcript, export structured outputs, repurpose into article sections and social snippets. That is why we built a dedicated YouTube Transcript Generator route instead of hiding YouTube inside a generic upload flow.
+          The fastest workflow is: download the video, upload the file, generate transcript, export structured outputs, and repurpose into article sections and social snippets. That is why we built a dedicated YouTube Transcript Generator route that uses the same file-upload flow as Video to Transcript.
         </p>
         <h3 className="text-base font-medium text-gray-900 dark:text-white mt-6">What to optimize for (not just “get text”)</h3>
         <ul className="list-disc pl-5 space-y-2">
-          <li><strong>Speed to first draft:</strong> You should move from URL to readable transcript quickly.</li>
+          <li><strong>Speed to first draft:</strong> You should move from a downloaded file to a readable transcript quickly.</li>
           <li><strong>Output quality:</strong> Transcript should be structured enough to publish with minimal editing.</li>
           <li><strong>Repurposing workflow:</strong> You need chapter-ready sections, summary framing, and export options.</li>
           <li><strong>Consistency:</strong> The process must work for every new video, not one-off hacks.</li>
@@ -119,7 +119,7 @@ const POSTS: BlogPost[] = [
           <li><strong>Cross-tool workflow:</strong> cleaner handoff into CMS, docs, and content ops.</li>
         </ul>
         <p>
-          If your goal is to publish text derivatives quickly, use a dedicated URL-first workflow: <a className="text-blue-600 dark:text-blue-400 hover:underline font-medium" href="/youtube-transcript-generator">YouTube Transcript Generator →</a>
+          If your goal is to publish text derivatives quickly, use a dedicated download-then-upload workflow: <a className="text-blue-600 dark:text-blue-400 hover:underline font-medium" href="/youtube-transcript-generator">YouTube Transcript Generator →</a>
         </p>
       </div>
     ),
@@ -793,10 +793,10 @@ Today we are covering subtitle formats.`}
         </p>
         <h3 className="text-base font-medium text-gray-900 dark:text-white mt-6">Method 1: VideoText (best for accuracy and export options)</h3>
         <p>
-          Go to <strong>Video to Transcript</strong>. Paste the YouTube URL (youtube.com/watch?v=... or youtu.be/...). Select the spoken language if known. Click Transcribe.
+          Download the YouTube video first. Then go to <strong>Video to Transcript</strong>, upload the file, select the spoken language if known, and click Transcribe.
         </p>
         <p>
-          VideoText streams the audio from YouTube and runs it through Whisper AI. You see the transcript build in real time — typically 2–4 minutes for a 30-minute video. No download required. No account needed for the first three imports.
+          VideoText runs the uploaded audio through Whisper AI. You see the transcript build in real time — typically 2–4 minutes for a 30-minute video. No account needed for the first three imports.
         </p>
         <p>
           After transcribing, you can:
@@ -1295,7 +1295,7 @@ Today we are covering subtitle formats.`}
         </ul>
         <h3 className="text-base font-medium text-gray-900 dark:text-white mt-6">How to Use Whisper Without Installing Anything</h3>
         <p>
-          The easiest option is to use a hosted service that runs Whisper on your behalf. <a href="/whisper-online" className="text-blue-600 dark:text-blue-400 hover:underline">VideoText's Whisper online tool</a> runs large-v3 on cloud GPUs. Paste a YouTube URL or upload a file, and you get a transcript in seconds — no Python, no GPU, no setup.
+          The easiest option is to use a hosted service that runs Whisper on your behalf. <a href="/whisper-online" className="text-blue-600 dark:text-blue-400 hover:underline">VideoText's Whisper online tool</a> runs large-v3 on cloud GPUs. Upload a file, and you get a transcript in seconds — no Python, no GPU, no setup.
         </p>
         <p>
           The <a href="/video-to-transcript" className="text-blue-600 dark:text-blue-400 hover:underline">video-to-transcript tool</a> accepts MP4, MOV, AVI, WebM, MKV, MP3, WAV, M4A, and most common formats. Free tier includes 3 uploads per month. Pro plan ($7.99/month) unlocks longer files, batch, and multi-language output.
@@ -1367,7 +1367,7 @@ Today we are covering subtitle formats.`}
           For most use cases, Whisper large-v3 is competitive with or superior to commercial APIs at a fraction of the cost. The main advantages of paid APIs are real-time streaming, managed infrastructure, and specialized models fine-tuned for phone audio or medical terminology. If you need live captions or are transcribing call-center audio at scale, commercial APIs may be a better fit. For everything else — YouTube, podcasts, interviews, lectures, meetings — Whisper is the better default.
         </p>
         <p>
-          If you want to try it without any setup, upload a video or paste a YouTube URL into <a href="/whisper-online" className="text-blue-600 dark:text-blue-400 hover:underline">VideoText's Whisper tool</a>. Three imports are free, no account required on first visit.
+          If you want to try it without any setup, upload a video file into <a href="/whisper-online" className="text-blue-600 dark:text-blue-400 hover:underline">VideoText's Whisper tool</a>. Three imports are free, no account required on first visit.
         </p>
       </div>
     ),
@@ -1497,7 +1497,7 @@ Today we are covering subtitle formats.`}
           The practical implication: for most use cases, AI transcription produces a usable draft that needs light editing, not a perfect transcript that needs no editing. If your workflow requires legally verbatim transcripts, plan for human review. If you need a searchable, readable record of meetings, interviews, or content — AI transcription at Whisper quality is accurate enough to use directly for most purposes.
         </p>
         <p>
-          Try it on your own audio at <a href="/video-to-transcript" className="text-blue-600 dark:text-blue-400 hover:underline">VideoText's transcription tool</a>. Upload a file or paste a URL — three imports are free.
+          Try it on your own audio at <a href="/video-to-transcript" className="text-blue-600 dark:text-blue-400 hover:underline">VideoText's transcription tool</a>. Upload a file — three imports are free.
         </p>
       </div>
     ),

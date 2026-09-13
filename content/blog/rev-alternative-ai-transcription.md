@@ -78,7 +78,7 @@ On clean audio, AI (Whisper large-v3) is often 94–98% — enough for content; 
 AI in VideoText + [Format → Client guidelines](https://videotext.io/guideline-format) for Rev/GoTranscript preset cards before submission.
 
 **Rev vs VideoText for YouTube?**  
-VideoText: URL paste, SRT upload, chapters. [YouTube workflow →](https://videotext.io/blog/transcription-tool-youtube)
+VideoText: download then upload, SRT export, chapters. [YouTube workflow →](https://videotext.io/blog/transcription-tool-youtube)
 
 ---
 

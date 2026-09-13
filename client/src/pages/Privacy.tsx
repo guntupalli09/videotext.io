@@ -34,7 +34,7 @@ export default function Privacy() {
               Processing and retention
             </h2>
             <p>
-              When you upload a file or paste a URL, we process it on our infrastructure to generate transcripts, subtitles, or other outputs. Temporary files created during processing are removed by our automated cleanup. We do not retain your source files or generated outputs for longer than needed to deliver your result (e.g., until you download or your session ends). Job metadata (e.g., job ID, status) may be kept for a short period for debugging and then removed.
+              When you upload a file, we process it on our infrastructure to generate transcripts, subtitles, or other outputs. Temporary files created during processing are removed by our automated cleanup. We do not retain your source files or generated outputs for longer than needed to deliver your result (e.g., until you download or your session ends). Job metadata (e.g., job ID, status) may be kept for a short period for debugging and then removed.
             </p>
           </section>
 

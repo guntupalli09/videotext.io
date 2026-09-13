@@ -40,9 +40,9 @@ If a vendor caps concurrent jobs unpredictably, your calendar—not accuracy—b
 
 ---
 
-## When to use batch vs URL-first transcription
+## When to use batch vs single-file transcription
 
-- **YouTube-first channels:** start from **[YouTube transcript generator](https://videotext.io/youtube-transcript-generator)** when assets already live on-platform and you want **URL → transcript** without mirroring files.
+- **YouTube-first channels:** start from **[YouTube transcript generator](https://videotext.io/youtube-transcript-generator)** when assets already live on-platform — download the video, then upload the file.
 - **Raw camera or webinar recordings:** **[Video → Transcript](https://videotext.io/video-to-transcript)** fits mixed codecs and longer runs where download-and-upload is normal.
 - **Many episodes or client folders:** **[Batch process](https://videotext.io/batch-process)** is the throughput hub—queue work, keep exports uniform, reduce context switching.
 

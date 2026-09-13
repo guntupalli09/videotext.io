@@ -4,14 +4,14 @@
     {
       "name": "video-transcription",
       "type": "api",
-      "description": "Transcribe video files (MP4, MOV, AVI, WebM) or YouTube URLs into text transcripts with speaker labels, chapters, and AI summary. Powered by OpenAI Whisper large-v3 with 98.5%+ accuracy.",
+      "description": "Transcribe video files (MP4, MOV, AVI, WebM) into text transcripts with speaker labels, chapters, and AI summary. Powered by OpenAI Whisper large-v3 with 98.5%+ accuracy.",
       "url": "https://videotext.io/video-to-transcript",
       "sha256": ""
     },
     {
       "name": "subtitle-generation",
       "type": "api",
-      "description": "Generate broadcast-ready SRT and VTT subtitle files from video files or YouTube URLs with AI-powered timing.",
+      "description": "Generate broadcast-ready SRT and VTT subtitle files from video files with AI-powered timing.",
       "url": "https://videotext.io/video-to-subtitles",
       "sha256": ""
     },
@@ -25,7 +25,7 @@
     {
       "name": "youtube-transcript",
       "type": "api",
-      "description": "Generate transcripts from YouTube videos by URL. No download required. Returns full transcript, subtitles, summary, and chapters.",
+      "description": "Generate transcripts from YouTube videos after downloading the file and uploading it. Returns full transcript, subtitles, summary, and chapters.",
       "url": "https://videotext.io/youtube-transcript-generator",
       "sha256": ""
     },

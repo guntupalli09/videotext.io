@@ -5,7 +5,7 @@ const steps = [
   {
     icon: Upload,
     title: 'Upload file',
-    description: 'Drop your video or paste a URL',
+    description: 'Drop your video file',
     color: 'from-blue-600 to-blue-700'
   },
   {

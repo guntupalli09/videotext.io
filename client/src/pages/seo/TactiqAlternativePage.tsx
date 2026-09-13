@@ -12,7 +12,7 @@ const COMPARE_ROWS = [
   { label: 'Works on past recordings you already have', videotext: true, competitor: false },
   { label: 'Browser extension required', videotext: false, competitor: true },
   { label: 'Works on any video/audio format', videotext: true, competitor: false },
-  { label: 'YouTube URL → transcript', videotext: true, competitor: false },
+  { label: 'Video file → transcript', videotext: true, competitor: false },
   { label: 'SRT / VTT subtitle export', videotext: true, competitor: false },
   { label: 'Translate subtitles (70+ languages)', videotext: true, competitor: false },
   { label: 'Burn captions into video', videotext: true, competitor: false },
@@ -106,7 +106,7 @@ export default function TactiqAlternativePage() {
               'Browser extension required — adds a permission layer and must be installed on Chrome or Edge.',
               'Only supports Google Meet, Zoom, and Teams — no support for Webex, in-person recordings, podcast files, or video uploads.',
               'No SRT or VTT subtitle file export — output is meeting transcript text only.',
-              'No YouTube URL transcription — cannot process YouTube videos or other online content.',
+              'No Video file transcription — cannot process YouTube videos or other online content.',
               'Free tier limited to 5 meetings/month — only if the extension was active during each call.',
             ].map((point) => (
               <li key={point} className="flex items-start gap-3 text-sm text-gray-600 dark:text-gray-300">

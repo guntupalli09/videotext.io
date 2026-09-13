@@ -69,10 +69,10 @@ const STATIC_META: RouteMeta[] = [
     path: '/',
     title: `VideoText: Video to Text & Subtitles | ${SITE_NAME}`,
     description:
-      'VideoText is AI video-to-text software: transcript, SRT/VTT, summary, and chapters from a video or YouTube URL. Whisper large-v3. 3 free imports/mo.',
+      'VideoText is AI video-to-text software: transcript, SRT/VTT, summary, and chapters from a video . Whisper large-v3. 3 free imports/mo.',
     h1: 'VideoText: Video to Text & Subtitle Tools',
     faq: [
-      { q: 'What is VideoText — is it the same as “video text”?', a: 'VideoText is one word: AI software that turns video into a transcript, SRT/VTT subtitles, a summary, and chapters. It is not a generic “video text” site. Upload a video or YouTube URL to try 3 free imports this month — no card; watermark on free exports.' },
+      { q: 'What is VideoText — is it the same as “video text”?', a: 'VideoText is one word: AI software that turns video into a transcript, SRT/VTT subtitles, a summary, and chapters. It is not a generic “video text” site. Upload a video to try 3 free imports this month — no card; watermark on free exports.' },
       { q: 'What do I get from one upload?', a: 'A transcript plus SRT/VTT subtitles, a summary, and chapters. Files are deleted after processing.' },
       { q: 'Is VideoText free to try?', a: 'Yes. 3 imports per month, no credit card. Free exports include a watermark; upgrade for clean files. Paid plans start if you need more volume.' },
     ],
@@ -165,7 +165,7 @@ const STATIC_META: RouteMeta[] = [
     path: '/video-to-transcript',
     title: 'Video to Transcript — Free AI, 98.5% | VideoText',
     description:
-      'Upload video or a YouTube URL. Get transcript, SRT/VTT, summary, and chapters. Whisper large-v3. Files deleted after processing. 3 free imports/mo.',
+      'Upload video . Get transcript, SRT/VTT, summary, and chapters. Whisper large-v3. Files deleted after processing. 3 free imports/mo.',
     h1: 'Fastest Way to Transcribe Your Audio/Video',
     valueProposition: 'VideoText lets you convert video to transcript online in minutes. Upload any video and get transcript text, subtitles (SRT/VTT), summary, and chapters in one click. 2-hour video → transcript in ~3–5 minutes.',
     keywords: ['video to transcript', 'convert video to transcript', 'transcribe video online', 'video to text', 'youtube transcript generator', 'subtitle generator', 'long video transcription', 'private transcription tool'],
@@ -198,7 +198,7 @@ const STATIC_META: RouteMeta[] = [
     path: '/video-to-subtitles',
     title: `Video to Subtitles — Full Caption Hub | ${SITE_NAME}`,
     description:
-      'Caption-first hub: video or YouTube URL → timed SRT/VTT, then fix, translate, or burn. Transcript + summary lives on Video to Transcript. 3 free imports/mo.',
+      'Caption-first hub: video file → timed SRT/VTT, then fix, translate, or burn. Transcript + summary lives on Video to Transcript. 3 free imports/mo.',
     h1: 'Video to Subtitles — Full Caption Hub',
     valueProposition: 'Create publication-ready SRT and VTT subtitle files in seconds. Perfect for YouTube, Vimeo, social media. No manual timing. No transcription service delays. Free tier: 3 imports/month.',
     keywords: ['video to subtitles', 'subtitle generator', 'SRT generator', 'VTT generator', 'auto subtitle', 'caption generator', 'subtitle maker', 'automatic captions'],
@@ -208,7 +208,7 @@ const STATIC_META: RouteMeta[] = [
       { tool: 'YouTube Auto-Captions', vs: 'Lower accuracy, no export as files' },
     ],
     howToUse: [
-      { step: 1, title: 'Upload Video File', detail: 'Drag & drop MP4, MOV, or paste a YouTube link. Processing starts instantly.' },
+      { step: 1, title: 'Upload Video File', detail: 'Drag & drop MP4, MOV, . Processing starts instantly.' },
       { step: 2, title: 'Choose Format', detail: 'Select SRT (universal) or VTT (modern web players). Single or multi-language.' },
       { step: 3, title: 'Download & Upload', detail: 'Get your .srt or .vtt file in seconds. Upload to YouTube Studio, Vimeo, or any player.' },
     ],
@@ -357,7 +357,7 @@ const STATIC_META: RouteMeta[] = [
     ],
     howToUse: [
       { step: 1, title: 'Export Your Data', detail: 'Download transcripts and settings from your current tool.' },
-      { step: 2, title: 'Upload to VideoText', detail: 'Paste a YouTube URL or upload video files. Get transcripts in 3-5 minutes.' },
+      { step: 2, title: 'Upload to VideoText', detail: 'Upload video files. Get transcripts in 3-5 minutes.' },
       { step: 3, title: 'Save Money & Time', detail: 'Free tier gets you started. Upgrade when ready. Keep 100% of your files.' },
     ],
     socialProof: [
@@ -434,7 +434,7 @@ const STATIC_META: RouteMeta[] = [
     breadcrumbLabel: 'Descript Alternative',
     faq: [
       { q: 'Is VideoText a good free alternative to Descript?', a: 'Yes. VideoText transcribes video to text and generates SRT/VTT subtitles starting free with no credit card required. Unlike Descript, there is no minimum paid plan to get started and no editing software to learn.' },
-      { q: 'How does VideoText compare to Descript for transcription?', a: 'Both use Whisper AI. VideoText processes a 1-hour video in about 2 minutes versus Descript\'s 5–10 minutes. VideoText also supports YouTube URL input and direct subtitle burning, which Descript does not offer in its core workflow.' },
+      { q: 'How does VideoText compare to Descript for transcription?', a: 'Both use Whisper AI. VideoText processes a 1-hour video in about 2 minutes versus Descript\'s 5–10 minutes. VideoText also supports video file upload and direct subtitle burning, which Descript does not offer in its core workflow.' },
       { q: 'Can I switch from Descript to VideoText?', a: 'Yes. VideoText supports the same video formats (MP4, MOV, WebM) and exports SRT and VTT subtitle files compatible with any platform. No project migration needed — just upload and go.' },
     ],
   },
@@ -442,7 +442,7 @@ const STATIC_META: RouteMeta[] = [
     path: '/otter-ai-alternative',
     title: `Best Otter.ai Alternative for Video Files & Subtitles | ${SITE_NAME}`,
     description:
-      "Otter.ai doesn't support video uploads or SRT export. VideoText does — plus YouTube URL input, subtitle translation, and file deletion. Free tier available.",
+      "Otter.ai doesn't support video uploads or SRT export. VideoText does — plus video file upload, subtitle translation, and file deletion. Free tier available.",
     breadcrumbLabel: 'Otter.ai Alternative',
     faq: [
       { q: 'What does VideoText do that Otter.ai does not?', a: 'VideoText accepts video file uploads (MP4, MOV, WebM) and YouTube URLs, exports SRT and VTT subtitle files, translates subtitles to 50+ languages, and burns subtitles into video. Otter.ai is audio-only and does not produce subtitle files.' },
@@ -470,7 +470,7 @@ const STATIC_META: RouteMeta[] = [
     breadcrumbLabel: 'Rev Alternative',
     faq: [
       { q: 'How is VideoText pricing different from Rev?', a: 'Rev AI charges per-minute ($0.25/min). A 450-minute month costs $112.50 on Rev. VideoText Pro is $7.99/month flat — no per-minute billing.' },
-      { q: 'Does VideoText support YouTube transcription like Rev?', a: 'Yes. Paste any public YouTube URL directly into VideoText — no download required. Rev does not offer YouTube URL input.' },
+      { q: 'Does VideoText support YouTube transcription like Rev?', a: 'Yes. Download the YouTube video, then upload the file into VideoText. Rev also requires a file upload.' },
       { q: 'Can VideoText generate subtitles like Rev?', a: 'Yes. VideoText generates SRT and VTT subtitle files from any video. You can also translate subtitles to 50+ languages and burn them into the video permanently.' },
     ],
   },
@@ -478,11 +478,11 @@ const STATIC_META: RouteMeta[] = [
     path: '/happyscribe-alternative',
     title: `Best Free HappyScribe Alternative – Transcription & Subtitles | ${SITE_NAME}`,
     description:
-      'HappyScribe starts at $17/month with no free tier and no YouTube URL input. VideoText is free to start — upload any video or paste a YouTube link, get SRT, translate, and burn subtitles.',
+      'HappyScribe starts at $17/month with no free tier and no video file upload. VideoText is free to start — upload any video , get SRT, translate, and burn subtitles.',
     breadcrumbLabel: 'HappyScribe Alternative',
     faq: [
       { q: 'Does VideoText have a free tier unlike HappyScribe?', a: 'Yes. VideoText offers 3 free imports per month with no credit card required. HappyScribe has no free tier — it starts at $17/month.' },
-      { q: 'Can VideoText transcribe YouTube videos like HappyScribe?', a: 'Yes. Paste a YouTube URL directly into VideoText — no download needed. HappyScribe requires you to download the video first and upload it manually.' },
+      { q: 'Can VideoText transcribe YouTube videos like HappyScribe?', a: 'Yes. Download the YouTube video first, then upload the file into VideoText. HappyScribe also requires a local file upload.' },
       { q: 'Does VideoText support subtitle translation like HappyScribe?', a: 'Yes. VideoText translates SRT and VTT subtitle files to 50+ languages. It also burns translated subtitles into video, which HappyScribe does not offer.' },
     ],
   },
@@ -495,7 +495,7 @@ const STATIC_META: RouteMeta[] = [
     faq: [
       { q: 'How does VideoText pricing compare to Sonix?', a: 'Sonix charges $22/month plus $0.10/minute for any overage. VideoText Pro is $7.99/month flat — no per-minute fees, ever.' },
       { q: 'Is VideoText as accurate as Sonix?', a: 'Both use Whisper AI. VideoText benchmarks at 98.5% word accuracy on clear audio, on par with Sonix\'s published accuracy.' },
-      { q: 'Does VideoText support YouTube URL input like Sonix?', a: 'Yes. Paste any YouTube URL directly into VideoText. Sonix requires manual video download and upload. VideoText streams the audio directly from YouTube — no download needed.' },
+      { q: 'Does VideoText support video file upload like Sonix?', a: 'Yes. Download the YouTube video, then upload the file directly into VideoText. Sonix also requires a manual video download and upload.' },
     ],
   },
   {
@@ -505,7 +505,7 @@ const STATIC_META: RouteMeta[] = [
       'EasyScribe only does basic audio transcription. VideoText handles video files, YouTube URLs, SRT subtitle export, 50+ language translation, and subtitle burning. Free tier available.',
     breadcrumbLabel: 'EasyScribe Alternative',
     faq: [
-      { q: 'What does VideoText offer that EasyScribe does not?', a: 'VideoText adds YouTube URL transcription, SRT and VTT subtitle export, subtitle translation to 50+ languages, subtitle burning into video, and batch processing. EasyScribe is limited to basic audio file transcription.' },
+      { q: 'What does VideoText offer that EasyScribe does not?', a: 'VideoText adds Video file transcription, SRT and VTT subtitle export, subtitle translation to 50+ languages, subtitle burning into video, and batch processing. EasyScribe is limited to basic audio file transcription.' },
       { q: 'Is VideoText free like EasyScribe?', a: 'Yes. VideoText has a free tier with 3 imports per month and no credit card required. Pro is $7.99/month for the full workflow.' },
     ],
   },
@@ -517,7 +517,7 @@ const STATIC_META: RouteMeta[] = [
     breadcrumbLabel: 'Notta Alternative',
     faq: [
       { q: 'What is a good free Notta alternative for video transcription?', a: "VideoText is a strong free Notta alternative if you need to transcribe video files (MP4, MOV, WebM) or YouTube videos, or if you need SRT/VTT subtitle exports. Notta's free plan is limited to 120 minutes per month with a 3-minute file cap — VideoText offers 3 full-length imports per month with no per-file minute limit." },
-      { q: 'How does VideoText compare to Notta for video files?', a: 'VideoText accepts MP4, MOV, WebM, and AVI video uploads plus YouTube URLs. Notta is primarily a meeting transcription tool — video file support is limited on lower plans and there is no YouTube URL input.' },
+      { q: 'How does VideoText compare to Notta for video files?', a: 'VideoText accepts MP4, MOV, WebM, and AVI video uploads plus YouTube URLs. Notta is primarily a meeting transcription tool — video file support is limited on lower plans and there is no video file upload.' },
       { q: 'Can VideoText export SRT subtitle files unlike Notta?', a: 'Yes. VideoText exports SRT and VTT subtitle files on all plans including free. Notta does not offer subtitle file export — it exports transcripts only as text documents.' },
     ],
   },
@@ -718,7 +718,7 @@ const STATIC_META: RouteMeta[] = [
     path: '/otter-vs-videotext',
     title: `Otter vs VideoText — Meeting Notes vs File Transcription | ${SITE_NAME}`,
     description:
-      'Otter is optimised for live meeting capture. VideoText is stronger for file-first transcription: faster processing, SRT/VTT subtitle export, YouTube URL input, and benchmark transparency.',
+      'Otter is optimised for live meeting capture. VideoText is stronger for file-first transcription: faster processing, SRT/VTT subtitle export, video file upload, and benchmark transparency.',
     h1: 'Otter vs VideoText',
     breadcrumbLabel: 'Otter vs VideoText',
   },
@@ -734,7 +734,7 @@ const STATIC_META: RouteMeta[] = [
     path: '/videotext-vs-turboscribe',
     title: `VideoText vs TurboScribe — Full 2025 Comparison | ${SITE_NAME}`,
     description:
-      'VideoText vs TurboScribe: both are fast, but VideoText adds SRT/VTT subtitles, AI summary, chapter markers, YouTube URL input, and subtitle burn-in in one workflow.',
+      'VideoText vs TurboScribe: both are fast, but VideoText adds SRT/VTT subtitles, AI summary, chapter markers, video file upload, and subtitle burn-in in one workflow.',
     h1: 'VideoText vs TurboScribe',
     breadcrumbLabel: 'VideoText vs TurboScribe',
   },
@@ -1448,7 +1448,7 @@ function buildConversionContent(meta: RouteMeta): string {
       </section>
       <section style="margin:32px 0">
         <h2 style="font-size:24px;font-weight:800;color:#111827;margin:0 0 10px 0">Transcribe Video to Text in Minutes</h2>
-        <p style="margin:0;color:#374151;line-height:1.7">Upload a file or paste a URL, then download transcript text, SRT/VTT subtitles, summary, and chapters.</p>
+        <p style="margin:0;color:#374151;line-height:1.7">Upload a file , then download transcript text, SRT/VTT subtitles, summary, and chapters.</p>
       </section>
       <section style="margin:32px 0">
         <h2 style="font-size:24px;font-weight:800;color:#111827;margin:0 0 10px 0">Convert Video to Transcript Without Editing</h2>

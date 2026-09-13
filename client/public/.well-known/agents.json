@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "name": "VideoText",
-  "description": "AI video transcription, subtitle generation, and translation. Upload a video or paste a YouTube URL to get a transcript, SRT/VTT subtitles, summary, and chapters in minutes. 98.5%+ accuracy. Privacy-first: files deleted after processing.",
+  "description": "AI video transcription, subtitle generation, and translation. Upload a video file to get a transcript, SRT/VTT subtitles, summary, and chapters in minutes. 98.5%+ accuracy. Privacy-first: files deleted after processing.",
   "url": "https://videotext.io",
   "capabilities": [
     "video-transcription",

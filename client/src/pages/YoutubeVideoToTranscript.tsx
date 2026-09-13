@@ -3,13 +3,13 @@ import VideoToTranscript from './VideoToTranscript'
 export default function YoutubeVideoToTranscript() {
   return (
     <VideoToTranscript
-      defaultInputMode="youtube"
-      seoH1="YouTube URL to Transcript"
-      seoIntro="Paste a YouTube link and get transcript, summary, chapters, and exports in the same workflow."
+      defaultInputMode="file"
+      seoH1="YouTube Video to Transcript"
+      seoIntro="Download a YouTube video, upload the file, and get transcript, summary, chapters, and exports in the same workflow."
       faq={[
         {
-          q: 'Can I paste a YouTube URL directly?',
-          a: 'Yes. Paste a public youtube.com or youtu.be URL and VideoText will fetch captions first, then fall back to audio transcription when needed.',
+          q: 'Can I upload a video file directly?',
+          a: 'Yes. Download the YouTube video first, then upload the file. VideoText transcribes the uploaded audio — URL paste is not in the live product UI.',
         },
         {
           q: 'Do I still get summary and exports?',
@@ -17,7 +17,7 @@ export default function YoutubeVideoToTranscript() {
         },
         {
           q: 'Will this affect other tools?',
-          a: 'No. This is a separate entry point for YouTube jobs and does not change upload flows for other tools.',
+          a: 'No. This is a separate entry point for YouTube-oriented jobs and does not change upload flows for other tools.',
         },
       ]}
     />

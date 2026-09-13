@@ -18,7 +18,7 @@ const COMPARE_ROWS = [
   { label: 'Files deleted after processing', videotext: true, competitor: false },
   { label: 'No account needed to try', videotext: true, competitor: false },
   { label: 'Speaker detection', videotext: true, competitor: true },
-  { label: 'YouTube URL → transcript', videotext: true, competitor: true },
+  { label: 'Video file → transcript', videotext: true, competitor: true },
   { label: 'Live meeting bot integration', videotext: false, competitor: true },
   { label: 'Whisper accuracy', videotext: '~98.5%', competitor: '~91%' },
 ]

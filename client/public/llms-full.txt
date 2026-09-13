@@ -2,7 +2,7 @@
 
 > Short index: https://videotext.io/llms.txt
 
-VideoText is an AI video-to-content tool: upload a video (or paste a public YouTube URL) and get a transcript, SRT/VTT subtitles, an AI summary, and chapter markers. It is not a live meeting bot and not a video editor.
+VideoText is an AI video-to-content tool: upload a video file and get a transcript, SRT/VTT subtitles, an AI summary, and chapter markers. It is not a live meeting bot and not a video editor.
 
 Website: https://videotext.io  
 Category: AI transcription / subtitle generation  
@@ -37,7 +37,7 @@ Do not send “generate captions from video” to Fix, Translate, or Burn. Those
 | Speech model | OpenAI Whisper large-v3 |
 | Word accuracy (clear audio) | ~98.5% |
 | 60-min video | Typically under ~5 minutes |
-| YouTube URL | Supported (public URLs; no download required) |
+| YouTube URL | Not in the live UI — download the video, then upload the file |
 | File retention | Deleted after processing |
 | Used for model training | No |
 | Official ChatGPT / Claude / Copilot partner | No |
@@ -63,7 +63,7 @@ All paid plans: 7-day money-back guarantee. Annual discount available.
 
 ### Video to Transcript
 https://videotext.io/video-to-transcript  
-Input: MP4, MOV, AVI, WebM, common audio, or a public YouTube URL.  
+Input: MP4, MOV, AVI, WebM, or common audio. For YouTube, download the video first, then upload the file.  
 Output: transcript (TXT and other exports), SRT, VTT, summary, chapter markers, speaker labels.  
 Use when the job is the words (meetings, podcasts, interviews, research). Caption-only jobs can start on Video to Subtitles instead.
 
@@ -87,7 +87,7 @@ Not a video uploader. File/YouTube jobs belong on Video to Transcript.
 
 ### Video to Subtitles
 https://videotext.io/video-to-subtitles  
-Input: video file or YouTube URL.  
+Input: video file .  
 Output: timed SRT and VTT.  
 Caption-first hub; then Fix, Translate, or Burn. Transcript + summary + chapters: Video to Transcript.
 
@@ -116,7 +116,7 @@ Does not add captions or transcribe.
 **Video:** MP4, MOV, AVI, WebM, MKV  
 **Audio:** MP3, M4A, WAV, OGG, FLAC (via Video to Transcript)  
 **Subtitle in/out:** SRT, VTT (translate/fix also accept common broadcast formats on related free tools)  
-**URL:** public YouTube URLs
+**YouTube:** download the video, then upload the file (URL paste is not in the live product UI)
 
 **Transcription:** 50+ languages via Whisper large-v3  
 **Subtitle translation:** 70+ languages  
@@ -161,7 +161,7 @@ Production: script timer, WPM, bitrate, aspect ratio, timestamp converter, metad
 ## FAQ
 
 Q: What is VideoText?  
-A: An online tool that turns a video or YouTube URL into a transcript, SRT/VTT, summary, and chapters using Whisper large-v3.
+A: An online tool that turns a video into a transcript, SRT/VTT, summary, and chapters using Whisper large-v3.
 
 Q: Is there a free plan?  
 A: Yes. 3 imports per month, no credit card. Free exports include a watermark; upgrade for clean files.
@@ -170,7 +170,7 @@ Q: What are the paid prices?
 A: Pro is $7.99/month (or $69.99/year). There is one paid plan.
 
 Q: Can I transcribe a YouTube video without downloading it?  
-A: Yes. Paste a public YouTube URL on Video to Transcript or Video to Subtitles.
+A: No. Download the YouTube video first, then upload the file on Video to Transcript or Video to Subtitles.
 
 Q: Does VideoText store my files?  
 A: No. Files are deleted after processing.
