@@ -6,10 +6,25 @@ import { loginWithGoogle } from '../lib/api'
 import { FileText, Youtube, Zap, ChevronRight } from 'lucide-react'
 import GoogleSignInButton, { GOOGLE_CLIENT_ID } from '../components/GoogleSignInButton'
 
+/**
+ * Turn a thrown auth error into something a user can act on. A failed fetch surfaces as
+ * "Load failed" in Safari and "Failed to fetch" in Chrome — both mean the request never
+ * reached the API (offline, DNS, or a CORS preflight rejection), which reads as a broken
+ * password to anyone staring at a login form.
+ */
+function describeAuthError(err: unknown, fallback: string): string {
+  const raw = err instanceof Error ? err.message : ''
+  if (/load failed|failed to fetch|networkerror|network request failed/i.test(raw)) {
+    return "Couldn't reach VideoText. Check your connection and try again — if this keeps happening, the API may be temporarily unavailable."
+  }
+  return raw || fallback
+}
+
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [googleError, setGoogleError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
   const navigate = useNavigate()
@@ -22,6 +37,7 @@ export default function Login() {
 
   async function handleGoogleCredential(credential: string) {
     setGoogleLoading(true)
+    setGoogleError(null)
     setError(null)
     try {
       const result = await loginWithGoogle(credential)
@@ -35,7 +51,7 @@ export default function Login() {
       navigate(returnTo, { replace: true })
       window.location.reload()
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Google login failed')
+      setGoogleError(describeAuthError(err, 'Google login failed'))
     } finally {
       setGoogleLoading(false)
     }
@@ -44,6 +60,7 @@ export default function Login() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
+    setGoogleError(null)
     setLoading(true)
     try { trackEvent('login_started') } catch { /* non-blocking */ }
     try {
@@ -58,7 +75,7 @@ export default function Login() {
       navigate(returnTo, { replace: true })
       window.location.reload()
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Login failed'
+      const msg = describeAuthError(err, 'Login failed')
       try { trackEvent('login_failed', { error: msg }) } catch { /* non-blocking */ }
       setError(msg)
     } finally {
@@ -155,9 +172,9 @@ export default function Login() {
               {googleLoading && (
                 <p className="text-center text-sm text-gray-500 dark:text-gray-400">Signing in with Google…</p>
               )}
-              {error && (
+              {googleError && (
                 <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600 dark:bg-red-500/10 dark:text-red-400" role="alert">
-                  {error}
+                  {googleError}
                 </p>
               )}
               <div className="flex items-center gap-3">

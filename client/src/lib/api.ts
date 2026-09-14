@@ -55,6 +55,22 @@ export function getAuthToken(): string | null {
   return typeof localStorage !== 'undefined' ? localStorage.getItem(AUTH_TOKEN_KEY) : null
 }
 
+/**
+ * Routes whose handlers actually read x-ph-distinct-id (see server/src/utils/analytics.ts
+ * readAnonymousId — consumed by upload.ts, apiV1.ts and services/transcriptionIntake.ts).
+ *
+ * The header is a non-safelisted custom header, so every request carrying it needs a CORS
+ * preflight that names it in Access-Control-Allow-Headers. Sending it on every request made
+ * login, signup and the founder dashboard fail with a bare "Load failed" whenever the API was
+ * running a build older than the one that allowlisted the header. Attribution is analytics-only
+ * and must never be able to block auth, so scope it to the routes that consume it.
+ */
+const ANONYMOUS_ID_PATH_PREFIXES = ['/api/upload/', '/api/batch/', '/api/v1/']
+
+function wantsAnonymousId(path: string): boolean {
+  return ANONYMOUS_ID_PATH_PREFIXES.some((prefix) => path.startsWith(prefix))
+}
+
 export function api(path: string, init?: ApiInit): Promise<Response> {
   if (!path.startsWith('/api/')) {
     throw new Error(`API path must start with /api/. Got: ${path}`)
@@ -63,8 +79,10 @@ export function api(path: string, init?: ApiInit): Promise<Response> {
   const token = getAuthToken()
   const headers = new Headers(rest.headers as HeadersInit)
   if (token) headers.set('Authorization', `Bearer ${token}`)
-  const phDistinctId = getPostHogDistinctId()
-  if (phDistinctId) headers.set('x-ph-distinct-id', phDistinctId)
+  if (wantsAnonymousId(path)) {
+    const phDistinctId = getPostHogDistinctId()
+    if (phDistinctId) headers.set('x-ph-distinct-id', phDistinctId)
+  }
   const options = { ...rest, headers }
   let signal = options.signal
   if (timeout != null && timeout > 0 && !signal) {
