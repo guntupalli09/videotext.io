@@ -36,7 +36,7 @@ Turn audio or video into an accurate, editable transcript with VideoText. Copy i
 *(Limit: 16,000 characters)*
 
 The full text lives in **[`DESCRIPTION.txt`](DESCRIPTION.txt)** — paste it into the Description field
-as-is. It is **2,568 characters**. That is deliberate: the limit is a ceiling, not a target.
+as-is. It is **2,297 characters**. That is deliberate: the limit is a ceiling, not a target.
 
 ### Read this before editing the description
 

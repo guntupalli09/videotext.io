@@ -1,43 +1,55 @@
-Turn any audio or video file into an accurate, editable transcript — without leaving your browser.
+Turn an audio or video file into an accurate, editable transcript without leaving your browser.
 
-Video to Transcript is the official Chrome extension for VideoText. Click the icon, drop in a recording, and get clean, readable text back. Copy it, or save it as a .TXT file.
+Video to Transcript is the official Chrome extension for VideoText. Select a recording, transcribe it, review the result, then copy or download the transcript as text.
 
 HOW IT WORKS
 
 1. Click the VideoText icon in your toolbar.
-2. Sign in with your VideoText account (free to create).
-3. Drop in an audio or video file, or click Select File.
-4. Choose the spoken language, or leave it on Auto-detect.
+2. Sign in to your VideoText account.
+3. Select an audio or video file.
+4. Choose the spoken language or use automatic detection.
 5. Click Transcribe.
-6. Read the transcript, then copy it or download it as .TXT.
+6. Review, copy, or download your transcript.
 
 WHAT YOU GET
 
-A full transcript, shown inside the extension, with one-click copy to your clipboard and a .TXT download named after your recording. Auto-detect works out the spoken language for you, or you can set it yourself from 72 languages when you already know it.
+Your completed transcript appears directly in the extension. You can copy the text to your clipboard or download it as a text file.
 
-Common video and audio formats are supported, and the extension lists them when you open it. Drop your file in as it is — no converting, and no extracting the audio first.
+The extension supports common audio and video files, so you can upload your recording directly without manually extracting the audio first.
 
-Maximum file size and recording length depend on your VideoText plan. The extension reads those limits from your account and tells you before you upload if a file is too large or too long, rather than failing halfway through.
+File size and recording-length limits depend on your VideoText plan. The extension checks your account limits before processing.
 
-If you close the popup while a file is processing, the job keeps running. Open the extension again and it picks up where it left off.
+If you close the popup while transcription is processing, the job continues. Open the extension again to continue from the current job.
 
-YOUR ACCOUNT, YOUR LIMITS
+WHEN TO USE IT
 
-This is a client for VideoText, not a separate product. It uses the account you already have, with the same plan and the same allowance as the website. Sign in once, and manage your plan at videotext.io whenever you like. The extension never takes payment and never handles your card details.
+Video to Transcript is useful whenever you need recorded speech as readable text — an interview you want to quote from, or a long recording you would rather read than sit through.
+
+VIDEOTEXT ACCOUNT
+
+The extension uses your existing VideoText account, plan, and usage allowance. Subscription management is handled through VideoText. The extension does not process payment card information.
 
 PRIVACY
 
-The file you choose and your VideoText sign-in are sent to VideoText and nowhere else. There is no analytics, no tracking and no third-party code in this extension. It cannot read your tabs, your history or any other site — it asks for access to the VideoText API and to one VideoText sign-in page, and nothing more. Your password is never seen by the extension, because signing in happens on videotext.io.
+Files you choose to process are sent to VideoText to provide the transcription service. The extension only requests the permissions needed to connect with VideoText and maintain your extension session.
 
-Privacy policy: https://videotext.io/privacy
-Terms: https://videotext.io/terms
+The extension does not read your browsing history, record your screen, capture tab audio, or access unrelated websites.
 
-WHAT IT DOES NOT DO
+Privacy policy:
+https://videotext.io/privacy
 
-One job: a file in, a transcript out. It does not record your screen, capture tab audio, download video from websites, or transcribe live speech as you talk.
+Terms:
+https://videotext.io/terms
+
+WHAT IT DOES
+
+Video to Transcript has one primary purpose: turn an audio or video file you select into a transcript.
+
+It does not record your screen, download videos from websites, or continuously listen to live speech.
 
 GETTING STARTED
 
-Install it, pin it to your toolbar, and click it. A free VideoText account is all you need.
+Install the extension, pin it to your toolbar, sign in to VideoText, and select a recording to transcribe.
 
-Full tool on the web: https://videotext.io/video-to-transcript
+VideoText:
+https://videotext.io/video-to-transcript

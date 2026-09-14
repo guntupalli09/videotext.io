@@ -18,7 +18,7 @@ Two rejections, both *Spam and placement in the Store* / keyword stuffing (`Yell
 | Date | Reviewer quoted | Cause |
 | --- | --- | --- |
 | 13 Sept 2026 | `"Video files: MP4, MOV, MKV, AVI, WebM, MPEG, MPG, OGV, 3GP, 3G2, FLV, WMV, TS, M4V"` | The description enumerated all 20 file formats, all 49 named languages, and seventeen near-duplicate "transcribe an X" bullets. |
-| 14 Sept 2026 | `"journalists, podcasters, students, researchers, creators, marketers, and professional teams."` | An audience roll-call. **This sentence was never in `store/DESCRIPTION.txt`** — whatever was submitted that day differed from the file in this repo. |
+| 14 Sept 2026 | `"journalists, podcasters, students, researchers, creators, marketers, and professional teams."` | An audience roll-call, in a hand-written description that was in the dashboard rather than this repo. That copy was otherwise clean — running `tests/listing.test.mjs` against it failed on that one sentence and nothing else. `store/DESCRIPTION.txt` is now that same copy with the sentence replaced, so the repo matches what is live. |
 
 **The lesson from both: this reviewer treats any category enumeration as stuffing** — formats,
 languages and audiences alike. `store/DESCRIPTION.txt` now contains none of the three. It is
@@ -69,7 +69,7 @@ for long comma runs, format names, language names, audience roll-calls, divider 
 | --- | --- |
 | **Name** | `Video to Transcript — VideoText` |
 | **Short description** | See `LISTING.md` → *Short description* (116 chars) |
-| **Detailed description** | Paste **`store/DESCRIPTION.txt`** verbatim (2,568 of 16,000 characters). **Do not add file-format or language lists** — that is what got v1.0.0 rejected; see `LISTING.md`. |
+| **Detailed description** | Paste **`store/DESCRIPTION.txt`** verbatim (2,297 of 16,000 characters). **Do not add file-format or language lists** — that is what got v1.0.0 rejected; see `LISTING.md`. |
 | **Category** | Productivity |
 | **Language** | English (United States) |
 
