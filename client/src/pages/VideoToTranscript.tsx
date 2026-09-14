@@ -1657,8 +1657,9 @@ export default function VideoToTranscript(
       setDiarizationWasRequested(diarizationEnabledForJob);
       setUploadPhase("uploading");
       const uploadProps = getFunnelProps("file_upload");
-      // PostHog's `upload_started` is captured once, inside the upload helper
-      // (it knows the real upload mode); these funnel props ride along with it.
+      // PostHog's `upload_started` and `upload_completed` are each captured once,
+      // inside the upload helper (it knows the real upload mode and duration);
+      // these props ride along with both via analyticsProps below.
       // trackAppEvent goes to our own /api/events, so it is not a duplicate.
       trackAppEvent("upload_started", uploadProps);
       trackEvent("processing_started", { tool: "video-to-transcript" });
@@ -1671,7 +1672,12 @@ export default function VideoToTranscript(
         onProgress: (p) => setUploadProgress(p),
         connectionSpeed: connectionSpeedResult,
         signal: uploadAbortRef.current?.signal,
-        analyticsProps: uploadProps,
+        analyticsProps: {
+          ...uploadProps,
+          tool: "video-to-transcript",
+          start_mode: startMode,
+          auto_start_enabled: autoStartEnabled,
+        },
       });
 
       const tl =
@@ -1680,17 +1686,6 @@ export default function VideoToTranscript(
           : undefined;
       uploadAbortRef.current = null;
       uploadCompletedAtRef.current = Date.now();
-      try {
-        trackEvent("upload_completed", {
-          tool: "video-to-transcript",
-          file_size_bytes: selectedFile.size,
-          upload_progress_pct: 100,
-          start_mode: startMode,
-          auto_start_enabled: autoStartEnabled,
-        });
-      } catch {
-        // non-blocking
-      }
       setCurrentJobId(response.jobId);
       persistJobId(location.pathname, response.jobId, response.jobToken);
       setUploadPhase("processing");
