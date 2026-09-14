@@ -1038,8 +1038,8 @@ export default function VideoToTranscript(
         if (resolved.kind === "ready" && resolved.status.result) {
           setShowAuthGate(false);
           setResult({
-            downloadUrl: resolved.status.result.downloadUrl || "",
             ...resolved.status.result,
+            downloadUrl: resolved.status.result.downloadUrl || "",
           });
           return applyTranscriptPayload(resolved.status.result);
         }
