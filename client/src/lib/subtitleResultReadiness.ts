@@ -92,8 +92,10 @@ export function resolvedJobIsSuccessful(resolved: ResolvedCompletedJob): boolean
 /**
  * Terminal outcome of finalizing a completed subtitle job.
  *
- * `ready` is the ONLY outcome that may drive `setStatus('completed')`, the
- * success Studio, or `first_output_seen`.
+ * `ready` is the ONLY member that may drive `setStatus('completed')`, the
+ * success Studio, or `first_output_seen`. It carries `rowsAvailable: true` as a
+ * literal so a ready result cannot be constructed without asserting that cue
+ * rows actually loaded — the compiler enforces the invariant, not a convention.
  *
  * There is deliberately no `download-only` member. Video-to-Subtitles has no
  * direct server-file download: every export runs handleDownloadSubtitles(rows)
@@ -101,23 +103,62 @@ export function resolvedJobIsSuccessful(resolved: ResolvedCompletedJob): boolean
  * rows produces an EMPTY file. If a real server-file download is added later,
  * add the member here and extend `finalizeOutcomeAllowsSuccessState`.
  */
-export type SubtitleFinalizeOutcome =
-  | 'ready'
-  | 'auth-gate'
-  | 'claim-failed'
-  | 'preview-failed'
-  | 'unavailable'
+export type FinalizeResult =
+  /** Cue rows loaded and are rendered. The only success. */
+  | { kind: 'ready'; rowsAvailable: true }
+  /** Guest job: the API withheld the payload pending sign-in. */
+  | { kind: 'auth-gate' }
+  /** Signed in, but the job could not be attached to this account. */
+  | { kind: 'claim-failed' }
+  /** Resolution exhausted its retries without ever seeing a usable payload. */
+  | { kind: 'timeout' }
+  /** Result file resolved, but fetching or parsing it produced no cues. */
+  | { kind: 'preview-failed' }
+  /** Resolution reported ready, but the payload carried no downloadUrl. */
+  | { kind: 'empty-result' }
 
-/** Which terminal outcomes may present the successful Studio. */
-export function finalizeOutcomeAllowsSuccessState(outcome: SubtitleFinalizeOutcome): boolean {
-  return outcome === 'ready'
+/** The single branch that authorizes the successful Studio. */
+export function finalizeOutcomeAllowsSuccessState(result: FinalizeResult): boolean {
+  return result.kind === 'ready'
 }
 
-/** Terminal UI status for a finalize outcome. */
+/** Terminal UI status for a finalize result. */
 export function statusForFinalizeOutcome(
-  outcome: SubtitleFinalizeOutcome,
+  result: FinalizeResult,
 ): 'completed' | 'result-gated' | 'result-unavailable' {
-  if (outcome === 'ready') return 'completed'
-  if (outcome === 'auth-gate') return 'result-gated'
+  if (result.kind === 'ready') return 'completed'
+  if (result.kind === 'auth-gate') return 'result-gated'
   return 'result-unavailable'
+}
+
+/** Copy for the terminal non-success states, so each failure reads distinctly. */
+export function finalizeFailureCopy(result: FinalizeResult): { title: string; detail: string } | null {
+  switch (result.kind) {
+    case 'ready':
+    case 'auth-gate':
+      return null
+    case 'claim-failed':
+      return {
+        title: "Couldn't attach this result to your account",
+        detail:
+          'This job may have been started in a different session. Try generating again, or refresh if you think this is a mistake.',
+      }
+    case 'timeout':
+      return {
+        title: 'Your subtitles are still finishing up',
+        detail: 'This is taking longer than usual. Refresh the page to check again.',
+      }
+    case 'preview-failed':
+      return {
+        title: "Your subtitles couldn't be loaded",
+        detail:
+          "The file finished, but we couldn't read it in this session. Refresh to try again — your subtitles are still on our side.",
+      }
+    case 'empty-result':
+      return {
+        title: 'This job finished without a subtitle file',
+        detail:
+          'Nothing was produced for this video. Try generating again, or contact support if it keeps happening.',
+      }
+  }
 }

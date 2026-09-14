@@ -36,7 +36,8 @@ import {
   needsResultRefetchAfterClaim,
   statusForFinalizeOutcome,
   finalizeOutcomeAllowsSuccessState,
-  type SubtitleFinalizeOutcome,
+  finalizeFailureCopy,
+  type FinalizeResult,
 } from '../lib/subtitleResultReadiness'
 import { incrementUsage } from '../lib/usage'
 import { uploadFileWithProgress, getJobStatus, subscribeJobStatus, getCurrentUsage, getConnectionProbeIfNeeded, BACKEND_TOOL_TYPES, SessionExpiredError, getUserFacingMessage, isNetworkError, POLL_STOP_AFTER_CONSECUTIVE_NETWORK_ERRORS, getAuthToken, claimGuestJob } from '../lib/api'
@@ -201,6 +202,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const [resultLoadTimedOut, setResultLoadTimedOut] = useState(false)
   /** Set when auto-claiming a guest job for the now-logged-in user fails, so the panel shows an actionable message instead of nothing. */
   const [resultClaimFailed, setResultClaimFailed] = useState(false)
+  /** Last non-success finalize result, so the recovery panel names the actual failure. */
+  const [finalizeFailure, setFinalizeFailure] = useState<FinalizeResult | null>(null)
   const [partialSegments, setPartialSegments] = useState<{ start: number; end: number; text: string }[]>([])
   const [freeExportsUsed, setFreeExportsUsed] = useState(0)
   /** Set on job_completed for "Processed in XX.Xs" badge (UI only). */
@@ -296,22 +299,27 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     jobId: string,
     jobToken?: string,
     incoming?: import('../lib/api').JobStatus,
-  ): Promise<SubtitleFinalizeOutcome> => {
+  ): Promise<FinalizeResult> => {
     setResultLoadTimedOut(false)
     setResultClaimFailed(false)
+    setFinalizeFailure(null)
+    const fail = (result: FinalizeResult): FinalizeResult => {
+      setFinalizeFailure(result)
+      return result
+    }
     const resolved = await resolveCompletedJobResult(jobId, jobToken, incoming)
     if (resolved.kind === 'auth-gate') {
       setShowAuthGate(true)
       setResult({ downloadUrl: '' })
       setPreviewLoading(false)
-      return 'auth-gate'
+      return { kind: 'auth-gate' }
     }
     if (resolved.kind === 'ready' && resolved.status.result) {
       setShowAuthGate(false)
       setResult(resolved.status.result)
       if (!resolved.status.result.downloadUrl) {
         setPreviewLoading(false)
-        return 'unavailable'
+        return fail({ kind: 'empty-result' })
       }
       setPreviewLoading(true)
       const preview = await loadCompletedPreview(
@@ -319,17 +327,19 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
         resolved.status.result.fileName,
       )
       // A superseded load must not downgrade the state the newer one set.
-      if (preview === 'stale') return 'ready'
-      return preview === 'ready' ? 'ready' : 'preview-failed'
+      if (preview === 'stale') return { kind: 'ready', rowsAvailable: true }
+      return preview === 'ready'
+        ? { kind: 'ready', rowsAvailable: true }
+        : fail({ kind: 'preview-failed' })
     }
     setPreviewLoading(false)
     if (resolved.status?.requiresAuth) {
       setResultClaimFailed(true)
       setResult({ downloadUrl: '' })
-      return 'claim-failed'
+      return fail({ kind: 'claim-failed' })
     }
     setResultLoadTimedOut(true)
-    return 'unavailable'
+    return fail({ kind: 'timeout' })
   }
 
   /**
@@ -1146,36 +1156,14 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           </ProcessingStateShell>
         )}
 
-        {status === 'result-unavailable' && (
-          resultLoadTimedOut ? (
+        {status === 'result-unavailable' && (() => {
+          const copy = finalizeFailureCopy(finalizeFailure ?? { kind: 'timeout' })
+          if (!copy) return null
+          return (
             <div className="rounded-xl border border-amber-200 dark:border-amber-800/50 bg-amber-50 dark:bg-amber-950/20 p-5 flex flex-col items-center text-center gap-2.5">
               <AlertTriangle className="h-5 w-5 text-amber-500 dark:text-amber-400" />
-              <p className="text-sm font-medium text-gray-900 dark:text-white">Your subtitles are still finishing up</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm">
-                This is taking longer than usual. Refresh the page to check again.
-              </p>
-              <button
-                type="button"
-                onClick={() => window.location.reload()}
-                className="inline-flex items-center gap-1.5 mt-1 px-3 py-1.5 rounded-lg border border-amber-300 dark:border-amber-700 text-xs font-medium text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
-              >
-                <RefreshCw className="h-3.5 w-3.5" />
-                Refresh
-              </button>
-            </div>
-          ) : (
-            <div className="rounded-xl border border-amber-200 dark:border-amber-800/50 bg-amber-50 dark:bg-amber-950/20 p-5 flex flex-col items-center text-center gap-2.5">
-              <AlertTriangle className="h-5 w-5 text-amber-500 dark:text-amber-400" />
-              <p className="text-sm font-medium text-gray-900 dark:text-white">
-                {resultClaimFailed
-                  ? "Couldn't attach this result to your account"
-                  : "Your subtitles couldn't be loaded"}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm">
-                {resultClaimFailed
-                  ? 'This job may have been started in a different session. Try generating again, or refresh if you think this is a mistake.'
-                  : "The job finished, but we couldn't retrieve the result in this session. Refresh to try again — your subtitles are still on our side."}
-              </p>
+              <p className="text-sm font-medium text-gray-900 dark:text-white">{copy.title}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm">{copy.detail}</p>
               <button
                 type="button"
                 onClick={() => window.location.reload()}
@@ -1186,7 +1174,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               </button>
             </div>
           )
-        )}
+        })()}
 
         {(status === 'completed' || status === 'result-gated') && result && (
           <div className="space-y-component-sm">

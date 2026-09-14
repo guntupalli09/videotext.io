@@ -25,7 +25,8 @@ import {
   resolvedJobIsSuccessful,
   statusForFinalizeOutcome,
   finalizeOutcomeAllowsSuccessState,
-  type SubtitleFinalizeOutcome,
+  finalizeFailureCopy,
+  type FinalizeResult,
 } from '../src/lib/subtitleResultReadiness'
 import {
   resolveCompletedJobResultWith,
@@ -331,39 +332,75 @@ test('after signing in, a claimed guest job resolves to a usable result', async 
 
 // ── terminal state machine ──────────────────────────────────────────────────
 
-const ALL_OUTCOMES: SubtitleFinalizeOutcome[] = [
-  'ready',
-  'auth-gate',
-  'claim-failed',
-  'preview-failed',
-  'unavailable',
+const ALL_RESULTS: FinalizeResult[] = [
+  { kind: 'ready', rowsAvailable: true },
+  { kind: 'auth-gate' },
+  { kind: 'claim-failed' },
+  { kind: 'timeout' },
+  { kind: 'preview-failed' },
+  { kind: 'empty-result' },
 ]
 
-test("only 'ready' may enter the successful completed state", () => {
-  for (const outcome of ALL_OUTCOMES) {
-    const allowed = finalizeOutcomeAllowsSuccessState(outcome)
-    assert.equal(allowed, outcome === 'ready', `${outcome} success-state gate`)
+test("only kind === 'ready' may enter the successful completed state", () => {
+  for (const result of ALL_RESULTS) {
+    const isReady = result.kind === 'ready'
     assert.equal(
-      statusForFinalizeOutcome(outcome) === 'completed',
-      outcome === 'ready',
-      `${outcome} must not map to status 'completed'`,
+      finalizeOutcomeAllowsSuccessState(result),
+      isReady,
+      `${result.kind} success-state gate`,
+    )
+    assert.equal(
+      statusForFinalizeOutcome(result) === 'completed',
+      isReady,
+      `${result.kind} must not map to status 'completed'`,
     )
   }
 })
 
-test('non-ready outcomes still reach a rendered recovery state, never a blank one', () => {
-  assert.equal(statusForFinalizeOutcome('auth-gate'), 'result-gated')
-  for (const outcome of ['claim-failed', 'preview-failed', 'unavailable'] as const) {
-    assert.equal(statusForFinalizeOutcome(outcome), 'result-unavailable')
+test('a ready result must assert rowsAvailable', () => {
+  const ready: FinalizeResult = { kind: 'ready', rowsAvailable: true }
+  assert.equal(ready.kind === 'ready' && ready.rowsAvailable, true)
+  // @ts-expect-error a ready result cannot be constructed without rowsAvailable
+  const bad: FinalizeResult = { kind: 'ready' }
+  assert.ok(bad)
+})
+
+test('every non-ready kind reaches a rendered recovery state, never a blank one', () => {
+  assert.equal(statusForFinalizeOutcome({ kind: 'auth-gate' }), 'result-gated')
+  for (const kind of ['claim-failed', 'timeout', 'preview-failed', 'empty-result'] as const) {
+    assert.equal(statusForFinalizeOutcome({ kind }), 'result-unavailable')
   }
+})
+
+test('each failure kind has its own copy, and success states have none', () => {
+  assert.equal(finalizeFailureCopy({ kind: 'ready', rowsAvailable: true }), null)
+  assert.equal(finalizeFailureCopy({ kind: 'auth-gate' }), null)
+
+  const titles = new Set<string>()
+  for (const kind of ['claim-failed', 'timeout', 'preview-failed', 'empty-result'] as const) {
+    const copy = finalizeFailureCopy({ kind })
+    assert.ok(copy, `${kind} must have copy`)
+    assert.ok(copy.title.length > 0 && copy.detail.length > 0)
+    titles.add(copy.title)
+  }
+  assert.equal(titles.size, 4, 'each failure must read distinctly, not share one message')
+})
+
+test('timeout and empty-result are distinct failures, not one bucket', () => {
+  // A job that never yielded a payload and a job that yielded a payload with no
+  // file are different bugs and need different messages.
+  const timeout = finalizeFailureCopy({ kind: 'timeout' })
+  const empty = finalizeFailureCopy({ kind: 'empty-result' })
+  assert.ok(timeout && empty)
+  assert.notEqual(timeout.title, empty.title)
 })
 
 test('preview failure is NOT treated as an alternative-download state', () => {
   // Video-to-Subtitles builds every export from subtitleRows client-side, so a
   // downloadUrl without rows yields an empty file. If a real server-file
   // download is added, this expectation should change deliberately.
-  assert.equal(finalizeOutcomeAllowsSuccessState('preview-failed'), false)
-  assert.equal(statusForFinalizeOutcome('preview-failed'), 'result-unavailable')
+  assert.equal(finalizeOutcomeAllowsSuccessState({ kind: 'preview-failed' }), false)
+  assert.equal(statusForFinalizeOutcome({ kind: 'preview-failed' }), 'result-unavailable')
 })
 
 // ── call-site guards for the state machine ──────────────────────────────────
