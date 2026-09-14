@@ -53,13 +53,25 @@ Package to upload: **`artifacts/videotext-video-to-transcript-v1.0.0.zip`**
 | Small promo tile | 440×280 PNG/JPEG | Optional but recommended — layout suggested in `LISTING.md` |
 | Marquee promo tile | 1400×560 PNG/JPEG | Optional |
 
-### URLs
+### URLs and additional fields
 
 | Field | Value |
 | --- | --- |
-| **Homepage / website URL** | `https://videotext.io` |
-| **Support URL** | **MANUAL INPUT REQUIRED.** The repository has no published support address — the site's Privacy page points to "the Contact link in the footer or the support channel provided in the app". Pick and enter the real one (e.g. a support page URL or a `mailto:`). |
-| **Privacy policy URL** | `https://videotext.io/privacy` |
+| **Official URL** | Select **videotext.io** from the dropdown. The list only shows sites verified in Google Search Console **under the same Google account as this developer account** — if it is not there, verify it first (`Add a new site`). Selecting it gets the listing a verified-publisher attribution. |
+| **Homepage URL** | `https://videotext.io` (the canonical origin — `client/src/lib/seo.ts` and the sitemap both use the apex, not `www`). |
+| **Support URL** | `https://videotext.io/faq` — the only existing http support-ish page. The real support channel is **`support@videotext.io`** (`client/src/components/UserMenu.tsx:15`, also on `/docs/api` and the Zapier page); `mailto:support@videotext.io` works here if the dashboard accepts a non-http URL. **See the note below.** |
+| **Mature content** | Off. Nothing in the extension is mature content. |
+
+> **Note on the Support URL.** `/faq` (`client/src/pages/Faq.tsx`) currently publishes no contact
+> address, so a user who lands there from the Store has no way to reach anyone. Either point the
+> Support URL at `mailto:support@videotext.io`, or add the support address to the FAQ page before
+> submitting. Do not leave Support URL blank — Google's own hint on the field says support pages
+> make an item's ratings and comments more meaningful, and reviewers notice its absence on an item
+> that requires an account.
+
+> **www vs apex.** `.env.example` sets the Search Console property to `https://www.videotext.io/`
+> while the site's canonical origin is the apex `https://videotext.io`. Verify **both** in Search
+> Console so the apex appears in the Official URL dropdown and matches the Homepage URL.
 
 ## 3 — Privacy practices tab
 
