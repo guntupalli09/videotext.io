@@ -54,6 +54,10 @@ for i in $(seq 1 30); do
 done
 
 # ── 4. Apply Caddy config ─────────────────────────────────────────────────────
+if grep -qiE 'Access-Control-Allow-|handle @options|@options method OPTIONS' "${CADDYFILE_SRC}"; then
+  fail "deploy/Caddyfile must not intercept OPTIONS or set CORS headers. Express owns CORS."
+fi
+
 log "Validating Caddyfile..."
 caddy validate --config "${CADDYFILE_SRC}" \
   || fail "Caddyfile validation failed. Fix ${CADDYFILE_SRC} before deploying."
@@ -64,6 +68,19 @@ cp "${CADDYFILE_SRC}" "${CADDYFILE_DST}"
 log "Reloading Caddy (zero-downtime)..."
 caddy reload --config "${CADDYFILE_DST}" \
   || fail "Caddy reload failed. Check: journalctl -u caddy -n 30"
+
+log "Verifying CORS preflight is proxied to Express..."
+PREFLIGHT_HEADERS=$(curl -sk -D - -o /dev/null --max-time 8 \
+  --resolve api.videotext.io:443:127.0.0.1 \
+  -X OPTIONS \
+  -H 'Origin: https://videotext.io' \
+  -H 'Access-Control-Request-Method: POST' \
+  -H 'Access-Control-Request-Headers: content-type,authorization,x-ph-distinct-id' \
+  https://api.videotext.io/api/auth/google 2>/dev/null || true)
+if ! echo "${PREFLIGHT_HEADERS}" | grep -qi 'x-ph-distinct-id'; then
+  fail "CORS preflight did not allow x-ph-distinct-id. Caddy may still be intercepting OPTIONS. Headers:
+${PREFLIGHT_HEADERS}"
+fi
 
 log "Verifying webhook endpoint through Caddy..."
 HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 \
