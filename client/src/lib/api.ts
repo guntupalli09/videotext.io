@@ -1,5 +1,5 @@
 import { API_ORIGIN } from './apiBase'
-import { jobPayloadHasTranscript } from './hydrateTranscriptResult'
+import { jobHasUsableResult } from './hydrateTranscriptResult'
 import { trackEvent } from './analytics'
 import { getSamplesModuleAttribution } from './samplesAttribution'
 import { getSignupAttributionPayload } from './attribution'
@@ -1391,10 +1391,17 @@ export async function hydrateCompletedJobStatus(
   incoming: JobStatus
 ): Promise<JobStatus> {
   if (incoming.status !== 'completed') return incoming
-  if (!incoming.requiresAuth && jobPayloadHasTranscript(incoming.result)) {
+  if (!incoming.requiresAuth && jobHasUsableResult(incoming.result)) {
     return incoming
   }
   try {
+    if (getAuthToken() && incoming.requiresAuth && options?.jobToken) {
+      try {
+        await ensureGuestJobClaimed(jobId, options.jobToken)
+      } catch {
+        // GET below may still succeed for an already-owned job
+      }
+    }
     return await getJobStatus(jobId, options)
   } catch {
     return incoming

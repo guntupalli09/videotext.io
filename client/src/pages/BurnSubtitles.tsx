@@ -28,6 +28,7 @@ import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/fil
 import { incrementUsage } from '../lib/usage'
 import { incrementJobCompletedCount } from '../lib/jobCount'
 import { uploadDualFilesWithProgress, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError, claimGuestJob, getAuthToken } from '../lib/api'
+import { resolveCompletedJobResult } from '../lib/resolveCompletedJob'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
 import { persistJobId, clearPersistedJobId, getPersistedJobId, getPersistedJobToken } from '../lib/jobSession'
@@ -228,8 +229,17 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
             const started = processingStartedAtRef.current ?? Date.now()
             const processingMs = Date.now() - started
             setLastProcessingMs(processingMs)
+            const resolved = await resolveCompletedJobResult(response.jobId, response.jobToken, jobStatus)
+            if (resolved.kind === 'ready' && resolved.status.result) {
+              setResult(resolved.status.result)
+            } else if (resolved.kind === 'auth-gate') {
+              setResult(resolved.status?.result ?? { downloadUrl: '' })
+              setShowAuthModal(true)
+            } else {
+              setResult({ downloadUrl: '' })
+              toast.error('Video is ready, but the download is still loading. Refresh to see it.')
+            }
             setStatus('completed')
-            setResult(jobStatus.result ?? null)
             trackAppEvent('transcription_completed', { toolId: 'burn-subtitles' })
             // emitToolCompleted({ toolId: 'burn-subtitles', pathname: '/burn-subtitles', processingMs })
             incrementUsage('burn-subtitles')

@@ -56,7 +56,6 @@ import {
   uploadFileWithProgress,
   getJobStatus,
   getJobDeferredSummary,
-  hydrateCompletedJobStatus,
   subscribeJobStatus,
   getCurrentUsage,
   invalidateUsageCache,
@@ -70,7 +69,6 @@ import {
   submitYoutubeUrl,
   isYoutubeUrl,
   claimGuestJob,
-  ensureGuestJobClaimed,
   uploadBatch,
   getBatchStatus,
   getBatchDownloadUrl,
@@ -94,6 +92,7 @@ import {
   transcriptTextFromResult,
   type TranscriptJobResultLike,
 } from "../lib/hydrateTranscriptResult";
+import { resolveCompletedJobResult } from "../lib/resolveCompletedJob";
 import { LANGUAGES, languageToCode } from "../lib/languages";
 import {
   exportFileStem,
@@ -998,29 +997,6 @@ export default function VideoToTranscript(
   );
 
   /**
-   * A job started as a guest is only linked to a real account once claimed.
-   * If the user is already logged in when it completes, the server still
-   * withholds the result (requiresAuth: true). Claim it and reload instead of
-   * showing a "Transcript ready" pane with no words — same fix as Video to Subtitles.
-   */
-  const claimAndReloadTranscript = useCallback(
-    async (jobId: string, jobToken?: string) => {
-      if (!jobToken) return false;
-      try {
-        await ensureGuestJobClaimed(jobId, jobToken);
-        const next = await getJobStatus(jobId, { jobToken });
-        if (next.requiresAuth || !next.result) return false;
-        setShowAuthGate(false);
-        setResult(next.result);
-        return applyTranscriptPayload(next.result);
-      } catch {
-        return false;
-      }
-    },
-    [applyTranscriptPayload],
-  );
-
-  /**
    * Never flip to the completed workspace until transcript text is in state.
    * SSE completed events omit the result (EventSource cannot send the JWT),
    * so we always re-fetch over the authenticated GET and claim if needed.
@@ -1040,54 +1016,39 @@ export default function VideoToTranscript(
         return true;
       }
 
-      const applyStatus = async (
-        jobStatus: {
-          requiresAuth?: boolean;
-          result?: TranscriptJobResultLike & { downloadUrl?: string };
-        },
-      ) => {
-        if (jobStatus.requiresAuth) {
-          return claimAndReloadTranscript(jobId, jobToken);
-        }
-        if (!jobStatus.result) return false;
-        setShowAuthGate(false);
-        setResult({
-          downloadUrl: jobStatus.result.downloadUrl || "",
-          ...jobStatus.result,
-        });
-        return applyTranscriptPayload(jobStatus.result);
-      };
-
       setIsHydratingTranscript(true);
       try {
-        if (incoming && (await applyStatus(incoming))) return true;
-
-        const first = await hydrateCompletedJobStatus(
+        const resolved = await resolveCompletedJobResult(
           jobId,
-          jobToken ? { jobToken } : undefined,
-          {
-            status: "completed",
-            progress: 100,
-            requiresAuth: incoming?.requiresAuth,
-            result: incoming?.result as import("../lib/api").JobStatus["result"],
-          },
+          jobToken,
+          incoming
+            ? {
+                status: "completed",
+                progress: 100,
+                requiresAuth: incoming.requiresAuth,
+                result: incoming.result as import("../lib/api").JobStatus["result"],
+              }
+            : undefined,
         );
-        if (await applyStatus(first)) return true;
-
-        for (let i = 0; i < 8; i++) {
-          await new Promise((r) => setTimeout(r, JOB_POLL_INTERVAL_MS));
-          const next = await getJobStatus(
-            jobId,
-            jobToken ? { jobToken } : undefined,
-          );
-          if (await applyStatus(next)) return true;
+        if (resolved.kind === "auth-gate") {
+          setShowAuthGate(true);
+          setResult({ downloadUrl: "" });
+          return true;
+        }
+        if (resolved.kind === "ready" && resolved.status.result) {
+          setShowAuthGate(false);
+          setResult({
+            ...resolved.status.result,
+            downloadUrl: resolved.status.result.downloadUrl || "",
+          });
+          return applyTranscriptPayload(resolved.status.result);
         }
         return false;
       } finally {
         setIsHydratingTranscript(false);
       }
     },
-    [applyTranscriptPayload, claimAndReloadTranscript],
+    [applyTranscriptPayload],
   );
 
   const retryLoadTranscript = useCallback(async () => {
