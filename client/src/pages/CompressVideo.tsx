@@ -30,6 +30,7 @@ import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/fil
 import { incrementUsage } from '../lib/usage'
 import { incrementJobCompletedCount } from '../lib/jobCount'
 import { uploadFileWithProgress, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError, claimGuestJob, getAuthToken } from '../lib/api'
+import { resolveCompletedJobResult } from '../lib/resolveCompletedJob'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
 import { persistJobId, clearPersistedJobId, getPersistedJobId, getPersistedJobToken } from '../lib/jobSession'
@@ -217,8 +218,18 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
             const started = processingStartedAtRef.current ?? Date.now()
             const processingMs = Date.now() - started
             setLastProcessingMs(processingMs)
+            const resolved = await resolveCompletedJobResult(response.jobId, response.jobToken, jobStatus)
+            if (resolved.kind === 'ready' && resolved.status.result) {
+              setResult(resolved.status.result)
+            } else if (resolved.kind === 'auth-gate') {
+              setResult(resolved.status?.result ?? { downloadUrl: '' })
+              setShowAuthGate(true)
+              setShowAuthModal(true)
+            } else {
+              setResult({ downloadUrl: '' })
+              toast.error('Compressed video is ready, but the download is still loading. Refresh to see it.')
+            }
             setStatus('completed')
-            setResult(jobStatus.result ?? null)
             trackAppEvent('transcription_completed', { toolId: 'compress-video' })
             // emitToolCompleted({ toolId: 'compress-video', pathname: '/compress-video', processingMs })
             incrementUsage('compress-video')

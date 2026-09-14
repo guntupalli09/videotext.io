@@ -4,6 +4,7 @@ import assert from 'node:assert/strict'
 import {
   fetchTranscriptDownloadText,
   isTranscriptDownloadZip,
+  jobHasUsableResult,
   jobPayloadHasTranscript,
   looksLikeJsonErrorBody,
   transcriptTextFromResult,
@@ -37,6 +38,15 @@ test('transcriptTextFromResult is empty when the payload was stripped (requiresA
 test('jobPayloadHasTranscript is false for the SSE completed event (no result / requiresAuth)', () => {
   assert.equal(jobPayloadHasTranscript(undefined), false)
   assert.equal(jobPayloadHasTranscript({ downloadUrl: '' }), false)
+})
+
+test('jobHasUsableResult treats zip downloads and analyze issues as ready for non-transcript tools', () => {
+  assert.equal(
+    jobHasUsableResult({ downloadUrl: '/api/download/out.zip', fileName: 'out.zip' }),
+    true,
+  )
+  assert.equal(jobHasUsableResult({ issues: [] }), true)
+  assert.equal(jobHasUsableResult({ downloadUrl: '' }), false)
 })
 
 test('jobPayloadHasTranscript is true when segments, fullText, or a non-zip download exist', () => {

@@ -29,6 +29,7 @@ const SubtitleEditor = lazy(() => import('../components/SubtitleEditor'))
 import { incrementUsage } from '../lib/usage'
 import { incrementJobCompletedCount } from '../lib/jobCount'
 import { uploadFileWithProgress, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError, getAuthToken } from '../lib/api'
+import { resolveCompletedJobResult } from '../lib/resolveCompletedJob'
 import { isLoggedIn } from '../lib/auth'
 import { isPaidPlan as hasPaidPlan } from '../lib/plans'
 import { watermarkTextExport, watermarkClipboardText, applyWatermarkToVtt, applyWatermarkToAss, drawPdfFreePlanWatermark, WATERMARK_DOC_FOOTER, WATERMARK_DOC_HEADER } from '../lib/watermark'
@@ -316,6 +317,62 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
 
   const subtitleBaseName = (result?.fileName ?? fallbackTranslatedName('.srt')).replace(/\.\w+$/, '')
 
+  const loadTranslatedPreview = async (downloadUrl: string, fileName?: string) => {
+    const token = getAuthToken()
+    const res = await fetch(getAbsoluteDownloadUrl(downloadUrl), {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+    if (!res.ok) throw new Error(`Failed to load translation (${res.status})`)
+    const txt = await res.text()
+    const isTxt = (fileName ?? '').toLowerCase().endsWith('.txt')
+    if (isTxt) setPlainTextResult(txt)
+    else setSubtitleRows(parseSubtitlesToRows(txt))
+  }
+
+  const applyCompletedTranslate = async (
+    jobId: string,
+    jobToken: string | undefined,
+    incoming: import('../lib/api').JobStatus,
+    opts: { trackUsage: boolean; processingMs?: number },
+  ) => {
+    const resolved = await resolveCompletedJobResult(jobId, jobToken, incoming)
+    setStatus('completed')
+    if (resolved.kind === 'auth-gate') {
+      setShowAuthGate(true)
+      const fileName = resolved.status?.result?.fileName
+      setResult(fileName ? { downloadUrl: '', fileName } : { downloadUrl: '' })
+      return
+    }
+    if (resolved.kind === 'ready' && resolved.status.result) {
+      setShowAuthGate(false)
+      setResult(resolved.status.result)
+      if (resolved.status.result.downloadUrl) {
+        try {
+          await loadTranslatedPreview(resolved.status.result.downloadUrl, resolved.status.result.fileName)
+        } catch {
+          /* preview is best-effort; download still works */
+        }
+      }
+      if (opts.trackUsage) {
+        incrementUsage('translate-subtitles')
+        try {
+          const nextJobCount = incrementJobCompletedCount()
+          trackEvent('job_completed', {
+            job_id: jobId,
+            tool_type: BACKEND_TOOL_TYPES.TRANSLATE_SUBTITLES,
+            processing_time_ms: opts.processingMs,
+            job_count: nextJobCount,
+          })
+        } catch {
+          /* non-blocking */
+        }
+      }
+      return
+    }
+    setResult({ downloadUrl: '' })
+    toast.error('Translation is ready, but the file is still loading. Refresh to see it.')
+  }
+
   useEffect(() => {
     const fromQuery = searchParams.get('to')
     if (fromQuery && LANGUAGES.some((l) => l.value === fromQuery)) {
@@ -334,22 +391,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
         const jobStatus = await getJobStatus(jobId, jobToken ? { jobToken } : undefined)
         const transition = getJobLifecycleTransition(jobStatus)
         if (transition !== 'completed') return
-        setStatus('completed')
-        if (jobStatus.requiresAuth || !isLoggedIn()) {
-          setShowAuthGate(true)
-          setResult(jobStatus.result?.fileName ? { downloadUrl: '', fileName: jobStatus.result.fileName } : { downloadUrl: '' })
-          return
-        }
-        setResult(jobStatus.result ?? null)
-        if (jobStatus.result?.downloadUrl) {
-          try {
-            const res = await fetch(getAbsoluteDownloadUrl(jobStatus.result.downloadUrl))
-            const txt = await res.text()
-            const isTxt = (jobStatus.result.fileName ?? '').toLowerCase().endsWith('.txt')
-            if (isTxt) setPlainTextResult(txt)
-            else setSubtitleRows(parseSubtitlesToRows(txt))
-          } catch { /* non-blocking */ }
-        }
+        await applyCompletedTranslate(jobId, jobToken ?? undefined, jobStatus, { trackUsage: false })
       } catch { /* non-blocking */ }
     })()
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -545,46 +587,16 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
           if (transition === 'completed') {
             clearInterval(pollIntervalRef.current)
             const started = processingStartedAtRef.current ?? Date.now()
-            setLastProcessingMs(Date.now() - started)
-            setStatus('completed')
+            const processingMs = Date.now() - started
+            setLastProcessingMs(processingMs)
             trackAppEvent('transcription_completed', { toolId: 'translate-subtitles' })
-
-            if (jobStatus.requiresAuth || !isLoggedIn()) {
-              setShowAuthGate(true)
-              setResult(jobStatus.result?.fileName ? { downloadUrl: '', fileName: jobStatus.result.fileName } : { downloadUrl: '' })
-            } else {
-              setResult(jobStatus.result ?? null)
-              if (jobStatus.result?.downloadUrl) {
-                try {
-                  const token = getAuthToken()
-                  const res = await fetch(getAbsoluteDownloadUrl(jobStatus.result.downloadUrl), {
-                    headers: token ? { Authorization: `Bearer ${token}` } : {},
-                  })
-                  const txt = await res.text()
-                  const isTxt = (jobStatus.result.fileName ?? '').toLowerCase().endsWith('.txt')
-                  if (isTxt) {
-                    setPlainTextResult(txt)
-                  } else {
-                    setSubtitleRows(parseSubtitlesToRows(txt))
-                  }
-                } catch {
-                  // ignore
-                }
-              }
-              incrementUsage('translate-subtitles')
-              try {
-                const nextJobCount = incrementJobCompletedCount()
-                trackEvent('job_completed', {
-                  job_id: response.jobId,
-                  tool_type: BACKEND_TOOL_TYPES.TRANSLATE_SUBTITLES,
-                  processing_time_ms: Date.now() - started,
-                  job_count: nextJobCount,
-                })
-              } catch {
-                /* non-blocking */
-              }
-            }
-          } else if (transition === 'failed') {
+            await applyCompletedTranslate(response.jobId, response.jobToken, jobStatus, {
+              trackUsage: true,
+              processingMs,
+            })
+            return
+          }
+          if (transition === 'failed') {
             clearInterval(pollIntervalRef.current)
             setStatus('failed')
             toast.error('Processing failed. Please try again.')

@@ -27,6 +27,23 @@ export function jobPayloadHasTranscript(
   return false
 }
 
+/**
+ * True when any core-tool job payload is ready to show (file, text, cues, or analyze findings).
+ * Unlike jobPayloadHasTranscript, a ZIP downloadUrl counts — burn/compress results *are* the file.
+ */
+export function jobHasUsableResult(
+  res:
+    | (TranscriptJobResultLike & { issues?: unknown[] })
+    | null
+    | undefined,
+): boolean {
+  if (!res) return false
+  if (typeof res.downloadUrl === 'string' && res.downloadUrl.trim()) return true
+  if (transcriptTextFromResult(res)) return true
+  if (Array.isArray(res.issues)) return true
+  return false
+}
+
 export function transcriptTextFromResult(res: TranscriptJobResultLike | null | undefined): string {
   if (!res) return ''
   if (res.segments?.length) {
