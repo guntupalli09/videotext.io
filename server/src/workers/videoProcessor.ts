@@ -2545,12 +2545,11 @@ async function processJob(job: import('bull').Job<JobData>) {
           source: data.toolType,
           metadata: { job_id: String(jobId), processing_ms: totalJobMs },
         }).catch(() => {})
-        captureFunnelEvent({
-          eventName: 'first_output_seen',
-          userId: data.userId,
-          source: data.toolType,
-          metadata: { job_id: String(jobId) },
-        }).catch(() => {})
+        // first_output_seen is emitted by the client once the result actually
+        // renders (POST /api/events). Emitting it here on job completion made
+        // every completed job count as a successful result view — including the
+        // sessions that landed on a blank workspace — and captureFunnelEvent
+        // keeps only the first occurrence, so the server row would always win.
       }
     } catch {
       // non-blocking

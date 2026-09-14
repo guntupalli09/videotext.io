@@ -1373,7 +1373,7 @@ export async function getJobStatus(jobId: string, options?: { jobToken?: string 
 export async function getJobDeferredSummary(
   jobId: string,
   options?: { jobToken?: string }
-): Promise<{ summary?: { summary?: string; bullets?: string[]; actionItems?: string[] }; chapters?: { title: string; startTime: number; endTime?: number }[] }> {
+): Promise<{ requiresAuth?: boolean; summary?: { summary?: string; bullets?: string[]; actionItems?: string[] }; chapters?: { title: string; startTime: number; endTime?: number }[] }> {
   let path = `/api/job/${jobId}/summary`
   if (options?.jobToken) {
     path += `?jobToken=${encodeURIComponent(options.jobToken)}`
