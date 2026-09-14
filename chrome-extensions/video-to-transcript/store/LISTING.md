@@ -36,28 +36,42 @@ Turn audio or video into an accurate, editable transcript with VideoText. Copy i
 *(Limit: 16,000 characters)*
 
 The full text lives in **[`DESCRIPTION.txt`](DESCRIPTION.txt)** — paste it into the Description field
-as-is. It is **12,184 characters**, leaving headroom for edits.
+as-is. It is **3,048 characters**. That is deliberate: the limit is a ceiling, not a target.
 
-What it covers, in order: what the extension does · how it works in six steps · what you get ·
-every supported file format · the 72 languages (49 named) · twelve audience sections
-(journalists, podcasters, students, researchers, sales/support, product teams, marketers, course
-creators, legal, medical, accessibility, and everyone else) · a list of concrete tasks people come
-looking for · why VideoText · account and plans · privacy and permissions · what the extension
-deliberately does not do · getting started.
+### Read this before editing the description
 
-**On keywords.** High-intent search terms — *convert video to text*, *transcribe MP4*, *audio to
-text*, *meeting transcript*, *transcribe interview*, *podcast transcription*, *transcribe lecture*,
-*MP3 to text*, *voice memo to text* and so on — are carried by the use-case and "things people use
-it for" sections, phrased the way someone would actually search. They are not listed as a keyword
-block: the Chrome Web Store's **Keyword Spam** policy rejects listings with repetitive or irrelevant
-keyword lists, and a rejection on those grounds is slow to appeal.
+**Version 1.0.0 was rejected on 13 Sept 2026** under *Spam and placement in the Store* — keyword
+stuffing (notification ID `Yellow Argon`). The reviewer quoted one line of the previous draft:
 
-**Every claim is verified against this repository.** Formats come from
-`server/src/utils/fileValidation.ts`; the language names are checked one by one against
-`client/src/lib/languages.ts`; the permission and privacy statements match `manifest.json` and the
-bundle audit. Limits are described as "whatever your plan allows" rather than quoted, because they
-are per-plan and read live from the account. There is no accuracy percentage, no speed claim and no
-"unlimited", because nothing in the repository substantiates a specific number.
+> `"Video files: MP4, MOV, MKV, AVI, WebM, MPEG, MPG, OGV, 3GP, 3G2, FLV, WMV, TS, M4V"`
+
+The policy's own example of this violation is "including in an extension's metadata a long list of
+the different sites on which the extension works". **An exhaustive list of file formats is the same
+shape**, and so was the 49-language list and the seventeen near-duplicate "Transcribe an MP4… /
+Transcribe an MP3… / Transcribe a WAV…" bullets in that draft.
+
+Rules for this field, enforced by `tests/listing.test.mjs`:
+
+* **No enumerations.** Name at most a handful of formats in a sentence ("including MP4, MOV, MP3 and
+  WAV"); never the full set. State the language *count* ("72 languages"); never the list.
+* **No comma runs longer than five items**, anywhere.
+* **No repeated verb phrases as pseudo-features.** One "transcribe your X" line, not twelve.
+* **No ASCII divider bars.** The same policy line covers "improperly formatted" metadata.
+* **Prose over bullets** wherever a sentence will do.
+
+The exhaustive format list still belongs in the product — the popup's dropzone shows it, and so does
+videotext.io. It just must not appear in Store metadata.
+
+### What the copy covers
+
+What the extension does · how it works in six steps · what you get · plan-driven limits · job
+persistence · who it is for · account and plans · privacy · what it deliberately does not do ·
+getting started.
+
+**Every claim is verified against this repository.** Limits are described as "whatever your plan
+allows" rather than quoted, because they are per-plan and read live from the account. There is no
+accuracy percentage, no speed claim and no "unlimited", because nothing in the repository
+substantiates a specific number.
 
 ---
 

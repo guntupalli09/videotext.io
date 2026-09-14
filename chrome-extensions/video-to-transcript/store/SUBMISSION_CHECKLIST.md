@@ -11,6 +11,23 @@ Package to upload: **`artifacts/videotext-video-to-transcript-v1.0.0.zip`**
 
 ---
 
+## Rejection history — read first
+
+**13 Sept 2026, v1.0.0 — rejected.** *Spam and placement in the Store*, keyword stuffing
+(`Yellow Argon`). Cause: the description enumerated all 20 supported file formats, all 49 named
+languages, and seventeen near-duplicate "transcribe an X" bullets. Fixed by rewriting
+`store/DESCRIPTION.txt` as prose (12,184 → 3,048 characters).
+
+**Resubmitting does not need a new package.** The rejection was listing metadata only — the ZIP,
+the manifest and the code were not implicated. Replace the Description field with the current
+`store/DESCRIPTION.txt`, check the rest of this listing for the same pattern, and resubmit the
+draft. No version bump and no rebuild are required.
+
+`npm run chrome:transcript:test` now fails the build if list-shaped copy comes back
+(`tests/listing.test.mjs`).
+
+---
+
 ## 0 — Before you upload
 
 - [ ] **Deploy the web app change.** The `/extension-auth` route
@@ -40,7 +57,7 @@ Package to upload: **`artifacts/videotext-video-to-transcript-v1.0.0.zip`**
 | --- | --- |
 | **Name** | `Video to Transcript — VideoText` |
 | **Short description** | See `LISTING.md` → *Short description* (116 chars) |
-| **Detailed description** | Paste **`store/DESCRIPTION.txt`** verbatim (12,184 of 16,000 characters) |
+| **Detailed description** | Paste **`store/DESCRIPTION.txt`** verbatim (3,048 of 16,000 characters). **Do not add file-format or language lists** — that is what got v1.0.0 rejected; see `LISTING.md`. |
 | **Category** | Productivity |
 | **Language** | English (United States) |
 
