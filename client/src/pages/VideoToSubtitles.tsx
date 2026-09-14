@@ -31,6 +31,7 @@ import FinalQaCheckpoint from '../components/subtitleStudio/FinalQaCheckpoint'
 import StudioExportScreen from '../components/subtitleStudio/StudioExportScreen'
 import { applySafeAssistFixes, chipsByCueIndex, runAssistValidation, summarizeAssist } from '../lib/subtitleQaAssist'
 import type { SubtitleRow } from '../components/SubtitleEditor'
+import { parseSubtitlesToRows, needsResultRefetchAfterClaim } from '../lib/subtitleResultReadiness'
 import { incrementUsage } from '../lib/usage'
 import { uploadFileWithProgress, getJobStatus, subscribeJobStatus, getCurrentUsage, getConnectionProbeIfNeeded, BACKEND_TOOL_TYPES, SessionExpiredError, getUserFacingMessage, isNetworkError, POLL_STOP_AFTER_CONSECUTIVE_NETWORK_ERRORS, getAuthToken, claimGuestJob } from '../lib/api'
 import { resolveCompletedJobResult } from '../lib/resolveCompletedJob'
@@ -64,32 +65,6 @@ export type VideoToSubtitlesSeoProps = {
     ctaText?: string
     ctaPath?: string
   }
-}
-
-function parseSubtitlesToRows(text: string): SubtitleRow[] {
-  const blocks = text
-    .replace(/\r/g, '')
-    .trim()
-    .split('\n\n')
-    .filter(Boolean)
-
-  const rows: SubtitleRow[] = []
-  for (const block of blocks) {
-    const lines = block.split('\n').filter((l) => l.trim().length > 0)
-    const timeLineIdx = lines.findIndex((l) => l.includes('-->'))
-    if (timeLineIdx === -1) continue
-
-    const timeLine = lines[timeLineIdx]
-    const [start, end] = timeLine.split('-->').map((s) => s.trim())
-    const textLines = lines.slice(timeLineIdx + 1)
-    rows.push({
-      index: rows.length + 1,
-      startTime: start,
-      endTime: end,
-      text: textLines.join('\n'),
-    })
-  }
-  return rows
 }
 
 /**
@@ -209,6 +184,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const processingStartedAtRef = useRef<number | null>(null)
   const terminalRef = useRef(false)
   const lastPartialVersionRef = useRef(0)
+  const hasTrackedFirstOutputRef = useRef(false)
   const [resultLoadTimedOut, setResultLoadTimedOut] = useState(false)
   /** Set when auto-claiming a guest job for the now-logged-in user fails, so the panel shows an actionable message instead of nothing. */
   const [resultClaimFailed, setResultClaimFailed] = useState(false)
@@ -322,6 +298,30 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     }
     return resolved
   }
+
+  /**
+   * first_output_seen means the user actually saw subtitles, not that the job
+   * finished. It used to fire inside the completion handler, so a guest whose
+   * result was withheld behind the auth gate — or a session whose preview
+   * failed to load — still logged a successful result view over an empty
+   * Studio, which made the funnel look healthy while exports went to zero.
+   * Gate it on the cue rows the Studio renders from.
+   */
+  useEffect(() => {
+    if (status !== 'completed') return
+    if (hasTrackedFirstOutputRef.current) return
+    if (subtitleRows.length === 0) return
+    hasTrackedFirstOutputRef.current = true
+    // Keep the "result_panel" source the completion site already used so
+    // existing funnel breakdowns stay comparable across this change.
+    const props = { tool: 'video-to-subtitles', source: 'result_panel' }
+    try {
+      trackFirstOutputSeen(props)
+      trackAppEvent('first_output_seen', props)
+    } catch {
+      // non-blocking
+    }
+  }, [status, subtitleRows.length])
 
   useEffect(() => {
     if (status === 'completed' && !isLoggedIn()) {
@@ -802,8 +802,12 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                 processing_time_ms: processingMs,
                 job_count: nextJobCount,
               })
-              trackFirstOutputSeen({ tool: 'video-to-subtitles', source: 'result_panel' })
-              trackAppEvent('first_output_seen', { tool: 'video-to-subtitles', source: 'result_panel' })
+              // first_output_seen is NOT fired here: backend completion is not
+              // the same as the user seeing usable subtitles. A guest job is
+              // withheld behind the auth gate, and the preview can fail to
+              // load, both of which used to land here and log a successful
+              // result view over an empty Studio. It is emitted by the effect
+              // below, gated on subtitleRows actually being rendered.
               trackEvent('processing_completed', { tool: 'video-to-subtitles' })
               // texJobCompleted(processingMs, 'video-to-subtitles')
               setLastProcessingMs(processingMs)
@@ -1474,6 +1478,25 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                         Refresh
                       </button>
                     </div>
+                  ) : !result?.downloadUrl ? (
+                    // Completed job, but no usable result resolved. This used to
+                    // fall through to `null`, rendering a silently empty Studio
+                    // that looked like a successful run with no subtitles.
+                    <div className="rounded-xl border border-amber-200 dark:border-amber-800/50 bg-amber-50 dark:bg-amber-950/20 p-5 flex flex-col items-center text-center gap-2.5">
+                      <AlertTriangle className="h-5 w-5 text-amber-500 dark:text-amber-400" />
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">Your subtitles couldn't be loaded</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm">
+                        The job finished, but we couldn't retrieve the result in this session. Refresh to try again — your subtitles are still on our side.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => window.location.reload()}
+                        className="inline-flex items-center gap-1.5 mt-1 px-3 py-1.5 rounded-lg border border-amber-300 dark:border-amber-700 text-xs font-medium text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
+                      >
+                        <RefreshCw className="h-3.5 w-3.5" />
+                        Refresh
+                      </button>
+                    </div>
                   ) : null
                 )}
 
@@ -1517,12 +1540,23 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           }
           setShowAuthGate(false)
           setShowAuthModal(false)
-          if (result) {
-            // Result is already in memory — no reload needed.
-            // The full result panel becomes visible on next render since isLoggedIn() is now true.
-          } else {
-            window.location.reload()
+          if (!needsResultRefetchAfterClaim(result, subtitleRows.length)) {
+            // A usable result is already in memory — the full panel becomes
+            // visible on next render since isLoggedIn() is now true.
+            return
           }
+          if (jobId) {
+            // The claim above changed server-side authorization, so a result
+            // the API withheld from the guest is now fetchable. Re-resolve it.
+            // The auth gate sets a { downloadUrl: '' } placeholder which is
+            // TRUTHY, so the old `if (result)` check treated the empty
+            // placeholder as a loaded result and skipped recovery entirely —
+            // leaving a completed Studio with zero cues and no path back
+            // short of a manual refresh.
+            await finalizeCompletedSubtitles(jobId, jobToken ?? undefined)
+            return
+          }
+          window.location.reload()
         }}
       />
 
