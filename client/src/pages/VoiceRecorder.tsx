@@ -684,6 +684,9 @@ export default function VoiceRecorder() {
           if (s.status === 'completed') {
             stopPollRef.current?.()
             const resolved = await resolveCompletedJobResult(res.jobId, res.jobToken, s)
+            if (resolved.kind === 'auth-gate' || !isLoggedIn()) {
+              setShowAuthGate(true)
+            }
             const result = resolved.kind === 'ready' ? resolved.status.result : undefined
             setVoiceSegments(result?.segments?.length ? result.segments : null)
             setVoiceAudioUrl(result?.audioUrl ?? null)

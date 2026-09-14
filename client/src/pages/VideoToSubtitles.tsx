@@ -302,8 +302,12 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       return resolved
     }
     setPreviewLoading(false)
-    if (resolved.status?.requiresAuth) setResultClaimFailed(true)
-    else setResultLoadTimedOut(true)
+    if (resolved.status?.requiresAuth) {
+      setResultClaimFailed(true)
+      setResult({ downloadUrl: '' })
+    } else {
+      setResultLoadTimedOut(true)
+    }
     return resolved
   }
 
