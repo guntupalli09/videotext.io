@@ -75,34 +75,49 @@ substantiates a specific number.
 
 ---
 
-## Suggested screenshot captions
+## Screenshots
 
-Screenshots must be **1280×800** or **640×400** PNG or JPEG (see `SUBMISSION_CHECKLIST.md`).
-Capture the popup at 380 px wide and place it on a clean, light backdrop.
+Per Google's listing guidance (developer.chrome.com/docs/webstore/best-listing):
+
+* **One minimum, five preferred.** Six is over the recommended count — drop the weakest.
+* **1280×800 or 640×400**, PNG or JPEG.
+* **Square corners and no padding — full bleed.** The image must fill the frame.
+* **Show the real product**, at current functionality. Nothing blurry, distorted or upscaled.
+
+> **Correction to earlier advice in this file:** "place the popup on a clean, light backdrop" is
+> wrong if the backdrop leaves the shot letterboxed or the corners rounded. The popup is only 380 px
+> wide, so compose each shot as a full-bleed 1280×800 frame — the popup open over a realistic
+> browser window — rather than a small popup floating in empty space.
+
+Suggested five:
 
 1. **"Drop in a file — or pick one."**
    The idle popup: VideoText branding, the drop area, the language picker, the Transcribe button.
-
 2. **"Choose the spoken language, or let it detect one."**
    The language dropdown open, with Auto-detect at the top.
-
 3. **"Real progress, no guesswork."**
-   The processing state showing "Transcribing your file…" with the queue or processing detail line.
-
+   The processing state with the queue or processing detail line.
 4. **"Read your transcript right in the extension."**
    The result view with transcript text and the word count.
-
 5. **"Copy it, or download a .TXT."**
-   The result view with the Copy Transcript and Download .TXT buttons in focus.
+   The result view with both buttons in focus.
 
-6. *(optional)* **"Your VideoText plan, your limits."**
-   The idle view with the plan pill and remaining-allowance line visible.
+## Promo tiles
 
-## Suggested small promo tile text (440×280)
+Small promo tile **440×280**; marquee **1400×560** (homepage carousel only). Google's guidance:
+avoid too much text, make sure it still reads at half size, and prefer saturated colours — the brand
+indigo `#6366F1` with the existing purple mark (`icons/icon-128.png`) fits that.
 
-Headline: **Video to Transcript**
-Sub-line: **by VideoText**
-Use the existing purple VideoText mark (`icons/icon-128.png`) on the brand indigo (`#6366F1`).
+Do not imply status the item does not have ("Editor's Choice", "#1", "Featured").
+
+## After the listing is approved
+
+Google's guidance asks for **"an overview paragraph followed by a short list of main features."**
+The current description is deliberately all prose, because a live keyword-spam strike is the wrong
+moment to reintroduce list formatting. Once the item is approved, a **short list of four or five
+genuinely distinct features** is both allowed and what Google asks for — the earlier violation was
+seventeen near-duplicate "transcribe an X" bullets and category roll-calls, which is a different
+thing. Re-run `npm test` after any such edit.
 
 ## Notes on the copy
 
