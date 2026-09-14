@@ -1,7 +1,7 @@
 # Single image for API and worker. Node 18 LTS.
 FROM node:20-slim
 
-# System dependencies (ffmpeg for workers; yt-dlp via pip for latest/pre-release; Deno for n/sig challenge).
+# System dependencies (ffmpeg for workers; yt-dlp via pip for latest/pre-release).
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     python3 \
@@ -11,10 +11,29 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     unzip \
     && pip3 install --break-system-packages -U --pre "yt-dlp[default]" \
     && yt-dlp --version \
-    && curl -fsSL --http1.1 "https://github.com/denoland/deno/releases/latest/download/deno-x86_64-unknown-linux-gnu.zip" -o /tmp/deno.zip \
-    && unzip -q /tmp/deno.zip -d /usr/local/bin \
-    && rm /tmp/deno.zip \
     && rm -rf /var/lib/apt/lists/* /root/.cache/pip
+
+# Deno (yt-dlp n/sig challenge solver). Kept in its own layer so a failed download does not
+# invalidate the apt/pip layer above — a rebuild then resumes here instead of refetching ~150MB.
+#
+# github.com/.../releases/latest/download is a redirect that intermittently answers 5xx; an
+# unretried curl there has already failed a production deploy with "curl: (22) ... error: 504".
+# --retry covers transient 5xx/timeouts, and --retry-all-errors also covers connection resets.
+# Set DENO_VERSION (e.g. --build-arg DENO_VERSION=v2.1.4) to pin an exact release instead of latest.
+ARG DENO_VERSION=latest
+RUN set -eux; \
+    if [ "$DENO_VERSION" = "latest" ]; then \
+      DENO_URL="https://github.com/denoland/deno/releases/latest/download/deno-x86_64-unknown-linux-gnu.zip"; \
+    else \
+      DENO_URL="https://github.com/denoland/deno/releases/download/${DENO_VERSION}/deno-x86_64-unknown-linux-gnu.zip"; \
+    fi; \
+    curl -fsSL --http1.1 \
+      --retry 5 --retry-delay 3 --retry-all-errors --retry-max-time 180 --connect-timeout 30 \
+      "$DENO_URL" -o /tmp/deno.zip; \
+    unzip -q /tmp/deno.zip -d /usr/local/bin; \
+    rm /tmp/deno.zip; \
+    chmod +x /usr/local/bin/deno; \
+    deno --version
 
 WORKDIR /app
 
