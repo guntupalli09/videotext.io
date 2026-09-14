@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { login, storeLoginResult } from '../lib/auth'
 import { identifyUser, trackEvent } from '../lib/analytics'
-import { loginWithGoogle } from '../lib/api'
+import { getUserFacingMessage, loginWithGoogle } from '../lib/api'
 import { FileText, Youtube, Zap, ChevronRight } from 'lucide-react'
 import GoogleSignInButton, { GOOGLE_CLIENT_ID } from '../components/GoogleSignInButton'
 
@@ -35,7 +35,7 @@ export default function Login() {
       navigate(returnTo, { replace: true })
       window.location.reload()
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Google login failed')
+      setError(getUserFacingMessage(err))
     } finally {
       setGoogleLoading(false)
     }
@@ -58,7 +58,7 @@ export default function Login() {
       navigate(returnTo, { replace: true })
       window.location.reload()
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Login failed'
+      const msg = getUserFacingMessage(err)
       try { trackEvent('login_failed', { error: msg }) } catch { /* non-blocking */ }
       setError(msg)
     } finally {
@@ -154,11 +154,6 @@ export default function Login() {
               <GoogleSignInButton onCredential={handleGoogleCredential} text="signin_with" />
               {googleLoading && (
                 <p className="text-center text-sm text-gray-500 dark:text-gray-400">Signing in with Google…</p>
-              )}
-              {error && (
-                <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600 dark:bg-red-500/10 dark:text-red-400" role="alert">
-                  {error}
-                </p>
               )}
               <div className="flex items-center gap-3">
                 <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
