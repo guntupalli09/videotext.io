@@ -233,7 +233,22 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
   const [paywallReason, setPaywallReason] = useState<PaywallReason>('FREE_DAILY_LIMIT_REACHED')
   const [showAuthGate, setShowAuthGate] = useState(false)
   const pendingDownloadRef = useRef<(() => void) | null>(null)
+  // Guards one job_started per job; polling revisits 'processing' on every tick.
+  const jobStartedTrackedRef = useRef<string | null>(null)
+  const editorOpenedTrackedRef = useRef(false)
   const pendingCopyRef = useRef<(() => void) | null>(null)
+
+  const handleLanguageSelected = (lang: string) => {
+    setTargetLanguage(lang)
+    try {
+      trackEvent('language_selected', {
+        tool_type: BACKEND_TOOL_TYPES.TRANSLATE_SUBTITLES,
+        language: lang,
+      })
+    } catch {
+      /* non-blocking */
+    }
+  }
 
   /** Gate any download action behind authentication. */
   function requireAuthForDownload(action: () => void) {
@@ -303,6 +318,20 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
   const plan = (localStorage.getItem('plan') || 'free').toLowerCase()
   const isPaidPlan = hasPaidPlan(plan)
   const canEdit = hasPaidPlan(plan)
+
+  useEffect(() => {
+    if (subtitleRows.length === 0 || editorOpenedTrackedRef.current) return
+    editorOpenedTrackedRef.current = true
+    try {
+      trackEvent('subtitle_editor_opened', {
+        tool_type: BACKEND_TOOL_TYPES.TRANSLATE_SUBTITLES,
+        editable: canEdit,
+        rows: subtitleRows.length,
+      })
+    } catch {
+      /* non-blocking */
+    }
+  }, [subtitleRows.length, canEdit])
 
   /** Paste / .txt upload → .txt; file upload → .srt (or .vtt from server). */
   const translateFallbackExt: '.srt' | '.txt' =
@@ -583,6 +612,18 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
           setProgress(jobStatus.progress ?? 0)
           if (jobStatus.queuePosition !== undefined) setQueuePosition(jobStatus.queuePosition)
 
+          if (jobStatus.status === 'processing' && jobStartedTrackedRef.current !== response.jobId) {
+            jobStartedTrackedRef.current = response.jobId
+            try {
+              trackEvent('job_started', {
+                job_id: response.jobId,
+                tool_type: BACKEND_TOOL_TYPES.TRANSLATE_SUBTITLES,
+              })
+            } catch {
+              /* non-blocking */
+            }
+          }
+
           const transition = getJobLifecycleTransition(jobStatus)
           if (transition === 'completed') {
             clearInterval(pollIntervalRef.current)
@@ -619,6 +660,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
   }
 
   const handleProcessAnother = () => {
+    try { trackEvent('process_another_clicked', { tool_type: BACKEND_TOOL_TYPES.TRANSLATE_SUBTITLES }) } catch { /* non-blocking */ }
     clearPersistedJobId(location.pathname, navigate)
     setSelectedFile(null)
     setPastedText('')
@@ -840,7 +882,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
         <UpgradeBanner variant="video-length" tool="translate-subtitles" />
 
         {isPrimaryTranslate && status === 'idle' && inputKind === 'subtitles' && (
-          <TranslateSerpHero targetLanguage={targetLanguage} onSelectLanguage={setTargetLanguage} />
+          <TranslateSerpHero targetLanguage={targetLanguage} onSelectLanguage={handleLanguageSelected} />
         )}
 
         {kindSelector}
@@ -863,7 +905,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
             {status === 'idle' && tab === 'upload' && !selectedFile && (
               <div className="space-y-component-sm">
                 {isPrimaryTranslate && (
-                  <Select label="Translate to" options={LANGUAGES} value={targetLanguage} onChange={setTargetLanguage} />
+                  <Select label="Translate to" options={LANGUAGES} value={targetLanguage} onChange={handleLanguageSelected} />
                 )}
                 <UploadZone
                   immediateSelect
@@ -891,7 +933,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                 showVideoPlayer={false}
               >
                 <div className="space-y-3">
-                  <Select label="Translate to" options={LANGUAGES} value={targetLanguage} onChange={setTargetLanguage} />
+                  <Select label="Translate to" options={LANGUAGES} value={targetLanguage} onChange={handleLanguageSelected} />
                   {!isPaidPlan && (
                     <p className="text-xs text-gray-400 dark:text-gray-500">
                       Free plan: 3 translations per month ·{' '}
@@ -905,7 +947,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
             {/* Paste tab */}
             {status === 'idle' && tab === 'paste' && (
               <div className="space-y-component-sm">
-                <Select label="Translate to" options={LANGUAGES} value={targetLanguage} onChange={setTargetLanguage} />
+                <Select label="Translate to" options={LANGUAGES} value={targetLanguage} onChange={handleLanguageSelected} />
                 <textarea
                   value={pastedText}
                   onChange={(e) => setPastedText(e.target.value)}
@@ -1178,7 +1220,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                 <div className="bg-gray-50 dark:bg-gray-900/60 border border-gray-100 dark:border-gray-800 rounded-xl p-4 max-h-40 overflow-y-auto">
                   <pre className="text-xs text-gray-500 dark:text-gray-400 whitespace-pre-wrap font-sans">{docText.slice(0, 600)}{docText.length > 600 ? '\n…' : ''}</pre>
                 </div>
-                <Select label="Translate to" options={LANGUAGES} value={targetLanguage} onChange={setTargetLanguage} />
+                <Select label="Translate to" options={LANGUAGES} value={targetLanguage} onChange={handleLanguageSelected} />
                 {!isPaidPlan && (
                   <p className="text-xs text-gray-400 dark:text-gray-500">
                     Free plan: 3 translations per month ·{' '}
@@ -1199,7 +1241,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
             {/* Paste tab */}
             {!docTranslated && !docLoading && tab === 'paste' && (
               <div className="space-y-component-sm">
-                <Select label="Translate to" options={LANGUAGES} value={targetLanguage} onChange={setTargetLanguage} />
+                <Select label="Translate to" options={LANGUAGES} value={targetLanguage} onChange={handleLanguageSelected} />
                 <textarea
                   value={pastedText}
                   onChange={(e) => setPastedText(e.target.value)}

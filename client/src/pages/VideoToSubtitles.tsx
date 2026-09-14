@@ -194,6 +194,18 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const [attachedMediaFile, setAttachedMediaFile] = useState<File | null>(null)
   const [attachedMediaUrl, setAttachedMediaUrl] = useState<string | null>(null)
   const jobStartedTrackedRef = useRef<string | null>(null)
+
+  const handleLanguageSelected = (lang: string) => {
+    setLanguage(lang)
+    try {
+      trackEvent('language_selected', {
+        tool_type: BACKEND_TOOL_TYPES.VIDEO_TO_SUBTITLES,
+        language: lang,
+      })
+    } catch {
+      /* non-blocking */
+    }
+  }
   const processingStartedAtRef = useRef<number | null>(null)
   const terminalRef = useRef(false)
   const lastPartialVersionRef = useRef(0)
@@ -878,6 +890,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   }
 
   const handleProcessAnother = () => {
+    try { trackEvent('process_another_clicked', { tool_type: BACKEND_TOOL_TYPES.VIDEO_TO_SUBTITLES }) } catch { /* non-blocking */ }
     clearPersistedJobId(location.pathname, navigate)
     setSelectedFile(null)
     setFilePreview(null)
@@ -1031,7 +1044,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                   { value: 'ja', label: 'Japanese' },
                 ]}
                 value={language}
-                onChange={setLanguage}
+                onChange={handleLanguageSelected}
               />
             </div>
           </ProcessingInterface>
