@@ -324,6 +324,18 @@ export default function VideoToTranscript(
   const [status, setStatus] = useState<
     "idle" | "processing" | "completed" | "failed"
   >("idle");
+  /**
+   * True from the moment the user hits a start CTA until the job's own status
+   * takes over. The quota lookup that runs first is a network round trip, so
+   * without this the primary button sits inert and people click it twice.
+   */
+  const [startPending, setStartPending] = useState(false);
+
+  // Once the job's own status drives the UI (or a failure sends us back to
+  // idle), the pending CTA state has done its job.
+  useEffect(() => {
+    setStartPending(false);
+  }, [status]);
   const [uploadZoneVisible, setUploadZoneVisible] = useState(true);
   const uploadZoneRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
@@ -1504,6 +1516,10 @@ export default function VideoToTranscript(
       return;
     }
 
+    // Synchronous, before any await: the CTA must disable and show its spinner
+    // on this click, not after the quota lookup returns.
+    setStartPending(true);
+
     const durationSeconds = filePreview?.durationSeconds ?? 0;
     // Only apply trim when user actually moved handles away from the default full-range (0/100).
     // ProcessingInterface always passes (0, 100) when untouched; treating that as "no trim"
@@ -1536,6 +1552,7 @@ export default function VideoToTranscript(
         ? used >= (usageData.limit ?? 3)
         : totalAvailable > 0 && used >= totalAvailable;
       if (atOrOverLimit) {
+        setStartPending(false);
         setShowPaywall(true);
         trackEvent("upgrade_prompt_seen", getFunnelProps("quota_gate"));
         return;
@@ -1640,7 +1657,10 @@ export default function VideoToTranscript(
       setDiarizationWasRequested(diarizationEnabledForJob);
       setUploadPhase("uploading");
       const uploadProps = getFunnelProps("file_upload");
-      trackEvent("upload_started", uploadProps);
+      // PostHog's `upload_started` and `upload_completed` are each captured once,
+      // inside the upload helper (it knows the real upload mode and duration);
+      // these props ride along with both via analyticsProps below.
+      // trackAppEvent goes to our own /api/events, so it is not a duplicate.
       trackAppEvent("upload_started", uploadProps);
       trackEvent("processing_started", { tool: "video-to-transcript" });
 
@@ -1652,6 +1672,12 @@ export default function VideoToTranscript(
         onProgress: (p) => setUploadProgress(p),
         connectionSpeed: connectionSpeedResult,
         signal: uploadAbortRef.current?.signal,
+        analyticsProps: {
+          ...uploadProps,
+          tool: "video-to-transcript",
+          start_mode: startMode,
+          auto_start_enabled: autoStartEnabled,
+        },
       });
 
       const tl =
@@ -1660,17 +1686,6 @@ export default function VideoToTranscript(
           : undefined;
       uploadAbortRef.current = null;
       uploadCompletedAtRef.current = Date.now();
-      try {
-        trackEvent("upload_completed", {
-          tool: "video-to-transcript",
-          file_size_bytes: selectedFile.size,
-          upload_progress_pct: 100,
-          start_mode: startMode,
-          auto_start_enabled: autoStartEnabled,
-        });
-      } catch {
-        // non-blocking
-      }
       setCurrentJobId(response.jobId);
       persistJobId(location.pathname, response.jobId, response.jobToken);
       setUploadPhase("processing");
@@ -1999,6 +2014,9 @@ export default function VideoToTranscript(
       toast.error("Please enter a valid YouTube URL (youtube.com or youtu.be)");
       return;
     }
+
+    // Same reason as handleProcess: the quota lookup below is a network call.
+    setStartPending(true);
     const _isPaid =
       typeof window !== "undefined" &&
       (localStorage.getItem("plan") || "free").toLowerCase() !== "free";
@@ -2019,6 +2037,7 @@ export default function VideoToTranscript(
         ? used >= (usageData.limit ?? 3)
         : totalAvailable > 0 && used >= totalAvailable;
       if (atOrOverLimit) {
+        setStartPending(false);
         setShowPaywall(true);
         trackEvent("upgrade_prompt_seen", getFunnelProps("youtube_paywall"));
         return;
@@ -4016,18 +4035,31 @@ export default function VideoToTranscript(
                 <button
                   type="button"
                   onClick={() => void handleProcessYoutube()}
-                  disabled={!youtubeUrlInput || !isYoutubeUrl(youtubeUrlInput)}
+                  disabled={
+                    startPending ||
+                    !youtubeUrlInput ||
+                    !isYoutubeUrl(youtubeUrlInput)
+                  }
                   className="w-full py-3 px-6 rounded-xl font-semibold text-sm transition-all duration-200 bg-red-500 hover:bg-red-600 text-white shadow-md disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2"
                 >
-                  <svg
-                    viewBox="0 0 24 24"
-                    className="w-4 h-4 shrink-0"
-                    fill="currentColor"
-                    aria-hidden
-                  >
-                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                  </svg>
-                  Transcribe YouTube Video
+                  {startPending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 shrink-0 animate-spin" />
+                      Starting…
+                    </>
+                  ) : (
+                    <>
+                      <svg
+                        viewBox="0 0 24 24"
+                        className="w-4 h-4 shrink-0"
+                        fill="currentColor"
+                        aria-hidden
+                      >
+                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                      </svg>
+                      Transcribe YouTube Video
+                    </>
+                  )}
                 </button>
               </div>
             )}
@@ -4229,7 +4261,7 @@ export default function VideoToTranscript(
             onAction={(trimStartPercent, trimEndPercent) =>
               handleProcess(trimStartPercent, trimEndPercent, "manual")
             }
-            actionLoading={false}
+            actionLoading={startPending}
             showVideoPlayer={
               !!(videoPreviewUrl || filePreview?.durationSeconds)
             }

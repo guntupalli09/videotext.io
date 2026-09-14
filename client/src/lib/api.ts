@@ -219,6 +219,12 @@ export interface UploadProgressOptions {
   signal?: AbortSignal
   /** Optional non-blocking UX: adaptive status messages e.g. "Optimizing connection...", "High-speed mode enabled". */
   onAdaptiveStatus?: (message: string) => void
+  /**
+   * Extra properties merged into the `upload_started` / `upload_completed` analytics
+   * events fired here. Lets a page attach its funnel context to these single captures
+   * instead of capturing duplicates of its own.
+   */
+  analyticsProps?: Record<string, unknown>
 }
 
 const CHUNK_THRESHOLD = 15 * 1024 * 1024 // 15 MB — use chunked upload above this
@@ -421,6 +427,7 @@ async function uploadFileChunked(
   const tl = typeof window !== 'undefined' ? (window as any).__uploadTimeline : undefined
   if (tl) tl.uploadStart = uploadStartMs
   trackUploadEvent('upload_started', {
+    ...(progressOptions?.analyticsProps ?? {}),
     tool_type: options.toolType,
     file_size_bytes: file.size,
     upload_mode: 'chunked',
@@ -778,6 +785,17 @@ async function uploadFileChunked(
   if (signal?.aborted) throw new Error('Upload cancelled')
   if (tl) tl.upload100 = Date.now()
   if (tl) tl.beforeComplete = Date.now()
+  const trackChunkedCompleted = (jobId: string, recoveredAfterError = false) => {
+    trackUploadEvent('upload_completed', {
+      ...(progressOptions?.analyticsProps ?? {}),
+      job_id: jobId,
+      tool_type: options.toolType,
+      file_size_bytes: file.size,
+      upload_mode: 'chunked',
+      upload_duration_ms: Date.now() - uploadStartMs,
+      ...(recoveredAfterError ? { recovered_after_complete_error: true } : {}),
+    })
+  }
   const completeRes = await api('/api/upload/complete', {
     method: 'POST',
     headers: {
@@ -809,6 +827,7 @@ async function uploadFileChunked(
           if (status.status === 'failed') throw new Error(msg)
           if (status.status === 'completed') {
             clearChunkedUploadState()
+            trackChunkedCompleted(err.jobId, true)
             return { jobId: err.jobId, status: 'queued' as const, jobToken }
           }
         } catch (e) {
@@ -818,6 +837,7 @@ async function uploadFileChunked(
       }
       // Job still processing or poll failed; return so UI shows "Processing..." instead of fatal error
       clearChunkedUploadState()
+      trackChunkedCompleted(err.jobId, true)
       return { jobId: err.jobId, status: 'queued' as const, jobToken }
     }
     throw new Error(msg)
@@ -826,13 +846,7 @@ async function uploadFileChunked(
   if (!data?.jobId) throw new Error('Invalid upload response. Please retry.')
   clearChunkedUploadState()
   const uploadDurationMs = Date.now() - uploadStartMs
-  trackUploadEvent('upload_completed', {
-    job_id: data.jobId,
-    tool_type: options.toolType,
-    file_size_bytes: file.size,
-    upload_mode: 'chunked',
-    upload_duration_ms: uploadDurationMs,
-  })
+  trackChunkedCompleted(data.jobId)
   console.log('[UPLOAD_TIMING]', { file_size_bytes: file.size, upload_duration_ms: uploadDurationMs, tool_type: options.toolType, mode: 'chunked' })
   return data
 }
@@ -851,6 +865,7 @@ export function uploadFileWithProgress(
 
   const uploadMode = options.uploadMode === 'audio-only' ? 'audio-only' : 'single'
   trackUploadEvent('upload_started', {
+    ...(progressOptions?.analyticsProps ?? {}),
     tool_type: options.toolType,
     file_size_bytes: file.size,
     upload_mode: uploadMode,
@@ -901,6 +916,7 @@ export function uploadFileWithProgress(
           if (tl) tl.uploadCompleteResponse = Date.now()
           const uploadDurationMs = uploadStartMs ? Date.now() - uploadStartMs : 0
           trackUploadEvent('upload_completed', {
+            ...(progressOptions?.analyticsProps ?? {}),
             job_id: data.jobId,
             tool_type: options.toolType,
             file_size_bytes: file.size,
