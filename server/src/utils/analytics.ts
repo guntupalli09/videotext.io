@@ -68,15 +68,37 @@ export function flushAnalytics(): void {
   }
 }
 
+/**
+ * Reads the browser's PostHog distinct ID forwarded by the client (see client/src/lib/api.ts).
+ * Returns undefined when absent — PostHog blocked, a non-browser caller, or the API used directly.
+ */
+export function readAnonymousId(req: { headers: Record<string, unknown> }): string | undefined {
+  const raw = req.headers['x-ph-distinct-id']
+  const value = Array.isArray(raw) ? raw[0] : raw
+  if (typeof value !== 'string') return undefined
+  const trimmed = value.trim()
+  // Bound the length so a hostile header can't create huge person profiles.
+  return trimmed && trimmed.length <= 200 ? trimmed : undefined
+}
+
+/**
+ * distinctId falls back to the browser's PostHog ID (x-ph-distinct-id) for logged-out
+ * users, so the job stitches onto the same person as their client-side events. Without
+ * it every anonymous visitor collapsed into one shared 'anonymous' profile, which made
+ * pre-signup funnels meaningless. Last resort is job_id — one throwaway profile is
+ * better than polluting a shared one.
+ */
 export function trackJobCreated(params: {
   job_id: string
   user_id?: string
+  anonymous_id?: string
   tool_type: string
   file_size_bytes?: number
   plan?: string
 }): void {
-  capture('job_created', params.user_id ?? 'anonymous', {
+  capture('job_created', params.user_id ?? params.anonymous_id ?? params.job_id, {
     job_id: params.job_id,
+    ...(params.user_id == null && { is_anonymous: true }),
     tool_type: params.tool_type,
     ...(params.file_size_bytes != null && { file_size_bytes: params.file_size_bytes }),
     ...(params.plan && { plan: params.plan }),

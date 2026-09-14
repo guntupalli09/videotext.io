@@ -223,3 +223,18 @@ export function trackEvent(event: AnalyticsEvent, props?: Record<string, unknown
     // non-blocking; never throw
   }
 }
+
+/**
+ * PostHog's distinct ID for the current browser. Sent to the API so server-side
+ * events can be attributed to the same person as client-side ones — without it,
+ * every logged-out user collapses into a single 'anonymous' profile.
+ * Returns null when PostHog is uninitialized, opted out, or blocked.
+ */
+export function getPostHogDistinctId(): string | null {
+  if (optedOut) return null
+  try {
+    return posthog.get_distinct_id() || null
+  } catch {
+    return null
+  }
+}
