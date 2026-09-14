@@ -16,7 +16,7 @@ api.videotext.io {
         output stdout
         format json
     }
-    # ... rest of config (handle @options, handle reverse_proxy)
+    reverse_proxy localhost:3001
 }
 ```
 
