@@ -1622,6 +1622,10 @@ async function processJob(job: import('bull').Job<JobData>) {
           result = {
             downloadUrl: primaryDownloadUrl,
             fileName: primaryFileName,
+            // Always include plain text so the client can render the pane even
+            // when segments are omitted (text-only Whisper path) or the
+            // download URL is a ZIP / requires a separate authenticated fetch.
+            ...(fullText ? { fullText } : {}),
             ...(segments.length > 0 && { segments }),
             ...(summary && { summary }),
             ...(chapters && chapters.length > 0 && { chapters }),

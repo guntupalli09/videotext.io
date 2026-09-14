@@ -69,6 +69,7 @@ import {
   submitYoutubeUrl,
   isYoutubeUrl,
   claimGuestJob,
+  ensureGuestJobClaimed,
   uploadBatch,
   getBatchStatus,
   getBatchDownloadUrl,
@@ -87,6 +88,11 @@ import {
   JOB_POLL_INTERVAL_MS,
 } from "../lib/jobPolling";
 import { API_ORIGIN, getAbsoluteDownloadUrl, getApiBase } from "../lib/apiBase";
+import {
+  fetchTranscriptDownloadText,
+  transcriptTextFromResult,
+  type TranscriptJobResultLike,
+} from "../lib/hydrateTranscriptResult";
 import { LANGUAGES, languageToCode } from "../lib/languages";
 import {
   exportFileStem,
@@ -326,6 +332,7 @@ export default function VideoToTranscript(
   const [result, setResult] = useState<{
     downloadUrl: string;
     fileName?: string;
+    fullText?: string;
     segments?: { start: number; end: number; text: string; speaker?: string }[];
     summary?: { summary: string; bullets: string[]; actionItems?: string[] };
     chapters?: { title: string; startTime: number; endTime?: number }[];
@@ -333,6 +340,7 @@ export default function VideoToTranscript(
   } | null>(null);
   const [transcriptPreview, setTranscriptPreview] = useState("");
   const [fullTranscript, setFullTranscript] = useState("");
+  const [isHydratingTranscript, setIsHydratingTranscript] = useState(false);
   const [includeSummary, setIncludeSummary] = useState(true);
   const [includeChapters, setIncludeChapters] = useState(true);
   const [exportFormats, setExportFormats] = useState<
@@ -960,6 +968,118 @@ export default function VideoToTranscript(
     };
   }, [status, result]);
 
+  const applyTranscriptPayload = useCallback(
+    async (res: TranscriptJobResultLike | null | undefined) => {
+      const fromPayload = transcriptTextFromResult(res);
+      if (fromPayload) {
+        setFullTranscript(fromPayload);
+        setTranscriptPreview(fromPayload.substring(0, 500));
+        return true;
+      }
+      if (!res?.downloadUrl) return false;
+      try {
+        const text = await fetchTranscriptDownloadText(
+          getAbsoluteDownloadUrl(res.downloadUrl),
+          res.fileName,
+          fetch,
+          getAuthToken(),
+        );
+        if (!text) return false;
+        setFullTranscript(text);
+        setTranscriptPreview(text.substring(0, 500));
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    [],
+  );
+
+  /**
+   * A job started as a guest is only linked to a real account once claimed.
+   * If the user is already logged in when it completes, the server still
+   * withholds the result (requiresAuth: true). Claim it and reload instead of
+   * showing a "Transcript ready" pane with no words — same fix as Video to Subtitles.
+   */
+  const claimAndReloadTranscript = useCallback(
+    async (jobId: string, jobToken?: string) => {
+      if (!jobToken) return false;
+      try {
+        await ensureGuestJobClaimed(jobId, jobToken);
+        const next = await getJobStatus(jobId, { jobToken });
+        if (next.requiresAuth || !next.result) return false;
+        setShowAuthGate(false);
+        setResult(next.result);
+        return applyTranscriptPayload(next.result);
+      } catch {
+        return false;
+      }
+    },
+    [applyTranscriptPayload],
+  );
+
+  const applyCompletedJobAccess = useCallback(
+    (
+      jobStatus: {
+        requiresAuth?: boolean;
+        result?: TranscriptJobResultLike & { downloadUrl?: string };
+      },
+      jobId: string,
+      jobToken?: string,
+    ) => {
+      if (isLoggedIn() && !jobStatus.requiresAuth) {
+        setResult(
+          jobStatus.result
+            ? {
+                downloadUrl: jobStatus.result.downloadUrl || "",
+                ...jobStatus.result,
+              }
+            : null,
+        );
+        setIsHydratingTranscript(true);
+        void applyTranscriptPayload(jobStatus.result).finally(() => {
+          setIsHydratingTranscript(false);
+        });
+        return;
+      }
+      if (isLoggedIn()) {
+        setResult({ downloadUrl: "" });
+        setIsHydratingTranscript(true);
+        void claimAndReloadTranscript(jobId, jobToken).finally(() => {
+          setIsHydratingTranscript(false);
+        });
+        return;
+      }
+      setShowAuthGate(true);
+      setResult({ downloadUrl: "" });
+    },
+    [applyTranscriptPayload, claimAndReloadTranscript],
+  );
+
+  const retryLoadTranscript = useCallback(async () => {
+    const jobId = currentJobId || getPersistedJobId(location.pathname);
+    const jobToken = getPersistedJobToken(location.pathname) || undefined;
+    if (!jobId) return;
+    if (isLoggedIn()) {
+      const claimed = await claimAndReloadTranscript(jobId, jobToken);
+      if (claimed) return;
+    }
+    try {
+      const next = await getJobStatus(
+        jobId,
+        jobToken ? { jobToken } : undefined,
+      );
+      applyCompletedJobAccess(next, jobId, jobToken);
+    } catch {
+      // keep the empty-state retry button
+    }
+  }, [
+    applyCompletedJobAccess,
+    claimAndReloadTranscript,
+    currentJobId,
+    location.pathname,
+  ]);
+
   // Rehydrate from URL/sessionStorage after idle or reload (e.g. mobile Safari)
   useEffect(() => {
     const pathname = location.pathname;
@@ -996,39 +1116,17 @@ export default function VideoToTranscript(
           terminalRef.current = true;
           setPartialSegments([]);
           setStatus("completed");
-          if (isLoggedIn() && !jobStatus.requiresAuth) {
-            setResult(jobStatus.result ?? null);
-          } else {
-            setShowAuthGate(true);
-            setResult({ downloadUrl: "" });
-          }
+          applyCompletedJobAccess(
+            jobStatus,
+            jobId,
+            jobToken ?? undefined,
+          );
           trackAppEvent("transcription_completed", {
             toolId: "video-to-transcript",
           });
           // emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript' })
           setUploadPhase("processing");
           setUploadProgress(100);
-          const res = jobStatus.result;
-          if (isLoggedIn()) {
-            if (res?.segments?.length) {
-              const textFromSegments = res.segments
-                .map((s: { text: string }) => s.text)
-                .join("\n\n");
-              setFullTranscript(textFromSegments);
-              setTranscriptPreview(textFromSegments.substring(0, 500));
-            } else if (res?.downloadUrl) {
-              try {
-                const transcriptResponse = await fetch(
-                  getAbsoluteDownloadUrl(res.downloadUrl),
-                );
-                const transcriptText = await transcriptResponse.text();
-                setTranscriptPreview(transcriptText.substring(0, 500));
-                setFullTranscript(transcriptText);
-              } catch {
-                // ignore (e.g. ZIP file)
-              }
-            }
-          }
           invalidateUsageCache();
           getCurrentUsage({ skipCache: true })
             .then((data) => {
@@ -1092,36 +1190,11 @@ export default function VideoToTranscript(
               rehydratePollRef.current = null;
               setPartialSegments([]);
               setStatus("completed");
-              if (isLoggedIn() && !s.requiresAuth) {
-                setResult(s.result ?? null);
-              } else {
-                setShowAuthGate(true);
-                setResult({ downloadUrl: "" });
-              }
+              applyCompletedJobAccess(s, jobId, jobToken ?? undefined);
               trackAppEvent("transcription_completed", {
                 toolId: "video-to-transcript",
               });
               // emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript' })
-              if (isLoggedIn()) {
-                if (s.result?.segments?.length) {
-                  const textFromSegments = s.result.segments
-                    .map((seg: { text: string }) => seg.text)
-                    .join("\n\n");
-                  setFullTranscript(textFromSegments);
-                  setTranscriptPreview(textFromSegments.substring(0, 500));
-                } else if (s.result?.downloadUrl) {
-                  try {
-                    const res = await fetch(
-                      getAbsoluteDownloadUrl(s.result.downloadUrl),
-                    );
-                    const text = await res.text();
-                    setTranscriptPreview(text.substring(0, 500));
-                    setFullTranscript(text);
-                  } catch {
-                    // ignore
-                  }
-                }
-              }
               invalidateUsageCache();
               getCurrentUsage({ skipCache: true })
                 .then((data) => {
@@ -1197,7 +1270,7 @@ export default function VideoToTranscript(
       if (rehydratePollRef.current) clearInterval(rehydratePollRef.current);
       rehydratePollRef.current = null;
     };
-  }, [location.pathname, navigate]);
+  }, [applyCompletedJobAccess, location.pathname, navigate]);
 
   // Remind user to keep tab open when they switch away during upload (helps mobile)
   useEffect(() => {
@@ -1667,39 +1740,17 @@ export default function VideoToTranscript(
             minStreamDelayTimeoutRef.current = null;
             setPartialSegments([]);
             setStatus("completed");
-            if (isLoggedIn() && !jobStatus.requiresAuth) {
-              setResult(jobStatus.result ?? null);
-            } else {
-              setShowAuthGate(true);
-              setResult({ downloadUrl: "" });
-            }
+            applyCompletedJobAccess(
+              jobStatus,
+              response.jobId,
+              jobToken ?? undefined,
+            );
             trackAppEvent("transcription_completed", {
               toolId: "video-to-transcript",
             });
             const started = processingStartedAtRef.current ?? Date.now();
             const processingMs = Date.now() - started;
             // emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript', processingMs })
-            if (isLoggedIn()) {
-              if (res?.segments?.length) {
-                const textFromSegments = res.segments
-                  .map((s: { text: string }) => s.text)
-                  .join("\n\n");
-                setFullTranscript(textFromSegments);
-                setTranscriptPreview(textFromSegments.substring(0, 500));
-              } else if (res?.downloadUrl) {
-                try {
-                  fetch(getAbsoluteDownloadUrl(res.downloadUrl))
-                    .then((transcriptResponse) => transcriptResponse.text())
-                    .then((transcriptText) => {
-                      setTranscriptPreview(transcriptText.substring(0, 500));
-                      setFullTranscript(transcriptText);
-                    })
-                    .catch(() => {});
-                } catch {
-                  // Ignore
-                }
-              }
-            }
             incrementUsage("video-to-transcript");
             setHasCompletedJobs(true);
             setActivationCardDismissed(true);
@@ -2082,35 +2133,17 @@ export default function VideoToTranscript(
             minStreamDelayTimeoutRef.current = null;
             setPartialSegments([]);
             setStatus("completed");
-            if (isLoggedIn() && !jobStatus.requiresAuth) {
-              setResult(jobStatus.result ?? null);
-            } else {
-              setShowAuthGate(true);
-              setResult({ downloadUrl: "" });
-            }
+            applyCompletedJobAccess(
+              jobStatus,
+              response.jobId,
+              jobToken ?? undefined,
+            );
             trackAppEvent("transcription_completed", {
               toolId: "video-to-transcript",
             });
             const started = processingStartedAtRef.current ?? Date.now();
             const processingMs = Date.now() - started;
             // emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript', processingMs })
-            if (isLoggedIn()) {
-              if (res?.segments?.length) {
-                const text = res.segments
-                  .map((s: { text: string }) => s.text)
-                  .join("\n\n");
-                setFullTranscript(text);
-                setTranscriptPreview(text.substring(0, 500));
-              } else if (res?.downloadUrl) {
-                fetch(getAbsoluteDownloadUrl(res.downloadUrl))
-                  .then((r) => r.text())
-                  .then((t) => {
-                    setTranscriptPreview(t.substring(0, 500));
-                    setFullTranscript(t);
-                  })
-                  .catch(() => {});
-              }
-            }
             incrementUsage("video-to-transcript");
             setHasCompletedJobs(true);
             setActivationCardDismissed(true);
@@ -2348,6 +2381,7 @@ export default function VideoToTranscript(
     setResult(null);
     setTranscriptPreview("");
     setFullTranscript("");
+    setIsHydratingTranscript(false);
     setPartialSegments([]);
     setLeftWorkspaceTab("transcript");
     setIncludeSummary(true);
@@ -5196,9 +5230,39 @@ export default function VideoToTranscript(
                         ) : (
                           <div className="max-w-[52rem] whitespace-pre-wrap break-words text-[#1d1d1f]">
                             {displayTranscript ||
+                            fullTranscript ||
+                            transcriptPreview ? (
+                              displayTranscript ||
                               fullTranscript ||
-                              transcriptPreview ||
-                              ""}
+                              transcriptPreview
+                            ) : (
+                              <div className="flex min-h-[12rem] flex-col items-center justify-center gap-3 text-center">
+                                {isHydratingTranscript ? (
+                                  <p className="text-sm text-gray-600">
+                                    Loading transcript…
+                                  </p>
+                                ) : (
+                                  <>
+                                    <p className="text-sm text-gray-600">
+                                      The transcript finished, but the text did
+                                      not load into this panel.
+                                    </p>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setIsHydratingTranscript(true);
+                                        void retryLoadTranscript().finally(
+                                          () => setIsHydratingTranscript(false),
+                                        );
+                                      }}
+                                      className="inline-flex items-center justify-center rounded-lg bg-blue-700 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-800"
+                                    >
+                                      Reload transcript
+                                    </button>
+                                  </>
+                                )}
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>

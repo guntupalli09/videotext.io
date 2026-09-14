@@ -111,6 +111,8 @@ export interface JobStatus {
     issues?: any[]
     warnings?: { type: string; message: string; line?: number }[]
     consistencyIssues?: { line: number; issueType: string }[]
+    /** Plain transcript text. Present even when segments are omitted. */
+    fullText?: string
     segments?: { start: number; end: number; text: string; speaker?: string }[]
     summary?: { summary: string; bullets: string[]; actionItems?: string[] }
     chapters?: { title: string; startTime: number; endTime?: number }[]
