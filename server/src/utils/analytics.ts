@@ -31,10 +31,7 @@ function identify(distinctId: string, properties?: Record<string, unknown>): voi
   try {
     const c = getClient()
     if (!c) return
-    ;(c as unknown as { identify?: (payload: { distinctId: string; properties?: Record<string, unknown> }) => void }).identify?.({
-      distinctId,
-      properties,
-    })
+    c.identify({ distinctId, properties })
   } catch {
     // no-op
   }
@@ -60,9 +57,9 @@ function capture(event: string, distinctId: string, properties?: Record<string, 
 /** Call once on server shutdown to flush events. */
 export function flushAnalytics(): void {
   try {
-    if (client) {
-      client.flush()
-    }
+    // flush() is async; swallow the rejection so a failed shutdown flush
+    // can't surface as an unhandled rejection and kill the process.
+    client?.flush().catch(() => {})
   } catch {
     // no-op
   }
