@@ -219,6 +219,12 @@ export interface UploadProgressOptions {
   signal?: AbortSignal
   /** Optional non-blocking UX: adaptive status messages e.g. "Optimizing connection...", "High-speed mode enabled". */
   onAdaptiveStatus?: (message: string) => void
+  /**
+   * Extra properties merged into the `upload_started` analytics event fired here.
+   * Lets a page attach its funnel context to this single capture instead of
+   * capturing a second, duplicate `upload_started` of its own.
+   */
+  analyticsProps?: Record<string, unknown>
 }
 
 const CHUNK_THRESHOLD = 15 * 1024 * 1024 // 15 MB — use chunked upload above this
@@ -421,6 +427,7 @@ async function uploadFileChunked(
   const tl = typeof window !== 'undefined' ? (window as any).__uploadTimeline : undefined
   if (tl) tl.uploadStart = uploadStartMs
   trackUploadEvent('upload_started', {
+    ...(progressOptions?.analyticsProps ?? {}),
     tool_type: options.toolType,
     file_size_bytes: file.size,
     upload_mode: 'chunked',
@@ -851,6 +858,7 @@ export function uploadFileWithProgress(
 
   const uploadMode = options.uploadMode === 'audio-only' ? 'audio-only' : 'single'
   trackUploadEvent('upload_started', {
+    ...(progressOptions?.analyticsProps ?? {}),
     tool_type: options.toolType,
     file_size_bytes: file.size,
     upload_mode: uploadMode,

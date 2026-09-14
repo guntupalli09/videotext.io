@@ -67,9 +67,11 @@ export function ProcessingInterface({
             <button
               type="button"
               onClick={onRemove}
-              className="rounded-md p-1.5 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+              aria-label={`Remove ${file.name}`}
+              title="Remove file"
+              className="shrink-0 rounded-md p-2.5 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
             >
-              <X className="h-3.5 w-3.5 text-gray-500 dark:text-gray-400" />
+              <X className="h-4 w-4 text-gray-500 dark:text-gray-400" />
             </button>
           )}
         </div>
