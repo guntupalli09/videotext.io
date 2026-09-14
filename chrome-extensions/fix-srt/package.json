@@ -1,0 +1,11 @@
+{
+  "name": "videotext-fix-srt-extension",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "icons": "node scripts/generate-icons.mjs",
+    "build": "node scripts/build.mjs",
+    "test": "node scripts/build.mjs && node --test tests/srtValidate.test.js tests/bundleAudit.test.js"
+  }
+}

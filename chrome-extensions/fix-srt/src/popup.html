@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fix SRT — VideoText</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">
+          <img class="logo" src="icons/icon32.png" alt="" width="24" height="24" />
+          <div>
+            <h1>Fix SRT</h1>
+            <p class="brand-sub">VideoText</p>
+          </div>
+        </div>
+        <div id="account-chip" class="account-chip hidden"></div>
+      </header>
+
+      <p class="lede">
+        Repair overlapping cues, re-index the file, and optionally fix timing, line length, fillers, or spelling.
+        Uses your VideoText account and the same server engine as
+        <a href="https://videotext.io/fix-subtitles" target="_blank" rel="noreferrer">videotext.io/fix-subtitles</a>.
+      </p>
+
+      <section id="auth-panel" class="card hidden">
+        <h2>Sign in to VideoText</h2>
+        <p class="muted">Required to run Fix SRT and download the corrected file. Free imports and paid limits still apply.</p>
+        <form id="login-form" class="stack">
+          <label>
+            Email
+            <input id="login-email" type="email" autocomplete="username" required />
+          </label>
+          <label>
+            Password
+            <input id="login-password" type="password" autocomplete="current-password" required />
+          </label>
+          <button type="submit" class="btn primary" id="login-submit">Sign in</button>
+        </form>
+        <p id="login-error" class="error hidden"></p>
+        <p class="muted small">
+          Already signed in on the website?
+          <button type="button" class="linkish" id="open-site-login">Open VideoText</button>
+          then reopen this popup.
+        </p>
+        <p class="muted small">
+          No account?
+          <a href="https://videotext.io/login" target="_blank" rel="noreferrer">Create one on VideoText</a>
+        </p>
+      </section>
+
+      <section id="quota-panel" class="card warn hidden">
+        <h2>Upgrade required</h2>
+        <p id="quota-copy">Your free VideoText imports are used up for this period.</p>
+        <a class="btn primary" id="upgrade-link" href="https://videotext.io/pricing" target="_blank" rel="noreferrer">Upgrade on VideoText</a>
+      </section>
+
+      <section id="drop-panel" class="card">
+        <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Select SRT file">
+          <strong>Drag &amp; drop your .srt file</strong>
+          <span>or</span>
+          <button type="button" class="btn ghost" id="pick-file">Select SRT File</button>
+          <input id="file-input" type="file" accept=".srt,application/x-subrip,text/plain" hidden />
+        </div>
+        <div id="file-meta" class="file-meta hidden"></div>
+        <ul id="file-errors" class="error-list hidden"></ul>
+        <ul id="file-warnings" class="warn-list hidden"></ul>
+      </section>
+
+      <section id="options-panel" class="card hidden">
+        <h2>Fix options</h2>
+        <p class="muted small">Overlapping cues are always resolved. Other changes are off unless you enable them. The original file stays on your computer; VideoText reconstructs a new SRT.</p>
+        <label class="check">
+          <input type="checkbox" id="opt-timing" />
+          <span>
+            <strong>Fix timing</strong>
+            <em>Clamp long cues, extend unreadable or too-fast cues</em>
+          </span>
+        </label>
+        <label class="check">
+          <input type="checkbox" id="opt-grammar" />
+          <span>
+            <strong>Grammar &amp; spelling</strong>
+            <em>Optional AI pass (gpt-4o-mini on VideoText’s server). Can change wording if the model errs.</em>
+          </span>
+        </label>
+        <label class="check">
+          <input type="checkbox" id="opt-lines" />
+          <span>
+            <strong>Line breaks (CPL)</strong>
+            <em>Wrap lines longer than 42 characters</em>
+          </span>
+        </label>
+        <label class="check">
+          <input type="checkbox" id="opt-fillers" />
+          <span>
+            <strong>Remove filler words</strong>
+            <em>Strip um, uh, like, you know, and similar</em>
+          </span>
+        </label>
+        <button type="button" class="btn primary" id="fix-btn" disabled>Fix SRT</button>
+      </section>
+
+      <section id="process-panel" class="card hidden">
+        <div class="spinner" aria-hidden="true"></div>
+        <p id="process-copy">Uploading SRT to VideoText…</p>
+        <p id="process-detail" class="muted small"></p>
+        <button type="button" class="btn ghost" id="cancel-btn">Cancel</button>
+      </section>
+
+      <section id="result-panel" class="card hidden">
+        <h2>Fixed SRT ready</h2>
+        <p id="result-summary" class="muted"></p>
+        <div id="findings" class="findings"></div>
+        <h3>Preview</h3>
+        <div id="preview" class="preview"></div>
+        <div class="row">
+          <button type="button" class="btn primary" id="download-btn">Download Fixed SRT</button>
+          <button type="button" class="btn ghost" id="another-btn">Fix Another SRT</button>
+        </div>
+        <p id="result-note" class="muted small"></p>
+      </section>
+
+      <section id="error-panel" class="card error-card hidden">
+        <h2>Could not finish</h2>
+        <p id="error-copy"></p>
+        <button type="button" class="btn ghost" id="retry-reset">Try another file</button>
+      </section>
+
+      <footer class="footer">
+        <span id="usage-line" class="muted small"></span>
+        <button type="button" class="linkish hidden" id="sign-out">Sign out</button>
+      </footer>
+    </div>
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>
