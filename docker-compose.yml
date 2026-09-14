@@ -140,8 +140,10 @@ services:
     command: node dist/workers/videoProcessor.js
 
   # ── Docker build-cache cleanup ────────────────────────────────────────────
-  # Prunes images and build cache older than 7 days every Sunday at 03:00 UTC.
-  # Prevents Docker's build cache from silently accumulating GBs over time.
+  # Prunes images and build cache older than 7 days. Runs once on start, then
+  # every 7 days. Do not chmod the script: it is mounted read-only, and chmod
+  # on that mount exits 1 (container Restarting loop). docker:cli also may not
+  # ship crond. Invoke via /bin/sh so the file does not need +x.
   # Logs: docker compose logs docker-cleanup
   docker-cleanup:
     image: docker:cli
@@ -150,12 +152,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./scripts/docker-cleanup.sh:/scripts/docker-cleanup.sh:ro
-    command: >
-      sh -c "
-        chmod +x /scripts/docker-cleanup.sh &&
-        echo '0 3 * * 0 /scripts/docker-cleanup.sh >> /proc/1/fd/1 2>&1' | crontab - &&
-        crond -f -l 2
-      "
+    command: ["sh", "-c", "while true; do /bin/sh /scripts/docker-cleanup.sh; sleep 604800; done"]
     deploy:
       resources:
         limits:
