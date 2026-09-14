@@ -69,6 +69,7 @@ import {
   submitYoutubeUrl,
   isYoutubeUrl,
   claimGuestJob,
+  ensureGuestJobClaimed,
   uploadBatch,
   getBatchStatus,
   getBatchDownloadUrl,
@@ -93,6 +94,7 @@ import {
   type TranscriptJobResultLike,
 } from "../lib/hydrateTranscriptResult";
 import { resolveCompletedJobResult } from "../lib/resolveCompletedJob";
+import { pollDeferredSummary } from "../lib/deferredSummaryPoll";
 import { LANGUAGES, languageToCode } from "../lib/languages";
 import {
   exportFileStem,
@@ -779,6 +781,29 @@ export default function VideoToTranscript(
     audioPlaybackTimeRef.current = 0;
   }, [result?.audioUrl, status]);
 
+  /**
+   * first_output_seen means the user actually saw a transcript, not that the
+   * job finished. It used to fire inside the completion handler, so a session
+   * that landed on a blank workspace still logged a successful result view and
+   * the funnel looked healthy while downloads went to zero. Gate it on the
+   * transcript text that the pane renders from.
+   */
+  useEffect(() => {
+    if (status !== "completed") return;
+    if (hasTrackedFirstOutputRef.current) return;
+    if (!fullTranscript.trim()) return;
+    hasTrackedFirstOutputRef.current = true;
+    // Keep the "result_panel" source both completion sites already used so the
+    // existing funnel breakdowns stay comparable across the change.
+    const props = getFunnelProps("result_panel");
+    try {
+      trackFirstOutputSeen(props);
+      trackAppEvent("first_output_seen", props);
+    } catch {
+      // non-blocking
+    }
+  }, [status, fullTranscript, getFunnelProps]);
+
   useEffect(() => {
     if (status !== "completed" || !currentJobId) {
       setIsSummaryHydrating(false);
@@ -794,52 +819,58 @@ export default function VideoToTranscript(
     let cancelled = false;
     setIsSummaryHydrating(true);
     const jobToken = getPersistedJobToken(location.pathname) || undefined;
-    const poll = async () => {
-      try {
-        const deferred = await getJobDeferredSummary(
-          currentJobId,
-          jobToken ? { jobToken } : undefined,
-        );
-        if (cancelled) return;
-        if (deferred.summary || deferred.chapters) {
-          setResult((prev) => {
-            if (!prev) return prev;
-            return {
-              ...prev,
-              ...(deferred.summary
-                ? {
-                    summary: deferred.summary as {
-                      summary: string;
-                      bullets: string[];
-                      actionItems?: string[];
-                    },
-                  }
-                : {}),
-              ...(deferred.chapters ? { chapters: deferred.chapters } : {}),
-            };
-          });
-          setIsSummaryHydrating(false);
-        }
-      } catch (err) {
-        if (err instanceof SessionExpiredError) {
-          cancelled = true;
-          setIsSummaryHydrating(false);
-          setCurrentJobId(null);
-          clearPersistedJobId(location.pathname, navigate);
-          return;
-        }
-        // Keep polling until summary is ready.
+
+    void (async () => {
+      const outcome = await pollDeferredSummary({
+        fetchSummary: () =>
+          getJobDeferredSummary(
+            currentJobId,
+            jobToken ? { jobToken } : undefined,
+          ),
+        sleep: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
+        now: () => Date.now(),
+        isCancelled: () => cancelled,
+        isSessionExpired: (err) => err instanceof SessionExpiredError,
+        claimJob:
+          getAuthToken() && jobToken
+            ? () => ensureGuestJobClaimed(currentJobId, jobToken)
+            : undefined,
+      });
+      if (cancelled) return;
+
+      if (outcome.kind === "ready") {
+        setResult((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            ...(outcome.payload.summary
+              ? {
+                  summary: outcome.payload.summary as {
+                    summary: string;
+                    bullets: string[];
+                    actionItems?: string[];
+                  },
+                }
+              : {}),
+            ...(outcome.payload.chapters
+              ? { chapters: outcome.payload.chapters }
+              : {}),
+          };
+        });
+      } else if (outcome.kind === "session-expired") {
+        setCurrentJobId(null);
+        clearPersistedJobId(location.pathname, navigate);
       }
-    };
-    void poll();
-    const timer = setInterval(() => {
-      void poll();
-    }, 2000);
+      // requires-auth / exhausted / session-expired all stop the spinner so the
+      // "No summary for this transcript yet" copy or the unlock teaser renders
+      // instead of an indefinite "Generating summary…".
+      setIsSummaryHydrating(false);
+    })();
+
     return () => {
       cancelled = true;
-      clearInterval(timer);
     };
-  }, [status, currentJobId, location.pathname, result?.summary]);
+  }, [status, currentJobId, location.pathname, navigate, result?.summary]);
 
   // Sync editable segments from result. Preserve speaker field so exports can apply speaker names.
   // Restore from localStorage when the same job is reopened (zero-server-retention: edits stay on device).
@@ -1764,15 +1795,10 @@ export default function VideoToTranscript(
                   processing_time_ms: processingMs,
                   ...getFunnelProps("file_upload"),
                 });
-                const nextJobCount = incrementJobCompletedCount();
-                trackFirstOutputSeen({
-                  ...getFunnelProps("result_panel"),
-                  job_count: nextJobCount,
-                });
-                trackAppEvent("first_output_seen", {
-                  ...getFunnelProps("result_panel"),
-                  job_count: nextJobCount,
-                });
+                incrementJobCompletedCount();
+                // first_output_seen is NOT fired here: job completion is not
+                // proof the user saw anything. See the effect keyed on
+                // fullTranscript below.
                 trackEvent("processing_completed", {
                   tool: "video-to-transcript",
                 });
@@ -2157,15 +2183,8 @@ export default function VideoToTranscript(
                   processing_time_ms: processingMs,
                   ...getFunnelProps("youtube_url"),
                 });
-                const nextJobCount = incrementJobCompletedCount();
-                trackFirstOutputSeen({
-                  ...getFunnelProps("result_panel"),
-                  job_count: nextJobCount,
-                });
-                trackAppEvent("first_output_seen", {
-                  ...getFunnelProps("result_panel"),
-                  job_count: nextJobCount,
-                });
+                incrementJobCompletedCount();
+                // See note above — fired on rendered transcript, not completion.
                 trackEvent("processing_completed", {
                   tool: "video-to-transcript",
                   source: "youtube",
