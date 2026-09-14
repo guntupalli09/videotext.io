@@ -75,27 +75,31 @@ Package to upload: **`artifacts/videotext-video-to-transcript-v1.0.0.zip`**
 
 ## 3 — Privacy practices tab
 
-**Single purpose description** — paste verbatim:
+**Every field on this tab has paste-ready text in [`PRIVACY_TAB.txt`](PRIVACY_TAB.txt).** Each block
+is under the dashboard's 1,000-character limit; paste them verbatim.
 
-```
-This extension lets a signed-in VideoText user upload an audio or video file and receive a text transcript of it, which they can read, copy, or download as a .TXT file. It is a client for the VideoText transcription service at videotext.io and does nothing else.
-```
+| Field | Characters | Source |
+| --- | --- | --- |
+| Single purpose description | 902 / 1000 | `PRIVACY_TAB.txt` |
+| `storage` justification | 898 / 1000 | `PRIVACY_TAB.txt` |
+| Host permission justification | 973 / 1000 | `PRIVACY_TAB.txt` |
+| Remote code | Select **No** (justification text included anyway) | `PRIVACY_TAB.txt` |
+| Privacy policy URL | — | `https://videotext.io/privacy` |
 
-**Permission justifications** — paste these; the full reasoning is in
-`docs/chrome-extension-permissions.md`.
+**Data usage — check exactly three:** Personally identifiable information (the account email the
+popup displays), Authentication information (the VideoText session token), and Website content (the
+media file the user picks and the transcript made from it). Leave the other six unchecked. Then
+check all three certifications — all three are true, because the only destination for any user data
+is VideoText's own API. Full reasoning per category: [`../STORE_PRIVACY.md`](../STORE_PRIVACY.md#chrome-web-store-data-disclosures).
 
-| Permission | Justification to paste |
-| --- | --- |
-| `storage` | `Stores the user's VideoText sign-in session and the id of a transcription job that is still running, so the user is not signed out every time the popup closes and does not lose a job in progress. No media files and no transcript text are stored.` |
-| `host_permissions` — `https://api.videotext.io/*` | `The VideoText API. The extension uploads the user's file to it, polls the transcription job's status, reads the account's plan and remaining allowance, and downloads the finished transcript. It is the only host the extension contacts.` |
-| Content script on `https://videotext.io/extension-auth*` | `VideoText signs users in with a token held by the website, not a cookie, so the extension cannot inherit the signed-in state. This script runs on one page only — the VideoText sign-in hand-off page — and does one thing: receive the user's existing session token from that page and store it for the extension. It reads no other page content and runs on no other site.` |
-| Remote code | `No. All code is included in the package; nothing is fetched or evaluated at runtime.` |
+> **The host-permission warning is expected.** The dashboard says a host permission may trigger an
+> in-depth review and delay publishing. That is normal for an extension that talks to its own API
+> and is not a sign of a problem. The justification text is written to answer that reviewer
+> directly: one API host, one single-page content script, no wildcards, no `<all_urls>`.
 
-**Data usage disclosures** — the full table, including every "Yes"/"No" and the three
-certifications, is in [`../STORE_PRIVACY.md`](../STORE_PRIVACY.md#chrome-web-store-data-disclosures).
-In summary, declare collection of: **personally identifiable information (email)**,
-**authentication information**, and **website content (the user's media file and its transcript)`**;
-declare nothing else. Then check all three certifications.
+> **Reviewer test account — MANUAL INPUT REQUIRED.** This item is sign-in gated. Create a working
+> VideoText account and paste its credentials into "Notes for reviewers", or the reviewer cannot get
+> past the first screen. This is one of the most common causes of rejection for account-gated items.
 
 ## 4 — Distribution
 

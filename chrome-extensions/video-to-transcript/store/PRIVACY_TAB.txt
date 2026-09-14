@@ -1,0 +1,154 @@
+PRIVACY TAB — paste-ready text
+Chrome Web Store Developer Dashboard → Privacy practices
+Video to Transcript — VideoText v1.0.0
+
+Every field below is under the 1,000-character limit. Paste each block verbatim
+between the ==== markers; do not include the markers themselves.
+
+Note: Google counts match patterns in BOTH the "permissions" and "content_scripts"
+manifest fields as host permissions, so the single Host permission justification
+field must cover api.videotext.io AND the videotext.io/extension-auth content
+script. Both are justified in the one block below.
+
+
+##############################################################################
+# SINGLE PURPOSE DESCRIPTION
+# Field: Single purpose description
+# 902 / 1000 characters
+##############################################################################
+
+====
+This extension has one purpose: to let a signed-in VideoText user turn an audio or video file into a text transcript.
+
+The user opens the popup, signs in with their existing VideoText account, selects or drops an audio/video file, optionally picks the spoken language, and clicks Transcribe. The file is uploaded to the VideoText API (api.videotext.io), which performs the transcription. The extension polls that job and displays the finished transcript in the popup, where the user can copy it to the clipboard or save it as a .TXT file.
+
+That is everything it does. It is a client for the VideoText transcription service at videotext.io - the same account, the same plan and the same limits as the website. It does not record screens or audio, capture tab content, download media from websites, modify any web page, or offer any feature unrelated to producing a transcript from a file the user chose.
+====
+
+##############################################################################
+# STORAGE JUSTIFICATION
+# Field: storage justification
+# 898 / 1000 characters
+##############################################################################
+
+====
+chrome.storage.local is used for exactly two things, both required for the single purpose.
+
+1) Keeping the user signed in. VideoText authenticates with a session token issued by its own website. A Chrome popup is destroyed as soon as it loses focus, so without persistent storage the user would be signed out every single time the popup closed and could never complete a transcription. The token is stored locally and sent only to api.videotext.io as an Authorization header.
+
+2) Remembering a transcription that is still running. Transcribing a long recording takes time. We store the job id so that when the user closes the popup and reopens it, the extension can resume showing that job instead of losing it.
+
+We also cache the account's plan name and email purely to display them in the popup header.
+
+No media file and no transcript text is ever written to storage. No password is ever stored.
+====
+
+##############################################################################
+# HOST PERMISSION JUSTIFICATION
+# Field: Host permission justification (covers BOTH host_permissions and content_scripts matches)
+# 973 / 1000 characters
+##############################################################################
+
+====
+Two match patterns, each required, each as narrow as the single purpose allows.
+
+1) https://api.videotext.io/* - the VideoText API, and the only server this extension contacts. Needed to upload the user's audio/video file, poll the transcription job's status, read the signed-in account's plan and remaining allowance so limits can be shown before an upload, and fetch the finished transcript. Without it the extension cannot transcribe anything. Chrome match patterns cannot express "only these five paths", so this is the narrowest available form.
+
+2) https://videotext.io/extension-auth* - a content script on ONE page. VideoText signs users in with a token held by the website rather than a cookie, so the extension cannot inherit the signed-in state. This script runs only on the dedicated sign-in hand-off page and does one thing: receive the user's existing session token from that page and store it. It reads no other page content and runs on no other site or path.
+====
+
+##############################################################################
+# REMOTE CODE
+# Field: Remote code justification - select "No, I am not using Remote code"
+# 811 / 1000 characters
+##############################################################################
+
+====
+No remote code is used.
+
+Every JavaScript file the extension executes is included in the uploaded package. There are no <script> tags pointing at external files, no modules imported from a URL, no eval(), no new Function(), no string-bodied setTimeout/setInterval, and no WebAssembly.
+
+The extension pages declare a strict Content Security Policy: script-src 'self'; object-src 'self'; base-uri 'none' - with no 'unsafe-eval' and no 'unsafe-inline'.
+
+The package is also not bundled or minified. Every .js file in it is readable output from the TypeScript compiler, so all of the above can be confirmed by reading the source in the package directly.
+
+Network requests are made only to https://api.videotext.io, and they carry data (the user's file, the job status, the transcript) - never code that is executed.
+====
+
+
+##############################################################################
+# DATA USAGE — checkboxes
+##############################################################################
+
+CHECK these three:
+
+  [x] Personally identifiable information
+      Why: the extension reads the signed-in account's email address from the
+      VideoText API and displays/caches it in the popup header.
+
+  [x] Authentication information
+      Why: the extension handles the user's VideoText session token. (It never
+      handles a password - sign-in happens on videotext.io.)
+
+  [x] Website content
+      Why: the audio/video file the user chooses to transcribe, and the
+      transcript text produced from it.
+
+LEAVE UNCHECKED - none of these are collected:
+
+  [ ] Health information
+  [ ] Financial and payment information     (billing is on videotext.io; the
+                                             extension never handles payment data)
+  [ ] Personal communications
+  [ ] Location
+  [ ] Web history                            (no host permission that could read it)
+  [ ] User activity                          (no analytics, no telemetry, no
+                                             clicks/keystrokes/scroll tracking)
+
+
+##############################################################################
+# CERTIFICATIONS — check all three
+##############################################################################
+
+  [x] I do not sell or transfer user data to third parties, apart from the
+      approved use cases
+  [x] I do not use or transfer user data for purposes that are unrelated to my
+      item's single purpose
+  [x] I do not use or transfer user data to determine creditworthiness or for
+      lending purposes
+
+All three are true: the only destination for any user data is VideoText's own
+API at api.videotext.io, in service of producing the transcript the user asked
+for. There is no third party, no analytics SDK and no data broker in the
+extension.
+
+
+##############################################################################
+# PRIVACY POLICY URL
+##############################################################################
+
+https://videotext.io/privacy
+
+
+##############################################################################
+# EXPECT AN IN-DEPTH REVIEW
+##############################################################################
+
+The dashboard warns that a host permission may trigger an in-depth review and
+delay publishing. That is expected here and is not a sign anything is wrong -
+the extension genuinely cannot work without talking to its own API. The Host
+permission justification above is written to answer that reviewer directly:
+one API host, one single-page content script, no wildcards, no <all_urls>.
+
+If a reviewer asks for anything further, the supporting material is:
+  - docs/chrome-extension-permissions.md    every permission, and every
+                                            permission deliberately NOT requested
+  - chrome-extensions/video-to-transcript/SECURITY_AUDIT.md
+                                            11 automated checks over the exact
+                                            shipped bundle, 0 findings
+  - chrome-extensions/video-to-transcript/STORE_PRIVACY.md
+                                            full data-handling detail
+
+Reviewer test account: MANUAL INPUT REQUIRED. This item is sign-in gated, so
+create a working VideoText account and paste its credentials into the
+"Notes for reviewers" field, or the reviewer will not get past the first screen.
