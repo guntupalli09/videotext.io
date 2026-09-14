@@ -17,7 +17,7 @@ import { assertPathWithinDir } from '../utils/assertPathWithinDir'
 import { isQueueAtHardLimit, isQueueAtSoftLimit, getSystemConcurrencyMultiplier } from '../utils/queueConfig'
 import { checkAndRecordUpload } from '../utils/uploadRateLimit'
 import { checkAndRecordGuestIpImport, extractClientIp } from '../utils/guestIpLimit'
-import { trackJobCreated } from '../utils/analytics'
+import { trackJobCreated, readAnonymousId } from '../utils/analytics'
 import { insertJobRecord } from '../lib/jobAnalytics'
 import { probeVideoDurationResult } from '../services/ffmpeg'
 import { STREAM_UPLOAD_ASSEMBLY } from '../utils/featureFlags'
@@ -52,6 +52,8 @@ const chunkUploadMeta = new Map<string, {
   totalSize: number
   toolType: string
   options: Record<string, unknown>
+  /** Browser PostHog distinct ID, captured at init so /complete can attribute the job. */
+  anonymousId?: string
   /** Creation time — used to prune abandoned uploads. */
   createdAt: number
 }>()
@@ -281,6 +283,7 @@ router.post('/init', async (req: Request, res: Response) => {
       totalSize,
       toolType,
       options: rest || {},
+      anonymousId: readAnonymousId(req),
       createdAt: Date.now(),
     })
 
@@ -633,6 +636,7 @@ router.post('/complete', async (req: Request, res: Response) => {
           trackJobCreated({
             job_id: String(job.id),
             user_id: meta.userId ?? undefined,
+            anonymous_id: meta.anonymousId,
             tool_type: meta.toolType,
             file_size_bytes: fileSize,
             plan: meta.plan,
@@ -868,6 +872,7 @@ router.post('/youtube', async (req: Request, res: Response) => {
       trackJobCreated({
         job_id: String(job.id),
         user_id: userId,
+        anonymous_id: readAnonymousId(req),
         tool_type: 'youtube-to-transcript',
         file_size_bytes: 0,
         plan,

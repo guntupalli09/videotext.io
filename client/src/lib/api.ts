@@ -1,6 +1,6 @@
 import { API_ORIGIN } from './apiBase'
 import { jobHasUsableResult } from './hydrateTranscriptResult'
-import { trackEvent } from './analytics'
+import { trackEvent, getPostHogDistinctId } from './analytics'
 import { getSamplesModuleAttribution } from './samplesAttribution'
 import { getSignupAttributionPayload } from './attribution'
 
@@ -63,6 +63,8 @@ export function api(path: string, init?: ApiInit): Promise<Response> {
   const token = getAuthToken()
   const headers = new Headers(rest.headers as HeadersInit)
   if (token) headers.set('Authorization', `Bearer ${token}`)
+  const phDistinctId = getPostHogDistinctId()
+  if (phDistinctId) headers.set('x-ph-distinct-id', phDistinctId)
   const options = { ...rest, headers }
   let signal = options.signal
   if (timeout != null && timeout > 0 && !signal) {
@@ -934,6 +936,8 @@ export function uploadFileWithProgress(
       xhr.timeout = 120_000
       xhr.setRequestHeader('x-user-id', userId)
       xhr.setRequestHeader('x-plan', plan)
+      const xhrPhId = getPostHogDistinctId()
+      if (xhrPhId) xhr.setRequestHeader('x-ph-distinct-id', xhrPhId)
       const token = getAuthToken()
       if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`)
       uploadStartMs = Date.now()
@@ -1217,6 +1221,8 @@ export function uploadDualFilesWithProgress(
       xhr.timeout = 180_000
       xhr.setRequestHeader('x-user-id', userId)
       xhr.setRequestHeader('x-plan', plan)
+      const xhrPhId = getPostHogDistinctId()
+      if (xhrPhId) xhr.setRequestHeader('x-ph-distinct-id', xhrPhId)
       const dualToken = getAuthToken()
       if (dualToken) xhr.setRequestHeader('Authorization', `Bearer ${dualToken}`)
       xhr.send(formData)
@@ -1292,6 +1298,8 @@ export function uploadFixSubtitlesDual(
       xhr.timeout = 180_000
       xhr.setRequestHeader('x-user-id', userId)
       xhr.setRequestHeader('x-plan', plan)
+      const xhrPhId = getPostHogDistinctId()
+      if (xhrPhId) xhr.setRequestHeader('x-ph-distinct-id', xhrPhId)
       const fixToken = getAuthToken()
       if (fixToken) xhr.setRequestHeader('Authorization', `Bearer ${fixToken}`)
       xhr.send(formData)

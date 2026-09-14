@@ -102,6 +102,8 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
   const [freeExportsUsed, setFreeExportsUsed] = useState(0)
   const [lastProcessingMs, setLastProcessingMs] = useState<number | null>(null)
   const processingStartedAtRef = useRef<number | null>(null)
+  // Guards one job_started per job; polling revisits 'processing' on every tick.
+  const jobStartedTrackedRef = useRef<string | null>(null)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [authModalMode, setAuthModalMode] = useState<'signup-combo' | 'login'>('signup-combo')
   const pendingDownloadRef = useRef<(() => void) | null>(null)
@@ -376,6 +378,18 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
           setProgress(jobStatus.progress ?? 0)
           if (jobStatus.queuePosition !== undefined) setQueuePosition(jobStatus.queuePosition)
 
+          if (jobStatus.status === 'processing' && jobStartedTrackedRef.current !== response.jobId) {
+            jobStartedTrackedRef.current = response.jobId
+            try {
+              trackEvent('job_started', {
+                job_id: response.jobId,
+                tool_type: BACKEND_TOOL_TYPES.FIX_SUBTITLES,
+              })
+            } catch {
+              /* non-blocking */
+            }
+          }
+
           const transition = getJobLifecycleTransition(jobStatus)
           if (transition === 'completed') {
             clearInterval(pollIntervalRef.current)
@@ -456,6 +470,18 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
           setProgress(jobStatus.progress ?? 0)
           if (jobStatus.queuePosition !== undefined) setQueuePosition(jobStatus.queuePosition)
 
+          if (jobStatus.status === 'processing' && jobStartedTrackedRef.current !== response.jobId) {
+            jobStartedTrackedRef.current = response.jobId
+            try {
+              trackEvent('job_started', {
+                job_id: response.jobId,
+                tool_type: BACKEND_TOOL_TYPES.FIX_SUBTITLES,
+              })
+            } catch {
+              /* non-blocking */
+            }
+          }
+
           const transition = getJobLifecycleTransition(jobStatus)
           if (transition === 'completed') {
             clearInterval(pollIntervalRef.current)
@@ -534,6 +560,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
   }
 
   const handleProcessAnother = () => {
+    try { trackEvent('process_another_clicked', { tool_type: BACKEND_TOOL_TYPES.FIX_SUBTITLES }) } catch { /* non-blocking */ }
     clearPersistedJobId(location.pathname, navigate)
     setSelectedFile(null)
     setVideoFile(null)

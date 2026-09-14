@@ -120,6 +120,7 @@ const corsHeaders = [
   'X-Chunk-Index',
   'X-Api-Key',
   'X-Job-Token',
+  'X-PH-Distinct-Id',
 ]
 
 function headerValue(value: string | string[] | undefined): string | undefined {

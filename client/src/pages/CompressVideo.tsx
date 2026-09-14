@@ -93,6 +93,8 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
   const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null)
   const [filePreview, setFilePreview] = useState<FilePreviewData | null>(null)
   const processingStartedAtRef = useRef<number | null>(null)
+  // Guards one job_started per job; polling revisits 'processing' on every tick.
+  const jobStartedTrackedRef = useRef<string | null>(null)
 
   const plan = (localStorage.getItem('plan') || 'free').toLowerCase()
   const hasPaidPlan = isPaidPlan(plan)
@@ -212,6 +214,18 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
           setProgress(jobStatus.progress ?? 0)
           if (jobStatus.queuePosition !== undefined) setQueuePosition(jobStatus.queuePosition)
 
+          if (jobStatus.status === 'processing' && jobStartedTrackedRef.current !== response.jobId) {
+            jobStartedTrackedRef.current = response.jobId
+            try {
+              trackEvent('job_started', {
+                job_id: response.jobId,
+                tool_type: BACKEND_TOOL_TYPES.COMPRESS_VIDEO,
+              })
+            } catch {
+              /* non-blocking */
+            }
+          }
+
           const transition = getJobLifecycleTransition(jobStatus)
           if (transition === 'completed') {
             clearInterval(pollIntervalRef.current)
@@ -269,6 +283,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
   }
 
   const handleProcessAnother = () => {
+    try { trackEvent('process_another_clicked', { tool_type: BACKEND_TOOL_TYPES.COMPRESS_VIDEO }) } catch { /* non-blocking */ }
     clearPersistedJobId(location.pathname, navigate)
     setSelectedFile(null)
     setStatus('idle')

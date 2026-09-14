@@ -2341,6 +2341,7 @@ export default function VideoToTranscript(
   };
 
   const handleProcessAnother = () => {
+    try { trackEvent('process_another_clicked', { tool_type: BACKEND_TOOL_TYPES.VIDEO_TO_TRANSCRIPT }) } catch { /* non-blocking */ }
     clearPersistedJobId(location.pathname, navigate);
     setSelectedFile(null);
     setFilePreview(null);
