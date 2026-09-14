@@ -4,6 +4,7 @@ import assert from 'node:assert/strict'
 import {
   fetchTranscriptDownloadText,
   isTranscriptDownloadZip,
+  jobPayloadHasTranscript,
   looksLikeJsonErrorBody,
   transcriptTextFromResult,
 } from '../src/lib/hydrateTranscriptResult'
@@ -31,6 +32,29 @@ test('transcriptTextFromResult falls back to fullText when segments are missing'
 test('transcriptTextFromResult is empty when the payload was stripped (requiresAuth path)', () => {
   assert.equal(transcriptTextFromResult({ downloadUrl: '' }), '')
   assert.equal(transcriptTextFromResult(null), '')
+})
+
+test('jobPayloadHasTranscript is false for the SSE completed event (no result / requiresAuth)', () => {
+  assert.equal(jobPayloadHasTranscript(undefined), false)
+  assert.equal(jobPayloadHasTranscript({ downloadUrl: '' }), false)
+})
+
+test('jobPayloadHasTranscript is true when segments, fullText, or a non-zip download exist', () => {
+  assert.equal(
+    jobPayloadHasTranscript({
+      segments: [{ start: 0, end: 1, text: 'Hello.' }],
+    }),
+    true,
+  )
+  assert.equal(jobPayloadHasTranscript({ fullText: 'Hello.' }), true)
+  assert.equal(
+    jobPayloadHasTranscript({ downloadUrl: '/api/download/talk.txt', fileName: 'talk.txt' }),
+    true,
+  )
+  assert.equal(
+    jobPayloadHasTranscript({ downloadUrl: '/api/download/talk.zip', fileName: 'talk.zip' }),
+    false,
+  )
 })
 
 test('isTranscriptDownloadZip detects zip primary downloads so we do not treat them as text', () => {

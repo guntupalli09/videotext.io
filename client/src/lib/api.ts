@@ -1,4 +1,5 @@
 import { API_ORIGIN } from './apiBase'
+import { jobPayloadHasTranscript } from './hydrateTranscriptResult'
 import { trackEvent } from './analytics'
 import { getSamplesModuleAttribution } from './samplesAttribution'
 import { getSignupAttributionPayload } from './attribution'
@@ -1380,6 +1381,27 @@ export async function getJobDeferredSummary(
 }
 
 /**
+ * EventSource cannot send Authorization. The SSE completed event therefore
+ * arrives with requiresAuth / no result even for a logged-in owner. Re-fetch
+ * over the authenticated GET before the UI treats the job as ready.
+ */
+export async function hydrateCompletedJobStatus(
+  jobId: string,
+  options: { jobToken?: string } | undefined,
+  incoming: JobStatus
+): Promise<JobStatus> {
+  if (incoming.status !== 'completed') return incoming
+  if (!incoming.requiresAuth && jobPayloadHasTranscript(incoming.result)) {
+    return incoming
+  }
+  try {
+    return await getJobStatus(jobId, options)
+  } catch {
+    return incoming
+  }
+}
+
+/**
  * Optional SSE subscription for job status and partials. Same payload shape as getJobStatus.
  * On SSE error or unsupported, falls back to polling automatically. Call the returned function to stop.
  */
@@ -1437,15 +1459,21 @@ export function subscribeJobStatus(
         const tl = typeof window !== 'undefined' ? (window as any).__uploadTimeline : undefined
         if (tl) tl.firstSseMessage = Date.now()
       }
-      try {
-        const payload = JSON.parse(e.data) as JobStatus
-        onStatus(payload)
-        if (payload.status === 'completed' || payload.status === 'failed') {
-          stop()
+      void (async () => {
+        try {
+          let payload = JSON.parse(e.data) as JobStatus
+          if (payload.status === 'completed') {
+            payload = await hydrateCompletedJobStatus(jobId, options, payload)
+          }
+          if (stopped) return
+          onStatus(payload)
+          if (payload.status === 'completed' || payload.status === 'failed') {
+            stop()
+          }
+        } catch (_) {
+          /* ignore parse error */
         }
-      } catch (_) {
-        /* ignore parse error */
-      }
+      })()
     }
     es.onerror = () => {
       es.close()

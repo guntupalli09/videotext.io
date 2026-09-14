@@ -56,6 +56,7 @@ import {
   uploadFileWithProgress,
   getJobStatus,
   getJobDeferredSummary,
+  hydrateCompletedJobStatus,
   subscribeJobStatus,
   getCurrentUsage,
   invalidateUsageCache,
@@ -547,6 +548,7 @@ export default function VideoToTranscript(
   const jobStartedTrackedRef = useRef<string | null>(null);
   const processingStartedAtRef = useRef<number | null>(null);
   const terminalRef = useRef(false);
+  const finalizingRef = useRef(false);
   const lastPartialVersionRef = useRef(0);
   const partialScrollRef = useRef<HTMLDivElement>(null);
   const savedScrollTopRef = useRef(0);
@@ -1018,40 +1020,72 @@ export default function VideoToTranscript(
     [applyTranscriptPayload],
   );
 
-  const applyCompletedJobAccess = useCallback(
-    (
-      jobStatus: {
+  /**
+   * Never flip to the completed workspace until transcript text is in state.
+   * SSE completed events omit the result (EventSource cannot send the JWT),
+   * so we always re-fetch over the authenticated GET and claim if needed.
+   */
+  const finalizeCompletedJob = useCallback(
+    async (
+      jobId: string,
+      jobToken?: string,
+      incoming?: {
         requiresAuth?: boolean;
         result?: TranscriptJobResultLike & { downloadUrl?: string };
       },
-      jobId: string,
-      jobToken?: string,
     ) => {
-      if (isLoggedIn() && !jobStatus.requiresAuth) {
-        setResult(
-          jobStatus.result
-            ? {
-                downloadUrl: jobStatus.result.downloadUrl || "",
-                ...jobStatus.result,
-              }
-            : null,
-        );
-        setIsHydratingTranscript(true);
-        void applyTranscriptPayload(jobStatus.result).finally(() => {
-          setIsHydratingTranscript(false);
-        });
-        return;
-      }
-      if (isLoggedIn()) {
+      if (!isLoggedIn()) {
+        setShowAuthGate(true);
         setResult({ downloadUrl: "" });
-        setIsHydratingTranscript(true);
-        void claimAndReloadTranscript(jobId, jobToken).finally(() => {
-          setIsHydratingTranscript(false);
-        });
-        return;
+        return true;
       }
-      setShowAuthGate(true);
-      setResult({ downloadUrl: "" });
+
+      const applyStatus = async (
+        jobStatus: {
+          requiresAuth?: boolean;
+          result?: TranscriptJobResultLike & { downloadUrl?: string };
+        },
+      ) => {
+        if (jobStatus.requiresAuth) {
+          return claimAndReloadTranscript(jobId, jobToken);
+        }
+        if (!jobStatus.result) return false;
+        setShowAuthGate(false);
+        setResult({
+          downloadUrl: jobStatus.result.downloadUrl || "",
+          ...jobStatus.result,
+        });
+        return applyTranscriptPayload(jobStatus.result);
+      };
+
+      setIsHydratingTranscript(true);
+      try {
+        if (incoming && (await applyStatus(incoming))) return true;
+
+        const first = await hydrateCompletedJobStatus(
+          jobId,
+          jobToken ? { jobToken } : undefined,
+          {
+            status: "completed",
+            progress: 100,
+            requiresAuth: incoming?.requiresAuth,
+            result: incoming?.result as import("../lib/api").JobStatus["result"],
+          },
+        );
+        if (await applyStatus(first)) return true;
+
+        for (let i = 0; i < 8; i++) {
+          await new Promise((r) => setTimeout(r, JOB_POLL_INTERVAL_MS));
+          const next = await getJobStatus(
+            jobId,
+            jobToken ? { jobToken } : undefined,
+          );
+          if (await applyStatus(next)) return true;
+        }
+        return false;
+      } finally {
+        setIsHydratingTranscript(false);
+      }
     },
     [applyTranscriptPayload, claimAndReloadTranscript],
   );
@@ -1060,25 +1094,8 @@ export default function VideoToTranscript(
     const jobId = currentJobId || getPersistedJobId(location.pathname);
     const jobToken = getPersistedJobToken(location.pathname) || undefined;
     if (!jobId) return;
-    if (isLoggedIn()) {
-      const claimed = await claimAndReloadTranscript(jobId, jobToken);
-      if (claimed) return;
-    }
-    try {
-      const next = await getJobStatus(
-        jobId,
-        jobToken ? { jobToken } : undefined,
-      );
-      applyCompletedJobAccess(next, jobId, jobToken);
-    } catch {
-      // keep the empty-state retry button
-    }
-  }, [
-    applyCompletedJobAccess,
-    claimAndReloadTranscript,
-    currentJobId,
-    location.pathname,
-  ]);
+    await finalizeCompletedJob(jobId, jobToken);
+  }, [currentJobId, finalizeCompletedJob, location.pathname]);
 
   // Rehydrate from URL/sessionStorage after idle or reload (e.g. mobile Safari)
   useEffect(() => {
@@ -1087,6 +1104,7 @@ export default function VideoToTranscript(
     if (!jobId) return;
 
     terminalRef.current = false;
+    finalizingRef.current = false;
     lastPartialVersionRef.current = 0;
     setStatus("processing");
     setUploadPhase("processing");
@@ -1113,14 +1131,15 @@ export default function VideoToTranscript(
 
         const transition = getJobLifecycleTransition(jobStatus);
         if (transition === "completed") {
+          await finalizeCompletedJob(
+            jobId,
+            jobToken ?? undefined,
+            jobStatus,
+          );
+          if (cancelled) return;
           terminalRef.current = true;
           setPartialSegments([]);
           setStatus("completed");
-          applyCompletedJobAccess(
-            jobStatus,
-            jobId,
-            jobToken ?? undefined,
-          );
           trackAppEvent("transcription_completed", {
             toolId: "video-to-transcript",
           });
@@ -1184,13 +1203,14 @@ export default function VideoToTranscript(
               setQueuePosition(s.queuePosition);
             const t = getJobLifecycleTransition(s);
             if (t === "completed") {
+              await finalizeCompletedJob(jobId, jobToken ?? undefined, s);
+              if (cancelled) return;
               terminalRef.current = true;
               if (rehydratePollRef.current)
                 clearInterval(rehydratePollRef.current);
               rehydratePollRef.current = null;
               setPartialSegments([]);
               setStatus("completed");
-              applyCompletedJobAccess(s, jobId, jobToken ?? undefined);
               trackAppEvent("transcription_completed", {
                 toolId: "video-to-transcript",
               });
@@ -1270,7 +1290,7 @@ export default function VideoToTranscript(
       if (rehydratePollRef.current) clearInterval(rehydratePollRef.current);
       rehydratePollRef.current = null;
     };
-  }, [applyCompletedJobAccess, location.pathname, navigate]);
+  }, [finalizeCompletedJob, location.pathname, navigate]);
 
   // Remind user to keep tab open when they switch away during upload (helps mobile)
   useEffect(() => {
@@ -1664,6 +1684,7 @@ export default function VideoToTranscript(
       setUploadPhase("processing");
       setUploadProgress(100);
       terminalRef.current = false;
+      finalizingRef.current = false;
       lastPartialVersionRef.current = 0;
       partialFirstSeenAtRef.current = null;
       if (minStreamDelayTimeoutRef.current) {
@@ -1717,7 +1738,8 @@ export default function VideoToTranscript(
         }
         const transition = getJobLifecycleTransition(jobStatus);
         if (transition === "completed") {
-          terminalRef.current = true;
+          if (finalizingRef.current) return;
+          finalizingRef.current = true;
           if (activeUploadPollRef.current) {
             activeUploadPollRef.current();
             activeUploadPollRef.current = null;
@@ -1725,86 +1747,88 @@ export default function VideoToTranscript(
           jobStartedTrackedRef.current = null;
           savedScrollTopRef.current = partialScrollRef.current?.scrollTop ?? 0;
           const MIN_STREAM_VISIBILITY_MS = 8000;
-          const res = jobStatus.result;
-          const streamProgress =
-            res &&
-            typeof (res as { streamProgress?: boolean }).streamProgress ===
-              "boolean" &&
-            (res as { streamProgress?: boolean }).streamProgress;
           const firstSeenAt = partialFirstSeenAtRef.current;
-          const remainingMs =
-            streamProgress && firstSeenAt != null
-              ? MIN_STREAM_VISIBILITY_MS - (Date.now() - firstSeenAt)
-              : 0;
-          const applyCompletedTransition = () => {
-            minStreamDelayTimeoutRef.current = null;
-            setPartialSegments([]);
-            setStatus("completed");
-            applyCompletedJobAccess(
-              jobStatus,
+          void (async () => {
+            await finalizeCompletedJob(
               response.jobId,
               jobToken ?? undefined,
+              jobStatus,
             );
-            trackAppEvent("transcription_completed", {
-              toolId: "video-to-transcript",
-            });
-            const started = processingStartedAtRef.current ?? Date.now();
-            const processingMs = Date.now() - started;
-            // emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript', processingMs })
-            incrementUsage("video-to-transcript");
-            setHasCompletedJobs(true);
-            setActivationCardDismissed(true);
-            try {
-              localStorage.setItem(ACTIVATION_CARD_DISMISS_KEY, "1");
-            } catch {
-              // Ignore storage failures
-            }
-            invalidateUsageCache();
-            const refreshUsage = () => {
-              getCurrentUsage({ skipCache: true })
-                .then((data) => {
-                  const isImports = data.quotaType === "imports";
-                  const total = isImports
-                    ? (data.limit ?? 3)
-                    : data.limits.minutesPerMonth + data.overages.minutes;
-                  setAvailableMinutes(total);
-                })
-                .catch(() => {});
+            const res = jobStatus.result;
+            const streamProgress =
+              res &&
+              typeof (res as { streamProgress?: boolean }).streamProgress ===
+                "boolean" &&
+              (res as { streamProgress?: boolean }).streamProgress;
+            const remainingMs =
+              streamProgress && firstSeenAt != null
+                ? MIN_STREAM_VISIBILITY_MS - (Date.now() - firstSeenAt)
+                : 0;
+            const applyCompletedTransition = () => {
+              minStreamDelayTimeoutRef.current = null;
+              terminalRef.current = true;
+              setPartialSegments([]);
+              setStatus("completed");
+              trackAppEvent("transcription_completed", {
+                toolId: "video-to-transcript",
+              });
+              const started = processingStartedAtRef.current ?? Date.now();
+              const processingMs = Date.now() - started;
+              incrementUsage("video-to-transcript");
+              setHasCompletedJobs(true);
+              setActivationCardDismissed(true);
+              try {
+                localStorage.setItem(ACTIVATION_CARD_DISMISS_KEY, "1");
+              } catch {
+                // Ignore storage failures
+              }
+              invalidateUsageCache();
+              const refreshUsage = () => {
+                getCurrentUsage({ skipCache: true })
+                  .then((data) => {
+                    const isImports = data.quotaType === "imports";
+                    const total = isImports
+                      ? (data.limit ?? 3)
+                      : data.limits.minutesPerMonth + data.overages.minutes;
+                    setAvailableMinutes(total);
+                  })
+                  .catch(() => {});
+              };
+              refreshUsage();
+              setTimeout(refreshUsage, 800);
+              try {
+                trackEvent("job_completed", {
+                  job_id: response.jobId,
+                  tool_type: BACKEND_TOOL_TYPES.VIDEO_TO_TRANSCRIPT,
+                  processing_time_ms: processingMs,
+                  ...getFunnelProps("file_upload"),
+                });
+                const nextJobCount = incrementJobCompletedCount();
+                trackFirstOutputSeen({
+                  ...getFunnelProps("result_panel"),
+                  job_count: nextJobCount,
+                });
+                trackAppEvent("first_output_seen", {
+                  ...getFunnelProps("result_panel"),
+                  job_count: nextJobCount,
+                });
+                trackEvent("processing_completed", {
+                  tool: "video-to-transcript",
+                });
+                setLastProcessingMs(processingMs);
+              } catch {
+                // non-blocking
+              }
             };
-            refreshUsage();
-            setTimeout(refreshUsage, 800);
-            try {
-              trackEvent("job_completed", {
-                job_id: response.jobId,
-                tool_type: BACKEND_TOOL_TYPES.VIDEO_TO_TRANSCRIPT,
-                processing_time_ms: processingMs,
-                ...getFunnelProps("file_upload"),
-              });
-              const nextJobCount = incrementJobCompletedCount();
-              trackFirstOutputSeen({
-                ...getFunnelProps("result_panel"),
-                job_count: nextJobCount,
-              });
-              trackAppEvent("first_output_seen", {
-                ...getFunnelProps("result_panel"),
-                job_count: nextJobCount,
-              });
-              trackEvent("processing_completed", {
-                tool: "video-to-transcript",
-              });
-              // texJobCompleted(processingMs, 'video-to-transcript')
-              setLastProcessingMs(processingMs);
-            } catch {
-              // non-blocking
+            if (remainingMs > 0) {
+              minStreamDelayTimeoutRef.current = setTimeout(
+                applyCompletedTransition,
+                remainingMs,
+              );
+            } else {
+              applyCompletedTransition();
             }
-          };
-          if (remainingMs > 0) {
-            minStreamDelayTimeoutRef.current = setTimeout(() => {
-              void applyCompletedTransition();
-            }, remainingMs);
-          } else {
-            void applyCompletedTransition();
-          }
+          })();
         } else if (transition === "failed") {
           terminalRef.current = true;
           setPartialSegments([]);
@@ -2024,6 +2048,7 @@ export default function VideoToTranscript(
       uploadAbortRef.current = new AbortController();
       setCurrentJobId(null);
       terminalRef.current = false;
+      finalizingRef.current = false;
       lastPartialVersionRef.current = 0;
       partialFirstSeenAtRef.current = null;
       if (minStreamDelayTimeoutRef.current) {
@@ -2110,7 +2135,8 @@ export default function VideoToTranscript(
         }
         const transition = getJobLifecycleTransition(jobStatus);
         if (transition === "completed") {
-          terminalRef.current = true;
+          if (finalizingRef.current) return;
+          finalizingRef.current = true;
           if (activeUploadPollRef.current) {
             activeUploadPollRef.current();
             activeUploadPollRef.current = null;
@@ -2118,83 +2144,85 @@ export default function VideoToTranscript(
           jobStartedTrackedRef.current = null;
           savedScrollTopRef.current = partialScrollRef.current?.scrollTop ?? 0;
           const MIN_STREAM_VISIBILITY_MS = 8000;
-          const res = jobStatus.result;
-          const streamProg =
-            res &&
-            typeof (res as { streamProgress?: boolean }).streamProgress ===
-              "boolean" &&
-            (res as { streamProgress?: boolean }).streamProgress;
           const firstSeenAt = partialFirstSeenAtRef.current;
-          const remainingMs =
-            streamProg && firstSeenAt != null
-              ? MIN_STREAM_VISIBILITY_MS - (Date.now() - firstSeenAt)
-              : 0;
-          const applyCompleted = () => {
-            minStreamDelayTimeoutRef.current = null;
-            setPartialSegments([]);
-            setStatus("completed");
-            applyCompletedJobAccess(
-              jobStatus,
+          void (async () => {
+            await finalizeCompletedJob(
               response.jobId,
               jobToken ?? undefined,
+              jobStatus,
             );
-            trackAppEvent("transcription_completed", {
-              toolId: "video-to-transcript",
-            });
-            const started = processingStartedAtRef.current ?? Date.now();
-            const processingMs = Date.now() - started;
-            // emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript', processingMs })
-            incrementUsage("video-to-transcript");
-            setHasCompletedJobs(true);
-            setActivationCardDismissed(true);
-            try {
-              localStorage.setItem(ACTIVATION_CARD_DISMISS_KEY, "1");
-            } catch {
-              // Ignore storage failures
+            const res = jobStatus.result;
+            const streamProg =
+              res &&
+              typeof (res as { streamProgress?: boolean }).streamProgress ===
+                "boolean" &&
+              (res as { streamProgress?: boolean }).streamProgress;
+            const remainingMs =
+              streamProg && firstSeenAt != null
+                ? MIN_STREAM_VISIBILITY_MS - (Date.now() - firstSeenAt)
+                : 0;
+            const applyCompleted = () => {
+              minStreamDelayTimeoutRef.current = null;
+              terminalRef.current = true;
+              setPartialSegments([]);
+              setStatus("completed");
+              trackAppEvent("transcription_completed", {
+                toolId: "video-to-transcript",
+              });
+              const started = processingStartedAtRef.current ?? Date.now();
+              const processingMs = Date.now() - started;
+              incrementUsage("video-to-transcript");
+              setHasCompletedJobs(true);
+              setActivationCardDismissed(true);
+              try {
+                localStorage.setItem(ACTIVATION_CARD_DISMISS_KEY, "1");
+              } catch {
+                // Ignore storage failures
+              }
+              invalidateUsageCache();
+              getCurrentUsage({ skipCache: true })
+                .then((data) => {
+                  const ii = data.quotaType === "imports";
+                  const total = ii
+                    ? (data.limit ?? 3)
+                    : data.limits.minutesPerMonth + data.overages.minutes;
+                  setAvailableMinutes(total);
+                })
+                .catch(() => {});
+              try {
+                trackEvent("job_completed", {
+                  job_id: response.jobId,
+                  tool_type: "youtube-to-transcript",
+                  processing_time_ms: processingMs,
+                  ...getFunnelProps("youtube_url"),
+                });
+                const nextJobCount = incrementJobCompletedCount();
+                trackFirstOutputSeen({
+                  ...getFunnelProps("result_panel"),
+                  job_count: nextJobCount,
+                });
+                trackAppEvent("first_output_seen", {
+                  ...getFunnelProps("result_panel"),
+                  job_count: nextJobCount,
+                });
+                trackEvent("processing_completed", {
+                  tool: "video-to-transcript",
+                  source: "youtube",
+                });
+                setLastProcessingMs(processingMs);
+              } catch {
+                /* non-blocking */
+              }
+            };
+            if (remainingMs > 0) {
+              minStreamDelayTimeoutRef.current = setTimeout(
+                applyCompleted,
+                remainingMs,
+              );
+            } else {
+              applyCompleted();
             }
-            invalidateUsageCache();
-            getCurrentUsage({ skipCache: true })
-              .then((data) => {
-                const ii = data.quotaType === "imports";
-                const total = ii
-                  ? (data.limit ?? 3)
-                  : data.limits.minutesPerMonth + data.overages.minutes;
-                setAvailableMinutes(total);
-              })
-              .catch(() => {});
-            try {
-              trackEvent("job_completed", {
-                job_id: response.jobId,
-                tool_type: "youtube-to-transcript",
-                processing_time_ms: processingMs,
-                ...getFunnelProps("youtube_url"),
-              });
-              const nextJobCount = incrementJobCompletedCount();
-              trackFirstOutputSeen({
-                ...getFunnelProps("result_panel"),
-                job_count: nextJobCount,
-              });
-              trackAppEvent("first_output_seen", {
-                ...getFunnelProps("result_panel"),
-                job_count: nextJobCount,
-              });
-              trackEvent("processing_completed", {
-                tool: "video-to-transcript",
-                source: "youtube",
-              });
-              // texJobCompleted(processingMs, 'video-to-transcript')
-              setLastProcessingMs(processingMs);
-            } catch {
-              /* non-blocking */
-            }
-          };
-          if (remainingMs > 0) {
-            minStreamDelayTimeoutRef.current = setTimeout(() => {
-              void applyCompleted();
-            }, remainingMs);
-          } else {
-            void applyCompleted();
-          }
+          })();
         } else if (transition === "failed") {
           terminalRef.current = true;
           setPartialSegments([]);
@@ -2358,6 +2386,7 @@ export default function VideoToTranscript(
     setCurrentJobId(null);
     uploadAbortRef.current = null;
     terminalRef.current = false;
+    finalizingRef.current = false;
     lastPartialVersionRef.current = 0;
     partialFirstSeenAtRef.current = null;
     if (minStreamDelayTimeoutRef.current) {

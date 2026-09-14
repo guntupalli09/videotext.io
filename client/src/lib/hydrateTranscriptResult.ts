@@ -16,6 +16,17 @@ export type TranscriptJobResultLike = {
   segments?: { start: number; end: number; text: string; speaker?: string }[]
 }
 
+/** True when the job payload can populate the transcript pane without another refresh. */
+export function jobPayloadHasTranscript(
+  res: TranscriptJobResultLike | null | undefined,
+): boolean {
+  if (transcriptTextFromResult(res)) return true
+  if (res?.downloadUrl && !isTranscriptDownloadZip(res.downloadUrl, res.fileName)) {
+    return true
+  }
+  return false
+}
+
 export function transcriptTextFromResult(res: TranscriptJobResultLike | null | undefined): string {
   if (!res) return ''
   if (res.segments?.length) {
