@@ -13,18 +13,30 @@ Package to upload: **`artifacts/videotext-video-to-transcript-v1.0.0.zip`**
 
 ## Rejection history — read first
 
-**13 Sept 2026, v1.0.0 — rejected.** *Spam and placement in the Store*, keyword stuffing
-(`Yellow Argon`). Cause: the description enumerated all 20 supported file formats, all 49 named
-languages, and seventeen near-duplicate "transcribe an X" bullets. Fixed by rewriting
-`store/DESCRIPTION.txt` as prose (12,184 → 3,048 characters).
+Two rejections, both *Spam and placement in the Store* / keyword stuffing (`Yellow Argon`).
 
-**Resubmitting does not need a new package.** The rejection was listing metadata only — the ZIP,
-the manifest and the code were not implicated. Replace the Description field with the current
-`store/DESCRIPTION.txt`, check the rest of this listing for the same pattern, and resubmit the
-draft. No version bump and no rebuild are required.
+| Date | Reviewer quoted | Cause |
+| --- | --- | --- |
+| 13 Sept 2026 | `"Video files: MP4, MOV, MKV, AVI, WebM, MPEG, MPG, OGV, 3GP, 3G2, FLV, WMV, TS, M4V"` | The description enumerated all 20 file formats, all 49 named languages, and seventeen near-duplicate "transcribe an X" bullets. |
+| 14 Sept 2026 | `"journalists, podcasters, students, researchers, creators, marketers, and professional teams."` | An audience roll-call. **This sentence was never in `store/DESCRIPTION.txt`** — whatever was submitted that day differed from the file in this repo. |
 
-`npm run chrome:transcript:test` now fails the build if list-shaped copy comes back
-(`tests/listing.test.mjs`).
+**The lesson from both: this reviewer treats any category enumeration as stuffing** — formats,
+languages and audiences alike. `store/DESCRIPTION.txt` now contains none of the three. It is
+2,568 characters; the 16,000 limit is a ceiling, not a target.
+
+**Before you resubmit, read what is actually in the dashboard field.** Do not assume it matches this
+repo. Select all, delete, and paste the current `store/DESCRIPTION.txt` — then re-read it once to
+confirm no list crept back in.
+
+**Resubmitting needs no new package.** Both rejections were listing metadata only; the ZIP, the
+manifest and the code were never implicated. No version bump, no rebuild.
+
+`npm run chrome:transcript:test` fails if list-shaped copy returns — `tests/listing.test.mjs` checks
+for long comma runs, format names, language names, audience roll-calls, divider bars and repeated
+"Transcribe …" lines. Both quoted lines above were used to verify the guard actually trips.
+
+> **Two strikes on one policy.** A third rejection on the same ground is worth avoiding — keep every
+> future edit to this field prose-only, and run the tests before pasting.
 
 ---
 
@@ -57,7 +69,7 @@ draft. No version bump and no rebuild are required.
 | --- | --- |
 | **Name** | `Video to Transcript — VideoText` |
 | **Short description** | See `LISTING.md` → *Short description* (116 chars) |
-| **Detailed description** | Paste **`store/DESCRIPTION.txt`** verbatim (3,048 of 16,000 characters). **Do not add file-format or language lists** — that is what got v1.0.0 rejected; see `LISTING.md`. |
+| **Detailed description** | Paste **`store/DESCRIPTION.txt`** verbatim (2,568 of 16,000 characters). **Do not add file-format or language lists** — that is what got v1.0.0 rejected; see `LISTING.md`. |
 | **Category** | Productivity |
 | **Language** | English (United States) |
 

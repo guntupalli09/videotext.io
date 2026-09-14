@@ -36,24 +36,24 @@ Turn audio or video into an accurate, editable transcript with VideoText. Copy i
 *(Limit: 16,000 characters)*
 
 The full text lives in **[`DESCRIPTION.txt`](DESCRIPTION.txt)** — paste it into the Description field
-as-is. It is **3,048 characters**. That is deliberate: the limit is a ceiling, not a target.
+as-is. It is **2,568 characters**. That is deliberate: the limit is a ceiling, not a target.
 
 ### Read this before editing the description
 
-**Version 1.0.0 was rejected on 13 Sept 2026** under *Spam and placement in the Store* — keyword
-stuffing (notification ID `Yellow Argon`). The reviewer quoted one line of the previous draft:
+**Version 1.0.0 was rejected twice** under *Spam and placement in the Store* — keyword stuffing
+(`Yellow Argon`). On **13 Sept 2026** the reviewer quoted a file-format list; on **14 Sept 2026**,
+an audience roll-call ("journalists, podcasters, students, researchers, creators, marketers, and
+professional teams") that was never in this file.
 
-> `"Video files: MP4, MOV, MKV, AVI, WebM, MPEG, MPG, OGV, 3GP, 3G2, FLV, WMV, TS, M4V"`
-
-The policy's own example of this violation is "including in an extension's metadata a long list of
-the different sites on which the extension works". **An exhaustive list of file formats is the same
-shape**, and so was the 49-language list and the seventeen near-duplicate "Transcribe an MP4… /
-Transcribe an MP3… / Transcribe a WAV…" bullets in that draft.
+The policy's own example of the violation is "including in an extension's metadata a long list of
+the different sites on which the extension works". **Any category enumeration is the same shape** —
+formats, languages, audiences. The copy now contains none of them.
 
 Rules for this field, enforced by `tests/listing.test.mjs`:
 
-* **No enumerations.** Name at most a handful of formats in a sentence ("including MP4, MOV, MP3 and
-  WAV"); never the full set. State the language *count* ("72 languages"); never the list.
+* **No enumerations of anything** — not formats, not languages, not professions. State the language
+  *count* ("72 languages") and let the popup show the formats.
+* **No audience roll-call.** Describe the job the tool does; do not list who does it.
 * **No comma runs longer than five items**, anywhere.
 * **No repeated verb phrases as pseudo-features.** One "transcribe your X" line, not twelve.
 * **No ASCII divider bars.** The same policy line covers "improperly formatted" metadata.

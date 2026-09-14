@@ -13,17 +13,13 @@ HOW IT WORKS
 
 WHAT YOU GET
 
-A full transcript, shown inside the extension, with one-click copy to your clipboard and a .TXT download named after your recording. Auto-detect works out the language for you, or you can set it yourself from 72 languages when you already know what was spoken. New Transcription starts the next file straight away.
+A full transcript, shown inside the extension, with one-click copy to your clipboard and a .TXT download named after your recording. Auto-detect works out the spoken language for you, or you can set it yourself from 72 languages when you already know it.
 
-Common video and audio formats are supported, including MP4, MOV, MP3 and WAV. Drop the file in as it is — no converting, no extracting the audio first.
+Common video and audio formats are supported, and the extension lists them when you open it. Drop your file in as it is — no converting, and no extracting the audio first.
 
 Maximum file size and recording length depend on your VideoText plan. The extension reads those limits from your account and tells you before you upload if a file is too large or too long, rather than failing halfway through.
 
 If you close the popup while a file is processing, the job keeps running. Open the extension again and it picks up where it left off.
-
-WHO IT IS FOR
-
-Journalists turning interviews into quotable text. Podcasters writing show notes. Students and researchers working through lectures, seminars and field recordings. Teams who would rather read a recorded call than sit through it again. Marketers repurposing a webinar into written content. Anyone with a recording they need as text.
 
 YOUR ACCOUNT, YOUR LIMITS
 
@@ -31,14 +27,14 @@ This is a client for VideoText, not a separate product. It uses the account you 
 
 PRIVACY
 
-The file you choose and your VideoText sign-in are sent to VideoText and nowhere else. There is no analytics, no tracking and no third-party code in this extension. It cannot read your tabs, your history or any other site — it asks for access to the VideoText API and to one VideoText sign-in page, and nothing more. Your password is never seen by the extension; signing in happens on videotext.io.
+The file you choose and your VideoText sign-in are sent to VideoText and nowhere else. There is no analytics, no tracking and no third-party code in this extension. It cannot read your tabs, your history or any other site — it asks for access to the VideoText API and to one VideoText sign-in page, and nothing more. Your password is never seen by the extension, because signing in happens on videotext.io.
 
 Privacy policy: https://videotext.io/privacy
 Terms: https://videotext.io/terms
 
 WHAT IT DOES NOT DO
 
-One job: a file in, a transcript out. It does not record your screen, capture tab audio, download video from websites, or transcribe live speech as you talk. Subtitles, caption files, translation and speaker labels live in the full product at videotext.io.
+One job: a file in, a transcript out. It does not record your screen, capture tab audio, download video from websites, or transcribe live speech as you talk.
 
 GETTING STARTED
 

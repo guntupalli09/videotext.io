@@ -7,10 +7,16 @@
  *
  *   "Video files: MP4, MOV, MKV, AVI, WebM, MPEG, MPG, OGV, 3GP, 3G2, FLV, WMV, TS, M4V"
  *
+ * It was rejected AGAIN on 14 Sept 2026 under the same policy, this time
+ * quoting an audience list:
+ *
+ *   "journalists, podcasters, students, researchers, creators, marketers, and professional teams."
+ *
  * The policy's own example of the violation is "including in an extension's
- * metadata a long list of the different sites on which the extension works" —
- * an exhaustive list of file formats is the same shape, and so is an
- * exhaustive list of languages.
+ * metadata a long list of the different sites on which the extension works".
+ * The lesson from both rejections is that THIS REVIEWER TREATS ANY CATEGORY
+ * ENUMERATION AS STUFFING — file formats, languages, and audiences alike. The
+ * description now names none of the three.
  *
  * These tests keep list-shaped metadata out of the listing copy. The full
  * format list still belongs in the product UI (the popup's dropzone shows it)
@@ -49,11 +55,11 @@ test('the description fits the Store field', () => {
 })
 
 test('the description contains no long comma-separated list', () => {
-  // Five is comfortably prose ("MP4, MOV, MP3 and WAV"); beyond that it reads
-  // as an enumeration, which is what was rejected.
+  // Four allows an ordinary sentence clause; beyond that it reads as an
+  // enumeration, which is what was rejected twice.
   const worst = longestCommaRun(description)
   assert.ok(
-    worst.count <= 5,
+    worst.count <= 4,
     `found a ${worst.count}-item list in the description, which risks the keyword-spam policy:\n  ${worst.text}`
   )
 })
@@ -67,8 +73,24 @@ test('the description does not enumerate file formats', () => {
   ]
   const present = formats.filter((f) => new RegExp(`\\b${f}\\b`, 'i').test(description))
   assert.ok(
-    present.length <= 6,
-    `description names ${present.length} file formats (${present.join(', ')}); keep it to a handful in prose`
+    present.length <= 3,
+    `description names ${present.length} file formats (${present.join(', ')}); the popup lists them, the listing should not`
+  )
+})
+
+test('the description does not enumerate audiences', () => {
+  // This is what the 14 Sept rejection quoted. Naming who a tool is for is
+  // fine in a sentence; a roll-call of professions is not.
+  const audiences = [
+    'journalist', 'podcaster', 'student', 'researcher', 'creator', 'marketer',
+    'educator', 'teacher', 'lawyer', 'paralegal', 'doctor', 'clinician',
+    'academic', 'professional team', 'agency', 'freelancer', 'entrepreneur',
+    'developer', 'designer', 'producer', 'editor', 'consultant',
+  ]
+  const present = audiences.filter((a) => new RegExp(`\\b${a}s?\\b`, 'i').test(description))
+  assert.ok(
+    present.length <= 2,
+    `description names ${present.length} audiences (${present.join(', ')}); describe the job, not a roll-call of professions`
   )
 })
 
