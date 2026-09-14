@@ -23,6 +23,9 @@ import {
   shouldEmitFirstOutputSeen,
   needsResultRefetchAfterClaim,
   resolvedJobIsSuccessful,
+  statusForFinalizeOutcome,
+  finalizeOutcomeAllowsSuccessState,
+  type SubtitleFinalizeOutcome,
 } from '../src/lib/subtitleResultReadiness'
 import {
   resolveCompletedJobResultWith,
@@ -324,4 +327,89 @@ test('after signing in, a claimed guest job resolves to a usable result', async 
   assert.equal(claimed, true)
   assert.equal(resolved.kind, 'ready')
   assert.equal(resolvedJobIsSuccessful(resolved), true)
+})
+
+// ── terminal state machine ──────────────────────────────────────────────────
+
+const ALL_OUTCOMES: SubtitleFinalizeOutcome[] = [
+  'ready',
+  'auth-gate',
+  'claim-failed',
+  'preview-failed',
+  'unavailable',
+]
+
+test("only 'ready' may enter the successful completed state", () => {
+  for (const outcome of ALL_OUTCOMES) {
+    const allowed = finalizeOutcomeAllowsSuccessState(outcome)
+    assert.equal(allowed, outcome === 'ready', `${outcome} success-state gate`)
+    assert.equal(
+      statusForFinalizeOutcome(outcome) === 'completed',
+      outcome === 'ready',
+      `${outcome} must not map to status 'completed'`,
+    )
+  }
+})
+
+test('non-ready outcomes still reach a rendered recovery state, never a blank one', () => {
+  assert.equal(statusForFinalizeOutcome('auth-gate'), 'result-gated')
+  for (const outcome of ['claim-failed', 'preview-failed', 'unavailable'] as const) {
+    assert.equal(statusForFinalizeOutcome(outcome), 'result-unavailable')
+  }
+})
+
+test('preview failure is NOT treated as an alternative-download state', () => {
+  // Video-to-Subtitles builds every export from subtitleRows client-side, so a
+  // downloadUrl without rows yields an empty file. If a real server-file
+  // download is added, this expectation should change deliberately.
+  assert.equal(finalizeOutcomeAllowsSuccessState('preview-failed'), false)
+  assert.equal(statusForFinalizeOutcome('preview-failed'), 'result-unavailable')
+})
+
+// ── call-site guards for the state machine ──────────────────────────────────
+
+test('no call site hard-codes setStatus(\'completed\') after finalizing', () => {
+  const finalizeCalls = [...pageSrc.matchAll(/finalizeCompletedSubtitles\([^)]*\)/g)]
+  assert.ok(finalizeCalls.length >= 3, 'expected the known finalize call sites')
+  assert.equal(
+    /finalizeCompletedSubtitles\([^)]*\)\s*\n\s*(if \(cancelled\) return\s*\n\s*)?setStatus\('completed'\)/.test(
+      pageSrc,
+    ),
+    false,
+    "status after finalizing must come from statusForFinalizeOutcome, never a hard-coded 'completed'",
+  )
+  assert.ok(
+    pageSrc.includes('statusForFinalizeOutcome'),
+    'terminal status must be derived from the finalize outcome',
+  )
+})
+
+test('the success Studio renders only under the completed status', () => {
+  assert.equal(
+    /\{\(!showAuthGate \|\| isLoggedIn\(\)\) && \(/.test(pageSrc),
+    false,
+    'the Studio must not be gated on login state alone — that rendered the ' +
+      'success panel over a withheld result once the guest signed in',
+  )
+})
+
+test('the terminal unavailable state never shows a loading skeleton', () => {
+  const block = pageSrc.slice(
+    pageSrc.indexOf("{status === 'result-unavailable' && ("),
+    pageSrc.indexOf("{(status === 'completed' || status === 'result-gated')"),
+  )
+  assert.ok(block.length > 0, 'unavailable block should be locatable')
+  assert.equal(
+    /ResultSkeleton|Finishing up/.test(block),
+    false,
+    'a terminal failure must not look like work still in progress',
+  )
+})
+
+test('the preview-failure toast does not point users at an empty export', () => {
+  assert.equal(
+    /Use the Exports panel to download them directly/.test(pageSrc),
+    false,
+    'exports are generated from subtitleRows, so that advice yields an empty file',
+  )
 })

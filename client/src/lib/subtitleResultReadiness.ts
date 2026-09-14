@@ -88,3 +88,36 @@ export function needsResultRefetchAfterClaim(
 export function resolvedJobIsSuccessful(resolved: ResolvedCompletedJob): boolean {
   return resolved.kind === 'ready' && Boolean(resolved.status?.result)
 }
+
+/**
+ * Terminal outcome of finalizing a completed subtitle job.
+ *
+ * `ready` is the ONLY outcome that may drive `setStatus('completed')`, the
+ * success Studio, or `first_output_seen`.
+ *
+ * There is deliberately no `download-only` member. Video-to-Subtitles has no
+ * direct server-file download: every export runs handleDownloadSubtitles(rows)
+ * and is generated client-side from subtitleRows, so a downloadUrl without
+ * rows produces an EMPTY file. If a real server-file download is added later,
+ * add the member here and extend `finalizeOutcomeAllowsSuccessState`.
+ */
+export type SubtitleFinalizeOutcome =
+  | 'ready'
+  | 'auth-gate'
+  | 'claim-failed'
+  | 'preview-failed'
+  | 'unavailable'
+
+/** Which terminal outcomes may present the successful Studio. */
+export function finalizeOutcomeAllowsSuccessState(outcome: SubtitleFinalizeOutcome): boolean {
+  return outcome === 'ready'
+}
+
+/** Terminal UI status for a finalize outcome. */
+export function statusForFinalizeOutcome(
+  outcome: SubtitleFinalizeOutcome,
+): 'completed' | 'result-gated' | 'result-unavailable' {
+  if (outcome === 'ready') return 'completed'
+  if (outcome === 'auth-gate') return 'result-gated'
+  return 'result-unavailable'
+}
