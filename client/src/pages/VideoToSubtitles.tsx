@@ -199,9 +199,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const terminalRef = useRef(false)
   const lastPartialVersionRef = useRef(0)
   const hasTrackedFirstOutputRef = useRef(false)
-  const [resultLoadTimedOut, setResultLoadTimedOut] = useState(false)
   /** Set when auto-claiming a guest job for the now-logged-in user fails, so the panel shows an actionable message instead of nothing. */
-  const [resultClaimFailed, setResultClaimFailed] = useState(false)
   /** Last non-success finalize result, so the recovery panel names the actual failure. */
   const [finalizeFailure, setFinalizeFailure] = useState<FinalizeResult | null>(null)
   const [partialSegments, setPartialSegments] = useState<{ start: number; end: number; text: string }[]>([])
@@ -300,8 +298,6 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     jobToken?: string,
     incoming?: import('../lib/api').JobStatus,
   ): Promise<FinalizeResult> => {
-    setResultLoadTimedOut(false)
-    setResultClaimFailed(false)
     setFinalizeFailure(null)
     const fail = (result: FinalizeResult): FinalizeResult => {
       setFinalizeFailure(result)
@@ -334,11 +330,9 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     }
     setPreviewLoading(false)
     if (resolved.status?.requiresAuth) {
-      setResultClaimFailed(true)
       setResult({ downloadUrl: '' })
       return fail({ kind: 'claim-failed' })
     }
-    setResultLoadTimedOut(true)
     return fail({ kind: 'timeout' })
   }
 
@@ -484,8 +478,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
 
     terminalRef.current = false
     lastPartialVersionRef.current = 0
-    setResultLoadTimedOut(false)
-    setResultClaimFailed(false)
+    setFinalizeFailure(null)
     setStatus('processing')
     setUploadPhase('processing')
     setUploadProgress(100)
@@ -804,8 +797,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       setUploadProgress(100)
       terminalRef.current = false
       lastPartialVersionRef.current = 0
-      setResultLoadTimedOut(false)
-      setResultClaimFailed(false)
+      setFinalizeFailure(null)
       setPartialSegments([])
       const startedAt = Date.now()
       setProcessingStartedAt(startedAt)
@@ -955,8 +947,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     uploadAbortRef.current = null
     terminalRef.current = false
     lastPartialVersionRef.current = 0
-    setResultLoadTimedOut(false)
-    setResultClaimFailed(false)
+    setFinalizeFailure(null)
     setTrimStart(null)
     setTrimEnd(null)
     setStatus('idle')
@@ -1492,44 +1483,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                     <p className="px-1 text-xs text-gray-500 dark:text-gray-400">Loading subtitle cues…</p>
                     <ResultSkeleton variant="subtitle" />
                   </div>
-                ) : (
-                  previewError && result?.downloadUrl ? (
-                    <div className="rounded-xl border border-amber-200 dark:border-amber-800/50 bg-amber-50 dark:bg-amber-950/20 p-5 flex flex-col items-center text-center gap-2.5">
-                      <AlertTriangle className="h-5 w-5 text-amber-500 dark:text-amber-400" />
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">Couldn't load the cue preview</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm">
-                        Your subtitles processed fine and are ready to download from the Exports panel — this only affects the on-screen preview.
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (!result?.downloadUrl) return
-                          void loadCompletedPreview(result.downloadUrl, result.fileName)
-                        }}
-                        className="inline-flex items-center gap-1.5 mt-1 px-3 py-1.5 rounded-lg border border-amber-300 dark:border-amber-700 text-xs font-medium text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
-                      >
-                        <RefreshCw className="h-3.5 w-3.5" />
-                        Retry preview
-                      </button>
-                    </div>
-                  ) : resultClaimFailed ? (
-                    <div className="rounded-xl border border-amber-200 dark:border-amber-800/50 bg-amber-50 dark:bg-amber-950/20 p-5 flex flex-col items-center text-center gap-2.5">
-                      <AlertTriangle className="h-5 w-5 text-amber-500 dark:text-amber-400" />
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">Couldn't attach this result to your account</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm">
-                        This job may have been started in a different session. Try generating again, or refresh if you think this is a mistake.
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => window.location.reload()}
-                        className="inline-flex items-center gap-1.5 mt-1 px-3 py-1.5 rounded-lg border border-amber-300 dark:border-amber-700 text-xs font-medium text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
-                      >
-                        <RefreshCw className="h-3.5 w-3.5" />
-                        Refresh
-                      </button>
-                    </div>
-                  ) : null
-                )}
+                ) : null}
 
                 <ResultUpgradeCard tool="subtitles" resultKey={result.downloadUrl} />
                 <FreePlanNudge tool="subtitles" resultKey={result.downloadUrl} />

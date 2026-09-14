@@ -443,10 +443,28 @@ test('the terminal unavailable state never shows a loading skeleton', () => {
   )
 })
 
-test('the preview-failure toast does not point users at an empty export', () => {
+test('no failure copy points users at an export that would be empty', () => {
+  // Every export runs handleDownloadSubtitles(subtitleRows). Any message shown
+  // while rows are empty must not tell the user to download from Exports — the
+  // file would be blank. Comments are stripped so the explanatory note about
+  // this rule does not satisfy its own guard.
+  const code = pageSrc.replace(/\/\/[^\n]*/g, '').replace(/\/\*[\s\S]*?\*\//g, '')
   assert.equal(
-    /Use the Exports panel to download them directly/.test(pageSrc),
+    /Exports panel to download/i.test(code),
     false,
     'exports are generated from subtitleRows, so that advice yields an empty file',
   )
+})
+
+test('superseded failure flags are gone, leaving one source of truth', () => {
+  // resultLoadTimedOut / resultClaimFailed were replaced by FinalizeResult.
+  // Leaving them write-only broke the build with TS6133 under noUnusedLocals.
+  for (const flag of ['resultLoadTimedOut', 'resultClaimFailed']) {
+    assert.equal(
+      pageSrc.includes(flag),
+      false,
+      `${flag} is superseded by finalizeFailure and must not be reintroduced`,
+    )
+  }
+  assert.ok(pageSrc.includes('finalizeFailureCopy'), 'failure copy comes from the result kind')
 })
