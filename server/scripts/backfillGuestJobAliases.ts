@@ -44,7 +44,14 @@
  * ENV
  *   DATABASE_URL                required (Prisma)
  *   POSTHOG_KEY                 required for --apply (project write key)
- *   POSTHOG_HOST                optional, default https://app.posthog.com
+ *   POSTHOG_HOST                ingestion host for --apply.
+ *                               Default https://app.posthog.com — for Cloud US
+ *                               this should be https://us.i.posthog.com
+ *   POSTHOG_API_HOST            query host for the HogQL read.
+ *                               Default https://us.posthog.com. NOTE this is a
+ *                               DIFFERENT host from POSTHOG_HOST: the query API
+ *                               lives on us.posthog.com, ingestion on
+ *                               us.i.posthog.com. Reusing one value 404s.
  *   POSTHOG_PERSONAL_API_KEY    required unless --mapping is given (HogQL read)
  *   POSTHOG_PROJECT_ID          required unless --mapping is given
  */
@@ -87,7 +94,9 @@ async function loadGuestJobsFromPostHog(): Promise<GuestJob[]> {
       'POSTHOG_PERSONAL_API_KEY and POSTHOG_PROJECT_ID are required unless --mapping is given.',
     )
   }
-  const host = (process.env.POSTHOG_HOST || 'https://app.posthog.com').replace(/\/$/, '')
+  // Deliberately NOT POSTHOG_HOST: that is the ingestion host, which does not
+  // serve /api/projects/:id/query/.
+  const host = (process.env.POSTHOG_API_HOST || 'https://us.posthog.com').replace(/\/$/, '')
   const query = `
     SELECT properties.job_id AS job_id, distinct_id AS guest_distinct_id
     FROM events
@@ -102,7 +111,12 @@ async function loadGuestJobsFromPostHog(): Promise<GuestJob[]> {
     body: JSON.stringify({ query: { kind: 'HogQLQuery', query } }),
   })
   if (!res.ok) {
-    throw new Error(`PostHog query failed (${res.status}): ${await res.text().catch(() => '')}`)
+    const detail = await res.text().catch(() => '')
+    const hint =
+      res.status === 404
+        ? ` (404 usually means POSTHOG_API_HOST points at the ingestion host; it should be the app host, e.g. https://us.posthog.com)`
+        : ''
+    throw new Error(`PostHog query failed (${res.status})${hint}: ${detail.slice(0, 300)}`)
   }
   const body = (await res.json()) as { results?: [string, string][] }
   return (body.results ?? [])
