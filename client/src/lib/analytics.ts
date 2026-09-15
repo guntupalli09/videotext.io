@@ -34,14 +34,29 @@ function attachLifecycleFlushHooks(): void {
   })
 }
 
-/** If PostHog host is unreachable (e.g. blocked by ad blocker), opt out so the SDK stops retrying. */
+/**
+ * Opt out only when PostHog is genuinely unreachable — never on a slow link.
+ *
+ * This used to abort after 3s and opt out on ANY rejection, including a
+ * timeout. That silenced analytics for exactly the users most likely to have a
+ * bad experience: a large upload saturating a slow connection would time out
+ * the probe and permanently disable capture for that session, so their
+ * failures never reached us. It fails OPEN now — a timeout leaves capture on,
+ * and only a definitive network-level rejection (what an ad blocker produces)
+ * opts out.
+ */
 function probeAndOptOutIfBlocked(): void {
   if (optedOut) return
   // Match posthog-js ingest path (e.g. us.i.posthog.com/i/v0/e/...) so ad-block blocks the same URL we probe.
   const base = POSTHOG_HOST.replace(/\/$/, '')
   const probeUrl = `${base}/i/v0/e/?ip=0&_=0&ver=1&compression=gzip-js`
   const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), 3000)
+  // Generous: a slow mobile link mid-upload must not read as "blocked".
+  const timeout = setTimeout(() => controller.abort(), 15000)
+  let timedOut = false
+  controller.signal.addEventListener('abort', () => {
+    timedOut = true
+  })
   fetch(probeUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain' },
@@ -52,6 +67,8 @@ function probeAndOptOutIfBlocked(): void {
     .then(() => clearTimeout(timeout))
     .catch(() => {
       clearTimeout(timeout)
+      // Fail open: a timeout is not evidence of blocking.
+      if (timedOut) return
       try {
         posthog.opt_out_capturing()
         optedOut = true
