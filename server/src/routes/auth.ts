@@ -20,6 +20,8 @@ import {
   trackPasswordResetCompleted,
   trackPasswordSetupCompleted,
   trackGoogleAuthCompleted,
+  identifyAuthenticatedUser,
+  readAnonymousId,
   trackDemoLoginStarted,
 } from '../utils/analytics'
 
@@ -349,6 +351,12 @@ router.post('/complete-signup', async (req: Request, res: Response) => {
     }
 
     await saveUser(user)
+    identifyAuthenticatedUser({
+      user_id: user.id,
+      email: user.email,
+      plan: user.plan,
+      anonymous_id: readAnonymousId(req),
+    })
     let referralApplied = false
     try {
       const refResult = await applyReferralOnSignup(user.id, referralCode)
@@ -727,7 +735,7 @@ router.post('/google', googleAuthLimit, async (req: Request, res: Response) => {
       } catch {
         // non-blocking
       }
-      trackGoogleAuthCompleted({ user_id: user.id, plan: user.plan, is_new_user: isNewUser })
+      trackGoogleAuthCompleted({ user_id: user.id, plan: user.plan, is_new_user: isNewUser, email: user.email, anonymous_id: readAnonymousId(req) })
       const token = signAuthToken(user)
       return res.json({
         token,
@@ -747,7 +755,7 @@ router.post('/google', googleAuthLimit, async (req: Request, res: Response) => {
       log.info({ msg: 'Google OAuth existing user login', email })
     }
 
-    trackGoogleAuthCompleted({ user_id: user.id, plan: user.plan, is_new_user: isNewUser })
+    trackGoogleAuthCompleted({ user_id: user.id, plan: user.plan, is_new_user: isNewUser, email: user.email, anonymous_id: readAnonymousId(req) })
     const token = signAuthToken(user)
     return res.json({ token, userId: user.id, plan: user.plan, email: user.email, name: user.name ?? null, isNewUser })
   } catch (error: unknown) {

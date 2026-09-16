@@ -223,6 +223,19 @@ adminDashboardRouter.post('/recompute', async (req: Request, res: Response): Pro
 })
 
 const CACHE_TTL_MS = 30_000
+/** Fail before Cloudflare's ~100s proxy timeout so the UI gets a JSON 504 instead of a hang. */
+const DASHBOARD_QUERY_TIMEOUT_MS = 90_000
+
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const t = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms)
+    promise.then(
+      (v) => { clearTimeout(t); resolve(v) },
+      (e) => { clearTimeout(t); reject(e) },
+    )
+  })
+}
+
 let cachedDashboard: Record<string, unknown> | null = null
 let cacheTimestamp = 0
 const KPI_TARGETS = {
@@ -442,7 +455,11 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
     const userId = await requireFounder(req, res)
     if (!userId) return res as Response
 
-    if (Date.now() - cacheTimestamp < CACHE_TTL_MS && cachedDashboard != null) {
+    const cacheHit = Date.now() - cacheTimestamp < CACHE_TTL_MS && cachedDashboard != null
+    log.info({ msg: '[admin/dashboard] start', cacheHit, userId })
+
+    if (cacheHit && cachedDashboard != null) {
+      log.info({ msg: '[admin/dashboard] cache hit', ms: Date.now() - startMs })
       return res.json(cachedDashboard)
     }
 
@@ -474,7 +491,7 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
       costMetrics,
       youtubeResolution,
       funnelByCohort,
-    ] = await Promise.all([
+    ] = await withTimeout(Promise.all([
       prisma.dailyMetrics.findFirst({ orderBy: { date: 'desc' } }),
       prisma.monthlyMetrics.findMany({ orderBy: { monthStart: 'desc' }, take: 12 }),
       prisma.$queryRaw<{ userId: string; email: string; plan: string; jobCount: bigint }[]>`
@@ -681,7 +698,7 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
         ORDER BY c."cohortDate" DESC
         LIMIT 26
       `,
-    ])
+    ]), DASHBOARD_QUERY_TIMEOUT_MS, 'GET /api/admin/dashboard queries')
 
     let snapshot: Record<string, unknown>
     if (latestDaily) {
@@ -903,7 +920,13 @@ adminDashboardRouter.get('/dashboard', async (req: Request, res: Response): Prom
 
     return res as Response
   } catch (err) {
-    log.error({ msg: '[admin/dashboard]', error: String(err) })
+    const elapsedMs = Date.now() - startMs
+    const message = err instanceof Error ? err.message : String(err)
+    const timedOut = /timed out after/i.test(message)
+    log.error({ msg: '[admin/dashboard]', error: message, elapsedMs, timedOut })
+    if (timedOut) {
+      return res.status(504).json({ message: 'Dashboard query timed out. Retry in a few seconds.' })
+    }
     return res.status(500).json({ message: 'Internal server error' })
   }
 })

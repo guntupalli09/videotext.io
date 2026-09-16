@@ -222,6 +222,8 @@ export default function TranscriptionAccuracyBenchmark2026() {
             <Link to="/best-transcription-tool" className="text-blue-700 hover:underline">Best transcription tool</Link>
             <Link to="/video-to-transcript" className="text-blue-700 hover:underline">Video to transcript</Link>
             <Link to="/ai-transcription-tools" className="text-blue-700 hover:underline">AI transcription tools</Link>
+            <Link to="/transcription-statistics" className="text-blue-700 hover:underline">Industry transcription statistics</Link>
+            <Link to="/glossary/word-error-rate" className="text-blue-700 hover:underline">What is word error rate?</Link>
           </div>
         </section>
       </div>

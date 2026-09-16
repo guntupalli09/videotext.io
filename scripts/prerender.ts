@@ -27,6 +27,7 @@ import { getCoreToolFaq, getCoreToolSeoDepth } from '../client/src/lib/coreToolS
 import { getIndexablePaths } from './seo/registry'
 import { stripTopLevelSoftwareApplicationScripts } from './seo/jsonLdUtils'
 import { renderPageToHtml } from '../client/src/ssr-render'
+import { getReferenceLayerJsonLd, getReferenceLayerPrerenderMeta, isReferenceLayerPath } from '../client/src/lib/referenceLayer'
 import { getContextualCta, getRouteFamily } from '../client/src/lib/routeFamilyTemplates'
 import slugMapJson from '../client/src/data/hashnode-slug-map.json'
 
@@ -1113,6 +1114,7 @@ function buildBreadcrumbJsonLd(routePath: string, routeMeta: RouteMeta): object 
 
 function resolveFaqItems(routePath: string, meta: RouteMeta): Array<{ q: string; a: string }> {
   if (meta.faq?.length) return meta.faq
+  if (isReferenceLayerPath(routePath)) return []
   return getCoreToolFaq(routePath)
 }
 
@@ -1187,6 +1189,8 @@ function injectStructuredData(template: string, routePath: string, meta: RouteMe
   if (softwareApp) schemas.push(softwareApp)
   if (howTo) schemas.push(howTo)
   if (product) schemas.push(product)
+  const referenceLayer = getReferenceLayerJsonLd(routePath)
+  if (referenceLayer) schemas.push(...referenceLayer)
   if (!schemas.length) return html
   const scripts = dedupeSchemas(schemas)
     .map((schema) => `<script type="application/ld+json">${JSON.stringify(schema)}</script>`)
@@ -1286,6 +1290,8 @@ const HUB_PAGE_LINKS: Record<string, Array<{ path: string; label: string }>> = {
     { path: '/best-youtube-transcription-tool', label: 'Best YouTube Transcription Tool' },
     { path: '/best-podcast-transcription-tool', label: 'Best Podcast Transcription Tool' },
     { path: '/transcription-benchmark', label: 'Transcription Benchmark' },
+    { path: '/transcription-statistics', label: 'Transcription statistics' },
+    { path: '/glossary', label: 'Transcription & subtitle glossary' },
     { path: '/otter-vs-videotext', label: 'Otter vs VideoText' },
     { path: '/descript-vs-videotext', label: 'Descript vs VideoText' },
     { path: '/videotext-vs-rev', label: 'VideoText vs Rev' },
@@ -1338,6 +1344,8 @@ const HUB_PAGE_LINKS: Record<string, Array<{ path: string; label: string }>> = {
     { path: '/ada-video-captions', label: 'ADA Video Captions' },
     { path: '/sdh-subtitles', label: 'SDH Subtitles' },
     { path: '/hardcoded-captions', label: 'Hardcoded Captions' },
+    { path: '/glossary', label: 'Transcription & subtitle glossary' },
+    { path: '/transcription-statistics', label: 'Transcription statistics' },
   ],
 }
 
@@ -1355,6 +1363,8 @@ function buildH1Html(meta: RouteMeta): string {
     { path: '/translate-subtitles', label: 'Translate Subtitles' },
     { path: '/subtitle-tools', label: 'Subtitle Tools' },
     { path: '/transcription-tools', label: 'Transcription Tools' },
+    { path: '/transcription-statistics', label: 'Transcription statistics' },
+    { path: '/glossary', label: 'Transcription glossary' },
   ].filter((item) => item.path !== meta.path)
   const keywordList = (meta.keywords?.length ? meta.keywords : generateKeywordsFromTitle(meta.title, meta.path)).slice(0, 6)
 
@@ -1852,7 +1862,9 @@ function injectHomepageVisibleRating(html: string, rating: PublicRating | null):
 
 async function main() {
   const templatePath = path.join(DIST_DIR, 'index.html')
-  if (!fs.existsSync(templatePath)) {
+  const clientTemplatePath = path.join(REPO_ROOT, 'client', 'dist', 'index.html')
+  const templateSource = fs.existsSync(clientTemplatePath) ? clientTemplatePath : templatePath
+  if (!fs.existsSync(templateSource)) {
     console.error('[prerender] dist/index.html not found — run the client build first.')
     process.exit(1)
   }
@@ -1863,7 +1875,11 @@ async function main() {
     console.log('[prerender] Removed stale dist/blog/ (Hashnode is canonical; vercel.json redirects /blog/*)')
   }
 
-  const template = fs.readFileSync(templatePath, 'utf8')
+  const template = fs.readFileSync(templateSource, 'utf8')
+  if (!template.includes('<div id="root"></div>')) {
+    console.error(`[prerender] ${templateSource} does not contain an empty #root. Re-run the Vite build before prerender so route HTML is not copied from a previous homepage snapshot.`)
+    process.exit(1)
+  }
   const publicRating = await fetchPublicRatingForPrerender()
   if (publicRating) {
     console.log(`[prerender] public rating ${publicRating.averageRating.toFixed(1)} from ${publicRating.ratingCount} ratings`)
@@ -1902,6 +1918,8 @@ async function main() {
     // Keep static routes last so canonical core pages (e.g. /video-to-transcript)
     // are not overwritten by registry aliases that resolve to the same primary URL.
     ...STATIC_META,
+    // Reference-layer pages last so citation-hub and glossary meta win any conflict.
+    ...getReferenceLayerPrerenderMeta(),
   ])
 
   let count = 0
@@ -1916,6 +1934,8 @@ async function main() {
     const ssrHtml = renderPageToHtml(routePath)
     if (ssrHtml) {
       html = html.replace('<div id="root"></div>', `<div id="root">${ssrHtml}</div>`)
+    } else if (isReferenceLayerPath(routePath)) {
+      throw new Error(`[prerender] Reference-layer SSR failed for ${routePath}. Refusing to inject the generic workflow template.`)
     } else if (meta.h1) {
       // For all other pages: inject minimal H1 + description for non-JS crawlers.
       html = html.replace('</body>', `${buildH1Html(meta)}\n</body>`)

@@ -42,6 +42,11 @@ import {
   getCurrentUsage,
   invalidateUsageCache,
 } from '../lib/api'
+import {
+  fetchTranscriptDownloadText,
+  transcriptTextFromResult,
+} from '../lib/hydrateTranscriptResult'
+import { resolveCompletedJobResult } from '../lib/resolveCompletedJob'
 import { isLoggedIn } from '../lib/auth'
 import { getAbsoluteDownloadUrl, getApiBase, API_ORIGIN, getWsBase } from '../lib/apiBase'
 import { formatTimestamp, type Segment } from '../lib/srtExport'
@@ -676,17 +681,23 @@ export default function VoiceRecorder() {
         async (s) => {
           if (s.partialTranscript) setPartial(s.partialTranscript)
 
-          if (s.status === 'completed' && s.result) {
+          if (s.status === 'completed') {
             stopPollRef.current?.()
-            setVoiceSegments(s.result.segments?.length ? s.result.segments : null)
-            setVoiceAudioUrl(s.result.audioUrl ?? null)
-            let text = ''
-            if (s.result.segments?.length) {
-              text = s.result.segments.map((seg) => seg.text).join('\n\n')
-            } else if (s.result.downloadUrl) {
+            const resolved = await resolveCompletedJobResult(res.jobId, res.jobToken, s)
+            if (resolved.kind === 'auth-gate' || !isLoggedIn()) {
+              setShowAuthGate(true)
+            }
+            const result = resolved.kind === 'ready' ? resolved.status.result : undefined
+            setVoiceSegments(result?.segments?.length ? result.segments : null)
+            setVoiceAudioUrl(result?.audioUrl ?? null)
+            let text = transcriptTextFromResult(result)
+            if (!text && result?.downloadUrl) {
               try {
-                text = await fetch(getAbsoluteDownloadUrl(s.result.downloadUrl)).then((r) =>
-                  r.text()
+                text = await fetchTranscriptDownloadText(
+                  getAbsoluteDownloadUrl(result.downloadUrl),
+                  result.fileName,
+                  fetch,
+                  getAuthToken(),
                 )
               } catch {
                 // fallback — empty transcript is better than crashing

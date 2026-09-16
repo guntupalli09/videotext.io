@@ -1,5 +1,6 @@
 import { API_ORIGIN } from './apiBase'
-import { trackEvent } from './analytics'
+import { jobHasUsableResult } from './hydrateTranscriptResult'
+import { trackEvent, getPostHogDistinctId } from './analytics'
 import { getSamplesModuleAttribution } from './samplesAttribution'
 import { getSignupAttributionPayload } from './attribution'
 
@@ -62,6 +63,8 @@ export function api(path: string, init?: ApiInit): Promise<Response> {
   const token = getAuthToken()
   const headers = new Headers(rest.headers as HeadersInit)
   if (token) headers.set('Authorization', `Bearer ${token}`)
+  const phDistinctId = getPostHogDistinctId()
+  if (phDistinctId) headers.set('x-ph-distinct-id', phDistinctId)
   const options = { ...rest, headers }
   let signal = options.signal
   if (timeout != null && timeout > 0 && !signal) {
@@ -111,6 +114,8 @@ export interface JobStatus {
     issues?: any[]
     warnings?: { type: string; message: string; line?: number }[]
     consistencyIssues?: { line: number; issueType: string }[]
+    /** Plain transcript text. Present even when segments are omitted. */
+    fullText?: string
     segments?: { start: number; end: number; text: string; speaker?: string }[]
     summary?: { summary: string; bullets: string[]; actionItems?: string[] }
     chapters?: { title: string; startTime: number; endTime?: number }[]
@@ -214,6 +219,12 @@ export interface UploadProgressOptions {
   signal?: AbortSignal
   /** Optional non-blocking UX: adaptive status messages e.g. "Optimizing connection...", "High-speed mode enabled". */
   onAdaptiveStatus?: (message: string) => void
+  /**
+   * Extra properties merged into the `upload_started` / `upload_completed` analytics
+   * events fired here. Lets a page attach its funnel context to these single captures
+   * instead of capturing duplicates of its own.
+   */
+  analyticsProps?: Record<string, unknown>
 }
 
 const CHUNK_THRESHOLD = 15 * 1024 * 1024 // 15 MB — use chunked upload above this
@@ -416,6 +427,7 @@ async function uploadFileChunked(
   const tl = typeof window !== 'undefined' ? (window as any).__uploadTimeline : undefined
   if (tl) tl.uploadStart = uploadStartMs
   trackUploadEvent('upload_started', {
+    ...(progressOptions?.analyticsProps ?? {}),
     tool_type: options.toolType,
     file_size_bytes: file.size,
     upload_mode: 'chunked',
@@ -773,6 +785,17 @@ async function uploadFileChunked(
   if (signal?.aborted) throw new Error('Upload cancelled')
   if (tl) tl.upload100 = Date.now()
   if (tl) tl.beforeComplete = Date.now()
+  const trackChunkedCompleted = (jobId: string, recoveredAfterError = false) => {
+    trackUploadEvent('upload_completed', {
+      ...(progressOptions?.analyticsProps ?? {}),
+      job_id: jobId,
+      tool_type: options.toolType,
+      file_size_bytes: file.size,
+      upload_mode: 'chunked',
+      upload_duration_ms: Date.now() - uploadStartMs,
+      ...(recoveredAfterError ? { recovered_after_complete_error: true } : {}),
+    })
+  }
   const completeRes = await api('/api/upload/complete', {
     method: 'POST',
     headers: {
@@ -804,6 +827,7 @@ async function uploadFileChunked(
           if (status.status === 'failed') throw new Error(msg)
           if (status.status === 'completed') {
             clearChunkedUploadState()
+            trackChunkedCompleted(err.jobId, true)
             return { jobId: err.jobId, status: 'queued' as const, jobToken }
           }
         } catch (e) {
@@ -813,6 +837,7 @@ async function uploadFileChunked(
       }
       // Job still processing or poll failed; return so UI shows "Processing..." instead of fatal error
       clearChunkedUploadState()
+      trackChunkedCompleted(err.jobId, true)
       return { jobId: err.jobId, status: 'queued' as const, jobToken }
     }
     throw new Error(msg)
@@ -821,13 +846,7 @@ async function uploadFileChunked(
   if (!data?.jobId) throw new Error('Invalid upload response. Please retry.')
   clearChunkedUploadState()
   const uploadDurationMs = Date.now() - uploadStartMs
-  trackUploadEvent('upload_completed', {
-    job_id: data.jobId,
-    tool_type: options.toolType,
-    file_size_bytes: file.size,
-    upload_mode: 'chunked',
-    upload_duration_ms: uploadDurationMs,
-  })
+  trackChunkedCompleted(data.jobId)
   console.log('[UPLOAD_TIMING]', { file_size_bytes: file.size, upload_duration_ms: uploadDurationMs, tool_type: options.toolType, mode: 'chunked' })
   return data
 }
@@ -846,6 +865,7 @@ export function uploadFileWithProgress(
 
   const uploadMode = options.uploadMode === 'audio-only' ? 'audio-only' : 'single'
   trackUploadEvent('upload_started', {
+    ...(progressOptions?.analyticsProps ?? {}),
     tool_type: options.toolType,
     file_size_bytes: file.size,
     upload_mode: uploadMode,
@@ -896,6 +916,7 @@ export function uploadFileWithProgress(
           if (tl) tl.uploadCompleteResponse = Date.now()
           const uploadDurationMs = uploadStartMs ? Date.now() - uploadStartMs : 0
           trackUploadEvent('upload_completed', {
+            ...(progressOptions?.analyticsProps ?? {}),
             job_id: data.jobId,
             tool_type: options.toolType,
             file_size_bytes: file.size,
@@ -931,6 +952,8 @@ export function uploadFileWithProgress(
       xhr.timeout = 120_000
       xhr.setRequestHeader('x-user-id', userId)
       xhr.setRequestHeader('x-plan', plan)
+      const xhrPhId = getPostHogDistinctId()
+      if (xhrPhId) xhr.setRequestHeader('x-ph-distinct-id', xhrPhId)
       const token = getAuthToken()
       if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`)
       uploadStartMs = Date.now()
@@ -1214,6 +1237,8 @@ export function uploadDualFilesWithProgress(
       xhr.timeout = 180_000
       xhr.setRequestHeader('x-user-id', userId)
       xhr.setRequestHeader('x-plan', plan)
+      const xhrPhId = getPostHogDistinctId()
+      if (xhrPhId) xhr.setRequestHeader('x-ph-distinct-id', xhrPhId)
       const dualToken = getAuthToken()
       if (dualToken) xhr.setRequestHeader('Authorization', `Bearer ${dualToken}`)
       xhr.send(formData)
@@ -1289,6 +1314,8 @@ export function uploadFixSubtitlesDual(
       xhr.timeout = 180_000
       xhr.setRequestHeader('x-user-id', userId)
       xhr.setRequestHeader('x-plan', plan)
+      const xhrPhId = getPostHogDistinctId()
+      if (xhrPhId) xhr.setRequestHeader('x-ph-distinct-id', xhrPhId)
       const fixToken = getAuthToken()
       if (fixToken) xhr.setRequestHeader('Authorization', `Bearer ${fixToken}`)
       xhr.send(formData)
@@ -1362,7 +1389,7 @@ export async function getJobStatus(jobId: string, options?: { jobToken?: string 
 export async function getJobDeferredSummary(
   jobId: string,
   options?: { jobToken?: string }
-): Promise<{ summary?: { summary?: string; bullets?: string[]; actionItems?: string[] }; chapters?: { title: string; startTime: number; endTime?: number }[] }> {
+): Promise<{ requiresAuth?: boolean; summary?: { summary?: string; bullets?: string[]; actionItems?: string[] }; chapters?: { title: string; startTime: number; endTime?: number }[] }> {
   let path = `/api/job/${jobId}/summary`
   if (options?.jobToken) {
     path += `?jobToken=${encodeURIComponent(options.jobToken)}`
@@ -1375,6 +1402,34 @@ export async function getJobDeferredSummary(
     throw new Error('Failed to get deferred summary')
   }
   return response.json()
+}
+
+/**
+ * EventSource cannot send Authorization. The SSE completed event therefore
+ * arrives with requiresAuth / no result even for a logged-in owner. Re-fetch
+ * over the authenticated GET before the UI treats the job as ready.
+ */
+export async function hydrateCompletedJobStatus(
+  jobId: string,
+  options: { jobToken?: string } | undefined,
+  incoming: JobStatus
+): Promise<JobStatus> {
+  if (incoming.status !== 'completed') return incoming
+  if (!incoming.requiresAuth && jobHasUsableResult(incoming.result)) {
+    return incoming
+  }
+  try {
+    if (getAuthToken() && incoming.requiresAuth && options?.jobToken) {
+      try {
+        await ensureGuestJobClaimed(jobId, options.jobToken)
+      } catch {
+        // GET below may still succeed for an already-owned job
+      }
+    }
+    return await getJobStatus(jobId, options)
+  } catch {
+    return incoming
+  }
 }
 
 /**
@@ -1435,15 +1490,21 @@ export function subscribeJobStatus(
         const tl = typeof window !== 'undefined' ? (window as any).__uploadTimeline : undefined
         if (tl) tl.firstSseMessage = Date.now()
       }
-      try {
-        const payload = JSON.parse(e.data) as JobStatus
-        onStatus(payload)
-        if (payload.status === 'completed' || payload.status === 'failed') {
-          stop()
+      void (async () => {
+        try {
+          let payload = JSON.parse(e.data) as JobStatus
+          if (payload.status === 'completed') {
+            payload = await hydrateCompletedJobStatus(jobId, options, payload)
+          }
+          if (stopped) return
+          onStatus(payload)
+          if (payload.status === 'completed' || payload.status === 'failed') {
+            stop()
+          }
+        } catch (_) {
+          /* ignore parse error */
         }
-      } catch (_) {
-        /* ignore parse error */
-      }
+      })()
     }
     es.onerror = () => {
       es.close()

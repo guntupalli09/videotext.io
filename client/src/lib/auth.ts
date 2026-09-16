@@ -1,4 +1,5 @@
 import { api, getAuthToken, invalidateUsageCache, completeSignup as completeSignupApi } from './api'
+import { trackEvent } from './analytics'
 import { clearAllPersistedJobs } from './jobSession'
 import { clearCachedFounderStatus } from './founderDashboard'
 
@@ -22,6 +23,8 @@ export function isDemo(): boolean {
 /** Clear session (logout). Clears auth, identity, and any persisted job/workflow data so results are not shown after reload. */
 export function logout(): void {
   if (typeof localStorage === 'undefined') return
+  // Fire before the identity is cleared so the event still attaches to the user.
+  try { trackEvent('user_logged_out', { plan: (localStorage.getItem(PLAN_KEY) || 'free').toLowerCase() }) } catch { /* non-blocking */ }
   localStorage.removeItem(AUTH_TOKEN_KEY)
   localStorage.removeItem(USER_ID_KEY)
   localStorage.removeItem(PLAN_KEY)

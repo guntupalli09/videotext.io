@@ -34,14 +34,29 @@ function attachLifecycleFlushHooks(): void {
   })
 }
 
-/** If PostHog host is unreachable (e.g. blocked by ad blocker), opt out so the SDK stops retrying. */
+/**
+ * Opt out only when PostHog is genuinely unreachable — never on a slow link.
+ *
+ * This used to abort after 3s and opt out on ANY rejection, including a
+ * timeout. That silenced analytics for exactly the users most likely to have a
+ * bad experience: a large upload saturating a slow connection would time out
+ * the probe and permanently disable capture for that session, so their
+ * failures never reached us. It fails OPEN now — a timeout leaves capture on,
+ * and only a definitive network-level rejection (what an ad blocker produces)
+ * opts out.
+ */
 function probeAndOptOutIfBlocked(): void {
   if (optedOut) return
   // Match posthog-js ingest path (e.g. us.i.posthog.com/i/v0/e/...) so ad-block blocks the same URL we probe.
   const base = POSTHOG_HOST.replace(/\/$/, '')
   const probeUrl = `${base}/i/v0/e/?ip=0&_=0&ver=1&compression=gzip-js`
   const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), 3000)
+  // Generous: a slow mobile link mid-upload must not read as "blocked".
+  const timeout = setTimeout(() => controller.abort(), 15000)
+  let timedOut = false
+  controller.signal.addEventListener('abort', () => {
+    timedOut = true
+  })
   fetch(probeUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain' },
@@ -52,6 +67,8 @@ function probeAndOptOutIfBlocked(): void {
     .then(() => clearTimeout(timeout))
     .catch(() => {
       clearTimeout(timeout)
+      // Fail open: a timeout is not evidence of blocking.
+      if (timedOut) return
       try {
         posthog.opt_out_capturing()
         optedOut = true
@@ -119,7 +136,6 @@ export type AnalyticsEvent =
   | 'processing_completed'
   | 'payment_completed'
   | 'soft_cap_shown'
-  | 'daily_cap_hit'
   | 'monthly_cap_hit'
   // Monetization tracking
   | 'transcript_copied'            // copy succeeded; props: { plan }
@@ -127,7 +143,6 @@ export type AnalyticsEvent =
   | 'copy_gate_limit'              // copy blocked — free copies exhausted; shown paywall
   | 'ai_summary_teaser_shown'      // blurred AI summary teaser rendered for free user
   | 'upgrade_clicked'              // user clicked upgrade CTA; props: { source, plan }
-  | 'billing_period_toggled'       // monthly/annual toggle; props: { annual: boolean }
   // Auth funnel
   | 'login_started'
   | 'login_completed'
@@ -144,9 +159,7 @@ export type AnalyticsEvent =
   | 'samples_module_clicked'       // user clicked "See real output samples"; props: { source_path, target_path }
   | 'guideline_cta_clicked'        // guideline page → /guideline-format CTA; props: { source_page, preset, destination }
   // Tool configuration
-  | 'format_changed'               // props: { tool, format }
   | 'language_selected'            // props: { tool, language, additional?: boolean }
-  | 'tool_option_changed'          // generic; props: { tool, option, value }
   // Tool result actions
   | 'process_another_clicked'      // props: { tool }
   | 'recording_started'
@@ -177,7 +190,6 @@ export type AnalyticsEvent =
   | 'activation_wizard_shown'     // first-session activation card shown
   | 'activation_wizard_cta_clicked' // first-session activation card CTA clicked
   // Engagement
-  | 'result_page_time_spent'       // time before first action; props: { tool, seconds, action }
   | 'first_output_seen'
   | 'upgrade_prompt_seen'
   | 'checkout_started'
@@ -221,5 +233,20 @@ export function trackEvent(event: AnalyticsEvent, props?: Record<string, unknown
     posthog.capture(event, props)
   } catch {
     // non-blocking; never throw
+  }
+}
+
+/**
+ * PostHog's distinct ID for the current browser. Sent to the API so server-side
+ * events can be attributed to the same person as client-side ones — without it,
+ * every logged-out user collapses into a single 'anonymous' profile.
+ * Returns null when PostHog is uninitialized, opted out, or blocked.
+ */
+export function getPostHogDistinctId(): string | null {
+  if (optedOut) return null
+  try {
+    return posthog.get_distinct_id() || null
+  } catch {
+    return null
   }
 }

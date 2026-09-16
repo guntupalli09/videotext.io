@@ -89,6 +89,7 @@ type ResultMode = "summary" | "review" | "full";
 type JobStatusResponse = {
   status: string;
   stage?: string | null;
+  requiresAuth?: boolean;
   outputText: string | null;
   diffData: DiffSegment[] | null;
   flaggedSegments: FlaggedSegment[] | null;
@@ -446,6 +447,50 @@ export default function GuidelineFormat() {
         setJobStatus((prev) => mergeGuidelinePollStatus(prev, data));
         if (data.status === "completed" || data.status === "failed") {
           scheduleMore = false;
+          if (
+            data.status === "completed" &&
+            isLoggedIn() &&
+            (!data.outputText || data.requiresAuth) &&
+            jobId &&
+            jobToken
+          ) {
+            try {
+              const claimRes = await api(`/api/guidelines/jobs/${jobId}/claim`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ jobToken }),
+                timeout: 15000,
+              });
+              if (!claimRes.ok && claimRes.status !== 409) {
+                const errData = (await claimRes
+                  .json()
+                  .catch(() => ({}))) as { error?: string };
+                throw new Error(
+                  errData.error || "Could not unlock this result. Please try again.",
+                );
+              }
+              const statusRes = await api(`/api/guidelines/jobs/${jobId}`, {
+                timeout: 15000,
+              });
+              const unlocked = (await statusRes.json()) as JobStatusResponse & {
+                error?: string;
+              };
+              if (!statusRes.ok) {
+                throw new Error(
+                  unlocked.error || "Could not load your formatted transcript.",
+                );
+              }
+              if (!active || pollSessionAtStart !== pollSession) return;
+              setJobStatus((prev) => mergeGuidelinePollStatus(prev, unlocked));
+            } catch (e) {
+              if (!active || pollSessionAtStart !== pollSession) return;
+              setSubmitError(
+                e instanceof Error
+                  ? e.message
+                  : "Could not unlock your formatted transcript",
+              );
+            }
+          }
           setIsSubmitting(false);
           return;
         }

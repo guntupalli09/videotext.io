@@ -312,6 +312,8 @@ export default function Faq() {
             { to: "/compare", label: "Compare competitors →", desc: "VideoText vs Descript, Otter, Trint." },
             { to: "/guideline-format", label: "Format your transcript to a client style guide →", desc: "Rev-, GoTranscript-, TranscribeMe-, Scribie-style cards + optional client file slot." },
             { to: "/blog", label: "Blog & how-tos →", desc: "QA, verbatim, freelance rates." },
+            { to: "/glossary", label: "Glossary of terms →", desc: "Definitions for SRT, WER, captions, and ASR." },
+            { to: "/transcription-statistics", label: "Transcription statistics →", desc: "Sourced industry figures, not VideoText operations." },
           ].map(({ to, label, desc }) => (
             <Link key={to} to={to} className="block bg-white border border-gray-200 rounded-xl p-4 hover:border-blue-300 hover:shadow-sm transition-all">
               <span className="text-sm font-semibold text-blue-600">{label}</span>

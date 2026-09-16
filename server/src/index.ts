@@ -109,18 +109,13 @@ const generalLimiter = rateLimit({
   legacyHeaders: false,
 })
 
-// CORS: allowlist is managed in utils/allowedOrigins.ts.
+// CORS: origin allowlist is managed in utils/allowedOrigins.ts.
 // Includes: production domain(s), localhost dev, and https://*.vercel.app previews.
-const corsHeaders = [
-  'Content-Type',
-  'Authorization',
-  'X-User-Id',
-  'X-Plan',
-  'X-Upload-Id',
-  'X-Chunk-Index',
-  'X-Api-Key',
-  'X-Job-Token',
-]
+// Do not pin Access-Control-Allow-Headers to a closed list. The Vercel client
+// ships independently of this Docker image; a new request header (e.g.
+// x-ph-distinct-id) that is missing from the list makes the browser report
+// TypeError: Failed to fetch on every API call. Reflecting
+// Access-Control-Request-Headers is the cors package default.
 
 function headerValue(value: string | string[] | undefined): string | undefined {
   return Array.isArray(value) ? value.join(', ') : value
@@ -172,7 +167,6 @@ const corsOptions: cors.CorsOptions = {
     callback(new Error('Not allowed by CORS'))
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: corsHeaders,
   credentials: true,
   optionsSuccessStatus: 204,
 }

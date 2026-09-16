@@ -69,6 +69,7 @@ import {
   submitYoutubeUrl,
   isYoutubeUrl,
   claimGuestJob,
+  ensureGuestJobClaimed,
   uploadBatch,
   getBatchStatus,
   getBatchDownloadUrl,
@@ -87,6 +88,13 @@ import {
   JOB_POLL_INTERVAL_MS,
 } from "../lib/jobPolling";
 import { API_ORIGIN, getAbsoluteDownloadUrl, getApiBase } from "../lib/apiBase";
+import {
+  fetchTranscriptDownloadText,
+  transcriptTextFromResult,
+  type TranscriptJobResultLike,
+} from "../lib/hydrateTranscriptResult";
+import { resolveCompletedJobResult } from "../lib/resolveCompletedJob";
+import { pollDeferredSummary } from "../lib/deferredSummaryPoll";
 import { LANGUAGES, languageToCode } from "../lib/languages";
 import {
   exportFileStem,
@@ -316,6 +324,18 @@ export default function VideoToTranscript(
   const [status, setStatus] = useState<
     "idle" | "processing" | "completed" | "failed"
   >("idle");
+  /**
+   * True from the moment the user hits a start CTA until the job's own status
+   * takes over. The quota lookup that runs first is a network round trip, so
+   * without this the primary button sits inert and people click it twice.
+   */
+  const [startPending, setStartPending] = useState(false);
+
+  // Once the job's own status drives the UI (or a failure sends us back to
+  // idle), the pending CTA state has done its job.
+  useEffect(() => {
+    setStartPending(false);
+  }, [status]);
   const [uploadZoneVisible, setUploadZoneVisible] = useState(true);
   const uploadZoneRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
@@ -326,6 +346,7 @@ export default function VideoToTranscript(
   const [result, setResult] = useState<{
     downloadUrl: string;
     fileName?: string;
+    fullText?: string;
     segments?: { start: number; end: number; text: string; speaker?: string }[];
     summary?: { summary: string; bullets: string[]; actionItems?: string[] };
     chapters?: { title: string; startTime: number; endTime?: number }[];
@@ -333,6 +354,7 @@ export default function VideoToTranscript(
   } | null>(null);
   const [transcriptPreview, setTranscriptPreview] = useState("");
   const [fullTranscript, setFullTranscript] = useState("");
+  const [isHydratingTranscript, setIsHydratingTranscript] = useState(false);
   const [includeSummary, setIncludeSummary] = useState(true);
   const [includeChapters, setIncludeChapters] = useState(true);
   const [exportFormats, setExportFormats] = useState<
@@ -539,6 +561,7 @@ export default function VideoToTranscript(
   const jobStartedTrackedRef = useRef<string | null>(null);
   const processingStartedAtRef = useRef<number | null>(null);
   const terminalRef = useRef(false);
+  const finalizingRef = useRef(false);
   const lastPartialVersionRef = useRef(0);
   const partialScrollRef = useRef<HTMLDivElement>(null);
   const savedScrollTopRef = useRef(0);
@@ -770,6 +793,29 @@ export default function VideoToTranscript(
     audioPlaybackTimeRef.current = 0;
   }, [result?.audioUrl, status]);
 
+  /**
+   * first_output_seen means the user actually saw a transcript, not that the
+   * job finished. It used to fire inside the completion handler, so a session
+   * that landed on a blank workspace still logged a successful result view and
+   * the funnel looked healthy while downloads went to zero. Gate it on the
+   * transcript text that the pane renders from.
+   */
+  useEffect(() => {
+    if (status !== "completed") return;
+    if (hasTrackedFirstOutputRef.current) return;
+    if (!fullTranscript.trim()) return;
+    hasTrackedFirstOutputRef.current = true;
+    // Keep the "result_panel" source both completion sites already used so the
+    // existing funnel breakdowns stay comparable across the change.
+    const props = getFunnelProps("result_panel");
+    try {
+      trackFirstOutputSeen(props);
+      trackAppEvent("first_output_seen", props);
+    } catch {
+      // non-blocking
+    }
+  }, [status, fullTranscript, getFunnelProps]);
+
   useEffect(() => {
     if (status !== "completed" || !currentJobId) {
       setIsSummaryHydrating(false);
@@ -785,52 +831,58 @@ export default function VideoToTranscript(
     let cancelled = false;
     setIsSummaryHydrating(true);
     const jobToken = getPersistedJobToken(location.pathname) || undefined;
-    const poll = async () => {
-      try {
-        const deferred = await getJobDeferredSummary(
-          currentJobId,
-          jobToken ? { jobToken } : undefined,
-        );
-        if (cancelled) return;
-        if (deferred.summary || deferred.chapters) {
-          setResult((prev) => {
-            if (!prev) return prev;
-            return {
-              ...prev,
-              ...(deferred.summary
-                ? {
-                    summary: deferred.summary as {
-                      summary: string;
-                      bullets: string[];
-                      actionItems?: string[];
-                    },
-                  }
-                : {}),
-              ...(deferred.chapters ? { chapters: deferred.chapters } : {}),
-            };
-          });
-          setIsSummaryHydrating(false);
-        }
-      } catch (err) {
-        if (err instanceof SessionExpiredError) {
-          cancelled = true;
-          setIsSummaryHydrating(false);
-          setCurrentJobId(null);
-          clearPersistedJobId(location.pathname, navigate);
-          return;
-        }
-        // Keep polling until summary is ready.
+
+    void (async () => {
+      const outcome = await pollDeferredSummary({
+        fetchSummary: () =>
+          getJobDeferredSummary(
+            currentJobId,
+            jobToken ? { jobToken } : undefined,
+          ),
+        sleep: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
+        now: () => Date.now(),
+        isCancelled: () => cancelled,
+        isSessionExpired: (err) => err instanceof SessionExpiredError,
+        claimJob:
+          getAuthToken() && jobToken
+            ? () => ensureGuestJobClaimed(currentJobId, jobToken)
+            : undefined,
+      });
+      if (cancelled) return;
+
+      if (outcome.kind === "ready") {
+        setResult((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            ...(outcome.payload.summary
+              ? {
+                  summary: outcome.payload.summary as {
+                    summary: string;
+                    bullets: string[];
+                    actionItems?: string[];
+                  },
+                }
+              : {}),
+            ...(outcome.payload.chapters
+              ? { chapters: outcome.payload.chapters }
+              : {}),
+          };
+        });
+      } else if (outcome.kind === "session-expired") {
+        setCurrentJobId(null);
+        clearPersistedJobId(location.pathname, navigate);
       }
-    };
-    void poll();
-    const timer = setInterval(() => {
-      void poll();
-    }, 2000);
+      // requires-auth / exhausted / session-expired all stop the spinner so the
+      // "No summary for this transcript yet" copy or the unlock teaser renders
+      // instead of an indefinite "Generating summary…".
+      setIsSummaryHydrating(false);
+    })();
+
     return () => {
       cancelled = true;
-      clearInterval(timer);
     };
-  }, [status, currentJobId, location.pathname, result?.summary]);
+  }, [status, currentJobId, location.pathname, navigate, result?.summary]);
 
   // Sync editable segments from result. Preserve speaker field so exports can apply speaker names.
   // Restore from localStorage when the same job is reopened (zero-server-retention: edits stay on device).
@@ -960,6 +1012,95 @@ export default function VideoToTranscript(
     };
   }, [status, result]);
 
+  const applyTranscriptPayload = useCallback(
+    async (res: TranscriptJobResultLike | null | undefined) => {
+      const fromPayload = transcriptTextFromResult(res);
+      if (fromPayload) {
+        setFullTranscript(fromPayload);
+        setTranscriptPreview(fromPayload.substring(0, 500));
+        return true;
+      }
+      if (!res?.downloadUrl) return false;
+      try {
+        const text = await fetchTranscriptDownloadText(
+          getAbsoluteDownloadUrl(res.downloadUrl),
+          res.fileName,
+          fetch,
+          getAuthToken(),
+        );
+        if (!text) return false;
+        setFullTranscript(text);
+        setTranscriptPreview(text.substring(0, 500));
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    [],
+  );
+
+  /**
+   * Never flip to the completed workspace until transcript text is in state.
+   * SSE completed events omit the result (EventSource cannot send the JWT),
+   * so we always re-fetch over the authenticated GET and claim if needed.
+   */
+  const finalizeCompletedJob = useCallback(
+    async (
+      jobId: string,
+      jobToken?: string,
+      incoming?: {
+        requiresAuth?: boolean;
+        result?: TranscriptJobResultLike & { downloadUrl?: string };
+      },
+    ) => {
+      if (!isLoggedIn()) {
+        setShowAuthGate(true);
+        setResult({ downloadUrl: "" });
+        return true;
+      }
+
+      setIsHydratingTranscript(true);
+      try {
+        const resolved = await resolveCompletedJobResult(
+          jobId,
+          jobToken,
+          incoming
+            ? {
+                status: "completed",
+                progress: 100,
+                requiresAuth: incoming.requiresAuth,
+                result: incoming.result as import("../lib/api").JobStatus["result"],
+              }
+            : undefined,
+        );
+        if (resolved.kind === "auth-gate") {
+          setShowAuthGate(true);
+          setResult({ downloadUrl: "" });
+          return true;
+        }
+        if (resolved.kind === "ready" && resolved.status.result) {
+          setShowAuthGate(false);
+          setResult({
+            ...resolved.status.result,
+            downloadUrl: resolved.status.result.downloadUrl || "",
+          });
+          return applyTranscriptPayload(resolved.status.result);
+        }
+        return false;
+      } finally {
+        setIsHydratingTranscript(false);
+      }
+    },
+    [applyTranscriptPayload],
+  );
+
+  const retryLoadTranscript = useCallback(async () => {
+    const jobId = currentJobId || getPersistedJobId(location.pathname);
+    const jobToken = getPersistedJobToken(location.pathname) || undefined;
+    if (!jobId) return;
+    await finalizeCompletedJob(jobId, jobToken);
+  }, [currentJobId, finalizeCompletedJob, location.pathname]);
+
   // Rehydrate from URL/sessionStorage after idle or reload (e.g. mobile Safari)
   useEffect(() => {
     const pathname = location.pathname;
@@ -967,6 +1108,7 @@ export default function VideoToTranscript(
     if (!jobId) return;
 
     terminalRef.current = false;
+    finalizingRef.current = false;
     lastPartialVersionRef.current = 0;
     setStatus("processing");
     setUploadPhase("processing");
@@ -993,42 +1135,21 @@ export default function VideoToTranscript(
 
         const transition = getJobLifecycleTransition(jobStatus);
         if (transition === "completed") {
+          await finalizeCompletedJob(
+            jobId,
+            jobToken ?? undefined,
+            jobStatus,
+          );
+          if (cancelled) return;
           terminalRef.current = true;
           setPartialSegments([]);
           setStatus("completed");
-          if (isLoggedIn() && !jobStatus.requiresAuth) {
-            setResult(jobStatus.result ?? null);
-          } else {
-            setShowAuthGate(true);
-            setResult({ downloadUrl: "" });
-          }
           trackAppEvent("transcription_completed", {
             toolId: "video-to-transcript",
           });
           // emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript' })
           setUploadPhase("processing");
           setUploadProgress(100);
-          const res = jobStatus.result;
-          if (isLoggedIn()) {
-            if (res?.segments?.length) {
-              const textFromSegments = res.segments
-                .map((s: { text: string }) => s.text)
-                .join("\n\n");
-              setFullTranscript(textFromSegments);
-              setTranscriptPreview(textFromSegments.substring(0, 500));
-            } else if (res?.downloadUrl) {
-              try {
-                const transcriptResponse = await fetch(
-                  getAbsoluteDownloadUrl(res.downloadUrl),
-                );
-                const transcriptText = await transcriptResponse.text();
-                setTranscriptPreview(transcriptText.substring(0, 500));
-                setFullTranscript(transcriptText);
-              } catch {
-                // ignore (e.g. ZIP file)
-              }
-            }
-          }
           invalidateUsageCache();
           getCurrentUsage({ skipCache: true })
             .then((data) => {
@@ -1086,42 +1207,18 @@ export default function VideoToTranscript(
               setQueuePosition(s.queuePosition);
             const t = getJobLifecycleTransition(s);
             if (t === "completed") {
+              await finalizeCompletedJob(jobId, jobToken ?? undefined, s);
+              if (cancelled) return;
               terminalRef.current = true;
               if (rehydratePollRef.current)
                 clearInterval(rehydratePollRef.current);
               rehydratePollRef.current = null;
               setPartialSegments([]);
               setStatus("completed");
-              if (isLoggedIn() && !s.requiresAuth) {
-                setResult(s.result ?? null);
-              } else {
-                setShowAuthGate(true);
-                setResult({ downloadUrl: "" });
-              }
               trackAppEvent("transcription_completed", {
                 toolId: "video-to-transcript",
               });
               // emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript' })
-              if (isLoggedIn()) {
-                if (s.result?.segments?.length) {
-                  const textFromSegments = s.result.segments
-                    .map((seg: { text: string }) => seg.text)
-                    .join("\n\n");
-                  setFullTranscript(textFromSegments);
-                  setTranscriptPreview(textFromSegments.substring(0, 500));
-                } else if (s.result?.downloadUrl) {
-                  try {
-                    const res = await fetch(
-                      getAbsoluteDownloadUrl(s.result.downloadUrl),
-                    );
-                    const text = await res.text();
-                    setTranscriptPreview(text.substring(0, 500));
-                    setFullTranscript(text);
-                  } catch {
-                    // ignore
-                  }
-                }
-              }
               invalidateUsageCache();
               getCurrentUsage({ skipCache: true })
                 .then((data) => {
@@ -1197,7 +1294,7 @@ export default function VideoToTranscript(
       if (rehydratePollRef.current) clearInterval(rehydratePollRef.current);
       rehydratePollRef.current = null;
     };
-  }, [location.pathname, navigate]);
+  }, [finalizeCompletedJob, location.pathname, navigate]);
 
   // Remind user to keep tab open when they switch away during upload (helps mobile)
   useEffect(() => {
@@ -1419,6 +1516,10 @@ export default function VideoToTranscript(
       return;
     }
 
+    // Synchronous, before any await: the CTA must disable and show its spinner
+    // on this click, not after the quota lookup returns.
+    setStartPending(true);
+
     const durationSeconds = filePreview?.durationSeconds ?? 0;
     // Only apply trim when user actually moved handles away from the default full-range (0/100).
     // ProcessingInterface always passes (0, 100) when untouched; treating that as "no trim"
@@ -1451,6 +1552,7 @@ export default function VideoToTranscript(
         ? used >= (usageData.limit ?? 3)
         : totalAvailable > 0 && used >= totalAvailable;
       if (atOrOverLimit) {
+        setStartPending(false);
         setShowPaywall(true);
         trackEvent("upgrade_prompt_seen", getFunnelProps("quota_gate"));
         return;
@@ -1555,7 +1657,10 @@ export default function VideoToTranscript(
       setDiarizationWasRequested(diarizationEnabledForJob);
       setUploadPhase("uploading");
       const uploadProps = getFunnelProps("file_upload");
-      trackEvent("upload_started", uploadProps);
+      // PostHog's `upload_started` and `upload_completed` are each captured once,
+      // inside the upload helper (it knows the real upload mode and duration);
+      // these props ride along with both via analyticsProps below.
+      // trackAppEvent goes to our own /api/events, so it is not a duplicate.
       trackAppEvent("upload_started", uploadProps);
       trackEvent("processing_started", { tool: "video-to-transcript" });
 
@@ -1567,6 +1672,12 @@ export default function VideoToTranscript(
         onProgress: (p) => setUploadProgress(p),
         connectionSpeed: connectionSpeedResult,
         signal: uploadAbortRef.current?.signal,
+        analyticsProps: {
+          ...uploadProps,
+          tool: "video-to-transcript",
+          start_mode: startMode,
+          auto_start_enabled: autoStartEnabled,
+        },
       });
 
       const tl =
@@ -1575,22 +1686,12 @@ export default function VideoToTranscript(
           : undefined;
       uploadAbortRef.current = null;
       uploadCompletedAtRef.current = Date.now();
-      try {
-        trackEvent("upload_completed", {
-          tool: "video-to-transcript",
-          file_size_bytes: selectedFile.size,
-          upload_progress_pct: 100,
-          start_mode: startMode,
-          auto_start_enabled: autoStartEnabled,
-        });
-      } catch {
-        // non-blocking
-      }
       setCurrentJobId(response.jobId);
       persistJobId(location.pathname, response.jobId, response.jobToken);
       setUploadPhase("processing");
       setUploadProgress(100);
       terminalRef.current = false;
+      finalizingRef.current = false;
       lastPartialVersionRef.current = 0;
       partialFirstSeenAtRef.current = null;
       if (minStreamDelayTimeoutRef.current) {
@@ -1644,7 +1745,8 @@ export default function VideoToTranscript(
         }
         const transition = getJobLifecycleTransition(jobStatus);
         if (transition === "completed") {
-          terminalRef.current = true;
+          if (finalizingRef.current) return;
+          finalizingRef.current = true;
           if (activeUploadPollRef.current) {
             activeUploadPollRef.current();
             activeUploadPollRef.current = null;
@@ -1652,108 +1754,83 @@ export default function VideoToTranscript(
           jobStartedTrackedRef.current = null;
           savedScrollTopRef.current = partialScrollRef.current?.scrollTop ?? 0;
           const MIN_STREAM_VISIBILITY_MS = 8000;
-          const res = jobStatus.result;
-          const streamProgress =
-            res &&
-            typeof (res as { streamProgress?: boolean }).streamProgress ===
-              "boolean" &&
-            (res as { streamProgress?: boolean }).streamProgress;
           const firstSeenAt = partialFirstSeenAtRef.current;
-          const remainingMs =
-            streamProgress && firstSeenAt != null
-              ? MIN_STREAM_VISIBILITY_MS - (Date.now() - firstSeenAt)
-              : 0;
-          const applyCompletedTransition = () => {
-            minStreamDelayTimeoutRef.current = null;
-            setPartialSegments([]);
-            setStatus("completed");
-            if (isLoggedIn() && !jobStatus.requiresAuth) {
-              setResult(jobStatus.result ?? null);
-            } else {
-              setShowAuthGate(true);
-              setResult({ downloadUrl: "" });
-            }
-            trackAppEvent("transcription_completed", {
-              toolId: "video-to-transcript",
-            });
-            const started = processingStartedAtRef.current ?? Date.now();
-            const processingMs = Date.now() - started;
-            // emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript', processingMs })
-            if (isLoggedIn()) {
-              if (res?.segments?.length) {
-                const textFromSegments = res.segments
-                  .map((s: { text: string }) => s.text)
-                  .join("\n\n");
-                setFullTranscript(textFromSegments);
-                setTranscriptPreview(textFromSegments.substring(0, 500));
-              } else if (res?.downloadUrl) {
-                try {
-                  fetch(getAbsoluteDownloadUrl(res.downloadUrl))
-                    .then((transcriptResponse) => transcriptResponse.text())
-                    .then((transcriptText) => {
-                      setTranscriptPreview(transcriptText.substring(0, 500));
-                      setFullTranscript(transcriptText);
-                    })
-                    .catch(() => {});
-                } catch {
-                  // Ignore
-                }
+          void (async () => {
+            await finalizeCompletedJob(
+              response.jobId,
+              jobToken ?? undefined,
+              jobStatus,
+            );
+            const res = jobStatus.result;
+            const streamProgress =
+              res &&
+              typeof (res as { streamProgress?: boolean }).streamProgress ===
+                "boolean" &&
+              (res as { streamProgress?: boolean }).streamProgress;
+            const remainingMs =
+              streamProgress && firstSeenAt != null
+                ? MIN_STREAM_VISIBILITY_MS - (Date.now() - firstSeenAt)
+                : 0;
+            const applyCompletedTransition = () => {
+              minStreamDelayTimeoutRef.current = null;
+              terminalRef.current = true;
+              setPartialSegments([]);
+              setStatus("completed");
+              trackAppEvent("transcription_completed", {
+                toolId: "video-to-transcript",
+              });
+              const started = processingStartedAtRef.current ?? Date.now();
+              const processingMs = Date.now() - started;
+              incrementUsage("video-to-transcript");
+              setHasCompletedJobs(true);
+              setActivationCardDismissed(true);
+              try {
+                localStorage.setItem(ACTIVATION_CARD_DISMISS_KEY, "1");
+              } catch {
+                // Ignore storage failures
               }
-            }
-            incrementUsage("video-to-transcript");
-            setHasCompletedJobs(true);
-            setActivationCardDismissed(true);
-            try {
-              localStorage.setItem(ACTIVATION_CARD_DISMISS_KEY, "1");
-            } catch {
-              // Ignore storage failures
-            }
-            invalidateUsageCache();
-            const refreshUsage = () => {
-              getCurrentUsage({ skipCache: true })
-                .then((data) => {
-                  const isImports = data.quotaType === "imports";
-                  const total = isImports
-                    ? (data.limit ?? 3)
-                    : data.limits.minutesPerMonth + data.overages.minutes;
-                  setAvailableMinutes(total);
-                })
-                .catch(() => {});
+              invalidateUsageCache();
+              const refreshUsage = () => {
+                getCurrentUsage({ skipCache: true })
+                  .then((data) => {
+                    const isImports = data.quotaType === "imports";
+                    const total = isImports
+                      ? (data.limit ?? 3)
+                      : data.limits.minutesPerMonth + data.overages.minutes;
+                    setAvailableMinutes(total);
+                  })
+                  .catch(() => {});
+              };
+              refreshUsage();
+              setTimeout(refreshUsage, 800);
+              try {
+                trackEvent("job_completed", {
+                  job_id: response.jobId,
+                  tool_type: BACKEND_TOOL_TYPES.VIDEO_TO_TRANSCRIPT,
+                  processing_time_ms: processingMs,
+                  ...getFunnelProps("file_upload"),
+                });
+                incrementJobCompletedCount();
+                // first_output_seen is NOT fired here: job completion is not
+                // proof the user saw anything. See the effect keyed on
+                // fullTranscript below.
+                trackEvent("processing_completed", {
+                  tool: "video-to-transcript",
+                });
+                setLastProcessingMs(processingMs);
+              } catch {
+                // non-blocking
+              }
             };
-            refreshUsage();
-            setTimeout(refreshUsage, 800);
-            try {
-              trackEvent("job_completed", {
-                job_id: response.jobId,
-                tool_type: BACKEND_TOOL_TYPES.VIDEO_TO_TRANSCRIPT,
-                processing_time_ms: processingMs,
-                ...getFunnelProps("file_upload"),
-              });
-              const nextJobCount = incrementJobCompletedCount();
-              trackFirstOutputSeen({
-                ...getFunnelProps("result_panel"),
-                job_count: nextJobCount,
-              });
-              trackAppEvent("first_output_seen", {
-                ...getFunnelProps("result_panel"),
-                job_count: nextJobCount,
-              });
-              trackEvent("processing_completed", {
-                tool: "video-to-transcript",
-              });
-              // texJobCompleted(processingMs, 'video-to-transcript')
-              setLastProcessingMs(processingMs);
-            } catch {
-              // non-blocking
+            if (remainingMs > 0) {
+              minStreamDelayTimeoutRef.current = setTimeout(
+                applyCompletedTransition,
+                remainingMs,
+              );
+            } else {
+              applyCompletedTransition();
             }
-          };
-          if (remainingMs > 0) {
-            minStreamDelayTimeoutRef.current = setTimeout(() => {
-              void applyCompletedTransition();
-            }, remainingMs);
-          } else {
-            void applyCompletedTransition();
-          }
+          })();
         } else if (transition === "failed") {
           terminalRef.current = true;
           setPartialSegments([]);
@@ -1937,6 +2014,9 @@ export default function VideoToTranscript(
       toast.error("Please enter a valid YouTube URL (youtube.com or youtu.be)");
       return;
     }
+
+    // Same reason as handleProcess: the quota lookup below is a network call.
+    setStartPending(true);
     const _isPaid =
       typeof window !== "undefined" &&
       (localStorage.getItem("plan") || "free").toLowerCase() !== "free";
@@ -1957,6 +2037,7 @@ export default function VideoToTranscript(
         ? used >= (usageData.limit ?? 3)
         : totalAvailable > 0 && used >= totalAvailable;
       if (atOrOverLimit) {
+        setStartPending(false);
         setShowPaywall(true);
         trackEvent("upgrade_prompt_seen", getFunnelProps("youtube_paywall"));
         return;
@@ -1973,6 +2054,7 @@ export default function VideoToTranscript(
       uploadAbortRef.current = new AbortController();
       setCurrentJobId(null);
       terminalRef.current = false;
+      finalizingRef.current = false;
       lastPartialVersionRef.current = 0;
       partialFirstSeenAtRef.current = null;
       if (minStreamDelayTimeoutRef.current) {
@@ -2059,7 +2141,8 @@ export default function VideoToTranscript(
         }
         const transition = getJobLifecycleTransition(jobStatus);
         if (transition === "completed") {
-          terminalRef.current = true;
+          if (finalizingRef.current) return;
+          finalizingRef.current = true;
           if (activeUploadPollRef.current) {
             activeUploadPollRef.current();
             activeUploadPollRef.current = null;
@@ -2067,101 +2150,78 @@ export default function VideoToTranscript(
           jobStartedTrackedRef.current = null;
           savedScrollTopRef.current = partialScrollRef.current?.scrollTop ?? 0;
           const MIN_STREAM_VISIBILITY_MS = 8000;
-          const res = jobStatus.result;
-          const streamProg =
-            res &&
-            typeof (res as { streamProgress?: boolean }).streamProgress ===
-              "boolean" &&
-            (res as { streamProgress?: boolean }).streamProgress;
           const firstSeenAt = partialFirstSeenAtRef.current;
-          const remainingMs =
-            streamProg && firstSeenAt != null
-              ? MIN_STREAM_VISIBILITY_MS - (Date.now() - firstSeenAt)
-              : 0;
-          const applyCompleted = () => {
-            minStreamDelayTimeoutRef.current = null;
-            setPartialSegments([]);
-            setStatus("completed");
-            if (isLoggedIn() && !jobStatus.requiresAuth) {
-              setResult(jobStatus.result ?? null);
-            } else {
-              setShowAuthGate(true);
-              setResult({ downloadUrl: "" });
-            }
-            trackAppEvent("transcription_completed", {
-              toolId: "video-to-transcript",
-            });
-            const started = processingStartedAtRef.current ?? Date.now();
-            const processingMs = Date.now() - started;
-            // emitToolCompleted({ toolId: 'video-to-transcript', pathname: '/video-to-transcript', processingMs })
-            if (isLoggedIn()) {
-              if (res?.segments?.length) {
-                const text = res.segments
-                  .map((s: { text: string }) => s.text)
-                  .join("\n\n");
-                setFullTranscript(text);
-                setTranscriptPreview(text.substring(0, 500));
-              } else if (res?.downloadUrl) {
-                fetch(getAbsoluteDownloadUrl(res.downloadUrl))
-                  .then((r) => r.text())
-                  .then((t) => {
-                    setTranscriptPreview(t.substring(0, 500));
-                    setFullTranscript(t);
-                  })
-                  .catch(() => {});
+          void (async () => {
+            await finalizeCompletedJob(
+              response.jobId,
+              jobToken ?? undefined,
+              jobStatus,
+            );
+            const res = jobStatus.result;
+            const streamProg =
+              res &&
+              typeof (res as { streamProgress?: boolean }).streamProgress ===
+                "boolean" &&
+              (res as { streamProgress?: boolean }).streamProgress;
+            const remainingMs =
+              streamProg && firstSeenAt != null
+                ? MIN_STREAM_VISIBILITY_MS - (Date.now() - firstSeenAt)
+                : 0;
+            const applyCompleted = () => {
+              minStreamDelayTimeoutRef.current = null;
+              terminalRef.current = true;
+              setPartialSegments([]);
+              setStatus("completed");
+              trackAppEvent("transcription_completed", {
+                toolId: "video-to-transcript",
+              });
+              const started = processingStartedAtRef.current ?? Date.now();
+              const processingMs = Date.now() - started;
+              incrementUsage("video-to-transcript");
+              setHasCompletedJobs(true);
+              setActivationCardDismissed(true);
+              try {
+                localStorage.setItem(ACTIVATION_CARD_DISMISS_KEY, "1");
+              } catch {
+                // Ignore storage failures
               }
+              invalidateUsageCache();
+              getCurrentUsage({ skipCache: true })
+                .then((data) => {
+                  const ii = data.quotaType === "imports";
+                  const total = ii
+                    ? (data.limit ?? 3)
+                    : data.limits.minutesPerMonth + data.overages.minutes;
+                  setAvailableMinutes(total);
+                })
+                .catch(() => {});
+              try {
+                trackEvent("job_completed", {
+                  job_id: response.jobId,
+                  tool_type: "youtube-to-transcript",
+                  processing_time_ms: processingMs,
+                  ...getFunnelProps("youtube_url"),
+                });
+                incrementJobCompletedCount();
+                // See note above — fired on rendered transcript, not completion.
+                trackEvent("processing_completed", {
+                  tool: "video-to-transcript",
+                  source: "youtube",
+                });
+                setLastProcessingMs(processingMs);
+              } catch {
+                /* non-blocking */
+              }
+            };
+            if (remainingMs > 0) {
+              minStreamDelayTimeoutRef.current = setTimeout(
+                applyCompleted,
+                remainingMs,
+              );
+            } else {
+              applyCompleted();
             }
-            incrementUsage("video-to-transcript");
-            setHasCompletedJobs(true);
-            setActivationCardDismissed(true);
-            try {
-              localStorage.setItem(ACTIVATION_CARD_DISMISS_KEY, "1");
-            } catch {
-              // Ignore storage failures
-            }
-            invalidateUsageCache();
-            getCurrentUsage({ skipCache: true })
-              .then((data) => {
-                const ii = data.quotaType === "imports";
-                const total = ii
-                  ? (data.limit ?? 3)
-                  : data.limits.minutesPerMonth + data.overages.minutes;
-                setAvailableMinutes(total);
-              })
-              .catch(() => {});
-            try {
-              trackEvent("job_completed", {
-                job_id: response.jobId,
-                tool_type: "youtube-to-transcript",
-                processing_time_ms: processingMs,
-                ...getFunnelProps("youtube_url"),
-              });
-              const nextJobCount = incrementJobCompletedCount();
-              trackFirstOutputSeen({
-                ...getFunnelProps("result_panel"),
-                job_count: nextJobCount,
-              });
-              trackAppEvent("first_output_seen", {
-                ...getFunnelProps("result_panel"),
-                job_count: nextJobCount,
-              });
-              trackEvent("processing_completed", {
-                tool: "video-to-transcript",
-                source: "youtube",
-              });
-              // texJobCompleted(processingMs, 'video-to-transcript')
-              setLastProcessingMs(processingMs);
-            } catch {
-              /* non-blocking */
-            }
-          };
-          if (remainingMs > 0) {
-            minStreamDelayTimeoutRef.current = setTimeout(() => {
-              void applyCompleted();
-            }, remainingMs);
-          } else {
-            void applyCompleted();
-          }
+          })();
         } else if (transition === "failed") {
           terminalRef.current = true;
           setPartialSegments([]);
@@ -2319,12 +2379,14 @@ export default function VideoToTranscript(
   };
 
   const handleProcessAnother = () => {
+    try { trackEvent('process_another_clicked', { tool_type: BACKEND_TOOL_TYPES.VIDEO_TO_TRANSCRIPT }) } catch { /* non-blocking */ }
     clearPersistedJobId(location.pathname, navigate);
     setSelectedFile(null);
     setFilePreview(null);
     setCurrentJobId(null);
     uploadAbortRef.current = null;
     terminalRef.current = false;
+    finalizingRef.current = false;
     lastPartialVersionRef.current = 0;
     partialFirstSeenAtRef.current = null;
     if (minStreamDelayTimeoutRef.current) {
@@ -2348,6 +2410,7 @@ export default function VideoToTranscript(
     setResult(null);
     setTranscriptPreview("");
     setFullTranscript("");
+    setIsHydratingTranscript(false);
     setPartialSegments([]);
     setLeftWorkspaceTab("transcript");
     setIncludeSummary(true);
@@ -3972,18 +4035,31 @@ export default function VideoToTranscript(
                 <button
                   type="button"
                   onClick={() => void handleProcessYoutube()}
-                  disabled={!youtubeUrlInput || !isYoutubeUrl(youtubeUrlInput)}
+                  disabled={
+                    startPending ||
+                    !youtubeUrlInput ||
+                    !isYoutubeUrl(youtubeUrlInput)
+                  }
                   className="w-full py-3 px-6 rounded-xl font-semibold text-sm transition-all duration-200 bg-red-500 hover:bg-red-600 text-white shadow-md disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2"
                 >
-                  <svg
-                    viewBox="0 0 24 24"
-                    className="w-4 h-4 shrink-0"
-                    fill="currentColor"
-                    aria-hidden
-                  >
-                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                  </svg>
-                  Transcribe YouTube Video
+                  {startPending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 shrink-0 animate-spin" />
+                      Starting…
+                    </>
+                  ) : (
+                    <>
+                      <svg
+                        viewBox="0 0 24 24"
+                        className="w-4 h-4 shrink-0"
+                        fill="currentColor"
+                        aria-hidden
+                      >
+                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                      </svg>
+                      Transcribe YouTube Video
+                    </>
+                  )}
                 </button>
               </div>
             )}
@@ -4185,7 +4261,7 @@ export default function VideoToTranscript(
             onAction={(trimStartPercent, trimEndPercent) =>
               handleProcess(trimStartPercent, trimEndPercent, "manual")
             }
-            actionLoading={false}
+            actionLoading={startPending}
             showVideoPlayer={
               !!(videoPreviewUrl || filePreview?.durationSeconds)
             }
@@ -5196,9 +5272,39 @@ export default function VideoToTranscript(
                         ) : (
                           <div className="max-w-[52rem] whitespace-pre-wrap break-words text-[#1d1d1f]">
                             {displayTranscript ||
+                            fullTranscript ||
+                            transcriptPreview ? (
+                              displayTranscript ||
                               fullTranscript ||
-                              transcriptPreview ||
-                              ""}
+                              transcriptPreview
+                            ) : (
+                              <div className="flex min-h-[12rem] flex-col items-center justify-center gap-3 text-center">
+                                {isHydratingTranscript ? (
+                                  <p className="text-sm text-gray-600">
+                                    Loading transcript…
+                                  </p>
+                                ) : (
+                                  <>
+                                    <p className="text-sm text-gray-600">
+                                      The transcript finished, but the text did
+                                      not load into this panel.
+                                    </p>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setIsHydratingTranscript(true);
+                                        void retryLoadTranscript().finally(
+                                          () => setIsHydratingTranscript(false),
+                                        );
+                                      }}
+                                      className="inline-flex items-center justify-center rounded-lg bg-blue-700 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-800"
+                                    >
+                                      Reload transcript
+                                    </button>
+                                  </>
+                                )}
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>

@@ -35,6 +35,7 @@ const SubtitleQAReview = lazy(() => import('../components/SubtitleQAReview'))
 import { incrementUsage } from '../lib/usage'
 import { incrementJobCompletedCount } from '../lib/jobCount'
 import { uploadFileWithProgress, uploadFixSubtitlesDual, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError, getAuthToken, claimGuestJob } from '../lib/api'
+import { resolveCompletedJobResult } from '../lib/resolveCompletedJob'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
 import { persistJobId, clearPersistedJobId, getPersistedJobId, getPersistedJobToken } from '../lib/jobSession'
@@ -101,6 +102,8 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
   const [freeExportsUsed, setFreeExportsUsed] = useState(0)
   const [lastProcessingMs, setLastProcessingMs] = useState<number | null>(null)
   const processingStartedAtRef = useRef<number | null>(null)
+  // Guards one job_started per job; polling revisits 'processing' on every tick.
+  const jobStartedTrackedRef = useRef<string | null>(null)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [authModalMode, setAuthModalMode] = useState<'signup-combo' | 'login'>('signup-combo')
   const pendingDownloadRef = useRef<(() => void) | null>(null)
@@ -147,15 +150,17 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
         const jobStatus = await getJobStatus(jobId, jobToken ? { jobToken } : undefined)
         const transition = getJobLifecycleTransition(jobStatus)
         if (transition !== 'completed') return
-        setResult(jobStatus.result ?? null)
-        setIssues(jobStatus.result?.issues ?? [])
-        setWarnings(jobStatus.result?.warnings ?? [])
+        const resolved = await resolveCompletedJobResult(jobId, jobToken ?? undefined, jobStatus)
+        if (resolved.kind !== 'ready' || !resolved.status.result) return
+        setResult(resolved.status.result)
+        setIssues(resolved.status.result.issues ?? [])
+        setWarnings(resolved.status.result.warnings ?? [])
         setShowIssues(true)
-        if (jobStatus.result?.downloadUrl) {
+        if (resolved.status.result.downloadUrl) {
           setStatus('completed')
           try {
             const token = getAuthToken()
-            const res = await fetch(getAbsoluteDownloadUrl(jobStatus.result.downloadUrl), {
+            const res = await fetch(getAbsoluteDownloadUrl(resolved.status.result.downloadUrl), {
               headers: token ? { Authorization: `Bearer ${token}` } : {},
             })
             const txt = await res.text()
@@ -373,16 +378,32 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
           setProgress(jobStatus.progress ?? 0)
           if (jobStatus.queuePosition !== undefined) setQueuePosition(jobStatus.queuePosition)
 
+          if (jobStatus.status === 'processing' && jobStartedTrackedRef.current !== response.jobId) {
+            jobStartedTrackedRef.current = response.jobId
+            try {
+              trackEvent('job_started', {
+                job_id: response.jobId,
+                tool_type: BACKEND_TOOL_TYPES.FIX_SUBTITLES,
+              })
+            } catch {
+              /* non-blocking */
+            }
+          }
+
           const transition = getJobLifecycleTransition(jobStatus)
           if (transition === 'completed') {
             clearInterval(pollIntervalRef.current)
-            if (isLoggedIn() && !jobStatus.requiresAuth) {
-              setResult(jobStatus.result ?? null)
-              setIssues(jobStatus.result?.issues ?? [])
-              setWarnings(jobStatus.result?.warnings ?? [])
+            const resolved = await resolveCompletedJobResult(response.jobId, response.jobToken, jobStatus)
+            if (resolved.kind === 'ready' && resolved.status.result) {
+              setResult(resolved.status.result)
+              setIssues(resolved.status.result.issues ?? [])
+              setWarnings(resolved.status.result.warnings ?? [])
               setShowIssues(true)
-            } else {
+            } else if (resolved.kind === 'auth-gate') {
               setShowAuthModal(true)
+              setResult({ downloadUrl: '' })
+            } else {
+              setShowAuthModal(isLoggedIn() ? false : true)
               setResult({ downloadUrl: '' })
             }
             setStatus('idle')
@@ -449,22 +470,44 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
           setProgress(jobStatus.progress ?? 0)
           if (jobStatus.queuePosition !== undefined) setQueuePosition(jobStatus.queuePosition)
 
+          if (jobStatus.status === 'processing' && jobStartedTrackedRef.current !== response.jobId) {
+            jobStartedTrackedRef.current = response.jobId
+            try {
+              trackEvent('job_started', {
+                job_id: response.jobId,
+                tool_type: BACKEND_TOOL_TYPES.FIX_SUBTITLES,
+              })
+            } catch {
+              /* non-blocking */
+            }
+          }
+
           const transition = getJobLifecycleTransition(jobStatus)
           if (transition === 'completed') {
             clearInterval(pollIntervalRef.current)
             const started = processingStartedAtRef.current ?? Date.now()
             const processingMs = Date.now() - started
             setLastProcessingMs(processingMs)
-            setStatus('completed')
-            if (isLoggedIn() && !jobStatus.requiresAuth) {
-              setResult(jobStatus.result ?? null)
-            } else {
+            const resolved = await resolveCompletedJobResult(response.jobId, response.jobToken, jobStatus)
+            if (resolved.kind === 'auth-gate') {
               setShowAuthModal(true)
               setResult({ downloadUrl: '' })
+              setIssues([])
+              setWarnings([])
+              setShowIssues(false)
+            } else if (resolved.kind === 'ready' && resolved.status.result) {
+              setResult(resolved.status.result)
+              setIssues(resolved.status.result.issues ?? [])
+              setWarnings(resolved.status.result.warnings ?? [])
+              setShowIssues(true)
+            } else {
+              setResult({ downloadUrl: '' })
+              setIssues([])
+              setWarnings([])
+              setShowIssues(false)
+              toast.error('Fixed subtitles are ready, but the file is still loading. Refresh to see it.')
             }
-            setIssues(isLoggedIn() && !jobStatus.requiresAuth ? (jobStatus.result?.issues ?? []) : [])
-            setWarnings(isLoggedIn() && !jobStatus.requiresAuth ? (jobStatus.result?.warnings ?? []) : [])
-            setShowIssues(isLoggedIn() && !jobStatus.requiresAuth)
+            setStatus('completed')
             incrementUsage('fix-subtitles')
             trackAppEvent('transcription_completed', { toolId: 'fix-subtitles' })
             try {
@@ -478,10 +521,10 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
             } catch {
               /* non-blocking */
             }
-            if (isLoggedIn() && jobStatus.result?.downloadUrl) {
+            if (resolved.kind === 'ready' && resolved.status.result?.downloadUrl) {
               try {
                 const token = getAuthToken()
-                const res = await fetch(getAbsoluteDownloadUrl(jobStatus.result.downloadUrl), {
+                const res = await fetch(getAbsoluteDownloadUrl(resolved.status.result.downloadUrl), {
                   headers: token ? { Authorization: `Bearer ${token}` } : {},
                 })
                 if (!res.ok) throw new Error(`Preview fetch failed (${res.status})`)
@@ -517,6 +560,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
   }
 
   const handleProcessAnother = () => {
+    try { trackEvent('process_another_clicked', { tool_type: BACKEND_TOOL_TYPES.FIX_SUBTITLES }) } catch { /* non-blocking */ }
     clearPersistedJobId(location.pathname, navigate)
     setSelectedFile(null)
     setVideoFile(null)

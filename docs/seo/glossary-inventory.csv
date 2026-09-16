@@ -1,0 +1,227 @@
+term,slug,cluster,definition_intent,search_demand_if_known,commercial_relevance,entity_centrality,internal_link_value,source_confidence,existing_page_conflict,priority,status
+transcription,transcription,transcription-asr,what is transcription,present in GSC tool queries; volume UNKNOWN,5,5,5,5,none — definition vs /video-to-transcript action,100,published
+automatic speech recognition,automatic-speech-recognition,transcription-asr,what is ASR,UNKNOWN,5,5,5,5,none,100,published
+speech-to-text,speech-to-text,transcription-asr,what is speech-to-text,UNKNOWN,5,5,4,5,/speech-to-text is transactional; glossary is definitional,95,draft
+verbatim transcription,verbatim-transcription,transcription-asr,what is verbatim transcription,UNKNOWN,4,5,5,5,blog clean vs full verbatim is off-site narrative,95,published
+clean verbatim,clean-verbatim,transcription-asr,what is clean verbatim,UNKNOWN,4,4,5,5,Hashnode comparison post; on-site definition still needed,89,published
+full verbatim,full-verbatim,transcription-asr,what is full verbatim,UNKNOWN,4,4,5,5,Hashnode comparison post,89,published
+word error rate,word-error-rate,quality,what is WER,UNKNOWN,4,5,5,5,/research page owns first-party WER study,95,published
+transcription accuracy,transcription-accuracy,quality,what is transcription accuracy,UNKNOWN,5,5,5,4,/accuracy-test is a comparison stub,96,published
+confidence score,confidence-score,quality,what is an ASR confidence score,UNKNOWN,3,4,4,4,none,75,published
+speaker diarization,speaker-diarization,speakers,what is speaker diarization,UNKNOWN,5,5,5,5,none — /video-to-transcript offers the feature,100,published
+speaker identification,speaker-identification,speakers,what is speaker identification,UNKNOWN,4,4,5,4,none,85,published
+speaker labels,speaker-labels,speakers,what are speaker labels,UNKNOWN,5,4,5,5,none,94,published
+overlapping speech,overlapping-speech,speakers,what is overlapping speech,UNKNOWN,3,4,4,4,blog on overlapping cues is subtitle-timing,75,published
+SRT file,srt-file,formats,what is an SRT file,SRT how-to queries appear in GSC; volume UNKNOWN,5,5,5,5,/how-to-create-srt-file is how-to; /video-to-srt is action,100,published
+WebVTT,webvtt,formats,what is WebVTT,UNKNOWN,5,5,5,5,/tools/srt-to-vtt is a converter,100,published
+TTML,ttml,formats,what is TTML,UNKNOWN,3,4,4,5,/tools/ttml-to-srt is a converter,79,published
+SCC,scc,formats,what is SCC,UNKNOWN,2,3,3,5,none,63,published
+closed captions,closed-captions,captions-subtitles,what are closed captions,vs-query appears in GSC; volume UNKNOWN,5,5,5,5,/open-captions-vs-closed-captions is a comparison,100,published
+open captions,open-captions,captions-subtitles,what are open captions,UNKNOWN,4,4,5,5,/open-captions-vs-closed-captions is a comparison,89,published
+subtitles,subtitles,captions-subtitles,what are subtitles,UNKNOWN,5,5,5,5,/subtitles-vs-closed-captions is a comparison,100,published
+SDH,sdh,captions-subtitles,what is SDH,UNKNOWN,4,4,5,5,/sdh-subtitles is create-SDH commercial,89,published
+forced subtitles,forced-subtitles,captions-subtitles,what are forced subtitles,UNKNOWN,3,3,4,4,none,69,published
+caption file,caption-file,formats,what is a caption file,UNKNOWN,4,4,5,4,none,85,published
+subtitle synchronization,subtitle-synchronization,timing,what is subtitle sync,UNKNOWN,5,4,5,4,/fix-subtitles is the action page,90,published
+timecode,timecode,timing,what is timecode,UNKNOWN,4,5,5,5,/tools/timestamp-converter is a utility,95,published
+SMPTE timecode,smpte-timecode,timing,what is SMPTE timecode,UNKNOWN,3,4,4,5,none,79,published
+frame rate,frame-rate,timing,what is frame rate,UNKNOWN,4,4,4,5,none,84,published
+drop-frame timecode,drop-frame-timecode,timing,what is drop-frame timecode,UNKNOWN,2,3,4,5,none,68,published
+audio description,audio-description,accessibility,what is audio description,UNKNOWN,3,4,4,5,none,79,published
+WCAG,wcag,accessibility,what is WCAG,UNKNOWN,4,5,5,5,/video-accessibility is compliance workflow,95,published
+caption accessibility,caption-accessibility,accessibility,what makes captions accessible,UNKNOWN,4,4,5,4,/ada-video-captions is commercial/compliance,85,published
+punctuation restoration,punctuation-restoration,quality,what is punctuation restoration,UNKNOWN,3,3,4,4,none,69,published
+hallucination,hallucination,quality,what is an ASR hallucination,UNKNOWN,4,4,4,4,none,80,published
+audio extraction,audio-extraction,video-audio-workflow,what is audio extraction,UNKNOWN,4,4,4,4,none — VideoText extracts audio in the pipeline,80,published
+multilingual transcription,multilingual-transcription,localization,what is multilingual transcription,UNKNOWN,4,4,4,4,none,80,published
+character error rate,character-error-rate,quality,what is CER,UNKNOWN,3,4,4,5,none,79,published
+transcript QA,transcription-qa,quality,what is transcript QA,UNKNOWN,5,4,5,4,Hashnode what-is-transcript-qa; /guideline-format is the tool,90,published
+timestamp,timestamp,timing,what is a transcript timestamp,UNKNOWN,4,4,5,4,none,85,published
+localization,localization,localization,what is media localization,UNKNOWN,4,4,5,4,/translate-subtitles is the action page,85,published
+speech recognition model,speech-recognition-model,transcription-asr,what is a speech recognition model,UNKNOWN,4,4,4,4,none,80,published
+VTT,vtt,formats,alias for WebVTT,UNKNOWN,4,3,3,5,alias of /glossary/webvtt — do not publish separately,73,draft
+subtitle file,subtitle-file,formats,what is a subtitle file,UNKNOWN,4,3,3,4,near /glossary/caption-file and /glossary/srt-file,69,draft
+STL,stl,formats,what is EBU STL,UNKNOWN,2,3,3,5,none,63,draft
+ASS,ass,formats,what is ASS/SSA,UNKNOWN,2,2,3,4,/tools/ass-to-srt,53,draft
+SBV,sbv,formats,what is SBV,UNKNOWN,2,2,3,4,/tools/sbv-to-srt,53,draft
+IMSC,imsc,formats,what is IMSC,UNKNOWN,2,3,3,5,none,63,draft
+EBU-TT,ebu-tt,formats,what is EBU-TT,UNKNOWN,2,3,3,5,none,63,draft
+CEA-608,cea-608,formats,what is CEA-608,UNKNOWN,2,4,3,5,none,69,draft
+CEA-708,cea-708,formats,what is CEA-708,UNKNOWN,2,4,3,5,none,69,draft
+caption synchronization,caption-synchronization,timing,what is caption sync,UNKNOWN,3,3,3,4,near /glossary/subtitle-synchronization,64,draft
+subtitle editor,subtitle-editor,captions-subtitles,what is a subtitle editor,UNKNOWN,4,3,3,3,/subtitle-editor is commercial,65,draft
+non-drop-frame timecode,non-drop-frame-timecode,timing,what is NDF timecode,UNKNOWN,2,3,3,5,pair with drop-frame; publish next,63,draft
+BITC,bitc,timing,what is burned-in timecode,UNKNOWN,2,3,3,4,none,59,draft
+source language,source-language,localization,what is a source language,UNKNOWN,3,3,3,4,none,64,draft
+target language,target-language,localization,what is a target language,UNKNOWN,3,3,3,4,none,64,draft
+subtitle translation,subtitle-translation,localization,what is subtitle translation,UNKNOWN,5,4,4,4,/translate-subtitles owns action intent — keep glossary definitional if published later,85,draft
+subtitle localization,subtitle-localization,localization,what is subtitle localization,UNKNOWN,4,3,3,4,near /glossary/localization,69,draft
+deaf and hard-of-hearing captions,deaf-and-hard-of-hearing-captions,accessibility,what are DHH captions,UNKNOWN,3,4,4,4,near /glossary/sdh and /glossary/closed-captions,75,draft
+transcript accessibility,transcript-accessibility,accessibility,what makes a transcript accessible,UNKNOWN,3,3,3,4,none,64,draft
+subtitle QA,subtitle-qa,quality,what is subtitle QA,UNKNOWN,4,3,4,4,/netflix-ttsc-checklist is QC workflow,74,draft
+timing accuracy,timing-accuracy,quality,what is timing accuracy,UNKNOWN,3,3,3,3,none,60,draft
+video transcription,video-transcription,video-audio-workflow,what is video transcription,UNKNOWN,5,4,3,4,/video-to-transcript owns action,80,draft
+podcast transcription,podcast-transcription,video-audio-workflow,what is podcast transcription,UNKNOWN,4,3,3,3,/podcast-transcription is commercial,65,draft
+interview transcription,interview-transcription,video-audio-workflow,what is interview transcription,UNKNOWN,4,3,3,3,redirects to /video-to-transcript,65,draft
+meeting transcription,meeting-transcription,video-audio-workflow,what is meeting transcription,UNKNOWN,4,3,3,3,/meeting-transcription is commercial,65,draft
+media transcription,media-transcription,video-audio-workflow,what is media transcription,UNKNOWN,3,2,2,3,thin synonym,49,draft
+true verbatim,true-verbatim,transcription-asr,alias of full verbatim,UNKNOWN,3,2,2,4,alias of full-verbatim,53,draft
+non-verbatim,non-verbatim,transcription-asr,what is non-verbatim,UNKNOWN,3,3,3,4,near clean verbatim,64,draft
+intelligent verbatim,intelligent-verbatim,transcription-asr,what is intelligent verbatim,UNKNOWN,2,2,2,3,vendor jargon,44,draft
+discourse transcription,discourse-transcription,transcription-asr,what is discourse transcription,UNKNOWN,1,2,2,3,academic-only,39,draft
+orthographic transcription,orthographic-transcription,transcription-asr,what is orthographic transcription,UNKNOWN,2,2,2,4,none,48,draft
+phonetic transcription,phonetic-transcription,transcription-asr,what is phonetic transcription,UNKNOWN,2,3,2,5,IPA/linguistics; low VideoText workflow value,58,draft
+forced alignment,forced-alignment,timing,what is forced alignment,UNKNOWN,2,3,3,5,none,63,draft
+voice activity detection,voice-activity-detection,transcription-asr,what is VAD,UNKNOWN,3,3,3,4,none,64,draft
+endpointing,endpointing,transcription-asr,what is endpointing,UNKNOWN,2,2,2,4,none,48,draft
+language identification,language-identification,localization,what is spoken LID,UNKNOWN,3,3,3,4,none,64,draft
+code-switching,code-switching,localization,what is code-switching in ASR,UNKNOWN,2,3,3,4,none,59,draft
+custom vocabulary,custom-vocabulary,transcription-asr,what is an ASR glossary/prompt,UNKNOWN,4,3,3,4,"VideoText upload option is a prompt, not a public glossary page",69,draft
+beam search,beam-search,transcription-asr,what is beam search in ASR,UNKNOWN,1,2,1,4,too model-internal,38,draft
+token,token,transcription-asr,what is a tokenizer token,UNKNOWN,2,2,2,4,too model-internal,48,draft
+mel spectrogram,mel-spectrogram,transcription-asr,what is a mel spectrogram,UNKNOWN,1,2,1,5,too acoustic-internal,42,draft
+waveform,waveform,video-audio-workflow,what is a waveform,UNKNOWN,2,2,2,4,none,48,draft
+sample rate,sample-rate,video-audio-workflow,what is audio sample rate,UNKNOWN,3,3,3,5,none,68,draft
+bit depth,bit-depth,video-audio-workflow,what is audio bit depth,UNKNOWN,2,2,2,5,none,52,draft
+mono audio,mono-audio,video-audio-workflow,what is mono audio,UNKNOWN,2,2,2,4,none,48,draft
+stereo audio,stereo-audio,video-audio-workflow,what is stereo audio,UNKNOWN,2,2,2,4,none,48,draft
+noise reduction,noise-reduction,video-audio-workflow,what is noise reduction,UNKNOWN,3,2,2,3,none,49,draft
+normalisation,normalisation,video-audio-workflow,what is audio normalisation,UNKNOWN,2,2,2,4,none,48,draft
+loudness,loudness,video-audio-workflow,what is loudness (LUFS),UNKNOWN,2,2,2,4,none,48,draft
+hard of hearing,hard-of-hearing,accessibility,what does hard of hearing mean,UNKNOWN,3,4,3,4,none,70,draft
+deaf,deaf,accessibility,what does Deaf/deaf mean in captioning,UNKNOWN,3,4,3,4,sensitive cultural term — needs careful sources,70,draft
+CART,cart,accessibility,what is CART captioning,UNKNOWN,3,3,3,4,none,64,draft
+real-time captioning,real-time-captioning,accessibility,what is real-time captioning,UNKNOWN,3,3,3,4,none,64,draft
+live captions,live-captions,accessibility,what are live captions,UNKNOWN,3,3,3,4,none,64,draft
+ASR captions,asr-captions,captions-subtitles,what are auto-generated captions,UNKNOWN,4,3,4,4,none,74,draft
+auto captions,auto-captions,captions-subtitles,what are auto captions,UNKNOWN,4,3,3,3,near ASR captions,65,draft
+burned-in captions,burned-in-captions,captions-subtitles,what are open/burned-in captions,UNKNOWN,4,3,3,4,/burn-subtitles is the action; /hardcoded-captions exists,69,draft
+hardcoded captions,hardcoded-captions,captions-subtitles,what are hardcoded captions,UNKNOWN,3,3,3,4,/hardcoded-captions commercial/informational hybrid,64,draft
+soft subtitles,soft-subtitles,captions-subtitles,what are soft subtitles,UNKNOWN,3,3,3,4,none,64,draft
+cue,cue,formats,what is a subtitle cue,UNKNOWN,3,4,4,5,none,79,draft
+caption block,caption-block,formats,what is a caption block,UNKNOWN,2,3,3,4,none,59,draft
+reading speed,reading-speed,quality,what is subtitle reading speed,UNKNOWN,4,4,4,5,/tools/subtitle-reading-speed,84,draft
+characters per second,characters-per-second,quality,what is CPS,UNKNOWN,4,4,4,5,/tools/subtitle-reading-speed; blog on CPS violations,84,draft
+characters per line,characters-per-line,quality,what is CPL,UNKNOWN,4,4,4,5,/tools/subtitle-character-checker,84,draft
+words per minute,words-per-minute,quality,what is WPM in captions,UNKNOWN,3,3,3,4,/tools/words-per-minute-calculator,64,draft
+line break,line-break,quality,what is a subtitle line break,UNKNOWN,3,3,3,4,none,64,draft
+shot change,shot-change,timing,what is a shot change in captioning,UNKNOWN,2,3,3,4,none,59,draft
+safe area,safe-area,captions-subtitles,what is a caption safe area,UNKNOWN,2,3,3,4,none,59,draft
+speaker change,speaker-change,speakers,what is a speaker change,UNKNOWN,3,3,3,4,none,64,draft
+multi-speaker transcription,multi-speaker-transcription,speakers,what is multi-speaker transcription,UNKNOWN,4,3,3,4,near diarization,69,draft
+crosstalk,crosstalk,speakers,what is crosstalk,UNKNOWN,3,3,3,4,none,64,draft
+inaudible tag,inaudible-tag,quality,what is an inaudible tag,UNKNOWN,3,3,3,4,style-guide pages,64,draft
+filler words,filler-words,transcription-asr,what are filler words in transcripts,UNKNOWN,3,3,3,4,guideline-format,64,draft
+false start,false-start,transcription-asr,what is a false start,UNKNOWN,3,3,3,4,guideline-format,64,draft
+discourse marker,discourse-marker,transcription-asr,what is a discourse marker,UNKNOWN,2,2,2,4,none,48,draft
+profanity handling,profanity-handling,quality,how transcripts treat profanity,UNKNOWN,2,2,2,3,style-guide pages,44,draft
+number formatting,number-formatting,quality,how transcripts format numbers,UNKNOWN,2,2,2,3,style-guide pages,44,draft
+speaker ID,speaker-id,speakers,alias of speaker identification,UNKNOWN,3,2,2,3,alias,49,draft
+diarization error rate,diarization-error-rate,quality,what is DER,UNKNOWN,2,3,3,5,none,63,draft
+matched error rate,matched-error-rate,quality,what is MER,UNKNOWN,1,2,2,4,none,43,draft
+token error rate,token-error-rate,quality,what is TER,UNKNOWN,1,2,1,3,none,34,draft
+real-time factor,real-time-factor,quality,what is RTF in ASR,UNKNOWN,2,3,2,4,/transcription-benchmark speed page,54,draft
+latency,latency,quality,what is transcription latency,UNKNOWN,3,3,2,3,none,55,draft
+streaming ASR,streaming-asr,transcription-asr,what is streaming ASR,UNKNOWN,3,3,2,4,none,59,draft
+batch ASR,batch-asr,transcription-asr,what is batch ASR,UNKNOWN,3,3,2,4,none,59,draft
+Whisper,whisper,transcription-asr,what is OpenAI Whisper,UNKNOWN,4,4,3,5,/whisper-online is commercial/educational hybrid,79,draft
+large-v3,whisper-large-v3,transcription-asr,what is Whisper large-v3,UNKNOWN,3,3,2,4,model card; product uses it — keep definitional if published,59,draft
+LibriSpeech,librispeech,transcription-asr,what is LibriSpeech,UNKNOWN,2,3,3,5,research page uses it,63,draft
+Common Voice,common-voice,transcription-asr,what is Common Voice,UNKNOWN,2,3,2,5,none,58,draft
+ground truth,ground-truth,quality,what is a ground-truth transcript,UNKNOWN,3,3,3,4,research page,64,draft
+reference transcript,reference-transcript,quality,what is a reference transcript,UNKNOWN,3,3,3,4,near ground truth,64,draft
+normalization,text-normalization,quality,what is ASR text normalization,UNKNOWN,3,3,3,4,Whisper paper normalizer,64,draft
+inverse text normalization,inverse-text-normalization,quality,what is ITN,UNKNOWN,2,3,2,4,none,54,draft
+punctuation,punctuation,quality,why ASR punctuation matters,UNKNOWN,3,2,2,3,near punctuation-restoration,49,draft
+capitalization,capitalization,quality,how transcripts handle caps,UNKNOWN,2,2,2,3,blog on capitalization,44,draft
+paragraphing,paragraphing,quality,how transcripts are paragraphed,UNKNOWN,2,2,2,3,style guides,44,draft
+timecode burn-in,timecode-burn-in,timing,what is timecode burn-in,UNKNOWN,2,2,2,3,near BITC,44,draft
+edit decision list,edit-decision-list,timing,what is an EDL,UNKNOWN,1,2,1,4,low VideoText relevance,38,draft
+frame-accurate,frame-accurate,timing,what is frame-accurate timing,UNKNOWN,3,3,3,4,none,64,draft
+offset,subtitle-offset,timing,what is a subtitle offset,UNKNOWN,3,3,3,4,/tools/shift-subtitle-timing,64,draft
+drift,subtitle-drift,timing,what is subtitle drift,UNKNOWN,3,3,3,4,blog on SRT timing drift,64,draft
+overlapping cues,overlapping-cues,timing,what are overlapping subtitle cues,UNKNOWN,3,3,3,4,blog + validator,64,draft
+gap,subtitle-gap,timing,what is a minimum subtitle gap,UNKNOWN,2,3,3,4,Netflix TTSC,59,draft
+dwell time,dwell-time,timing,what is caption dwell time,UNKNOWN,2,2,2,3,none,44,draft
+ADA,ada,accessibility,what is the ADA for video,UNKNOWN,4,4,3,5,/ada-video-captions owns commercial intent,79,draft
+Section 508,section-508,accessibility,what is Section 508,UNKNOWN,3,4,3,5,/video-accessibility,74,draft
+CVAA,cvaa,accessibility,what is the CVAA,UNKNOWN,3,4,3,5,none,74,draft
+EN 301 549,en-301-549,accessibility,what is EN 301 549,UNKNOWN,2,3,2,5,none,58,draft
+AODA,aoda,accessibility,what is AODA captioning,UNKNOWN,2,2,2,4,none,48,draft
+reasonable accommodation,reasonable-accommodation,accessibility,what is a reasonable accommodation,UNKNOWN,2,3,2,4,none,54,draft
+equal access,equal-access,accessibility,what is equal access in media,UNKNOWN,2,2,2,3,thin,44,draft
+descriptive transcript,descriptive-transcript,accessibility,what is a descriptive transcript,UNKNOWN,2,3,3,4,none,59,draft
+extended audio description,extended-audio-description,accessibility,what is extended AD,UNKNOWN,2,3,2,4,none,54,draft
+sign language interpretation,sign-language-interpretation,accessibility,what is signed interpretation on video,UNKNOWN,2,3,2,4,Ofcom signing hours,54,draft
+plain language,plain-language,accessibility,what is plain language,UNKNOWN,2,2,2,4,none,48,draft
+dubbing,dubbing,localization,what is dubbing,UNKNOWN,3,3,3,4,none — VideoText does not claim dubbing,64,draft
+voice-over,voice-over,localization,what is voice-over localization,UNKNOWN,2,2,2,3,none,44,draft
+back translation,back-translation,localization,what is back translation,UNKNOWN,1,2,1,4,none,38,draft
+transcreation,transcreation,localization,what is transcreation,UNKNOWN,1,2,1,3,low relevance,34,draft
+bilingual subtitles,bilingual-subtitles,localization,what are bilingual subtitles,UNKNOWN,3,3,3,4,none,64,draft
+language pack,language-pack,localization,what is a subtitle language pack,UNKNOWN,2,2,2,3,none,44,draft
+ISO 639,iso-639,localization,what is ISO 639,UNKNOWN,2,3,2,5,none,58,draft
+BCP 47,bcp-47,localization,what is BCP 47,UNKNOWN,2,3,2,5,WebVTT language tags,58,draft
+MP4,mp4,video-audio-workflow,what is MP4,UNKNOWN,4,3,2,5,"format, not a VideoText-only term",68,draft
+MOV,mov,video-audio-workflow,what is MOV,UNKNOWN,3,2,2,4,none,53,draft
+MKV,mkv,video-audio-workflow,what is MKV,UNKNOWN,3,2,2,4,none,53,draft
+WebM,webm,video-audio-workflow,what is WebM,UNKNOWN,3,2,2,4,none,53,draft
+MP3,mp3,video-audio-workflow,what is MP3,UNKNOWN,3,2,2,4,/mp3-to-text commercial,53,draft
+WAV,wav,video-audio-workflow,what is WAV,UNKNOWN,3,2,2,4,/wav-to-text,53,draft
+M4A,m4a,video-audio-workflow,what is M4A,UNKNOWN,2,2,2,4,/m4a-to-text,48,draft
+AAC,aac,video-audio-workflow,what is AAC,UNKNOWN,2,2,2,4,none,48,draft
+FLAC,flac,video-audio-workflow,what is FLAC,UNKNOWN,2,2,2,4,none,48,draft
+codec,codec,video-audio-workflow,what is a codec,UNKNOWN,2,2,2,4,none,48,draft
+container format,container-format,video-audio-workflow,what is a media container,UNKNOWN,2,2,2,4,none,48,draft
+bitrate,bitrate,video-audio-workflow,what is bitrate,UNKNOWN,2,2,2,4,/tools/video-bitrate-calculator,48,draft
+aspect ratio,aspect-ratio,video-audio-workflow,what is aspect ratio,UNKNOWN,2,2,2,4,/tools/aspect-ratio-calculator,48,draft
+proxy file,proxy-file,video-audio-workflow,what is a proxy file,UNKNOWN,1,2,1,3,"editorial, low relevance",34,draft
+mezzanine file,mezzanine-file,video-audio-workflow,what is a mezzanine file,UNKNOWN,1,2,1,3,none,34,draft
+loudness range,loudness-range,video-audio-workflow,what is LRA,UNKNOWN,1,2,1,4,none,38,draft
+silence,silence,video-audio-workflow,how ASR treats silence,UNKNOWN,2,2,2,3,none,44,draft
+music and effects,music-and-effects,accessibility,what is an M&E track,UNKNOWN,2,2,2,3,none,44,draft
+spotting,spotting,timing,what is subtitle spotting,UNKNOWN,2,3,2,4,none,54,draft
+originator,originator,formats,what is a TTML originator,UNKNOWN,1,1,1,3,too obscure,28,draft
+region,vtt-region,formats,what is a WebVTT region,UNKNOWN,2,3,2,5,none,58,draft
+voice span,vtt-voice,formats,what is a WebVTT voice span,UNKNOWN,2,3,2,5,none,58,draft
+NOTE block,vtt-note,formats,what is a WebVTT NOTE,UNKNOWN,1,2,1,5,none,42,draft
+UTF-8,utf-8,formats,why subtitle files use UTF-8,UNKNOWN,2,2,2,5,none,52,draft
+BOM,byte-order-mark,formats,what is a UTF-8 BOM in SRT,UNKNOWN,1,2,2,4,none,43,draft
+FPS,fps,timing,alias of frame rate,UNKNOWN,3,2,2,5,alias of frame-rate,57,draft
+29.97,twenty-nine-nine-seven,timing,what is 29.97 fps,UNKNOWN,2,3,2,5,pair with drop-frame,58,draft
+23.976,twenty-three-nine-seven-six,timing,what is 23.976 fps,UNKNOWN,2,2,2,4,none,48,draft
+pal,pal,timing,what is PAL frame rate,UNKNOWN,1,2,1,4,none,38,draft
+ntsc,ntsc,timing,what is NTSC frame rate,UNKNOWN,2,2,2,4,none,48,draft
+interlaced video,interlaced-video,video-audio-workflow,what is interlacing,UNKNOWN,1,2,1,4,none,38,draft
+progressive scan,progressive-scan,video-audio-workflow,what is progressive scan,UNKNOWN,1,2,1,4,none,38,draft
+YouTube captions,youtube-captions,captions-subtitles,what are YouTube captions,UNKNOWN,4,3,3,4,many YouTube commercial aliases exist,69,draft
+automatic captions vs subtitles,automatic-captions-vs-subtitles,captions-subtitles,comparison query,UNKNOWN,3,2,2,3,comparison already exists on-site,49,draft
+Netflix TTSC,netflix-ttsc,quality,what is Netflix TTSC,UNKNOWN,4,4,3,5,/netflix-ttsc-checklist owns the workflow,79,draft
+BBC subtitle guidelines,bbc-subtitle-guidelines,quality,what are BBC subtitle rules,UNKNOWN,3,3,2,5,none,63,draft
+EBU R37,ebu-r37,quality,what is EBU R37,UNKNOWN,2,3,2,5,none,58,draft
+FCC caption quality,fcc-caption-quality,accessibility,what are FCC caption quality standards,UNKNOWN,3,4,3,5,citation hub covers the rule as a statistic,74,draft
+accurate captions,accurate-captions,quality,what does accurate mean in FCC rules,UNKNOWN,3,3,3,5,none,68,draft
+synchronous captions,synchronous-captions,quality,what does synchronous mean in FCC rules,UNKNOWN,3,3,3,5,none,68,draft
+complete captions,complete-captions,quality,what does complete mean in FCC rules,UNKNOWN,3,3,3,5,none,68,draft
+placement,caption-placement,captions-subtitles,what is caption placement,UNKNOWN,3,3,3,4,none,64,draft
+pop-on captions,pop-on-captions,captions-subtitles,what are pop-on captions,UNKNOWN,2,3,2,4,none,54,draft
+roll-up captions,roll-up-captions,captions-subtitles,what are roll-up captions,UNKNOWN,2,3,2,4,none,54,draft
+paint-on captions,paint-on-captions,captions-subtitles,what are paint-on captions,UNKNOWN,2,3,2,4,none,54,draft
+offline captioning,offline-captioning,captions-subtitles,what is offline captioning,UNKNOWN,3,3,2,4,none,59,draft
+online captioning,online-captioning,captions-subtitles,what is online/live captioning,UNKNOWN,3,3,2,4,near live captions,59,draft
+respeaking,respeaking,accessibility,what is respeaking,UNKNOWN,2,3,2,4,none,54,draft
+stenography,stenography,accessibility,what is caption stenography,UNKNOWN,2,3,2,4,none,54,draft
+human-in-the-loop,human-in-the-loop,quality,what is HITL captioning,UNKNOWN,3,3,3,3,3Play report discusses this,60,draft
+post-editing,post-editing,quality,what is ASR post-editing,UNKNOWN,3,3,3,3,none,60,draft
+reviewer,transcript-reviewer,quality,what is a transcript reviewer,UNKNOWN,3,2,2,3,none,49,draft
+style guide,style-guide,quality,what is a transcription style guide,UNKNOWN,4,3,3,4,/guideline-format and marketplace guideline pages,69,draft
+clean read,clean-read,transcription-asr,what is a clean read,UNKNOWN,2,2,2,3,near clean verbatim,44,draft
+edited transcript,edited-transcript,transcription-asr,what is an edited transcript,UNKNOWN,2,2,2,3,none,44,draft
+rough transcript,rough-transcript,transcription-asr,what is a rough transcript,UNKNOWN,2,2,2,3,none,44,draft
+timestamped transcript,timestamped-transcript,timing,what is a timestamped transcript,UNKNOWN,4,3,3,4,none,69,draft
+chapter markers,chapter-markers,video-audio-workflow,what are transcript chapters,UNKNOWN,3,2,2,3,VideoText feature — do not invent capabilities beyond repo,49,draft
+summary,transcript-summary,video-audio-workflow,what is a transcript summary,UNKNOWN,3,2,2,3,VideoText feature,49,draft
+export format,export-format,formats,what transcript exports exist,UNKNOWN,3,2,2,3,product docs,49,draft
+DOCX transcript,docx-transcript,formats,what is a DOCX transcript,UNKNOWN,2,2,2,3,none,44,draft
+JSON transcript,json-transcript,formats,what is a JSON transcript,UNKNOWN,2,2,2,3,none,44,draft
+plain text transcript,plain-text-transcript,formats,what is a TXT transcript,UNKNOWN,3,2,2,3,/tools/srt-to-text,49,draft

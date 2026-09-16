@@ -12,6 +12,8 @@ import { invalidateUsageCache } from './lib/api'
 import Footer from './components/Footer'
 import Seo from './components/Seo'
 import { ROUTE_SEO, ROUTE_BREADCRUMB, getOrganizationJsonLd, getWebApplicationJsonLd, getFaqJsonLd, getFaqJsonLdFromItems, getBreadcrumbJsonLd, getBlogPostingJsonLd, getAeoJsonLd, BLOG_POST_DATES } from './lib/seoMeta'
+import { getReferenceArticleDates, getReferenceLayerJsonLd } from './lib/referenceLayer'
+import { getGlossaryTermBySlug } from './data/glossary/inventory'
 import { getCoreToolFaq } from './lib/coreToolSeoDepth'
 import { getPageGscSeoFaq, getPageGscSupplementFaq } from './lib/pageGscSeoDepth'
 import { getCanonicalPathForRoute } from './lib/primaryUrls'
@@ -90,6 +92,9 @@ const Samples = lazy(() => import('./pages/Samples'))
 const TranscriptionBenchmark = lazy(() => import('./pages/TranscriptionBenchmark'))
 const AccuracyTest = lazy(() => import('./pages/AccuracyTest'))
 const TranscriptionAccuracyBenchmark2026 = lazy(() => import('./pages/TranscriptionAccuracyBenchmark2026'))
+const TranscriptionStatistics = lazy(() => import('./pages/TranscriptionStatistics'))
+const GlossaryHub = lazy(() => import('./pages/glossary/GlossaryHub'))
+const GlossaryTermPage = lazy(() => import('./pages/glossary/GlossaryTermPage'))
 const BestTranscriptionTool = lazy(() => import('./pages/BestTranscriptionTool'))
 const FastestTranscriptionSoftware = lazy(() => import('./pages/FastestTranscriptionSoftware'))
 const FastestTranscriptionTool = lazy(() => import('./pages/FastestTranscriptionTool'))
@@ -182,9 +187,10 @@ function AppSeo() {
 
   // Blog post schemas + og:article meta
   const blogPostDates = isBlogPost ? BLOG_POST_DATES[pathname] : undefined
+  const referenceDates = getReferenceArticleDates(pathname)
   const articleMeta = blogPostDates
     ? { publishedTime: `${blogPostDates.datePublished}T00:00:00Z`, modifiedTime: `${blogPostDates.dateModified}T00:00:00Z` }
-    : undefined
+    : referenceDates
   const blogPostingSchema = isBlogPost ? getBlogPostingJsonLd(pathname, meta.title, meta.description) : null
 
   const dedupeAndMergeFaqSchemas = (schemas: object[]): object[] => {
@@ -241,6 +247,12 @@ function AppSeo() {
     }
     const aeoSchemas = getAeoJsonLd(pathname)
     if (aeoSchemas?.length) schemas.push(...aeoSchemas)
+    const referenceSchemas = getReferenceLayerJsonLd(pathname)
+    if (referenceSchemas?.length) schemas.push(...referenceSchemas)
+    if (pathname.startsWith('/glossary/') && pathname !== '/glossary') {
+      const glossaryTerm = getGlossaryTermBySlug(pathname.replace('/glossary/', ''))
+      if (glossaryTerm?.faqs?.length) schemas.push(getFaqJsonLdFromItems(glossaryTerm.faqs))
+    }
     const normalizedSchemas = dedupeAndMergeFaqSchemas(schemas)
     return normalizedSchemas.length ? normalizedSchemas : undefined
   }
@@ -601,6 +613,9 @@ function App() {
             <Route path="/transcription-benchmark" element={<TranscriptionBenchmark />} />
             <Route path="/accuracy-test" element={<AccuracyTest />} />
             <Route path="/research/transcription-accuracy-benchmark-2026" element={<TranscriptionAccuracyBenchmark2026 />} />
+            <Route path="/transcription-statistics" element={<TranscriptionStatistics />} />
+            <Route path="/glossary" element={<GlossaryHub />} />
+            <Route path="/glossary/:slug" element={<GlossaryTermPage />} />
             <Route path="/best-transcription-tool" element={<BestTranscriptionTool />} />
             <Route path="/fastest-transcription-software" element={<FastestTranscriptionSoftware />} />
             <Route path="/fastest-transcription-tool" element={<FastestTranscriptionTool />} />

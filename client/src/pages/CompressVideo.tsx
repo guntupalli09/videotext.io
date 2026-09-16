@@ -30,6 +30,7 @@ import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/fil
 import { incrementUsage } from '../lib/usage'
 import { incrementJobCompletedCount } from '../lib/jobCount'
 import { uploadFileWithProgress, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError, claimGuestJob, getAuthToken } from '../lib/api'
+import { resolveCompletedJobResult } from '../lib/resolveCompletedJob'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
 import { persistJobId, clearPersistedJobId, getPersistedJobId, getPersistedJobToken } from '../lib/jobSession'
@@ -92,6 +93,8 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
   const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null)
   const [filePreview, setFilePreview] = useState<FilePreviewData | null>(null)
   const processingStartedAtRef = useRef<number | null>(null)
+  // Guards one job_started per job; polling revisits 'processing' on every tick.
+  const jobStartedTrackedRef = useRef<string | null>(null)
 
   const plan = (localStorage.getItem('plan') || 'free').toLowerCase()
   const hasPaidPlan = isPaidPlan(plan)
@@ -211,14 +214,36 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
           setProgress(jobStatus.progress ?? 0)
           if (jobStatus.queuePosition !== undefined) setQueuePosition(jobStatus.queuePosition)
 
+          if (jobStatus.status === 'processing' && jobStartedTrackedRef.current !== response.jobId) {
+            jobStartedTrackedRef.current = response.jobId
+            try {
+              trackEvent('job_started', {
+                job_id: response.jobId,
+                tool_type: BACKEND_TOOL_TYPES.COMPRESS_VIDEO,
+              })
+            } catch {
+              /* non-blocking */
+            }
+          }
+
           const transition = getJobLifecycleTransition(jobStatus)
           if (transition === 'completed') {
             clearInterval(pollIntervalRef.current)
             const started = processingStartedAtRef.current ?? Date.now()
             const processingMs = Date.now() - started
             setLastProcessingMs(processingMs)
+            const resolved = await resolveCompletedJobResult(response.jobId, response.jobToken, jobStatus)
+            if (resolved.kind === 'ready' && resolved.status.result) {
+              setResult(resolved.status.result)
+            } else if (resolved.kind === 'auth-gate') {
+              setResult(resolved.status?.result ?? { downloadUrl: '' })
+              setShowAuthGate(true)
+              setShowAuthModal(true)
+            } else {
+              setResult({ downloadUrl: '' })
+              toast.error('Compressed video is ready, but the download is still loading. Refresh to see it.')
+            }
             setStatus('completed')
-            setResult(jobStatus.result ?? null)
             trackAppEvent('transcription_completed', { toolId: 'compress-video' })
             // emitToolCompleted({ toolId: 'compress-video', pathname: '/compress-video', processingMs })
             incrementUsage('compress-video')
@@ -258,6 +283,7 @@ export default function CompressVideo(props: CompressVideoSeoProps = {}) {
   }
 
   const handleProcessAnother = () => {
+    try { trackEvent('process_another_clicked', { tool_type: BACKEND_TOOL_TYPES.COMPRESS_VIDEO }) } catch { /* non-blocking */ }
     clearPersistedJobId(location.pathname, navigate)
     setSelectedFile(null)
     setStatus('idle')
