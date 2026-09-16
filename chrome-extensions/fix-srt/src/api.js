@@ -23,7 +23,7 @@ export async function login(email, password) {
   })
   const data = await readJson(response)
   if (!response.ok) {
-    throw new ApiError(data.message || 'Sign in failed', { status: response.status })
+    throw new ApiError(humanizeApiError(data, response.status), { status: response.status })
   }
   if (!data.token || !data.userId || data.plan == null) {
     throw new ApiError('Invalid login response')
@@ -160,7 +160,18 @@ function mapUploadError(message) {
   if (/quota|import/i.test(message) && /exceed|limit|reached/i.test(message)) {
     return message
   }
-  return message
+  return humanizeApiError({ message }, 0)
+}
+
+function humanizeApiError(data, status) {
+  const raw = typeof data?.message === 'string' ? data.message.trim() : ''
+  if (!raw && status >= 500) {
+    return 'VideoText had a server error. Try again, or sign in on videotext.io and reopen this popup.'
+  }
+  if (/<!DOCTYPE html/i.test(raw) || /<html[\s>]/i.test(raw)) {
+    return 'VideoText could not complete this request from the extension. Sign in on videotext.io, then reopen this popup — or try again after the API allows Chrome extension logins.'
+  }
+  return raw || 'Sign in failed'
 }
 
 async function apiFetch(path, { token, timeoutMs } = {}) {

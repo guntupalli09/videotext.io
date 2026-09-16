@@ -22,6 +22,8 @@ Not requested: `http://localhost:*`, preview hosts, `<all_urls>`.
 
 Opening https://videotext.io/login or /pricing uses `chrome.tabs.create` and does not need a host permission.
 
+Chrome extension pages send `Origin: chrome-extension://<id>`. Production CORS (`isCorsAllowedOrigin` in `server/src/utils/allowedOrigins.ts`) must allow that origin or login/upload return Express HTML 500. Checkout redirects still use `isAllowedOrigin` and do **not** accept chrome-extension URLs.
+
 ## content_scripts
 
 | Match | Why |
