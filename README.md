@@ -481,7 +481,7 @@ VideoText is ~2.3× faster than the next-fastest and ~7× faster than Trint on t
 ├── docs/                   # ARCHITECTURE.md (pipeline, tier limits, mindmaps), UX_UPLOAD_IMPROVEMENTS.md, PERFORMANCE_AUDIT_UPLOAD_PIPELINE.md, BENCHMARKS.md, …
 ├── scripts/seo/            # Registry sync, sitemap, validate-registry, validate-sitemap, smoke, weekly pipeline (run-weekly, apply-proposals), …
 ├── deploy/
-│   └── Caddyfile           # Reverse proxy for API + CORS preflight (OPTIONS)
+│   └── Caddyfile           # TLS reverse proxy for API (CORS is Express, not Caddy)
 ├── docker-compose.yml      # Redis, api, worker (env_file: .env from same directory)
 ├── Dockerfile
 ├── vercel.json             # SPA rewrites + index.html cache headers (used when Root Directory is repo root)
@@ -514,7 +514,7 @@ VideoText has a single **observability stack** for debugging across UI, API, and
 - **Sentry:** Set **SENTRY_DSN** in `server/.env` (backend) and **VITE_SENTRY_DSN** in `client/.env` (frontend, then rebuild). Open [sentry.io](https://sentry.io) → your project → **Issues** to see errors; filter by **request_id** or **job_id** to follow a single request.
 - **Health:** `GET /healthz`, `GET /readyz`, `GET /version`, `GET /configz`, `GET /ops/queue` on the API (see [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md) for details).
 - **Incident workflow:** Get `x-request-id` from the response → search in Sentry and logs → check `/ops/queue` for worker heartbeat.
-| **CORS errors or 502 on API from frontend** | API not running (e.g. Prisma crash), or Caddy not using the updated Caddyfile. | Check API logs: `docker logs videotools-api --tail 100`. If you see "Table \`User\` does not exist", migrations didn’t run — ensure the API command in docker-compose runs `prisma migrate deploy` then `node dist/index.js`. If you see Prisma adapter/constructor errors, ensure `DATABASE_URL` is set and the image was rebuilt. For CORS, copy `deploy/Caddyfile` to `/etc/caddy/Caddyfile` and `sudo systemctl reload caddy`. |
+| **CORS errors or `Failed to fetch` / `Load failed` on login, signup, or `/founder`** | Caddy intercepting `OPTIONS` with a stale `Access-Control-Allow-Headers` list (Express never sees the preflight). Direct `curl http://127.0.0.1:3001` can look fine while `https://api.videotext.io` fails. | Caddy must only `reverse_proxy localhost:3001`. Copy `deploy/Caddyfile` to `/etc/caddy/Caddyfile`, `sudo caddy validate --config /etc/caddy/Caddyfile`, then `sudo systemctl reload caddy`. Confirm `Allow-Headers` includes `x-ph-distinct-id` on an OPTIONS request through 443. |
 | **Permission denied on .env** | Trying to execute the file (e.g. `./.env`). | Edit the file only (e.g. `nano .env` or your editor). Do not run it as a script. |
 | **Server won't start: JWT_SECRET must be set in production** | `NODE_ENV=production` and `JWT_SECRET` is missing, empty, or `dev-secret`. | Set `JWT_SECRET` in the `.env` used by the API (e.g. next to `docker-compose.yml`) to a strong random value. Generate with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`. Restart the API. |
 

@@ -1,60 +1,8 @@
-# CORS guardrail at the edge:
-# - Handle preflight consistently for allowed origins.
-# - Include CORS headers on all API responses for allowed origins (including 4xx/5xx generated upstream).
-# This prevents browser-side "CORS" masking when batch requests hit error paths.
+# TLS termination + reverse proxy only.
+# Do not intercept OPTIONS or set Access-Control-* here. Express owns CORS
+# (trusted origins + reflected Allow-Headers). A closed header list in Caddy
+# caused production "Failed to fetch" when the Vercel client added
+# x-ph-distinct-id (2026-09-14).
 api.videotext.io {
-    request_id
-    @origin_videotext header Origin https://videotext.io
-    @origin_www header Origin https://www.videotext.io
-    @origin_vercel header_regexp Origin https://.*\.vercel\.app$
-
-    # CORS headers for non-OPTIONS responses
-    header @origin_videotext Access-Control-Allow-Origin https://videotext.io
-    header @origin_www Access-Control-Allow-Origin https://www.videotext.io
-    header @origin_vercel Access-Control-Allow-Origin {http.request.header.Origin}
-    header @origin_videotext Access-Control-Allow-Credentials true
-    header @origin_www Access-Control-Allow-Credentials true
-    header @origin_vercel Access-Control-Allow-Credentials true
-    header @origin_videotext Vary Origin
-    header @origin_www Vary Origin
-    header @origin_vercel Vary Origin
-
-    @options method OPTIONS
-    handle @options {
-        handle @origin_videotext {
-            header Access-Control-Allow-Origin https://videotext.io
-            header Access-Control-Allow-Credentials true
-            header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS, PATCH"
-            header Access-Control-Allow-Headers "Content-Type, Authorization, Accept, X-Api-Key, X-User-Id, X-Plan, X-Upload-Id, X-Chunk-Index"
-            header Access-Control-Max-Age 86400
-            header Vary Origin
-            respond 204
-        }
-        handle @origin_www {
-            header Access-Control-Allow-Origin https://www.videotext.io
-            header Access-Control-Allow-Credentials true
-            header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS, PATCH"
-            header Access-Control-Allow-Headers "Content-Type, Authorization, Accept, X-Api-Key, X-User-Id, X-Plan, X-Upload-Id, X-Chunk-Index"
-            header Access-Control-Max-Age 86400
-            header Vary Origin
-            respond 204
-        }
-        handle @origin_vercel {
-            header Access-Control-Allow-Origin {http.request.header.Origin}
-            header Access-Control-Allow-Credentials true
-            header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS, PATCH"
-            header Access-Control-Allow-Headers "Content-Type, Authorization, Accept, X-Api-Key, X-User-Id, X-Plan, X-Upload-Id, X-Chunk-Index"
-            header Access-Control-Max-Age 86400
-            header Vary Origin
-            respond 204
-        }
-        handle {
-            respond 403
-        }
-    }
-    handle {
-        reverse_proxy localhost:3001 {
-            header_up X-Request-Id {request_id}
-        }
-    }
+	reverse_proxy localhost:3001
 }

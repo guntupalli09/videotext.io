@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { sendOtp, verifyOtp, loginWithGoogle } from '../lib/api'
+import { getUserFacingMessage, sendOtp, verifyOtp, loginWithGoogle } from '../lib/api'
 import { completeSignup, storeLoginResult } from '../lib/auth'
 import { identifyUser, trackEvent } from '../lib/analytics'
 import { getSamplesModuleAttribution } from '../lib/samplesAttribution'
@@ -69,7 +69,7 @@ export default function Signup() {
       navigate(returnTo, { replace: true })
       window.location.reload()
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Google sign-up failed')
+      setError(getUserFacingMessage(err))
     } finally {
       setGoogleLoading(false)
     }
@@ -97,7 +97,7 @@ export default function Signup() {
       setStep('otp')
       try { trackEvent('otp_requested', { method: 'email' }) } catch { /* non-blocking */ }
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to send code')
+      setError(getUserFacingMessage(err))
     } finally {
       setLoading(false)
     }
@@ -114,7 +114,7 @@ export default function Signup() {
       try { trackEvent('otp_verified') } catch { /* non-blocking */ }
     } catch (err: unknown) {
       try { trackEvent('otp_failed', { reason: 'invalid_code' }) } catch { /* non-blocking */ }
-      setError(err instanceof Error ? err.message : 'Invalid or expired code')
+      setError(getUserFacingMessage(err))
     } finally {
       setLoading(false)
     }
@@ -167,7 +167,7 @@ export default function Signup() {
       window.dispatchEvent(new CustomEvent('videotext:plan-updated'))
       window.location.reload()
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Signup failed')
+      setError(getUserFacingMessage(err))
     } finally {
       setLoading(false)
     }
@@ -287,11 +287,6 @@ export default function Signup() {
               <GoogleSignInButton onCredential={handleGoogleCredential} text="signup_with" />
               {googleLoading && (
                 <p className="text-center text-sm text-gray-500 dark:text-gray-400">Signing up with Google…</p>
-              )}
-              {error && (
-                <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600 dark:bg-red-500/10 dark:text-red-400" role="alert">
-                  {error}
-                </p>
               )}
               <div className="flex items-center gap-3">
                 <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />

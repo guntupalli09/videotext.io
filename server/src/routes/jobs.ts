@@ -7,6 +7,7 @@ import { getJobPartial, trimPartialPayloadForResponse, segmentsToPartialTranscri
 import { getJobSummary } from '../utils/jobSummary'
 import { getJobStage, type YoutubeJobStage } from '../utils/jobStage'
 import { getLogger } from '../lib/logger'
+import { identifyAuthenticatedUser, readAnonymousId } from '../utils/analytics'
 import { prisma } from '../db'
 
 const log = getLogger('api')
@@ -326,6 +327,24 @@ router.post('/:jobId/claim', async (req: Request, res: Response) => {
         error: prismaErr instanceof Error ? prismaErr.message : String(prismaErr),
       })
       // non-blocking — queue update already succeeded
+    }
+
+    // Stitch the guest's analytics identity onto the real account. The Prisma
+    // update above is why the founder dashboard can show this user's email
+    // while PostHog still saw an unrelated guest: nothing told PostHog the two
+    // ids are the same person. Without this the guest's job_created and any
+    // pre-signup browser events stay on an orphan profile forever.
+    try {
+      const claimedForAnalytics = await getUser(userId)
+      identifyAuthenticatedUser({
+        user_id: userId,
+        email: claimedForAnalytics?.email,
+        plan: claimedForAnalytics?.plan,
+        guest_user_id: jobUserId && jobUserId.startsWith('guest_') ? jobUserId : undefined,
+        anonymous_id: readAnonymousId(req),
+      })
+    } catch {
+      // non-blocking — claiming must not fail on an analytics error
     }
 
     // Increment real user's import counts to reflect the guest trial job.

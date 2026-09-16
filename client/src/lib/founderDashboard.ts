@@ -286,9 +286,12 @@ export type FetchDashboardResult =
   | { ok: false; status: 403 }
   | { ok: false; status: 'error' }
 
+/** Match the API's 90s query budget; abort before the browser hangs on a Cloudflare 524. */
+const DASHBOARD_FETCH_TIMEOUT_MS = 95_000
+
 export async function fetchFounderDashboard(): Promise<FetchDashboardResult> {
   try {
-    const res = await api('/api/admin/dashboard')
+    const res = await api('/api/admin/dashboard', { timeout: DASHBOARD_FETCH_TIMEOUT_MS })
     if (res.status === 401) return { ok: false, status: 401 }
     if (res.status === 403) return { ok: false, status: 403 }
     if (!res.ok) return { ok: false, status: 'error' }

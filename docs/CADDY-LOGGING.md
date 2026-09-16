@@ -2,8 +2,9 @@
 
 ## Current config
 
-- **Request ID:** `request_id` is enabled; `header_up X-Request-Id {request_id}` forwards the ID to the API. The API echoes or generates it and returns it in the response header.
-- **Logs:** When Caddy runs non-interactively (e.g. systemd/Docker), access logs go to stderr in **JSON** by default.
+- **TLS + proxy only:** `deploy/Caddyfile` terminates HTTPS and `reverse_proxy`s to `localhost:3001`. CORS (origin allowlist and `Access-Control-Allow-Headers`) is owned by Express. Do not handle `OPTIONS` in Caddy.
+- **Request ID:** Optional. If you enable Caddy’s `request_id` module, use `header_up X-Request-Id {request_id}` so the API can echo it. The API also generates `x-request-id` when the header is missing.
+- **Logs:** When Caddy runs non-interactively (e.g. systemd), access logs go to stderr in **JSON** by default.
 
 ## Optional: explicit JSON access log
 
@@ -16,7 +17,7 @@ api.videotext.io {
         output stdout
         format json
     }
-    # ... rest of config (handle @options, handle reverse_proxy)
+    reverse_proxy localhost:3001
 }
 ```
 

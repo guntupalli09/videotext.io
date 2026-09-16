@@ -40,6 +40,50 @@ function identify(distinctId: string, properties?: Record<string, unknown>): voi
   }
 }
 
+/**
+ * Point an old distinct id at the canonical one. Fire-and-forget; never throws.
+ * posthog-node's shape is { distinctId: <canonical>, alias: <old> }.
+ */
+function alias(canonicalId: string, previousId: string): void {
+  if (!canonicalId || !previousId || canonicalId === previousId) return
+  try {
+    const c = getClient()
+    if (!c) return
+    ;(c as unknown as { alias?: (payload: { distinctId: string; alias: string }) => void }).alias?.({
+      distinctId: canonicalId,
+      alias: previousId,
+    })
+  } catch {
+    // no-op
+  }
+}
+
+/**
+ * Attach the account's identity to its PostHog person.
+ *
+ * Server-side because it must not depend on the browser: client analytics can
+ * be blocked or opted out, and when that happens the email never reaches
+ * PostHog at all. Before this existed, identify() ran only from
+ * trackPlanUpgraded, so a free user's email was never recorded — roughly half
+ * of completed signups produced a person with no email.
+ */
+export function identifyAuthenticatedUser(params: {
+  user_id: string
+  email?: string
+  plan?: string
+  /** Browser distinct id (x-ph-distinct-id), so pre-signup events stitch on. */
+  anonymous_id?: string
+  /** Guest id a job ran under, so its server-side events stitch on. */
+  guest_user_id?: string
+}): void {
+  if (params.anonymous_id) alias(params.user_id, params.anonymous_id)
+  if (params.guest_user_id) alias(params.user_id, params.guest_user_id)
+  identify(params.user_id, {
+    ...(params.email && { email: params.email }),
+    ...(params.plan && { plan: params.plan }),
+  })
+}
+
 function capture(event: string, distinctId: string, properties?: Record<string, unknown>): void {
   try {
     if (process.env.NODE_ENV !== 'production') {
@@ -68,15 +112,37 @@ export function flushAnalytics(): void {
   }
 }
 
+/**
+ * Reads the browser's PostHog distinct ID forwarded by the client (see client/src/lib/api.ts).
+ * Returns undefined when absent — PostHog blocked, a non-browser caller, or the API used directly.
+ */
+export function readAnonymousId(req: { headers: Record<string, unknown> }): string | undefined {
+  const raw = req.headers['x-ph-distinct-id']
+  const value = Array.isArray(raw) ? raw[0] : raw
+  if (typeof value !== 'string') return undefined
+  const trimmed = value.trim()
+  // Bound the length so a hostile header can't create huge person profiles.
+  return trimmed && trimmed.length <= 200 ? trimmed : undefined
+}
+
+/**
+ * distinctId falls back to the browser's PostHog ID (x-ph-distinct-id) for logged-out
+ * users, so the job stitches onto the same person as their client-side events. Without
+ * it every anonymous visitor collapsed into one shared 'anonymous' profile, which made
+ * pre-signup funnels meaningless. Last resort is job_id — one throwaway profile is
+ * better than polluting a shared one.
+ */
 export function trackJobCreated(params: {
   job_id: string
   user_id?: string
+  anonymous_id?: string
   tool_type: string
   file_size_bytes?: number
   plan?: string
 }): void {
-  capture('job_created', params.user_id ?? 'anonymous', {
+  capture('job_created', params.user_id ?? params.anonymous_id ?? params.job_id, {
     job_id: params.job_id,
+    ...(params.user_id == null && { is_anonymous: true }),
     tool_type: params.tool_type,
     ...(params.file_size_bytes != null && { file_size_bytes: params.file_size_bytes }),
     ...(params.plan && { plan: params.plan }),
@@ -300,7 +366,15 @@ export function trackGoogleAuthCompleted(params: {
   user_id: string
   plan: string
   is_new_user: boolean
+  email?: string
+  anonymous_id?: string
 }): void {
+  identifyAuthenticatedUser({
+    user_id: params.user_id,
+    email: params.email,
+    plan: params.plan,
+    anonymous_id: params.anonymous_id,
+  })
   const event = params.is_new_user ? 'google_signup_completed' : 'google_login_completed'
   capture(event, params.user_id, {
     user_id: params.user_id,

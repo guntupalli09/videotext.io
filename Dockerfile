@@ -2,6 +2,7 @@
 FROM node:20-slim
 
 # System dependencies (ffmpeg for workers; yt-dlp via pip for latest/pre-release; Deno for n/sig challenge).
+# Keep apt / yt-dlp / Deno as separate layers so a flaky GitHub 504 does not redo a 40s apt install.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     python3 \
@@ -9,12 +10,37 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
     unzip \
-    && pip3 install --break-system-packages -U --pre "yt-dlp[default]" \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install --break-system-packages -U --pre "yt-dlp[default]" \
     && yt-dlp --version \
-    && curl -fsSL --http1.1 "https://github.com/denoland/deno/releases/latest/download/deno-x86_64-unknown-linux-gnu.zip" -o /tmp/deno.zip \
-    && unzip -q /tmp/deno.zip -d /usr/local/bin \
-    && rm /tmp/deno.zip \
-    && rm -rf /var/lib/apt/lists/* /root/.cache/pip
+    && rm -rf /root/.cache/pip
+
+# Pin a release instead of GitHub /latest/ (that redirect 504s). Prefer Deno's CDN, then GitHub.
+ARG DENO_VERSION=2.9.6
+RUN set -eux; \
+    asset="deno-x86_64-unknown-linux-gnu.zip"; \
+    urls="https://dl.deno.land/release/v${DENO_VERSION}/${asset} https://github.com/denoland/deno/releases/download/v${DENO_VERSION}/${asset}"; \
+    downloaded=0; \
+    for url in $urls; do \
+      attempt=1; \
+      while [ "$attempt" -le 4 ]; do \
+        if curl --retry 3 --retry-all-errors --retry-delay 3 --connect-timeout 20 --max-time 120 -fsSL --http1.1 "$url" -o /tmp/deno.zip; then \
+          downloaded=1; \
+          break 2; \
+        fi; \
+        attempt=$((attempt + 1)); \
+        sleep $((attempt * 2)); \
+      done; \
+    done; \
+    if [ "$downloaded" != 1 ]; then \
+      echo "Failed to download Deno ${DENO_VERSION}" >&2; \
+      exit 1; \
+    fi; \
+    unzip -q /tmp/deno.zip -d /usr/local/bin; \
+    chmod +x /usr/local/bin/deno; \
+    rm -f /tmp/deno.zip; \
+    deno --version
 
 WORKDIR /app
 

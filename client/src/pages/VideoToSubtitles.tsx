@@ -31,8 +31,17 @@ import FinalQaCheckpoint from '../components/subtitleStudio/FinalQaCheckpoint'
 import StudioExportScreen from '../components/subtitleStudio/StudioExportScreen'
 import { applySafeAssistFixes, chipsByCueIndex, runAssistValidation, summarizeAssist } from '../lib/subtitleQaAssist'
 import type { SubtitleRow } from '../components/SubtitleEditor'
+import {
+  parseSubtitlesToRows,
+  needsResultRefetchAfterClaim,
+  statusForFinalizeOutcome,
+  finalizeOutcomeAllowsSuccessState,
+  finalizeFailureCopy,
+  type FinalizeResult,
+} from '../lib/subtitleResultReadiness'
 import { incrementUsage } from '../lib/usage'
-import { uploadFileWithProgress, getJobStatus, subscribeJobStatus, getCurrentUsage, getConnectionProbeIfNeeded, BACKEND_TOOL_TYPES, SessionExpiredError, getUserFacingMessage, isNetworkError, POLL_STOP_AFTER_CONSECUTIVE_NETWORK_ERRORS, getAuthToken, claimGuestJob, ensureGuestJobClaimed } from '../lib/api'
+import { uploadFileWithProgress, getJobStatus, subscribeJobStatus, getCurrentUsage, getConnectionProbeIfNeeded, BACKEND_TOOL_TYPES, SessionExpiredError, getUserFacingMessage, isNetworkError, POLL_STOP_AFTER_CONSECUTIVE_NETWORK_ERRORS, getAuthToken, claimGuestJob } from '../lib/api'
+import { resolveCompletedJobResult } from '../lib/resolveCompletedJob'
 import { isLoggedIn } from '../lib/auth'
 import { isPaidPlan as hasPaidPlan } from '../lib/plans'
 import { getFailureMessage } from '../lib/failureMessage'
@@ -63,35 +72,6 @@ export type VideoToSubtitlesSeoProps = {
     ctaText?: string
     ctaPath?: string
   }
-}
-
-/** Extra polls to wait for a completed job's result URL before giving up (avoids a blank Studio when status flips before the result is attached). */
-const MAX_MISSING_RESULT_RETRIES = 8
-
-function parseSubtitlesToRows(text: string): SubtitleRow[] {
-  const blocks = text
-    .replace(/\r/g, '')
-    .trim()
-    .split('\n\n')
-    .filter(Boolean)
-
-  const rows: SubtitleRow[] = []
-  for (const block of blocks) {
-    const lines = block.split('\n').filter((l) => l.trim().length > 0)
-    const timeLineIdx = lines.findIndex((l) => l.includes('-->'))
-    if (timeLineIdx === -1) continue
-
-    const timeLine = lines[timeLineIdx]
-    const [start, end] = timeLine.split('-->').map((s) => s.trim())
-    const textLines = lines.slice(timeLineIdx + 1)
-    rows.push({
-      index: rows.length + 1,
-      startTime: start,
-      endTime: end,
-      text: textLines.join('\n'),
-    })
-  }
-  return rows
 }
 
 /**
@@ -157,7 +137,14 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const [trimEnd, setTrimEnd] = useState<number | null>(null)
   const format = 'srt' as const // generation always SRT; SRT/VTT chosen at export
   const [language, setLanguage] = useState<string>('')
-  const [status, setStatus] = useState<'idle' | 'processing' | 'completed' | 'failed'>('idle')
+  /**
+   * 'completed' means the user has usable subtitles — never merely that the
+   * backend job finished. Terminal states that are NOT a success get their own
+   * values so the recovery UI still renders without the success Studio.
+   */
+  const [status, setStatus] = useState<
+    'idle' | 'processing' | 'completed' | 'result-gated' | 'result-unavailable' | 'failed'
+  >('idle')
   const [progress, setProgress] = useState(0)
   const [uploadPhase, setUploadPhase] = useState<'uploading' | 'processing'>('uploading')
   const [uploadProgress, setUploadProgress] = useState(0)
@@ -196,14 +183,25 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   const [attachedMediaFile, setAttachedMediaFile] = useState<File | null>(null)
   const [attachedMediaUrl, setAttachedMediaUrl] = useState<string | null>(null)
   const jobStartedTrackedRef = useRef<string | null>(null)
+
+  const handleLanguageSelected = (lang: string) => {
+    setLanguage(lang)
+    try {
+      trackEvent('language_selected', {
+        tool_type: BACKEND_TOOL_TYPES.VIDEO_TO_SUBTITLES,
+        language: lang,
+      })
+    } catch {
+      /* non-blocking */
+    }
+  }
   const processingStartedAtRef = useRef<number | null>(null)
   const terminalRef = useRef(false)
   const lastPartialVersionRef = useRef(0)
-  /** status can flip to 'completed' before the result URL is attached server-side; retry a few times instead of rendering a blank Studio. */
-  const missingResultRetriesRef = useRef(0)
-  const [resultLoadTimedOut, setResultLoadTimedOut] = useState(false)
+  const hasTrackedFirstOutputRef = useRef(false)
   /** Set when auto-claiming a guest job for the now-logged-in user fails, so the panel shows an actionable message instead of nothing. */
-  const [resultClaimFailed, setResultClaimFailed] = useState(false)
+  /** Last non-success finalize result, so the recovery panel names the actual failure. */
+  const [finalizeFailure, setFinalizeFailure] = useState<FinalizeResult | null>(null)
   const [partialSegments, setPartialSegments] = useState<{ start: number; end: number; text: string }[]>([])
   const [freeExportsUsed, setFreeExportsUsed] = useState(0)
   /** Set on job_completed for "Processed in XX.Xs" badge (UI only). */
@@ -249,92 +247,121 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     setStudioPhase('review')
   }
 
-  const loadCompletedPreview = async (downloadUrl: string, fileName?: string) => {
+  /**
+   * Load the result file into cue rows. Returns whether rows are actually
+   * available, because rows — not the downloadUrl — are what every export in
+   * this tool is generated from.
+   *
+   * Returns 'stale' when a newer load superseded this one, so the caller does
+   * not act on an outcome for a result the user has moved on from.
+   */
+  const loadCompletedPreview = async (
+    downloadUrl: string,
+    fileName?: string,
+  ): Promise<'ready' | 'preview-failed' | 'stale'> => {
     const gen = ++previewLoadGenRef.current
     setPreviewLoading(true)
     setPreviewError(false)
     try {
       const { rows, isZip } = await fetchSubtitlePreviewRowsWithRetry(downloadUrl, fileName)
-      if (gen !== previewLoadGenRef.current) return
+      if (gen !== previewLoadGenRef.current) return 'stale'
       if (isZip || rows.length === 0) {
         setSubtitleRows([])
         setPreviewError(true)
-        if (rows.length === 0 && !isZip) {
-          toast.error("Subtitles are ready, but the preview couldn't load. Use the Exports panel to download them directly.")
-        }
-        return
+        // No "use the Exports panel" advice: handleDownloadSubtitles builds the
+        // file from subtitleRows client-side, so with zero rows that panel
+        // would hand the user an empty .srt.
+        toast.error("Your subtitles couldn't be loaded. Refresh to try again.")
+        return 'preview-failed'
       }
       ingestGeneratedRows(rows, downloadUrl)
       setPreviewError(false)
+      return 'ready'
     } catch {
-      if (gen !== previewLoadGenRef.current) return
+      if (gen !== previewLoadGenRef.current) return 'stale'
       setSubtitleRows([])
       setPreviewError(true)
-      toast.error("Subtitles are ready, but the preview couldn't load. Use the Exports panel to download them directly.")
+      toast.error("Your subtitles couldn't be loaded. Refresh to try again.")
+      return 'preview-failed'
     } finally {
       if (gen === previewLoadGenRef.current) setPreviewLoading(false)
     }
   }
 
   /**
-   * status can flip to 'completed' before the result URL is attached server-side (the SSE/poll
-   * transport stops itself on the first 'completed' message regardless of whether result is
-   * present). Rather than block finalizing — which risks the previously-fixed "stuck processing
-   * forever" bug — we finalize immediately and fill in the result in the background so the
-   * Studio doesn't sit blank until a manual refresh.
+   * Claim + re-fetch + load cues, then report which terminal state the caller
+   * may enter. Only 'ready' means the user has usable subtitles; every other
+   * outcome must NOT flip the Studio to completed or emit first_output_seen.
    */
-  const pollForMissingResult = async (jobId: string, jobToken?: string) => {
-    setResultLoadTimedOut(false)
-    for (let i = 0; i < MAX_MISSING_RESULT_RETRIES; i++) {
-      await new Promise((r) => setTimeout(r, JOB_POLL_INTERVAL_MS))
-      try {
-        const s = await getJobStatus(jobId, jobToken ? { jobToken } : undefined)
-        if (s.result?.downloadUrl) {
-          setResult(s.result)
-          setPreviewLoading(true)
-          await loadCompletedPreview(s.result.downloadUrl, s.result.fileName)
-          return
-        }
-      } catch {
-        // keep trying
-      }
+  const finalizeCompletedSubtitles = async (
+    jobId: string,
+    jobToken?: string,
+    incoming?: import('../lib/api').JobStatus,
+  ): Promise<FinalizeResult> => {
+    setFinalizeFailure(null)
+    const fail = (result: FinalizeResult): FinalizeResult => {
+      setFinalizeFailure(result)
+      return result
     }
-    setResultLoadTimedOut(true)
+    const resolved = await resolveCompletedJobResult(jobId, jobToken, incoming)
+    if (resolved.kind === 'auth-gate') {
+      setShowAuthGate(true)
+      setResult({ downloadUrl: '' })
+      setPreviewLoading(false)
+      return { kind: 'auth-gate' }
+    }
+    if (resolved.kind === 'ready' && resolved.status.result) {
+      setShowAuthGate(false)
+      setResult(resolved.status.result)
+      if (!resolved.status.result.downloadUrl) {
+        setPreviewLoading(false)
+        return fail({ kind: 'empty-result' })
+      }
+      setPreviewLoading(true)
+      const preview = await loadCompletedPreview(
+        resolved.status.result.downloadUrl,
+        resolved.status.result.fileName,
+      )
+      // A superseded load must not downgrade the state the newer one set.
+      if (preview === 'stale') return { kind: 'ready', rowsAvailable: true }
+      return preview === 'ready'
+        ? { kind: 'ready', rowsAvailable: true }
+        : fail({ kind: 'preview-failed' })
+    }
+    setPreviewLoading(false)
+    if (resolved.status?.requiresAuth) {
+      setResult({ downloadUrl: '' })
+      return fail({ kind: 'claim-failed' })
+    }
+    return fail({ kind: 'timeout' })
   }
 
   /**
-   * A job started as a guest is only linked to a real account once claimed (see
-   * JobAuthGateModal). If the user is already logged in by the time the job completes — e.g.
-   * they signed in during processing, or on a later visit — the server still withholds the
-   * result (requiresAuth: true) because the job record isn't attached to them yet. Rather than
-   * show a broken "ready but nothing to see" panel, claim it in the background and reload.
+   * first_output_seen means the user actually saw subtitles, not that the job
+   * finished. It used to fire inside the completion handler, so a guest whose
+   * result was withheld behind the auth gate — or a session whose preview
+   * failed to load — still logged a successful result view over an empty
+   * Studio, which made the funnel look healthy while exports went to zero.
+   * Gate it on the cue rows the Studio renders from.
    */
-  const claimAndReloadResult = async (jobId: string, jobToken?: string) => {
-    setResultClaimFailed(false)
-    if (!jobToken) {
-      setPreviewLoading(false)
-      setResultClaimFailed(true)
-      return
-    }
+  useEffect(() => {
+    if (status !== 'completed') return
+    if (hasTrackedFirstOutputRef.current) return
+    if (subtitleRows.length === 0) return
+    hasTrackedFirstOutputRef.current = true
+    // Keep the "result_panel" source the completion site already used so
+    // existing funnel breakdowns stay comparable across this change.
+    const props = { tool: 'video-to-subtitles', source: 'result_panel' }
     try {
-      await ensureGuestJobClaimed(jobId, jobToken)
-      const s = await getJobStatus(jobId, { jobToken })
-      if (s.result?.downloadUrl) {
-        setShowAuthGate(false)
-        setResult(s.result)
-        setPreviewLoading(true)
-        await loadCompletedPreview(s.result.downloadUrl, s.result.fileName)
-        return
-      }
+      trackFirstOutputSeen(props)
+      trackAppEvent('first_output_seen', props)
     } catch {
-      // fall through to error state below
+      // non-blocking
     }
-    setPreviewLoading(false)
-    setResultClaimFailed(true)
-  }
+  }, [status, subtitleRows.length])
 
   useEffect(() => {
-    if (status === 'completed' && !isLoggedIn()) {
+    if (status === 'result-gated' && !isLoggedIn()) {
       setShowAuthGate(true)
       setShowAuthModal(true)
     }
@@ -451,9 +478,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
 
     terminalRef.current = false
     lastPartialVersionRef.current = 0
-    missingResultRetriesRef.current = 0
-    setResultLoadTimedOut(false)
-    setResultClaimFailed(false)
+    setFinalizeFailure(null)
     setStatus('processing')
     setUploadPhase('processing')
     setUploadProgress(100)
@@ -473,37 +498,18 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
         if (jobStatus.queuePosition !== undefined) setQueuePosition(jobStatus.queuePosition)
 
         const transition = getJobLifecycleTransition(jobStatus)
-        const resultMissing =
-          transition === 'completed' && isLoggedIn() && !jobStatus.requiresAuth && !jobStatus.result?.downloadUrl
-        if (resultMissing && missingResultRetriesRef.current < MAX_MISSING_RESULT_RETRIES) {
-          // status flipped to completed before the result URL was attached — keep polling instead of rendering a blank Studio.
-          missingResultRetriesRef.current += 1
-        } else if (transition === 'completed') {
+        if (transition === 'completed') {
           terminalRef.current = true
           setPartialSegments([])
-          setPreviewLoading(Boolean(isLoggedIn() && jobStatus.result?.downloadUrl))
-          setStatus('completed')
-          if (isLoggedIn() && !jobStatus.requiresAuth) {
-            setResult(jobStatus.result ?? null)
-          } else if (isLoggedIn()) {
-            // Logged in, but this job isn't linked to the account yet (e.g. started as a guest
-            // job before sign-in) — claim it in the background instead of showing an empty panel.
-            setResult({ downloadUrl: '' })
-            setPreviewLoading(true)
-            void claimAndReloadResult(jobId, jobToken ?? undefined)
-          } else {
-            setShowAuthGate(true)
-            setResult({ downloadUrl: '' })
+          const outcome = await finalizeCompletedSubtitles(jobId, jobToken ?? undefined, jobStatus)
+          if (cancelled) return
+          setStatus(statusForFinalizeOutcome(outcome))
+          if (finalizeOutcomeAllowsSuccessState(outcome)) {
+            trackAppEvent('transcription_completed', { toolId: 'video-to-subtitles' })
           }
-          trackAppEvent('transcription_completed', { toolId: 'video-to-subtitles' })
           // emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles' })
           setUploadPhase('processing')
           setUploadProgress(100)
-          if (isLoggedIn() && jobStatus.result?.downloadUrl) {
-            await loadCompletedPreview(jobStatus.result.downloadUrl, jobStatus.result.fileName)
-          } else if (resultMissing) {
-            void pollForMissingResult(jobId, jobToken ?? undefined)
-          }
           return
         }
         if (transition === 'failed') {
@@ -533,33 +539,18 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
             setProgress(s.progress ?? 0)
             if (s.queuePosition !== undefined) setQueuePosition(s.queuePosition)
             const t = getJobLifecycleTransition(s)
-            const resultMissing = t === 'completed' && isLoggedIn() && !s.requiresAuth && !s.result?.downloadUrl
-            if (resultMissing && missingResultRetriesRef.current < MAX_MISSING_RESULT_RETRIES) {
-              missingResultRetriesRef.current += 1
-            } else if (t === 'completed') {
+            if (t === 'completed') {
               terminalRef.current = true
               setPartialSegments([])
               if (rehydratePollRef.current) clearInterval(rehydratePollRef.current)
               rehydratePollRef.current = null
-              setPreviewLoading(Boolean(isLoggedIn() && s.result?.downloadUrl))
-              setStatus('completed')
-              if (isLoggedIn() && !s.requiresAuth) {
-                setResult(s.result ?? null)
-              } else if (isLoggedIn()) {
-                setResult({ downloadUrl: '' })
-                setPreviewLoading(true)
-                void claimAndReloadResult(jobId, jobToken ?? undefined)
-              } else {
-                setShowAuthGate(true)
-                setResult({ downloadUrl: '' })
+              const outcome = await finalizeCompletedSubtitles(jobId, jobToken ?? undefined, s)
+              if (cancelled) return
+              setStatus(statusForFinalizeOutcome(outcome))
+              if (finalizeOutcomeAllowsSuccessState(outcome)) {
+                trackAppEvent('transcription_completed', { toolId: 'video-to-subtitles' })
               }
-              trackAppEvent('transcription_completed', { toolId: 'video-to-subtitles' })
               // emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles' })
-              if (isLoggedIn() && s.result?.downloadUrl) {
-                await loadCompletedPreview(s.result.downloadUrl, s.result.fileName)
-              } else if (resultMissing) {
-                void pollForMissingResult(jobId, jobToken ?? undefined)
-              }
             } else if (t === 'failed') {
               terminalRef.current = true
               setPartialSegments([])
@@ -806,9 +797,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
       setUploadProgress(100)
       terminalRef.current = false
       lastPartialVersionRef.current = 0
-      missingResultRetriesRef.current = 0
-      setResultLoadTimedOut(false)
-      setResultClaimFailed(false)
+      setFinalizeFailure(null)
       setPartialSegments([])
       const startedAt = Date.now()
       setProcessingStartedAt(startedAt)
@@ -829,8 +818,6 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           }
         }
         const transition = getJobLifecycleTransition(jobStatus)
-        const resultMissing =
-          transition === 'completed' && isLoggedIn() && !jobStatus.requiresAuth && !jobStatus.result?.downloadUrl
         if (transition === 'completed') {
           terminalRef.current = true
           setPartialSegments([])
@@ -839,46 +826,43 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
             activeUploadPollRef.current = null
           }
           jobStartedTrackedRef.current = null
-          setPreviewLoading(Boolean(isLoggedIn() && jobStatus.result?.downloadUrl))
-          setStatus('completed')
-          if (isLoggedIn() && !jobStatus.requiresAuth) {
-            setResult(jobStatus.result ?? null)
-          } else if (isLoggedIn()) {
-            setResult({ downloadUrl: '' })
-            setPreviewLoading(true)
-            void claimAndReloadResult(response.jobId, jobToken)
-          } else {
-            setShowAuthGate(true)
-            setResult({ downloadUrl: '' })
-          }
-          trackAppEvent('transcription_completed', { toolId: 'video-to-subtitles' })
-          const started = processingStartedAtRef.current ?? Date.now()
-          const processingMs = Date.now() - started
-          // emitToolCompleted({ toolId: 'video-to-subtitles', pathname: '/video-to-subtitles', processingMs })
-          if (isLoggedIn() && jobStatus.result?.downloadUrl) {
-            void loadCompletedPreview(jobStatus.result.downloadUrl, jobStatus.result.fileName)
-          } else if (resultMissing) {
-            // Result URL wasn't attached yet — keep checking in the background instead of leaving the Studio blank.
-            void pollForMissingResult(response.jobId, jobToken)
-          }
-          incrementUsage('video-to-subtitles')
-          try {
-            const nextJobCount = incrementJobCompletedCount()
-            trackEvent('job_completed', {
-              job_id: response.jobId,
-              tool_type: BACKEND_TOOL_TYPES.VIDEO_TO_SUBTITLES,
-              processing_time_ms: processingMs,
-              job_count: nextJobCount,
-            })
-            trackFirstOutputSeen({ tool: 'video-to-subtitles', source: 'result_panel' })
-            trackAppEvent('first_output_seen', { tool: 'video-to-subtitles', source: 'result_panel' })
-            trackEvent('processing_completed', { tool: 'video-to-subtitles' })
-            // texJobCompleted(processingMs, 'video-to-subtitles')
-            setLastProcessingMs(processingMs)
-          } catch {
-            // non-blocking
-          }
-        } else if (transition === 'failed') {
+          void (async () => {
+            const outcome = await finalizeCompletedSubtitles(response.jobId, jobToken, jobStatus)
+            setStatus(statusForFinalizeOutcome(outcome))
+            if (finalizeOutcomeAllowsSuccessState(outcome)) {
+              trackAppEvent('transcription_completed', { toolId: 'video-to-subtitles' })
+            }
+            // job_completed / processing_completed and incrementUsage stay
+            // unconditional: the backend job really did finish and the quota
+            // was really consumed, whatever the client managed to render.
+            // Only result-viewed events are gated on a usable result.
+            const started = processingStartedAtRef.current ?? Date.now()
+            const processingMs = Date.now() - started
+            incrementUsage('video-to-subtitles')
+            try {
+              const nextJobCount = incrementJobCompletedCount()
+              trackEvent('job_completed', {
+                job_id: response.jobId,
+                tool_type: BACKEND_TOOL_TYPES.VIDEO_TO_SUBTITLES,
+                processing_time_ms: processingMs,
+                job_count: nextJobCount,
+              })
+              // first_output_seen is NOT fired here: backend completion is not
+              // the same as the user seeing usable subtitles. A guest job is
+              // withheld behind the auth gate, and the preview can fail to
+              // load, both of which used to land here and log a successful
+              // result view over an empty Studio. It is emitted by the effect
+              // below, gated on subtitleRows actually being rendered.
+              trackEvent('processing_completed', { tool: 'video-to-subtitles' })
+              // texJobCompleted(processingMs, 'video-to-subtitles')
+              setLastProcessingMs(processingMs)
+            } catch {
+              // non-blocking
+            }
+          })()
+          return
+        }
+        if (transition === 'failed') {
           terminalRef.current = true
           setPartialSegments([])
           if (activeUploadPollRef.current) {
@@ -955,6 +939,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
   }
 
   const handleProcessAnother = () => {
+    try { trackEvent('process_another_clicked', { tool_type: BACKEND_TOOL_TYPES.VIDEO_TO_SUBTITLES }) } catch { /* non-blocking */ }
     clearPersistedJobId(location.pathname, navigate)
     setSelectedFile(null)
     setFilePreview(null)
@@ -962,9 +947,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     uploadAbortRef.current = null
     terminalRef.current = false
     lastPartialVersionRef.current = 0
-    missingResultRetriesRef.current = 0
-    setResultLoadTimedOut(false)
-    setResultClaimFailed(false)
+    setFinalizeFailure(null)
     setTrimStart(null)
     setTrimEnd(null)
     setStatus('idle')
@@ -1038,6 +1021,8 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
     currentStepLabel:
       status === 'completed'
         ? 'Subtitles ready'
+        : status === 'result-gated' || status === 'result-unavailable'
+          ? 'Result not loaded'
         : selectedFile
           ? 'Upload configured'
           : 'Ready to upload',
@@ -1109,7 +1094,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                   { value: 'ja', label: 'Japanese' },
                 ]}
                 value={language}
-                onChange={setLanguage}
+                onChange={handleLanguageSelected}
               />
             </div>
           </ProcessingInterface>
@@ -1162,14 +1147,14 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           </ProcessingStateShell>
         )}
 
-        {status === 'completed' && !result && (
-          resultLoadTimedOut ? (
+        {status === 'result-unavailable' && (() => {
+          const copy = finalizeFailureCopy(finalizeFailure ?? { kind: 'timeout' })
+          if (!copy) return null
+          return (
             <div className="rounded-xl border border-amber-200 dark:border-amber-800/50 bg-amber-50 dark:bg-amber-950/20 p-5 flex flex-col items-center text-center gap-2.5">
               <AlertTriangle className="h-5 w-5 text-amber-500 dark:text-amber-400" />
-              <p className="text-sm font-medium text-gray-900 dark:text-white">Your subtitles are still finishing up</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm">
-                This is taking longer than usual. Refresh the page to check again.
-              </p>
+              <p className="text-sm font-medium text-gray-900 dark:text-white">{copy.title}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm">{copy.detail}</p>
               <button
                 type="button"
                 onClick={() => window.location.reload()}
@@ -1179,15 +1164,10 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                 Refresh
               </button>
             </div>
-          ) : (
-            <div className="space-y-2">
-              <p className="px-1 text-xs text-gray-500 dark:text-gray-400">Finishing up — loading your subtitles…</p>
-              <ResultSkeleton variant="subtitle" />
-            </div>
           )
-        )}
+        })()}
 
-        {status === 'completed' && result && (
+        {(status === 'completed' || status === 'result-gated') && result && (
           <div className="space-y-component-sm">
             {/* Teaser card for guests */}
             {showAuthGate && !isLoggedIn() && (
@@ -1231,7 +1211,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
               </div>
             )}
 
-            {(!showAuthGate || isLoggedIn()) && (
+            {status === 'completed' && (
               <div className="space-y-component-sm">
                 <ResultHeader
                   title={selectedFile?.name || result.fileName || 'Subtitles'}
@@ -1503,44 +1483,7 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
                     <p className="px-1 text-xs text-gray-500 dark:text-gray-400">Loading subtitle cues…</p>
                     <ResultSkeleton variant="subtitle" />
                   </div>
-                ) : (
-                  previewError && result?.downloadUrl ? (
-                    <div className="rounded-xl border border-amber-200 dark:border-amber-800/50 bg-amber-50 dark:bg-amber-950/20 p-5 flex flex-col items-center text-center gap-2.5">
-                      <AlertTriangle className="h-5 w-5 text-amber-500 dark:text-amber-400" />
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">Couldn't load the cue preview</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm">
-                        Your subtitles processed fine and are ready to download from the Exports panel — this only affects the on-screen preview.
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (!result?.downloadUrl) return
-                          void loadCompletedPreview(result.downloadUrl, result.fileName)
-                        }}
-                        className="inline-flex items-center gap-1.5 mt-1 px-3 py-1.5 rounded-lg border border-amber-300 dark:border-amber-700 text-xs font-medium text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
-                      >
-                        <RefreshCw className="h-3.5 w-3.5" />
-                        Retry preview
-                      </button>
-                    </div>
-                  ) : resultClaimFailed ? (
-                    <div className="rounded-xl border border-amber-200 dark:border-amber-800/50 bg-amber-50 dark:bg-amber-950/20 p-5 flex flex-col items-center text-center gap-2.5">
-                      <AlertTriangle className="h-5 w-5 text-amber-500 dark:text-amber-400" />
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">Couldn't attach this result to your account</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm">
-                        This job may have been started in a different session. Try generating again, or refresh if you think this is a mistake.
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => window.location.reload()}
-                        className="inline-flex items-center gap-1.5 mt-1 px-3 py-1.5 rounded-lg border border-amber-300 dark:border-amber-700 text-xs font-medium text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
-                      >
-                        <RefreshCw className="h-3.5 w-3.5" />
-                        Refresh
-                      </button>
-                    </div>
-                  ) : null
-                )}
+                ) : null}
 
                 <ResultUpgradeCard tool="subtitles" resultKey={result.downloadUrl} />
                 <FreePlanNudge tool="subtitles" resultKey={result.downloadUrl} />
@@ -1582,12 +1525,25 @@ export default function VideoToSubtitles(props: VideoToSubtitlesSeoProps = {}) {
           }
           setShowAuthGate(false)
           setShowAuthModal(false)
-          if (result) {
-            // Result is already in memory — no reload needed.
-            // The full result panel becomes visible on next render since isLoggedIn() is now true.
-          } else {
-            window.location.reload()
+          if (!needsResultRefetchAfterClaim(result, subtitleRows.length)) {
+            // A usable result is already in memory — promote out of the gated
+            // state so the success Studio renders.
+            setStatus('completed')
+            return
           }
+          if (jobId) {
+            // The claim above changed server-side authorization, so a result
+            // the API withheld from the guest is now fetchable. Re-resolve it.
+            // The auth gate sets a { downloadUrl: '' } placeholder which is
+            // TRUTHY, so the old `if (result)` check treated the empty
+            // placeholder as a loaded result and skipped recovery entirely —
+            // leaving a completed Studio with zero cues and no path back
+            // short of a manual refresh.
+            const outcome = await finalizeCompletedSubtitles(jobId, jobToken ?? undefined)
+            setStatus(statusForFinalizeOutcome(outcome))
+            return
+          }
+          window.location.reload()
         }}
       />
 

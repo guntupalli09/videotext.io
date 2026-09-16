@@ -27,7 +27,7 @@ import { getAuthFromRequest, getEffectiveUserId } from '../utils/auth'
 import { isQueueAtHardLimit, isQueueAtSoftLimit, getSystemConcurrencyMultiplier } from '../utils/queueConfig'
 import { checkAndRecordUpload } from '../utils/uploadRateLimit'
 import { checkAndRecordGuestIpImport, extractClientIp } from '../utils/guestIpLimit'
-import { trackJobCreated } from '../utils/analytics'
+import { trackJobCreated, readAnonymousId } from '../utils/analytics'
 import { insertJobRecord } from '../lib/jobAnalytics'
 import { probeVideoDurationResult } from '../services/ffmpeg'
 import { getLogger } from '../lib/logger'
@@ -442,6 +442,7 @@ export async function runTranscriptionIntake(
       trackJobCreated({
         job_id: String(job.id),
         user_id: userId,
+        anonymous_id: readAnonymousId(req),
         tool_type: toolType,
         file_size_bytes: file.size,
         plan,
