@@ -7,6 +7,10 @@
  *   - Production: exact origins from the hardcoded set + CORS_ORIGINS env var.
  *   - All environments: any https://*.vercel.app preview deployment is allowed.
  *   - Development: any localhost / 127.0.0.1 / [::1] origin is allowed regardless of port.
+ *
+ * Chrome extension pages send Origin: chrome-extension://<id>. That is allowed for
+ * API CORS only (isCorsAllowedOrigin). Do NOT treat it as an allowed web origin for
+ * checkout redirects or WebSocket upgrades — those must stay https VideoText hosts.
  */
 
 const PRODUCTION_ORIGINS = new Set<string>([
@@ -55,8 +59,23 @@ function isLocalhost(origin: string): boolean {
 }
 
 /**
- * Returns true when the origin is allowed.
+ * Chrome extension popup / service-worker fetches send this Origin.
+ * Hostname is the 32-char extension id; reject empty or malformed ids.
+ */
+export function isChromeExtensionOrigin(origin?: string): boolean {
+  if (!origin) return false
+  try {
+    const parsed = new URL(normalizeOrigin(origin))
+    return parsed.protocol === 'chrome-extension:' && /^[a-p]{32}$/i.test(parsed.hostname)
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Returns true when the origin is allowed as a VideoText web origin.
  * No Origin header (curl / server-to-server) is always permitted.
+ * Chrome-extension origins are intentionally excluded (checkout / live WS).
  */
 export function isAllowedOrigin(origin?: string): boolean {
   if (!origin) return true
@@ -66,4 +85,9 @@ export function isAllowedOrigin(origin?: string): boolean {
   // In dev allow any localhost port; in production this branch is never reached.
   if (process.env.NODE_ENV !== 'production' && isLocalhost(norm)) return true
   return false
+}
+
+/** Origins the API CORS middleware may reflect. Broader than isAllowedOrigin. */
+export function isCorsAllowedOrigin(origin?: string): boolean {
+  return isAllowedOrigin(origin) || isChromeExtensionOrigin(origin)
 }
