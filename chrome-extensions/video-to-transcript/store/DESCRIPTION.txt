@@ -1,0 +1,55 @@
+Turn an audio or video file into an accurate, editable transcript without leaving your browser.
+
+Video to Transcript is the official Chrome extension for VideoText. Select a recording, transcribe it, review the result, then copy or download the transcript as text.
+
+HOW IT WORKS
+
+1. Click the VideoText icon in your toolbar.
+2. Sign in to your VideoText account.
+3. Select an audio or video file.
+4. Choose the spoken language or use automatic detection.
+5. Click Transcribe.
+6. Review, copy, or download your transcript.
+
+WHAT YOU GET
+
+Your completed transcript appears directly in the extension. You can copy the text to your clipboard or download it as a text file.
+
+The extension supports common audio and video files, so you can upload your recording directly without manually extracting the audio first.
+
+File size and recording-length limits depend on your VideoText plan. The extension checks your account limits before processing.
+
+If you close the popup while transcription is processing, the job continues. Open the extension again to continue from the current job.
+
+WHEN TO USE IT
+
+Video to Transcript is useful whenever you need recorded speech as readable text — an interview you want to quote from, or a long recording you would rather read than sit through.
+
+VIDEOTEXT ACCOUNT
+
+The extension uses your existing VideoText account, plan, and usage allowance. Subscription management is handled through VideoText. The extension does not process payment card information.
+
+PRIVACY
+
+Files you choose to process are sent to VideoText to provide the transcription service. The extension only requests the permissions needed to connect with VideoText and maintain your extension session.
+
+The extension does not read your browsing history, record your screen, capture tab audio, or access unrelated websites.
+
+Privacy policy:
+https://videotext.io/privacy
+
+Terms:
+https://videotext.io/terms
+
+WHAT IT DOES
+
+Video to Transcript has one primary purpose: turn an audio or video file you select into a transcript.
+
+It does not record your screen, download videos from websites, or continuously listen to live speech.
+
+GETTING STARTED
+
+Install the extension, pin it to your toolbar, sign in to VideoText, and select a recording to transcribe.
+
+VideoText:
+https://videotext.io/video-to-transcript
