@@ -142,28 +142,21 @@ is VideoText's own API. Full reasoning per category: [`../STORE_PRIVACY.md`](../
 | **Mature content** | No |
 | **Publish** | Immediately after review (or choose "Publish later" to stage it). |
 
-## 5 — Immediately after the reviewer assigns an extension ID
+## 5 — After publishing
 
-The published extension gets a permanent 32-character ID. Two follow-ups:
+**No API configuration is needed.** `server/src/utils/allowedOrigins.ts` on `main` allows any
+well-formed `chrome-extension://<id>` origin through CORS via `isCorsAllowedOrigin()` — added
+alongside the Fix SRT extension — so this extension's requests are accepted without an env var.
+An earlier design here used an `EXTENSION_ORIGINS` allowlist; that was dropped in favour of the
+mechanism already on `main` rather than maintaining two competing ones in the same file.
 
-1. **Allow the extension origin on the API.** Set, on the API service (Hetzner/Docker env for
-   `server/`):
+What *is* required: the `/extension-auth` route must be deployed to `https://videotext.io`, or the
+popup's **Sign in to VideoText** button lands on a 404. See §0.
 
-   ```
-   EXTENSION_ORIGINS=chrome-extension://<your-32-char-extension-id>
-   ```
-
-   This is read by `server/src/utils/allowedOrigins.ts`. Unset, the variable allows nothing, so this
-   must be set before the published build can talk to the API from a Chrome extension origin.
-   Restart the API after setting it. **MANUAL INPUT REQUIRED** — the ID does not exist until the
-   first upload.
-
-   *(Note: for a self-hosted/unpacked install the ID differs from the published one. Add both,
-   comma-separated, while testing.)*
-
-2. **Optional hardening.** With the ID known, the content script can be replaced by
-   `externally_connectable`, removing the "read your data on videotext.io" install warning
-   altogether. See the last section of `docs/chrome-extension-permissions.md`.
+**Optional hardening.** With the published id known, the content script could be replaced by
+`externally_connectable`, removing the "read your data on videotext.io" install warning. See the
+last section of `docs/chrome-extension-permissions.md`. That would need a new package and a
+resubmission.
 
 ## 6 — Things Google commonly asks that are already answered
 

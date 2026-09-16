@@ -321,12 +321,14 @@ plan, uploads used) is stored for billing and limits; content is not used for mo
 
 Two, both additive and off by default.
 
-**(a) CORS — allow explicitly-configured extension origins.**
-A popup/service-worker `fetch` sends `Origin: chrome-extension://<id>`, which today lands in the
-`[cors] rejected origin` branch (`server/src/index.ts:145`). Change: `allowedOrigins.ts` reads a new
-`EXTENSION_ORIGINS` env var (comma-separated, each must be exactly `chrome-extension://<32 a-p chars>`)
-and allows those origins. **No wildcard** — an unset variable changes nothing, and a malformed entry is
-ignored. `credentials: true` is irrelevant here because the extension sends a bearer token, not cookies.
+**(a) CORS — allow the extension origin.** *(Superseded — already solved on `main`.)*
+A popup/service-worker `fetch` sends `Origin: chrome-extension://<id>`, which this audit originally
+proposed allowlisting via a new `EXTENSION_ORIGINS` env var. Before this branch merged, `main`
+solved the same problem for the Fix SRT extension with `isChromeExtensionOrigin()` /
+`isCorsAllowedOrigin()` in `server/src/utils/allowedOrigins.ts`, which accepts any well-formed
+`chrome-extension://[a-p]{32}` origin for CORS while keeping `isAllowedOrigin()` — used for Stripe
+redirect URLs and WebSocket upgrades — extension-free. That mechanism is used instead; no env var
+and no second implementation.
 
 **(b) A sign-in handoff page, `/extension-auth`.**
 Auth is a `localStorage` JWT with no cookie session, so the extension cannot "already be signed in".

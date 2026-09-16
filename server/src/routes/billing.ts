@@ -6,7 +6,7 @@ import { prisma } from '../db'
 import type { User, PlanType } from '../models/User'
 import { getPlanLimits } from '../utils/limits'
 import { getAuthFromRequest, getEffectiveUserId, verifyEmailVerificationToken, generatePasswordSetupToken, signAuthToken } from '../utils/auth'
-import { isAllowedRedirectOrigin, normalizeOrigin } from '../utils/allowedOrigins'
+import { isAllowedOrigin, normalizeOrigin } from '../utils/allowedOrigins'
 import { getLogger } from '../lib/logger'
 import { captureFunnelEvent } from '../utils/funnelEvents'
 import { recordUpgradeIntent } from '../models/UpgradeIntent'
@@ -69,7 +69,7 @@ router.post('/checkout', async (req: Request, res: Response) => {
     // allowing session token theft via GET /api/billing/session-details.
     const envOrigin = process.env.BASE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null)
     const requestedOrigin = typeof frontendOrigin === 'string' ? normalizeOrigin(frontendOrigin) : null
-    const baseUrl = (requestedOrigin && isAllowedRedirectOrigin(requestedOrigin))
+    const baseUrl = (requestedOrigin && isAllowedOrigin(requestedOrigin))
       ? requestedOrigin
       : envOrigin || 'https://videotext.io'
     const normalizedPath =

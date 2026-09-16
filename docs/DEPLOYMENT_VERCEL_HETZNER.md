@@ -43,7 +43,6 @@ Create a **`.env`** next to `docker-compose.yml` (or set env in your process man
 | `REDIS_PASSWORD` | Yes | Strong random password for the Compose Redis service, e.g. `openssl rand -hex 32`. |
 | `REDIS_URL` | Yes | Compose sets this for API/worker as `redis://:${REDIS_PASSWORD}@redis:6379`. If overriding manually, require auth and keep Redis private; URL-encode special characters in the password. |
 | `CORS_ORIGINS` | Yes | Your frontend origin(s), e.g. `https://www.videotext.io` or `https://www.videotext.io,https://videotext.io` |
-| `EXTENSION_ORIGINS` | Only for the Chrome extension | Exact `chrome-extension://<32-char-id>` origins allowed through CORS, comma-separated. Unset allows none; there is no wildcard. Needed by the "Video to Transcript — VideoText" extension (`chrome-extensions/video-to-transcript`) — see its `store/SUBMISSION_CHECKLIST.md`. |
 | `TEMP_FILE_PATH` | Yes | `/tmp` (API and worker must share this; use shared volume so assembled files are visible to the worker) |
 | `PROCESSING_V2` | Yes (performance) | `true` — extraction-first TTFW (worker) |
 | `STREAM_UPLOAD_ASSEMBLY` | Yes (performance) | `true` — streaming chunk reassembly (API) |

@@ -90,6 +90,6 @@ available: add the ID to the web app's `/extension-auth` page and use `externall
 `content_scripts` entry — and its "read your data on videotext.io" install warning — entirely. It is
 a follow-up, not a blocker: the current scope is already a single page.
 
-The extension ID is also what must be set in the API's `EXTENSION_ORIGINS` environment variable
-(`server/src/utils/allowedOrigins.ts`) — see the deployment note in
-`chrome-extensions/video-to-transcript/store/SUBMISSION_CHECKLIST.md`.
+No API configuration is needed for CORS: `server/src/utils/allowedOrigins.ts` allows any
+well-formed `chrome-extension://<id>` origin through `isCorsAllowedOrigin()`, while
+`isAllowedOrigin()` keeps those origins out of checkout redirects and WebSocket upgrades.

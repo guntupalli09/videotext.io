@@ -63,13 +63,15 @@ Output: `dist/` (load unpacked) and `artifacts/videotext-video-to-transcript-v1.
 
 ## Backend touchpoints
 
-Two additive changes in this repository support the extension:
+One change in this repository is required for the extension to work:
 
-* `server/src/utils/allowedOrigins.ts` — `EXTENSION_ORIGINS` allows explicitly listed
-  `chrome-extension://<id>` origins through CORS. Unset by default, so nothing changes until it is
-  configured. (`isAllowedRedirectOrigin()` keeps those origins out of the Stripe redirect allowlist.)
 * `client/src/pages/ExtensionAuth.tsx` + the `/extension-auth` route — hands the user's existing
-  session token to the extension after they sign in normally.
+  session token to the extension after they sign in normally. **This must be deployed** or the
+  popup's sign-in button lands on a 404.
+
+CORS needs no configuration: `server/src/utils/allowedOrigins.ts` allows any well-formed
+`chrome-extension://<id>` origin through `isCorsAllowedOrigin()`, while `isAllowedOrigin()` keeps
+those origins out of checkout redirects and WebSocket upgrades.
 
 ## Docs
 

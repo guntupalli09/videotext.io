@@ -43,7 +43,10 @@ test('Express does not pin Access-Control-Allow-Headers to a closed list', () =>
 })
 
 test('Express still constrains origins while reflecting headers', () => {
-  assert.ok(/isAllowedOrigin/.test(indexSrc), 'origin allowlist must remain enforced')
+  assert.ok(
+    /isCorsAllowedOrigin/.test(indexSrc),
+    'origin allowlist must remain enforced (isCorsAllowedOrigin includes web hosts and chrome-extension://)',
+  )
   assert.ok(
     /app\.options\(\s*['"]\*['"]\s*,\s*cors\(/.test(indexSrc),
     'preflight must be handled by the cors middleware',

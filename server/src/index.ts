@@ -38,7 +38,7 @@ import adminSupportRoutes, { runAlertChecks, maybeSendDailyDigest } from './rout
 import { runRecompute } from './services/recomputeMetrics'
 import { pushLogEntry } from './lib/logRing'
 import { purgeOldStripeEvents } from './models/StripeEventLog'
-import { isAllowedOrigin, normalizeOrigin } from './utils/allowedOrigins'
+import { isCorsAllowedOrigin, normalizeOrigin } from './utils/allowedOrigins'
 import { prisma } from './db'
 import { refreshApiCredits } from './lib/apiCreditsCache'
 import { createMagicLinkToken } from './routes/auth'
@@ -110,7 +110,8 @@ const generalLimiter = rateLimit({
 })
 
 // CORS: origin allowlist is managed in utils/allowedOrigins.ts.
-// Includes: production domain(s), localhost dev, and https://*.vercel.app previews.
+// Includes: production domain(s), localhost dev, https://*.vercel.app previews,
+// and chrome-extension://<id> (Fix SRT and future VideoText extensions).
 // Do not pin Access-Control-Allow-Headers to a closed list. The Vercel client
 // ships independently of this Docker image; a new request header (e.g.
 // x-ph-distinct-id) that is missing from the list makes the browser report
@@ -137,7 +138,7 @@ app.use((req, _res, next) => {
   const rawOrigin = headerValue(req.headers.origin)
   const normalizedOrigin = rawOrigin ? normalizeOrigin(rawOrigin) : undefined
 
-  if (normalizedOrigin && !isAllowedOrigin(normalizedOrigin)) {
+  if (normalizedOrigin && !isCorsAllowedOrigin(normalizedOrigin)) {
     log.error({
       msg: '[cors] rejected origin',
       origin: normalizedOrigin,
@@ -159,12 +160,14 @@ const corsOptions: cors.CorsOptions = {
     const normalized = typeof origin === 'string' ? normalizeOrigin(origin) : origin
     log.info({ msg: '[cors] incoming origin', origin: normalized ?? 'undefined' })
 
-    if (!normalized || isAllowedOrigin(normalized)) {
+    if (!normalized || isCorsAllowedOrigin(normalized)) {
       callback(null, true)
       return
     }
 
-    callback(new Error('Not allowed by CORS'))
+    // Do not throw: the cors package turns callback(Error) into Express HTML 500
+    // ("Internal Server Error"), which is what Chrome extension logins were showing.
+    callback(null, false)
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   credentials: true,
