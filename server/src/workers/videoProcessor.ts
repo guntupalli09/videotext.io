@@ -37,6 +37,7 @@ import {
   videoCompressedFilename,
 } from '../utils/exportFileNames'
 import { validateFileType, validateFileSize } from '../utils/fileValidation'
+import { audioPath, downloadPath } from '../utils/downloadUrl'
 import { trimVideoSegment } from '../services/trimming'
 import { LANGUAGE_NAMES, generateMultiLanguageSubtitles } from '../services/multiLanguage'
 import { BatchJob, appendBatchFailure, getBatchById, incrementBatchProcessedVideos, saveBatch } from '../models/BatchJob'
@@ -1335,7 +1336,7 @@ async function processJob(job: import('bull').Job<JobData>) {
           const audioFilename = audioExtractFilename(data.originalName)
           const audioOutputPath = path.join(tempDir, audioFilename)
           audioExtractionPromise = extractAudioForPlayback(videoPath, audioOutputPath)
-            .then(() => `/api/audio/${audioFilename}`)
+            .then(() => audioPath(audioFilename))
             .catch((err: Error) => {
               log.warn({ msg: 'audio_extraction_for_playback_failed', error: err.message, jobId: String(jobId) })
               return null
@@ -1510,7 +1511,7 @@ async function processJob(job: import('bull').Job<JobData>) {
           const txtPath = path.join(tempDir, txtFilename)
           await fs.promises.writeFile(txtPath, fullText, 'utf-8')
           filesToZip.push({ path: txtPath, name: txtFilename })
-          primaryDownloadUrl = `/api/download/${txtFilename}`
+          primaryDownloadUrl = downloadPath(txtFilename)
           primaryFileName = txtFilename
           if (STREAM_PROGRESS) await job.progress(55)
 
@@ -1606,7 +1607,7 @@ async function processJob(job: import('bull').Job<JobData>) {
               filesToZip.forEach((f) => zip.file(f.path, { name: f.name }))
               zip.finalize()
             })
-            primaryDownloadUrl = `/api/download/${zipFilename}`
+            primaryDownloadUrl = downloadPath(zipFilename)
             primaryFileName = zipFilename
           }
 
@@ -1769,7 +1770,7 @@ async function processJob(job: import('bull').Job<JobData>) {
           const audioFilename = audioExtractFilename(data.originalName)
           const audioOutputPath = path.join(tempDir, audioFilename)
           const playbackAudioPromise = extractAudioForPlayback(videoPath, audioOutputPath)
-            .then(() => `/api/audio/${audioFilename}`)
+            .then(() => audioPath(audioFilename))
             .catch((err: Error) => {
               log.warn({ msg: 'audio_extraction_for_playback_failed', error: err.message, jobId: String(jobId) })
               return null as string | null
@@ -1840,7 +1841,7 @@ async function processJob(job: import('bull').Job<JobData>) {
 
             const playbackAudioUrl = await playbackAudioPromise
             result = {
-              downloadUrl: `/api/download/${zipFilename}`,
+              downloadUrl: downloadPath(zipFilename),
               fileName: zipFilename,
               multiLanguage: outputFiles,
               ...(playbackAudioUrl && { audioUrl: playbackAudioUrl }),
@@ -1931,7 +1932,7 @@ async function processJob(job: import('bull').Job<JobData>) {
             })
             const playbackAudioUrl = await playbackAudioPromise
             result = {
-              downloadUrl: `/api/download/${outputFilename}`,
+              downloadUrl: downloadPath(outputFilename),
               fileName: outputFilename,
               warnings: warnings.length > 0 ? warnings : undefined,
               processingMs: fileReceivedToTranscriptionFinishedMs,
@@ -2164,7 +2165,7 @@ async function processJob(job: import('bull').Job<JobData>) {
             }
 
             result = {
-              downloadUrl: `/api/download/batch-${batchId}.zip`,
+              downloadUrl: downloadPath(`batch-${batchId}.zip`),
               fileName: `batch-${batchId}.zip`,
               batchId,
             }
@@ -2188,7 +2189,7 @@ async function processJob(job: import('bull').Job<JobData>) {
             const outputPath = path.join(tempDir, outputFilename)
             await fs.promises.writeFile(outputPath, translatedText, 'utf-8')
             result = {
-              downloadUrl: `/api/download/${outputFilename}`,
+              downloadUrl: downloadPath(outputFilename),
               fileName: outputFilename,
             }
           } else {
@@ -2211,7 +2212,7 @@ async function processJob(job: import('bull').Job<JobData>) {
             }
 
             result = {
-              downloadUrl: `/api/download/${outputFilename}`,
+              downloadUrl: downloadPath(outputFilename),
               fileName: outputFilename,
               consistencyIssues: consistencyIssues.length > 0 ? consistencyIssues : undefined,
             }
@@ -2274,7 +2275,7 @@ async function processJob(job: import('bull').Job<JobData>) {
           }
 
           result = {
-            downloadUrl: `/api/download/${outputFilename}`,
+            downloadUrl: downloadPath(outputFilename),
             fileName: outputFilename,
             issues: fixed.issues,
             warnings: fixed.warnings,
@@ -2302,7 +2303,7 @@ async function processJob(job: import('bull').Job<JobData>) {
           }
 
           result = {
-            downloadUrl: `/api/download/${outputFilename}`,
+            downloadUrl: downloadPath(outputFilename),
             fileName: outputFilename,
           }
           break
@@ -2359,7 +2360,7 @@ async function processJob(job: import('bull').Job<JobData>) {
           )
 
           result = {
-            downloadUrl: `/api/download/${outputFilename}`,
+            downloadUrl: downloadPath(outputFilename),
             fileName: outputFilename,
           }
 
@@ -2434,7 +2435,7 @@ async function processJob(job: import('bull').Job<JobData>) {
           )
 
           result = {
-            downloadUrl: `/api/download/${outputFilename}`,
+            downloadUrl: downloadPath(outputFilename),
             fileName: outputFilename,
           }
 

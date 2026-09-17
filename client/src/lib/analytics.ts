@@ -123,6 +123,7 @@ export type AnalyticsEvent =
   | 'job_started'
   | 'job_completed'
   | 'result_downloaded'
+  | 'result_download_failed'
   | 'plan_clicked'
   | 'plan_upgraded'
   | 'pricing_page_view'

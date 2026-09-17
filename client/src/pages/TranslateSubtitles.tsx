@@ -35,6 +35,7 @@ import { isPaidPlan as hasPaidPlan } from '../lib/plans'
 import { watermarkTextExport, watermarkClipboardText, applyWatermarkToVtt, applyWatermarkToAss, drawPdfFreePlanWatermark, WATERMARK_DOC_FOOTER, WATERMARK_DOC_HEADER } from '../lib/watermark'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl, getApiBase } from '../lib/apiBase'
+import { downloadAuthedUrl, downloadErrorMessage, resolveResultDownloadUrl, trackDownloadFailure } from '../lib/downloadResult'
 import { persistJobId, clearPersistedJobId, getPersistedJobId, getPersistedJobToken } from '../lib/jobSession'
 import { trackEvent } from '../lib/analytics'
 import toast from 'react-hot-toast'
@@ -673,7 +674,7 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
     setPlainTextResult(null)
   }
 
-  const getDownloadUrl = () => result?.downloadUrl ? getAbsoluteDownloadUrl(result.downloadUrl) : ''
+  const getDownloadUrl = () => resolveResultDownloadUrl(result?.downloadUrl)
 
   const copyToClipboard = async (text: string) => {
     requireAuthForCopy(async () => {
@@ -1110,19 +1111,16 @@ export default function TranslateSubtitles(props: TranslateSubtitlesSeoProps = {
                             return
                           }
                           try {
-                            const token = getAuthToken()
-                            const res = await fetch(getDownloadUrl(), { headers: token ? { Authorization: `Bearer ${token}` } : {} })
-                            const blob = await res.blob()
-                            const a = document.createElement('a')
-                            a.href = URL.createObjectURL(blob)
-                            a.download = result?.fileName || fallbackTranslatedName(translateFallbackExt)
-                            a.click()
-                            URL.revokeObjectURL(a.href)
+                            await downloadAuthedUrl(
+                              getDownloadUrl(),
+                              result?.fileName || fallbackTranslatedName(translateFallbackExt)
+                            )
                             try { trackEvent('result_downloaded', { tool: 'translate-subtitles', plan: isPaidPlan ? 'paid' : 'free' }) } catch { /* non-blocking */ }
                             if (!isPaidPlan) setFreeExportsUsed((prev) => prev + 1)
                             toast.success('Download started')
-                          } catch {
-                            toast.error('Download failed')
+                          } catch (err) {
+                            trackDownloadFailure(err, { tool: 'translate-subtitles', plan: isPaidPlan ? 'paid' : 'free' })
+                            toast.error(downloadErrorMessage(err))
                           }
                         })}
                         disabled={!isPaidPlan && freeExportsUsed >= 2}

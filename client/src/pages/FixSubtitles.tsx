@@ -38,6 +38,7 @@ import { uploadFileWithProgress, uploadFixSubtitlesDual, getJobStatus, getCurren
 import { resolveCompletedJobResult } from '../lib/resolveCompletedJob'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { getAbsoluteDownloadUrl } from '../lib/apiBase'
+import { downloadAuthedUrl, downloadErrorMessage, resolveResultDownloadUrl, trackDownloadFailure } from '../lib/downloadResult'
 import { persistJobId, clearPersistedJobId, getPersistedJobId, getPersistedJobToken } from '../lib/jobSession'
 import { trackEvent } from '../lib/analytics'
 import { isLoggedIn } from '../lib/auth'
@@ -579,10 +580,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
     setShowAuthModal(false)
   }
 
-  const getDownloadUrl = () => {
-    if (!result?.downloadUrl) return ''
-    return getAbsoluteDownloadUrl(result.downloadUrl)
-  }
+  const getDownloadUrl = () => resolveResultDownloadUrl(result?.downloadUrl)
 
   function requireAuthForDownload(action: () => void) {
     if (isLoggedIn()) {
@@ -605,22 +603,7 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
     }
 
     try {
-      const token = getAuthToken()
-      const downloadUrl = `${getDownloadUrl()}`
-      const res = await fetch(downloadUrl, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      })
-      if (!res.ok) throw new Error('Download request failed')
-
-      const blob = await res.blob()
-      const objectUrl = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = objectUrl
-      a.download = result.fileName || fallbackFixedName
-      document.body.appendChild(a)
-      a.click()
-      a.remove()
-      URL.revokeObjectURL(objectUrl)
+      await downloadAuthedUrl(getDownloadUrl(), result.fileName || fallbackFixedName)
 
       try {
         trackEvent('result_downloaded', { tool: 'fix-subtitles', plan })
@@ -632,8 +615,9 @@ export default function FixSubtitles(props: FixSubtitlesSeoProps = {}) {
       } else {
         toast.success('Download started')
       }
-    } catch {
-      toast.error('Download failed')
+    } catch (err) {
+      trackDownloadFailure(err, { tool: 'fix-subtitles', plan })
+      toast.error(downloadErrorMessage(err))
     }
   }
 
