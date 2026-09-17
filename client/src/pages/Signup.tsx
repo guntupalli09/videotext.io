@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { getUserFacingMessage, sendOtp, verifyOtp, loginWithGoogle } from '../lib/api'
 import { completeSignup, storeLoginResult } from '../lib/auth'
+import { claimPersistedGuestJobs } from '../lib/claimGuestJobs'
 import { identifyUser, trackEvent } from '../lib/analytics'
 import { getSamplesModuleAttribution } from '../lib/samplesAttribution'
 import { captureReferralFromUrl, getStoredReferralCode, clearStoredReferralCode } from '../lib/referral'
@@ -66,6 +67,7 @@ export default function Signup() {
         }
       } catch { /* non-blocking */ }
       window.dispatchEvent(new CustomEvent('videotext:plan-updated'))
+      await claimPersistedGuestJobs()
       navigate(returnTo, { replace: true })
       window.location.reload()
     } catch (err: unknown) {
@@ -163,6 +165,7 @@ export default function Signup() {
       } catch {
         // non-blocking
       }
+      await claimPersistedGuestJobs()
       navigate(returnTo, { replace: true })
       window.dispatchEvent(new CustomEvent('videotext:plan-updated'))
       window.location.reload()

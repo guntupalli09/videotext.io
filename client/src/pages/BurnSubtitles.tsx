@@ -27,10 +27,10 @@ import { Select } from '../components/figma/FormControls'
 import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/filePreview'
 import { incrementUsage } from '../lib/usage'
 import { incrementJobCompletedCount } from '../lib/jobCount'
-import { uploadDualFilesWithProgress, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError, claimGuestJob, getAuthToken } from '../lib/api'
+import { uploadDualFilesWithProgress, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError, claimGuestJob } from '../lib/api'
 import { resolveCompletedJobResult } from '../lib/resolveCompletedJob'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
-import { getAbsoluteDownloadUrl } from '../lib/apiBase'
+import { downloadAuthedUrl, downloadErrorMessage, resolveResultDownloadUrl, trackDownloadFailure } from '../lib/downloadResult'
 import { persistJobId, clearPersistedJobId, getPersistedJobId, getPersistedJobToken } from '../lib/jobSession'
 import { trackEvent } from '../lib/analytics'
 import { isLoggedIn } from '../lib/auth'
@@ -306,10 +306,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
     setResult(null)
   }
 
-  const getDownloadUrl = () => {
-    if (!result?.downloadUrl) return ''
-    return getAbsoluteDownloadUrl(result.downloadUrl)
-  }
+  const getDownloadUrl = () => resolveResultDownloadUrl(result?.downloadUrl)
 
   function requireAuthForDownload(action: () => void) {
     if (isLoggedIn()) {
@@ -318,19 +315,6 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
       pendingDownloadRef.current = action
       setShowAuthModal(true)
     }
-  }
-
-  /** Fetch a download URL with the required auth header and trigger a real file save (a plain <a> click can't carry the Bearer token, so it 401s). */
-  const downloadAuthedUrl = async (url: string, filename: string) => {
-    const token = getAuthToken()
-    const res = await fetch(url, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
-    if (!res.ok) throw new Error(`Download failed (${res.status})`)
-    const blob = await res.blob()
-    const a = document.createElement('a')
-    a.href = URL.createObjectURL(blob)
-    a.download = filename
-    a.click()
-    URL.revokeObjectURL(a.href)
   }
 
   const breadcrumbs = [{ label: 'Burn Subtitles', href: '/burn-subtitles' }]
@@ -585,16 +569,18 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
                               try { trackEvent('result_downloaded', { tool: 'burn-subtitles', plan: 'free' }) } catch { /* non-blocking */ }
                               setFreeExportsUsed((prev) => prev + 1)
                               toast.success('Download started')
-                            } catch {
-                              toast.error('Download failed')
+                            } catch (err) {
+                              trackDownloadFailure(err, { tool: 'burn-subtitles', plan: 'free' })
+                              toast.error(downloadErrorMessage(err))
                             }
                           }
                         : async () => {
                             try {
                               await downloadAuthedUrl(getDownloadUrl(), result?.fileName || fallbackBurnName)
                               try { trackEvent('result_downloaded', { tool: 'burn-subtitles', plan: 'paid' }) } catch { /* non-blocking */ }
-                            } catch {
-                              toast.error('Download failed')
+                            } catch (err) {
+                              trackDownloadFailure(err, { tool: 'burn-subtitles', plan: 'paid' })
+                              toast.error(downloadErrorMessage(err))
                             }
                           }
                     )}

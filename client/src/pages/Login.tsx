@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { login, storeLoginResult } from '../lib/auth'
 import { identifyUser, trackEvent } from '../lib/analytics'
 import { getUserFacingMessage, loginWithGoogle } from '../lib/api'
+import { claimPersistedGuestJobs } from '../lib/claimGuestJobs'
 import { FileText, Youtube, Zap, ChevronRight } from 'lucide-react'
 import GoogleSignInButton, { GOOGLE_CLIENT_ID } from '../components/GoogleSignInButton'
 
@@ -32,6 +33,7 @@ export default function Login() {
         trackEvent(event, { plan: result.plan })
       } catch { /* non-blocking */ }
       window.dispatchEvent(new CustomEvent('videotext:plan-updated'))
+      await claimPersistedGuestJobs()
       navigate(returnTo, { replace: true })
       window.location.reload()
     } catch (err: unknown) {
@@ -55,6 +57,7 @@ export default function Login() {
       } catch {
         // non-blocking
       }
+      await claimPersistedGuestJobs()
       navigate(returnTo, { replace: true })
       window.location.reload()
     } catch (err: unknown) {

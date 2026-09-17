@@ -18,6 +18,7 @@ import path from 'path'
 import { v4 as uuidv4 } from 'uuid'
 import { fileQueue, addJobToQueue, getTotalQueueCount as getQueueCountFromWorker, JobData } from '../workers/videoProcessor'
 import { validateFileType, validateSubtitleFile } from '../utils/fileValidation'
+import { downloadPath } from '../utils/downloadUrl'
 import { enforceLanguageLimits, enforceUsageLimits, getDailySoftCapConcurrency, getMaxMonthlyImports, getPlanLimits, applySystemLoadGuard, FREE_MONTHLY_IMPORT_QUOTA_MESSAGE, GUEST_DAILY_IMPORT_QUOTA_MESSAGE } from '../utils/limits'
 import { assertCanImport } from '../utils/importQuota'
 import { resetDailyImportIfNeeded, resetDailyMinutesIfNeeded, resetUserUsageIfNeeded } from '../utils/usageReset'
@@ -385,7 +386,7 @@ export async function runTranscriptionIntake(
             userId,
             plan,
             cachedResult: {
-              downloadUrl: `/api/download/${cachedFileName}`,
+              downloadUrl: downloadPath(cachedFileName),
               fileName: cachedFileName,
             },
             requestId: (req as RequestWithId).requestId,

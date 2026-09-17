@@ -1,6 +1,7 @@
 import Queue from 'bull'
 import path from 'path'
 import { createRedisClient } from '../utils/redis'
+import { downloadPath } from '../utils/downloadUrl'
 import { getLogger } from '../lib/logger'
 const dummyLog = getLogger('worker')
 
@@ -34,7 +35,7 @@ export function startWorker() {
 
       // Return fake success result
       return {
-        downloadUrl: `/api/download/${path.basename(filePath)}`,
+        downloadUrl: downloadPath(path.basename(filePath)),
         fileName: originalName,
       }
     } catch (error: any) {

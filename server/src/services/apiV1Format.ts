@@ -5,6 +5,7 @@
  * tests/apiV1Pagination.test.ts).
  */
 import { PUBLIC_OPERATIONS, type PublicOperation } from './apiOperations'
+import { downloadPath } from '../utils/downloadUrl'
 
 export interface StableJobRow {
   id: string
@@ -60,7 +61,7 @@ export function extOf(filename: string | null): string {
 }
 
 function downloadUrlFor(filename: string, jobToken: string | null): string {
-  const base = `/api/download/${encodeURIComponent(filename)}`
+  const base = downloadPath(filename)
   return jobToken ? `${base}?jobToken=${encodeURIComponent(jobToken)}` : base
 }
 

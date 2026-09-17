@@ -96,3 +96,33 @@ export function clearAllPersistedJobs(): void {
     // ignore
   }
 }
+
+export interface PersistedGuestJob {
+  jobId: string
+  jobToken: string
+}
+
+/**
+ * Every persisted guest job in this tab, regardless of which tool path stored it.
+ *
+ * The per-path getters above key off the *current* pathname, so they find
+ * nothing on /signup or /login — the job lives under `job-burn-subtitles`,
+ * not `job-signup`. Claiming has to work from those pages too, or the user
+ * signs up outside the auth-gate modal and the job stays guest-owned, which
+ * GET /api/download rejects with 403.
+ */
+export function getAllPersistedGuestJobs(): PersistedGuestJob[] {
+  const jobs: PersistedGuestJob[] = []
+  try {
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const key = sessionStorage.key(i)
+      if (!key || !key.startsWith('job-') || key.endsWith(TOKEN_STORAGE_SUFFIX)) continue
+      const jobId = sessionStorage.getItem(key)
+      const jobToken = sessionStorage.getItem(key + TOKEN_STORAGE_SUFFIX)
+      if (jobId && jobToken) jobs.push({ jobId, jobToken })
+    }
+  } catch {
+    // sessionStorage unavailable — nothing to claim
+  }
+  return jobs
+}
