@@ -93,7 +93,7 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       'Upload video → timed SRT/VTT, then fix, translate, or burn. Transcript + summary on Video to Transcript. Whisper large-v3. 3 free imports/mo.',
   },
   '/translate-subtitles': {
-    title: 'Translate SRT/VTT — Timestamps Stay Intact | VideoText',
+    title: 'Subtitle Translator — Translate SRT & VTT Online Free | VideoText',
     description:
       'Upload SRT or VTT, pick from 70+ languages, download with every cue time preserved. Free: 3 imports/mo, no card. Files deleted after processing. Pro from $7.99/mo.',
   },
@@ -435,7 +435,7 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
     description: 'Check every subtitle cue for characters-per-second against Netflix TTSC (20 CPS adult), BBC (17 CPS), and EBU (21 CPS) broadcast standards. Free online tool.',
   },
   '/tools/subtitle-character-checker': {
-    title: 'Netflix Subtitle CPL Checker — Check 42-Character Limits | VideoText',
+    title: 'Subtitle CPL Checker — Netflix 42 & BBC 37 Limits | VideoText',
     description:
       'Check subtitle cues against Netflix-published character-per-line guidelines (42 CPL), BBC (37), or a wide 80-character preset. VideoText is not affiliated with or endorsed by Netflix.',
   },
