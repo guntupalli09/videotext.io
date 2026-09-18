@@ -4758,8 +4758,8 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
   },
   {
     path: '/srt-to-word',
-    title: 'SRT to Word — Export Your Transcript as a Text | VideoText',
-    description: 'Convert SRT subtitle files to a clean Word-compatible document. Strip timestamps, extract dialogue, and download as plain text. Or transcribe video directly to get a full document.',
+    title: 'SRT to Word — Convert SRT to DOCX & DOC | VideoText',
+    description: 'Convert SRT subtitle files to Word (.docx/.doc) with speaker labels and timecodes as an option. Free, no signup — upload an SRT and download a Word document.',
     h1: 'SRT to Word — Export Subtitle Text as a Readable Document',
     intro: 'To convert an SRT file to a Word document, you need to extract just the dialogue text — stripping the timestamps and block numbers. Use our free SRT to Text tool to extract clean text from your SRT file, then open the .txt output in Word. Alternatively, use VideoText\'s AI transcription tool to go directly from video to a clean, formatted transcript ready to paste into any document.',
     breadcrumbLabel: 'SRT to Word',
