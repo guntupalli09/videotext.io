@@ -4588,7 +4588,7 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
 
   {
     path: '/capcut-captions',
-    title: 'CapCut Won\'t Export SRT? Pull Captions Out Here | VideoText',
+    title: 'CapCut SRT Export — Extract Captions to an SRT File | VideoText',
     description:
       'Export MP4 without burned-in text, upload here, download a real SRT or VTT you can edit in Premiere or upload to YouTube.',
     h1: 'Export CapCut Captions as an SRT File',
