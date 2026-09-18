@@ -281,6 +281,16 @@
       "status": 301
     },
     {
+      "src": "/tools/video-script-timer",
+      "dest": "/subtitle-tools",
+      "status": 301
+    },
+    {
+      "src": "/tools/srt-to-vtt",
+      "dest": "/subtitle-tools",
+      "status": 301
+    },
+    {
       "handle": "filesystem"
     },
     {
