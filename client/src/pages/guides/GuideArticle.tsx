@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { getGuideBySlug, getRelatedGuides, guideSlugFromPath } from '../../lib/guides'
-import { getGuideHtmlSync, loadGuideHtml } from '../../lib/guideHtml'
+import { CTA_SLOT, getGuideHtmlSync, loadGuideHtml } from '../../lib/guideHtml'
 import NotFound from '../NotFound'
 
 void React
@@ -15,6 +15,32 @@ function formatDate(iso: string): string {
     day: 'numeric',
     timeZone: 'UTC',
   })
+}
+
+interface CtaProps {
+  cta: { path: string; name: string; blurb: string; action: string }
+  variant: 'inline' | 'end'
+}
+
+function ToolCta({ cta, variant }: CtaProps) {
+  return (
+    <aside
+      className={
+        variant === 'inline'
+          ? 'my-8 rounded-lg border border-blue-200 bg-blue-50 p-5 dark:border-blue-900 dark:bg-blue-950/40'
+          : 'rounded-lg border border-gray-200 bg-gray-50 p-6 dark:border-gray-800 dark:bg-gray-900'
+      }
+    >
+      <h2 className="text-lg font-medium text-gray-900 dark:text-white">{cta.name}</h2>
+      <p className="mt-2 text-sm leading-relaxed text-gray-700 dark:text-gray-300">{cta.blurb}</p>
+      <Link
+        to={cta.path}
+        className="mt-4 inline-block rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+      >
+        {cta.action}
+      </Link>
+    </aside>
+  )
 }
 
 export default function GuideArticle() {
@@ -38,6 +64,14 @@ export default function GuideArticle() {
   }, [slug, html])
 
   if (!guide) return <NotFound />
+
+  // The build inserts CTA_SLOT before the second H2 so the first CTA lands after
+  // a section of substance rather than interrupting the intro.
+  const [bodyBefore, bodyAfter] = (() => {
+    if (html === undefined) return ['', '']
+    const at = html.indexOf(CTA_SLOT)
+    return at === -1 ? [html, ''] : [html.slice(0, at), html.slice(at + CTA_SLOT.length)]
+  })()
 
   const related = getRelatedGuides(guide.slug)
   const published = guide.date ? formatDate(guide.date) : ''
@@ -68,21 +102,14 @@ export default function GuideArticle() {
             Loading guide…
           </p>
         ) : (
-          <article className="guide-body" dangerouslySetInnerHTML={{ __html: html }} />
+          <>
+            <article className="guide-body" dangerouslySetInnerHTML={{ __html: bodyBefore }} />
+            <ToolCta cta={guide.ctas[0]} variant="inline" />
+            {bodyAfter && <article className="guide-body" dangerouslySetInnerHTML={{ __html: bodyAfter }} />}
+          </>
         )}
 
-        <aside className="rounded-lg border border-gray-200 bg-gray-50 p-6 dark:border-gray-800 dark:bg-gray-900">
-          <h2 className="text-lg font-medium text-gray-900 dark:text-white">Turn a video into a transcript</h2>
-          <p className="mt-2 text-sm leading-relaxed text-gray-700 dark:text-gray-300">
-            Upload a file and get a transcript, SRT subtitles, chapters, and a summary in one pass — free to start.
-          </p>
-          <Link
-            to="/video-to-transcript"
-            className="mt-4 inline-block rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-          >
-            Try it free
-          </Link>
-        </aside>
+        <ToolCta cta={guide.ctas[1]} variant="end" />
 
         {related.length > 0 && (
           <section>

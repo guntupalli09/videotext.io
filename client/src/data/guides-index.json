@@ -7,7 +7,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/d55b275f-6ab3-4165-81f0-e7d19f1751d8/featured.jpg",
     "source_path": "/automatically-transcribe-podcast-episodes-when-they-re-uploaded",
     "words": 2246,
-    "readMinutes": 10
+    "readMinutes": 10,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "best-8-descript-alternatives-in-2026",
@@ -17,7 +31,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/5632a985-556e-4fdb-b259-a23e31717ffc/featured.jpg",
     "source_path": "/best-8-descript-alternatives-in",
     "words": 1724,
-    "readMinutes": 8
+    "readMinutes": 8,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      }
+    ]
   },
   {
     "slug": "best-ai-transcription-software-for-podcasters-in-2026",
@@ -27,7 +55,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/cf292611-e1c4-4f9f-8383-8043be9b2ff8/featured.jpg",
     "source_path": "/best-ai-transcription-software-for-podcasters-in",
     "words": 2007,
-    "readMinutes": 9
+    "readMinutes": 9,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/guideline-format",
+        "name": "Style Guide Formatter",
+        "blurb": "Reformat a transcript to Rev, GoTranscript, or TranscribeMe house rules automatically.",
+        "action": "Format to a style guide"
+      }
+    ]
   },
   {
     "slug": "best-batch-transcription-software-in-2026",
@@ -37,7 +79,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/d876fe2d-f6c9-476f-a457-ff78d2b16e68/featured.jpg",
     "source_path": "/best-batch-transcription-software-in",
     "words": 2217,
-    "readMinutes": 10
+    "readMinutes": 10,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/guideline-format",
+        "name": "Style Guide Formatter",
+        "blurb": "Reformat a transcript to Rev, GoTranscript, or TranscribeMe house rules automatically.",
+        "action": "Format to a style guide"
+      }
+    ]
   },
   {
     "slug": "best-caption-tools-for-tiktok-videos-in-2026",
@@ -47,7 +103,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/f4c07fa7-5c34-448a-8bfa-bfb98fed9ec4/featured.jpg",
     "source_path": "/best-caption-tools-for-tiktok-videos-in",
     "words": 1877,
-    "readMinutes": 8
+    "readMinutes": 8,
+    "ctas": [
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "best-live-transcription-software-in-2026",
@@ -57,7 +127,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/84715ceb-9284-4638-91f8-05a92d11dbe0/featured.jpg",
     "source_path": "/best-live-transcription-software-in",
     "words": 2198,
-    "readMinutes": 10
+    "readMinutes": 10,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/voice-recorder",
+        "name": "Voice Recorder",
+        "blurb": "Record straight from the browser and get the transcript when you stop — no file needed.",
+        "action": "Record and transcribe"
+      }
+    ]
   },
   {
     "slug": "best-screen-recording-transcription-software-in-2026",
@@ -67,7 +151,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/377f410f-8b34-4fba-ba81-e629493899a8/featured.jpg",
     "source_path": "/best-screen-recording-transcription-software-in",
     "words": 2040,
-    "readMinutes": 9
+    "readMinutes": 9,
+    "ctas": [
+      {
+        "path": "/voice-recorder",
+        "name": "Voice Recorder",
+        "blurb": "Record straight from the browser and get the transcript when you stop — no file needed.",
+        "action": "Record and transcribe"
+      },
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      }
+    ]
   },
   {
     "slug": "best-sdh-captioning-software-in-2026",
@@ -77,7 +175,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/7be2eb4e-324f-41da-aeb3-047fda9dd6fd/featured.jpg",
     "source_path": "/best-sdh-captioning-software-in",
     "words": 1947,
-    "readMinutes": 9
+    "readMinutes": 9,
+    "ctas": [
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "best-speaker-diarization-software-in-2026",
@@ -87,7 +199,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/42fa7acd-2d98-4622-b0a2-3c40f9932b94/featured.jpg",
     "source_path": "/best-speaker-diarization-software-in",
     "words": 2271,
-    "readMinutes": 10
+    "readMinutes": 10,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "best-subtitle-burning-software-in-2026",
@@ -97,7 +223,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/d1406c40-bd1b-4a44-b439-2e9a2dda4130/featured.jpg",
     "source_path": "/best-subtitle-burning-software-in",
     "words": 1946,
-    "readMinutes": 9
+    "readMinutes": 9,
+    "ctas": [
+      {
+        "path": "/burn-subtitles",
+        "name": "Burn Subtitles",
+        "blurb": "Burn captions permanently into the video so they play everywhere, no sidecar file needed.",
+        "action": "Burn captions into video"
+      },
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      }
+    ]
   },
   {
     "slug": "best-subtitle-generator-tools-for-youtube-in-2026",
@@ -107,7 +247,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/4bc71f08-5389-4d65-a8c0-e9d87ec962cb/featured.jpg",
     "source_path": "/best-subtitle-generator-tools-for-youtube-in",
     "words": 2089,
-    "readMinutes": 9
+    "readMinutes": 9,
+    "ctas": [
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "best-subtitle-qa-tools-in-2026",
@@ -117,7 +271,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/f70b6239-023a-4a8d-a3cb-2ddf5fd8af10/featured.jpg",
     "source_path": "/best-subtitle-qa-tools-in",
     "words": 1793,
-    "readMinutes": 8
+    "readMinutes": 8,
+    "ctas": [
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      },
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      }
+    ]
   },
   {
     "slug": "best-subtitle-translation-software-in-2026",
@@ -127,7 +295,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/0b91b881-47d9-4a06-a162-935c971e5baf/featured.jpg",
     "source_path": "/best-subtitle-translation-software-in",
     "words": 2185,
-    "readMinutes": 10
+    "readMinutes": 10,
+    "ctas": [
+      {
+        "path": "/translate-subtitles",
+        "name": "Translate Subtitles",
+        "blurb": "Translate an SRT or VTT file into another language while keeping the timings intact.",
+        "action": "Translate a subtitle file"
+      },
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      }
+    ]
   },
   {
     "slug": "best-transcription-api-providers-in-2026",
@@ -137,7 +319,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/f43b1dd8-745a-4455-945c-9a4c72fd659a/featured.jpg",
     "source_path": "/best-transcription-api-providers-in",
     "words": 2099,
-    "readMinutes": 9
+    "readMinutes": 9,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "best-transcription-software-for-course-creators-in-2026",
@@ -147,7 +343,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/1ed9eed8-dd9e-4f81-b6a0-1e6e42d5db83/featured.jpg",
     "source_path": "/best-transcription-software-for-course-creators-in",
     "words": 2055,
-    "readMinutes": 9
+    "readMinutes": 9,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "best-transcription-software-for-freelance-editors-in-2026",
@@ -157,7 +367,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/811fcb06-98d6-4d24-bba4-ae2e868ccefb/featured.jpg",
     "source_path": "/best-transcription-software-for-freelance-editors-in",
     "words": 1939,
-    "readMinutes": 9
+    "readMinutes": 9,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/guideline-format",
+        "name": "Style Guide Formatter",
+        "blurb": "Reformat a transcript to Rev, GoTranscript, or TranscribeMe house rules automatically.",
+        "action": "Format to a style guide"
+      }
+    ]
   },
   {
     "slug": "best-transcription-software-for-lecture-recordings-in-2026",
@@ -167,7 +391,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/7af2e006-9e1b-4bc6-bc08-1addca080039/featured.jpg",
     "source_path": "/best-transcription-software-for-lecture-recordings-in",
     "words": 1957,
-    "readMinutes": 9
+    "readMinutes": 9,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/voice-recorder",
+        "name": "Voice Recorder",
+        "blurb": "Record straight from the browser and get the transcript when you stop — no file needed.",
+        "action": "Record and transcribe"
+      }
+    ]
   },
   {
     "slug": "best-transcription-software-for-media-agencies-in-2026",
@@ -177,7 +415,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/7ab61487-2f36-4bf6-883e-9a5801a75a92/featured.jpg",
     "source_path": "/best-transcription-software-for-media-agencies-in",
     "words": 1880,
-    "readMinutes": 8
+    "readMinutes": 8,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "best-transcription-software-ranked-by-accuracy-in-2026",
@@ -187,7 +439,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/6aaa0862-62c9-46a4-b38e-9a390386da4f/featured.jpg",
     "source_path": "/best-transcription-software-ranked-by-accuracy-in",
     "words": 2386,
-    "readMinutes": 11
+    "readMinutes": 11,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/guideline-format",
+        "name": "Style Guide Formatter",
+        "blurb": "Reformat a transcript to Rev, GoTranscript, or TranscribeMe house rules automatically.",
+        "action": "Format to a style guide"
+      }
+    ]
   },
   {
     "slug": "best-transcription-software-ranked-by-data-security-in-2026",
@@ -197,7 +463,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/aebeed13-b4e7-4ea9-aad8-ceda78d4d998/featured.jpg",
     "source_path": "/best-transcription-software-ranked-by-data-security-in",
     "words": 1868,
-    "readMinutes": 8
+    "readMinutes": 8,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "best-transcription-software-ranked-by-price-in-2026",
@@ -207,7 +487,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/f1ef1d0b-bef9-4b39-af9a-4926d9c8bd76/featured.jpg",
     "source_path": "/best-transcription-software-ranked-by-price-in",
     "words": 2278,
-    "readMinutes": 10
+    "readMinutes": 10,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "best-transcription-software-ranked-by-turnaround-time-in-2026",
@@ -217,7 +511,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/aa476528-524b-473b-bdbd-cbf91289378b/featured.jpg",
     "source_path": "/best-transcription-software-ranked-by-turnaround-time-in",
     "words": 2001,
-    "readMinutes": 9
+    "readMinutes": 9,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "best-voice-to-text-software-for-content-creators-in-2026",
@@ -227,7 +535,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/51b7da4f-87d3-49b9-926f-8ce269414955/featured.jpg",
     "source_path": "/best-voice-to-text-software-for-content-creators-in",
     "words": 2244,
-    "readMinutes": 10
+    "readMinutes": 10,
+    "ctas": [
+      {
+        "path": "/voice-recorder",
+        "name": "Voice Recorder",
+        "blurb": "Record straight from the browser and get the transcript when you stop — no file needed.",
+        "action": "Record and transcribe"
+      },
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      }
+    ]
   },
   {
     "slug": "best-zoom-meeting-transcription-software-in-2026",
@@ -237,7 +559,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/01d4c5c5-545c-4beb-b4ab-d03a45d14e66/featured.jpg",
     "source_path": "/best-zoom-meeting-transcription-software-in",
     "words": 2134,
-    "readMinutes": 9
+    "readMinutes": 9,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "can-a-transcript-be-converted-into-srt-captions-automatically",
@@ -247,7 +583,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/86db5d00-cdaa-46ac-a4d5-862dfd4ab59c/featured.jpg",
     "source_path": "/can-a-transcript-be-converted-into-srt-captions-automatically",
     "words": 1318,
-    "readMinutes": 6
+    "readMinutes": 6,
+    "ctas": [
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      },
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      }
+    ]
   },
   {
     "slug": "can-ai-accurately-detect-and-label-multiple-speakers",
@@ -257,7 +607,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/4fa6131d-9f41-411d-97f8-6c1ac078dc18/featured.jpg",
     "source_path": "/can-ai-accurately-detect-and-label-multiple-speakers",
     "words": 2215,
-    "readMinutes": 10
+    "readMinutes": 10,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/translate-subtitles",
+        "name": "Translate Subtitles",
+        "blurb": "Translate an SRT or VTT file into another language while keeping the timings intact.",
+        "action": "Translate a subtitle file"
+      }
+    ]
   },
   {
     "slug": "can-ai-generate-chapter-markers-for-a-video-automatically",
@@ -267,7 +631,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/21738def-964d-4873-ade2-5f2a9159402e/featured.jpg",
     "source_path": "/can-ai-generate-chapter-markers-for-a-video-automatically",
     "words": 1386,
-    "readMinutes": 6
+    "readMinutes": 6,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "can-ai-transcription-detect-background-music-or-non-speech-audio",
@@ -277,7 +655,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/30a1b499-0834-4784-a7d1-f515ae32c556/featured.jpg",
     "source_path": "/can-ai-transcription-detect-background-music-or-non-speech-audio",
     "words": 1655,
-    "readMinutes": 7
+    "readMinutes": 7,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "can-ai-transcription-handle-two-languages-in-one-recording",
@@ -287,7 +679,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/f8795407-8dbf-45a4-8a4e-3352bf9d7b62/featured.jpg",
     "source_path": "/can-ai-transcription-handle-two-languages-in-one-recording",
     "words": 2278,
-    "readMinutes": 10
+    "readMinutes": 10,
+    "ctas": [
+      {
+        "path": "/translate-subtitles",
+        "name": "Translate Subtitles",
+        "blurb": "Translate an SRT or VTT file into another language while keeping the timings intact.",
+        "action": "Translate a subtitle file"
+      },
+      {
+        "path": "/voice-recorder",
+        "name": "Voice Recorder",
+        "blurb": "Record straight from the browser and get the transcript when you stop — no file needed.",
+        "action": "Record and transcribe"
+      }
+    ]
   },
   {
     "slug": "can-ai-transcription-software-work-without-an-internet-connection",
@@ -297,7 +703,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/71bd2abb-9dd8-44df-90fc-c50c7b2349b3/featured.jpg",
     "source_path": "/can-ai-transcription-software-work-without-an-internet-connection",
     "words": 1410,
-    "readMinutes": 6
+    "readMinutes": 6,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/guideline-format",
+        "name": "Style Guide Formatter",
+        "blurb": "Reformat a transcript to Rev, GoTranscript, or TranscribeMe house rules automatically.",
+        "action": "Format to a style guide"
+      }
+    ]
   },
   {
     "slug": "can-speaker-labels-be-edited-after-automatic-detection",
@@ -307,7 +727,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/a1e3657a-2dee-4da9-9146-e3bbb8a5bac3/featured.jpg",
     "source_path": "/can-speaker-labels-be-edited-after-automatic-detection",
     "words": 1243,
-    "readMinutes": 6
+    "readMinutes": 6,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "can-subtitles-be-burned-into-a-video-without-losing-video-quality",
@@ -317,7 +751,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/4d01ed7b-b42b-488e-81d6-b1045375d20e/featured.jpg",
     "source_path": "/can-subtitles-be-burned-into-a-video-without-losing-video-quality",
     "words": 1643,
-    "readMinutes": 7
+    "readMinutes": 7,
+    "ctas": [
+      {
+        "path": "/burn-subtitles",
+        "name": "Burn Subtitles",
+        "blurb": "Burn captions permanently into the video so they play everywhere, no sidecar file needed.",
+        "action": "Burn captions into video"
+      },
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      }
+    ]
   },
   {
     "slug": "can-subtitles-be-translated-without-losing-timing-sync",
@@ -327,7 +775,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/c42abb4c-0cf8-48a0-91e3-e83a3c1174ac/featured.jpg",
     "source_path": "/can-subtitles-be-translated-without-losing-timing-sync",
     "words": 1583,
-    "readMinutes": 7
+    "readMinutes": 7,
+    "ctas": [
+      {
+        "path": "/translate-subtitles",
+        "name": "Translate Subtitles",
+        "blurb": "Translate an SRT or VTT file into another language while keeping the timings intact.",
+        "action": "Translate a subtitle file"
+      },
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      }
+    ]
   },
   {
     "slug": "can-you-batch-process-multiple-video-files-for-transcription-at-once",
@@ -337,7 +799,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/1f9537c3-c6ab-4bf8-bc92-9c83f9efa8dd/featured.jpg",
     "source_path": "/can-you-batch-process-multiple-video-files-for-transcription-at-once",
     "words": 2089,
-    "readMinutes": 9
+    "readMinutes": 9,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/guideline-format",
+        "name": "Style Guide Formatter",
+        "blurb": "Reformat a transcript to Rev, GoTranscript, or TranscribeMe house rules automatically.",
+        "action": "Format to a style guide"
+      }
+    ]
   },
   {
     "slug": "can-you-edit-an-ai-generated-transcript-before-exporting-it",
@@ -347,7 +823,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/b2883a54-e3bd-4b6e-9ec8-4f3ddd70dfe0/featured.jpg",
     "source_path": "/can-you-edit-an-ai-generated-transcript-before-exporting-it",
     "words": 1484,
-    "readMinutes": 7
+    "readMinutes": 7,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/guideline-format",
+        "name": "Style Guide Formatter",
+        "blurb": "Reformat a transcript to Rev, GoTranscript, or TranscribeMe house rules automatically.",
+        "action": "Format to a style guide"
+      }
+    ]
   },
   {
     "slug": "can-you-export-a-video-transcript-directly-to-word-or-pdf",
@@ -357,7 +847,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/6d3317e8-ef9c-482e-a755-fbd560026aa7/featured.jpg",
     "source_path": "/can-you-export-a-video-transcript-directly-to-word-or-pdf",
     "words": 1552,
-    "readMinutes": 7
+    "readMinutes": 7,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/guideline-format",
+        "name": "Style Guide Formatter",
+        "blurb": "Reformat a transcript to Rev, GoTranscript, or TranscribeMe house rules automatically.",
+        "action": "Format to a style guide"
+      }
+    ]
   },
   {
     "slug": "can-you-search-a-video-transcript-for-a-specific-word",
@@ -367,7 +871,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/fc55bf88-be14-48da-b2aa-97ead01d0b75/featured.jpg",
     "source_path": "/can-you-search-a-video-transcript-for-a-specific-word",
     "words": 1588,
-    "readMinutes": 7
+    "readMinutes": 7,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "capcut-projects-to-client-ready-captions-complete-2026-workflow",
@@ -377,7 +895,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/3764a089-640c-4254-b0f8-e8d758296045/featured.jpg",
     "source_path": "/capcut-projects-to-client-ready-captions-complete-workflow",
     "words": 1620,
-    "readMinutes": 7
+    "readMinutes": 7,
+    "ctas": [
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      },
+      {
+        "path": "/guideline-format",
+        "name": "Style Guide Formatter",
+        "blurb": "Reformat a transcript to Rev, GoTranscript, or TranscribeMe house rules automatically.",
+        "action": "Format to a style guide"
+      }
+    ]
   },
   {
     "slug": "clideo-alternatives-in-2026",
@@ -387,7 +919,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/9ecbd208-3fb9-4698-ba18-5f8c88f346bc/featured.jpg",
     "source_path": "/clideo-alternatives-in",
     "words": 1599,
-    "readMinutes": 7
+    "readMinutes": 7,
+    "ctas": [
+      {
+        "path": "/compress-video",
+        "name": "Compress Video",
+        "blurb": "Shrink a large video before uploading, without a visible quality drop.",
+        "action": "Compress a video"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "closed-captioning-for-higher-education-and-ada-compliance-complete-2026-guide",
@@ -397,7 +943,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/bbd2b453-47d0-4480-ae66-d294d08ecb12/featured.jpg",
     "source_path": "/closed-captioning-for-higher-education-and-ada-compliance-complete-guide",
     "words": 2313,
-    "readMinutes": 10
+    "readMinutes": 10,
+    "ctas": [
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "flixier-alternatives-in-2026",
@@ -407,7 +967,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/8192a5c1-bb68-4c44-a7a4-ed85e8c40102/featured.jpg",
     "source_path": "/flixier-alternatives-in",
     "words": 1718,
-    "readMinutes": 8
+    "readMinutes": 8,
+    "ctas": [
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "google-meet-recordings-to-shareable-transcripts-2026-workflow",
@@ -417,7 +991,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/5a8ffbfc-b8c0-4707-b353-da2fea44d76b/featured.jpg",
     "source_path": "/google-meet-recordings-to-shareable-transcripts-workflow",
     "words": 1779,
-    "readMinutes": 8
+    "readMinutes": 8,
+    "ctas": [
+      {
+        "path": "/voice-recorder",
+        "name": "Voice Recorder",
+        "blurb": "Record straight from the browser and get the transcript when you stop — no file needed.",
+        "action": "Record and transcribe"
+      },
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      }
+    ]
   },
   {
     "slug": "gotranscript-alternatives-in-2026",
@@ -427,7 +1015,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/1e980cf1-8ac1-4874-aa4d-af233aa3e0a0/featured.jpg",
     "source_path": "/gotranscript-alternatives-in",
     "words": 1801,
-    "readMinutes": 8
+    "readMinutes": 8,
+    "ctas": [
+      {
+        "path": "/guideline-format",
+        "name": "Style Guide Formatter",
+        "blurb": "Reformat a transcript to Rev, GoTranscript, or TranscribeMe house rules automatically.",
+        "action": "Format to a style guide"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "how-accurate-is-ai-transcription-for-accented-english",
@@ -437,7 +1039,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/af3870e0-66f7-4653-b9e9-3811fb6f2410/featured.jpg",
     "source_path": "/how-accurate-is-ai-transcription-for-accented-english",
     "words": 1582,
-    "readMinutes": 7
+    "readMinutes": 7,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "how-do-you-check-subtitle-cpl-and-reading-speed-before-delivery",
@@ -447,7 +1063,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/7fbc6731-387b-4ffb-9a12-1af7fc6ac03f/featured.jpg",
     "source_path": "/how-do-you-check-subtitle-cpl-and-reading-speed-before-delivery",
     "words": 1667,
-    "readMinutes": 7
+    "readMinutes": 7,
+    "ctas": [
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      },
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      }
+    ]
   },
   {
     "slug": "how-do-you-fix-subtitle-timing-drift-after-transcription",
@@ -457,7 +1087,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/434c1f32-68ca-4746-a732-7e45fa4b4dbc/featured.jpg",
     "source_path": "/how-do-you-fix-subtitle-timing-drift-after-transcription",
     "words": 1618,
-    "readMinutes": 7
+    "readMinutes": 7,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "how-do-you-know-an-ai-transcript-is-clean-enough-for-delivery",
@@ -467,7 +1111,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/c9cf4c1f-cd94-4319-aae8-c9e2d993469d/featured.jpg",
     "source_path": "/how-do-you-know-an-ai-transcript-is-clean-enough-for-delivery",
     "words": 1562,
-    "readMinutes": 7
+    "readMinutes": 7,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/guideline-format",
+        "name": "Style Guide Formatter",
+        "blurb": "Reformat a transcript to Rev, GoTranscript, or TranscribeMe house rules automatically.",
+        "action": "Format to a style guide"
+      }
+    ]
   },
   {
     "slug": "how-do-you-reduce-qa-time-on-subtitles-before-client-delivery",
@@ -477,7 +1135,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/759b711f-800e-478d-a951-f9ddcfde8e83/featured.jpg",
     "source_path": "/how-do-you-reduce-qa-time-on-subtitles-before-client-delivery",
     "words": 1342,
-    "readMinutes": 6
+    "readMinutes": 6,
+    "ctas": [
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "how-do-you-remove-filler-words-from-a-transcript-automatically",
@@ -487,7 +1159,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/3faf3d3b-ac1c-4865-8556-db5edbb39fd7/featured.jpg",
     "source_path": "/how-do-you-remove-filler-words-from-a-transcript-automatically",
     "words": 1470,
-    "readMinutes": 7
+    "readMinutes": 7,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "how-do-you-turn-a-podcast-recording-into-show-notes-automatically",
@@ -497,7 +1183,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/a3f2e527-ac5d-43f9-8c84-09d9b89dd0d4/featured.jpg",
     "source_path": "/how-do-you-turn-a-podcast-recording-into-show-notes-automatically",
     "words": 1545,
-    "readMinutes": 7
+    "readMinutes": 7,
+    "ctas": [
+      {
+        "path": "/voice-recorder",
+        "name": "Voice Recorder",
+        "blurb": "Record straight from the browser and get the transcript when you stop — no file needed.",
+        "action": "Record and transcribe"
+      },
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      }
+    ]
   },
   {
     "slug": "how-long-does-it-take-to-add-and-sync-subtitles-to-a-video",
@@ -507,7 +1207,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/e8872dbe-b11e-4209-8354-3f8fbd2f04f9/featured.jpg",
     "source_path": "/how-long-does-it-take-to-add-and-sync-subtitles-to-a-video",
     "words": 1461,
-    "readMinutes": 6
+    "readMinutes": 6,
+    "ctas": [
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "how-long-does-it-take-to-transcribe-a-one-hour-video",
@@ -517,7 +1231,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/2c77d3fa-6bcd-44b4-a69b-cab548aa698b/featured.jpg",
     "source_path": "/how-long-does-it-take-to-transcribe-a-one-hour-video",
     "words": 2112,
-    "readMinutes": 9
+    "readMinutes": 9,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/guideline-format",
+        "name": "Style Guide Formatter",
+        "blurb": "Reformat a transcript to Rev, GoTranscript, or TranscribeMe house rules automatically.",
+        "action": "Format to a style guide"
+      }
+    ]
   },
   {
     "slug": "how-many-hours-of-audio-can-be-transcribed-in-a-single-batch-upload",
@@ -527,7 +1255,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/5ffb4515-a960-4c0d-97cf-f666616edeea/featured.jpg",
     "source_path": "/how-many-hours-of-audio-can-be-transcribed-in-a-single-batch-upload",
     "words": 1380,
-    "readMinutes": 6
+    "readMinutes": 6,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      }
+    ]
   },
   {
     "slug": "how-much-does-professional-video-transcription-cost-in-2026",
@@ -537,7 +1279,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/f0fce698-2d22-4b13-8f8b-7f4295523ef8/featured.jpg",
     "source_path": "/how-much-does-professional-video-transcription-cost-in",
     "words": 1545,
-    "readMinutes": 7
+    "readMinutes": 7,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "how-much-does-subtitle-translation-cost-per-minute",
@@ -547,7 +1303,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/520bdea1-270b-400e-b7f8-56dd6d108db9/featured.jpg",
     "source_path": "/how-much-does-subtitle-translation-cost-per-minute",
     "words": 1512,
-    "readMinutes": 7
+    "readMinutes": 7,
+    "ctas": [
+      {
+        "path": "/translate-subtitles",
+        "name": "Translate Subtitles",
+        "blurb": "Translate an SRT or VTT file into another language while keeping the timings intact.",
+        "action": "Translate a subtitle file"
+      },
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      }
+    ]
   },
   {
     "slug": "how-to-connect-videotext-to-zapier-for-automatic-transcription",
@@ -557,7 +1327,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/f58207a6-2404-4803-9eac-fc802355298e/featured.jpg",
     "source_path": "/how-to-connect-videotext-to-zapier-for-automatic-transcription",
     "words": 2286,
-    "readMinutes": 10
+    "readMinutes": 10,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "how-to-connect-videotexts-api-to-your-transcription-pipeline",
@@ -567,7 +1351,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/8d53daf9-b100-465f-bd21-45f80e5b59fa/featured.jpg",
     "source_path": "/how-to-connect-videotext-s-api-to-your-transcription-pipeline",
     "words": 1826,
-    "readMinutes": 8
+    "readMinutes": 8,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "is-ai-transcription-accurate-enough-to-skip-human-proofreading",
@@ -577,7 +1375,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/d3800b73-0ccc-43d7-9b06-7d0bf3d4616d/featured.jpg",
     "source_path": "/is-ai-transcription-accurate-enough-to-skip-human-proofreading",
     "words": 1513,
-    "readMinutes": 7
+    "readMinutes": 7,
+    "ctas": [
+      {
+        "path": "/guideline-format",
+        "name": "Style Guide Formatter",
+        "blurb": "Reformat a transcript to Rev, GoTranscript, or TranscribeMe house rules automatically.",
+        "action": "Format to a style guide"
+      },
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      }
+    ]
   },
   {
     "slug": "is-live-transcription-accurate-enough-for-broadcast-captions",
@@ -587,7 +1399,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/fa630f5f-488c-4897-bf16-4349631725bd/featured.jpg",
     "source_path": "/is-live-transcription-accurate-enough-for-broadcast-captions",
     "words": 2200,
-    "readMinutes": 10
+    "readMinutes": 10,
+    "ctas": [
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      },
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      }
+    ]
   },
   {
     "slug": "is-machine-transcription-reliable-enough-for-research-interview-data",
@@ -597,7 +1423,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/7afd5b67-d29e-49f1-8931-303e0ee440da/featured.jpg",
     "source_path": "/is-machine-transcription-reliable-enough-for-research-interview-data",
     "words": 1460,
-    "readMinutes": 6
+    "readMinutes": 6,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/guideline-format",
+        "name": "Style Guide Formatter",
+        "blurb": "Reformat a transcript to Rev, GoTranscript, or TranscribeMe house rules automatically.",
+        "action": "Format to a style guide"
+      }
+    ]
   },
   {
     "slug": "is-there-a-limit-to-how-long-a-file-can-be-for-transcription",
@@ -607,7 +1447,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/c2dfcadc-1012-4752-83e9-03b0e467f0b0/featured.jpg",
     "source_path": "/is-there-a-limit-to-how-long-a-file-can-be-for-transcription",
     "words": 1576,
-    "readMinutes": 7
+    "readMinutes": 7,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/compress-video",
+        "name": "Compress Video",
+        "blurb": "Shrink a large video before uploading, without a visible quality drop.",
+        "action": "Compress a video"
+      }
+    ]
   },
   {
     "slug": "is-transcription-software-worth-it-over-free-tools-in-2026",
@@ -617,7 +1471,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/bfac0bbf-9194-4608-9b52-4420ea803b9c/featured.jpg",
     "source_path": "/is-transcription-software-worth-it-over-free-tools-in",
     "words": 2107,
-    "readMinutes": 9
+    "readMinutes": 9,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/guideline-format",
+        "name": "Style Guide Formatter",
+        "blurb": "Reformat a transcript to Rev, GoTranscript, or TranscribeMe house rules automatically.",
+        "action": "Format to a style guide"
+      }
+    ]
   },
   {
     "slug": "loom-videos-to-searchable-transcripts-complete-2026-workflow",
@@ -627,7 +1495,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/0365179d-c37a-45b0-8689-5ef57d738ac4/featured.jpg",
     "source_path": "/loom-videos-to-searchable-transcripts-complete-workflow",
     "words": 1783,
-    "readMinutes": 8
+    "readMinutes": 8,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/voice-recorder",
+        "name": "Voice Recorder",
+        "blurb": "Record straight from the browser and get the transcript when you stop — no file needed.",
+        "action": "Record and transcribe"
+      }
+    ]
   },
   {
     "slug": "maestra-alternatives-in-2026",
@@ -637,7 +1519,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/4cde1a93-de59-4410-a68b-ed62e6bb05ac/featured.jpg",
     "source_path": "/maestra-alternatives-in",
     "words": 1915,
-    "readMinutes": 9
+    "readMinutes": 9,
+    "ctas": [
+      {
+        "path": "/translate-subtitles",
+        "name": "Translate Subtitles",
+        "blurb": "Translate an SRT or VTT file into another language while keeping the timings intact.",
+        "action": "Translate a subtitle file"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "notta-alternatives-in-2026",
@@ -647,7 +1543,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/7534991d-6893-4675-b1df-7ae75a768f01/featured.jpg",
     "source_path": "/notta-alternatives-in",
     "words": 1715,
-    "readMinutes": 8
+    "readMinutes": 8,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/guideline-format",
+        "name": "Style Guide Formatter",
+        "blurb": "Reformat a transcript to Rev, GoTranscript, or TranscribeMe house rules automatically.",
+        "action": "Format to a style guide"
+      }
+    ]
   },
   {
     "slug": "panopto-recordings-to-accessible-captions-2026-workflow",
@@ -657,7 +1567,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/dc288946-859b-4897-9cd5-0137998c8015/featured.jpg",
     "source_path": "/panopto-recordings-to-accessible-captions-workflow",
     "words": 1412,
-    "readMinutes": 6
+    "readMinutes": 6,
+    "ctas": [
+      {
+        "path": "/voice-recorder",
+        "name": "Voice Recorder",
+        "blurb": "Record straight from the browser and get the transcript when you stop — no file needed.",
+        "action": "Record and transcribe"
+      },
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      }
+    ]
   },
   {
     "slug": "riverside-alternatives-in-2026",
@@ -667,7 +1591,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/774118f1-9d52-49f0-bb6d-40140e1033f3/featured.jpg",
     "source_path": "/riverside-alternatives-in",
     "words": 1735,
-    "readMinutes": 8
+    "readMinutes": 8,
+    "ctas": [
+      {
+        "path": "/voice-recorder",
+        "name": "Voice Recorder",
+        "blurb": "Record straight from the browser and get the transcript when you stop — no file needed.",
+        "action": "Record and transcribe"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "screenapp-alternatives-in-2026",
@@ -677,7 +1615,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/44d5c452-7a6e-4c12-9545-66035c609aae/featured.jpg",
     "source_path": "/screenapp-alternatives-in",
     "words": 1623,
-    "readMinutes": 7
+    "readMinutes": 7,
+    "ctas": [
+      {
+        "path": "/voice-recorder",
+        "name": "Voice Recorder",
+        "blurb": "Record straight from the browser and get the transcript when you stop — no file needed.",
+        "action": "Record and transcribe"
+      },
+      {
+        "path": "/guideline-format",
+        "name": "Style Guide Formatter",
+        "blurb": "Reformat a transcript to Rev, GoTranscript, or TranscribeMe house rules automatically.",
+        "action": "Format to a style guide"
+      }
+    ]
   },
   {
     "slug": "scriptme-alternatives-in-2026",
@@ -687,7 +1639,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/b5275759-a27c-469e-b6fd-416b8ba75e5c/featured.jpg",
     "source_path": "/scriptme-alternatives-in",
     "words": 1776,
-    "readMinutes": 8
+    "readMinutes": 8,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "subtitle-cpl-and-cps-benchmarks-by-style-guide-2026",
@@ -697,7 +1663,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/ae52d79c-7a0a-4c3f-a2c5-74d8e21880c8/featured.jpg",
     "source_path": "/subtitle-cpl-and-cps-benchmarks-by-style-guide",
     "words": 1533,
-    "readMinutes": 7
+    "readMinutes": 7,
+    "ctas": [
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      },
+      {
+        "path": "/guideline-format",
+        "name": "Style Guide Formatter",
+        "blurb": "Reformat a transcript to Rev, GoTranscript, or TranscribeMe house rules automatically.",
+        "action": "Format to a style guide"
+      }
+    ]
   },
   {
     "slug": "subtitle-qa-for-streaming-and-ott-platforms-complete-2026-guide",
@@ -707,7 +1687,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/3d6ac665-be02-4848-92ae-e66c84981b35/featured.jpg",
     "source_path": "/subtitle-qa-for-streaming-and-ott-platforms-complete-guide",
     "words": 2020,
-    "readMinutes": 9
+    "readMinutes": 9,
+    "ctas": [
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      },
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      }
+    ]
   },
   {
     "slug": "subtitle-translation-for-global-marketing-teams-complete-2026-guide",
@@ -717,7 +1711,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/0ace02cc-7be8-4992-9097-46eddd867715/featured.jpg",
     "source_path": "/subtitle-translation-for-global-marketing-teams-complete-guide",
     "words": 1925,
-    "readMinutes": 9
+    "readMinutes": 9,
+    "ctas": [
+      {
+        "path": "/translate-subtitles",
+        "name": "Translate Subtitles",
+        "blurb": "Translate an SRT or VTT file into another language while keeping the timings intact.",
+        "action": "Translate a subtitle file"
+      },
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      }
+    ]
   },
   {
     "slug": "subtitle-workflows-for-in-house-corporate-video-teams-complete-2026-guide",
@@ -727,7 +1735,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/39c809cb-9972-46b0-a8cc-13dfe8e37568/featured.jpg",
     "source_path": "/subtitle-workflows-for-in-house-corporate-video-teams-complete-guide",
     "words": 2058,
-    "readMinutes": 9
+    "readMinutes": 9,
+    "ctas": [
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      },
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      }
+    ]
   },
   {
     "slug": "tactiq-alternatives-in-2026",
@@ -737,7 +1759,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/43b2180a-ce11-4c77-a3a8-8878441b5fe4/featured.jpg",
     "source_path": "/tactiq-alternatives-in",
     "words": 1686,
-    "readMinutes": 7
+    "readMinutes": 7,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "transcription-and-subtitles-for-documentary-filmmakers-complete-2026-guide",
@@ -747,7 +1783,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/11b2ac43-92d8-45af-bb16-c856531929bc/featured.jpg",
     "source_path": "/transcription-and-subtitles-for-documentary-filmmakers-complete-guide",
     "words": 1930,
-    "readMinutes": 9
+    "readMinutes": 9,
+    "ctas": [
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      },
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      }
+    ]
   },
   {
     "slug": "transcription-for-legal-depositions-and-interviews-complete-2026-guide",
@@ -757,7 +1807,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/b99634d1-74ae-44a3-b854-074c4292d5c0/featured.jpg",
     "source_path": "/transcription-for-legal-depositions-and-interviews-complete-guide",
     "words": 1810,
-    "readMinutes": 8
+    "readMinutes": 8,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/guideline-format",
+        "name": "Style Guide Formatter",
+        "blurb": "Reformat a transcript to Rev, GoTranscript, or TranscribeMe house rules automatically.",
+        "action": "Format to a style guide"
+      }
+    ]
   },
   {
     "slug": "transcription-for-market-research-firms-complete-2026-guide",
@@ -767,7 +1831,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/3bcf7d1f-ce2a-4d67-adcb-e4ad6a0f1d62/featured.jpg",
     "source_path": "/transcription-for-market-research-firms-complete-guide",
     "words": 1951,
-    "readMinutes": 9
+    "readMinutes": 9,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/guideline-format",
+        "name": "Style Guide Formatter",
+        "blurb": "Reformat a transcript to Rev, GoTranscript, or TranscribeMe house rules automatically.",
+        "action": "Format to a style guide"
+      }
+    ]
   },
   {
     "slug": "veed-alternatives-in-2026",
@@ -777,7 +1855,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/0ddfe40f-096a-401e-a570-98118cb28b72/featured.jpg",
     "source_path": "/veed-alternatives-in",
     "words": 1732,
-    "readMinutes": 8
+    "readMinutes": 8,
+    "ctas": [
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "video-captioning-for-corporate-training-and-l-d-teams-complete-2026-guide",
@@ -787,7 +1879,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/674817c7-77eb-401b-9a18-2e561893934f/featured.jpg",
     "source_path": "/video-captioning-for-corporate-training-and-l-d-teams-complete-guide",
     "words": 2155,
-    "readMinutes": 10
+    "readMinutes": 10,
+    "ctas": [
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      },
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      }
+    ]
   },
   {
     "slug": "video-to-text-search-demand-benchmarks-by-format-2026",
@@ -797,7 +1903,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/40f94536-9f1d-4dff-8283-7db4f151b206/featured.jpg",
     "source_path": "/video-to-text-search-demand-benchmarks-by-format",
     "words": 1525,
-    "readMinutes": 7
+    "readMinutes": 7,
+    "ctas": [
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "video-transcription-for-journalists-and-newsrooms-complete-2026-guide",
@@ -807,7 +1927,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/61d47ea3-1eea-4b97-bbcb-df767597dedb/featured.jpg",
     "source_path": "/video-transcription-for-journalists-and-newsrooms-complete-guide",
     "words": 2230,
-    "readMinutes": 10
+    "readMinutes": 10,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "videotext-vs-gotranscript-which-is-better-in-2026",
@@ -817,7 +1951,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/bfd48aad-7eed-4c39-8072-25c66af5bea0/featured.jpg",
     "source_path": "/videotext-vs-gotranscript-which-is-better-in",
     "words": 2067,
-    "readMinutes": 9
+    "readMinutes": 9,
+    "ctas": [
+      {
+        "path": "/guideline-format",
+        "name": "Style Guide Formatter",
+        "blurb": "Reformat a transcript to Rev, GoTranscript, or TranscribeMe house rules automatically.",
+        "action": "Format to a style guide"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "videotext-vs-happy-scribe-which-is-better-in-2026",
@@ -827,7 +1975,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/f32b8657-4787-4668-9bf2-d48597dc5085/featured.jpg",
     "source_path": "/videotext-vs-happy-scribe-which-is-better-in",
     "words": 1894,
-    "readMinutes": 8
+    "readMinutes": 8,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "videotext-vs-kapwing-which-is-better-in-2026",
@@ -837,7 +1999,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/92293f2e-f5fc-4a9b-b0ee-e4b23cf031ec/featured.jpg",
     "source_path": "/videotext-vs-kapwing-which-is-better-in",
     "words": 1855,
-    "readMinutes": 8
+    "readMinutes": 8,
+    "ctas": [
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "videotext-vs-maestra-which-is-better-in-2026",
@@ -847,7 +2023,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/9fe0e19b-c1a5-4e42-8ff4-4e5be8140be4/featured.jpg",
     "source_path": "/videotext-vs-maestra-which-is-better-in",
     "words": 1794,
-    "readMinutes": 8
+    "readMinutes": 8,
+    "ctas": [
+      {
+        "path": "/translate-subtitles",
+        "name": "Translate Subtitles",
+        "blurb": "Translate an SRT or VTT file into another language while keeping the timings intact.",
+        "action": "Translate a subtitle file"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "videotext-vs-notta-which-is-better-in-2026",
@@ -857,7 +2047,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/07808993-8c83-49b7-b40d-f4f3ff8cb1fa/featured.jpg",
     "source_path": "/videotext-vs-notta-which-is-better-in",
     "words": 2485,
-    "readMinutes": 11
+    "readMinutes": 11,
+    "ctas": [
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      },
+      {
+        "path": "/guideline-format",
+        "name": "Style Guide Formatter",
+        "blurb": "Reformat a transcript to Rev, GoTranscript, or TranscribeMe house rules automatically.",
+        "action": "Format to a style guide"
+      }
+    ]
   },
   {
     "slug": "videotext-vs-screenapp-which-is-better-in-2026",
@@ -867,7 +2071,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/464cdf8e-8bdd-4127-8916-c39877cc38df/featured.jpg",
     "source_path": "/videotext-vs-screenapp-which-is-better-in",
     "words": 1470,
-    "readMinutes": 7
+    "readMinutes": 7,
+    "ctas": [
+      {
+        "path": "/voice-recorder",
+        "name": "Voice Recorder",
+        "blurb": "Record straight from the browser and get the transcript when you stop — no file needed.",
+        "action": "Record and transcribe"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "videotext-vs-veed-which-is-better-in-2026",
@@ -877,7 +2095,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/6de3bf41-e1d8-400d-a9f8-620b62175496/featured.jpg",
     "source_path": "/videotext-vs-veed-which-is-better-in",
     "words": 1659,
-    "readMinutes": 7
+    "readMinutes": 7,
+    "ctas": [
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      },
+      {
+        "path": "/fix-subtitles",
+        "name": "Fix Subtitles",
+        "blurb": "Clean up overlapping cues, reading-speed violations, and long lines in an existing file.",
+        "action": "Fix a subtitle file"
+      }
+    ]
   },
   {
     "slug": "vimeo-videos-to-translated-subtitles-complete-2026-workflow",
@@ -887,7 +2119,21 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/09665078-536d-455b-9523-eb8edcac0f83/featured.jpg",
     "source_path": "/vimeo-videos-to-translated-subtitles-complete-workflow",
     "words": 1563,
-    "readMinutes": 7
+    "readMinutes": 7,
+    "ctas": [
+      {
+        "path": "/translate-subtitles",
+        "name": "Translate Subtitles",
+        "blurb": "Translate an SRT or VTT file into another language while keeping the timings intact.",
+        "action": "Translate a subtitle file"
+      },
+      {
+        "path": "/video-to-subtitles",
+        "name": "Video to Subtitles",
+        "blurb": "Generate timed SRT or VTT subtitles from any video, ready to upload or edit.",
+        "action": "Generate subtitles free"
+      }
+    ]
   },
   {
     "slug": "zoom-recordings-to-client-ready-transcripts-complete-2026-workflow",
@@ -897,6 +2143,20 @@
     "image": "https://gwvckixiegkllthleuyt.supabase.co/storage/v1/object/public/programmatic-articles/24af2efc-0e05-453f-acde-b01a5d7c8f92/featured.jpg",
     "source_path": "/zoom-recordings-to-client-ready-transcripts-complete-workflow",
     "words": 1522,
-    "readMinutes": 7
+    "readMinutes": 7,
+    "ctas": [
+      {
+        "path": "/voice-recorder",
+        "name": "Voice Recorder",
+        "blurb": "Record straight from the browser and get the transcript when you stop — no file needed.",
+        "action": "Record and transcribe"
+      },
+      {
+        "path": "/video-to-transcript",
+        "name": "Video to Transcript",
+        "blurb": "Upload a video and get a full transcript, plus chapters and a summary, in one pass.",
+        "action": "Transcribe a video free"
+      }
+    ]
   }
 ]

@@ -11,6 +11,9 @@
  *   `getGuideHtmlSync` can serve it during the synchronous renderToString pass.
  */
 
+/** Marker the build inserts where the in-article CTA belongs. */
+export const CTA_SLOT = '<!--guide-cta-slot-->'
+
 const cache = new Map<string, string>()
 
 /** Build-time only: preload bodies so SSR can render them synchronously. */

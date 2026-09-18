@@ -10,6 +10,8 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import { marked } from 'marked'
+import { pickCtas, type GuideCta } from './cta-map'
+import { CTA_SLOT } from '../../client/src/lib/guideHtml'
 
 const REPO_ROOT = path.resolve(__dirname, '..', '..')
 const GUIDES_DIR = path.join(REPO_ROOT, 'content', 'guides')
@@ -30,6 +32,8 @@ export interface GuideFrontmatter {
 export interface GuideMeta extends GuideFrontmatter {
   readMinutes: number
   words: number
+  /** Two core-tool CTAs: [mid-article, end-of-article]. */
+  ctas: [GuideCta, GuideCta]
 }
 
 export interface Guide extends GuideMeta {
@@ -59,6 +63,18 @@ function parseFrontmatter(raw: string, file: string): { data: Record<string, str
  */
 function stripLeadingH1(body: string): string {
   return body.replace(/^\s*#\s+.*\n+/, '')
+}
+
+/**
+ * Mark where the in-article CTA goes: before the second H2, so it lands after
+ * the reader has had a section of substance rather than interrupting the intro.
+ * Articles with fewer than two H2s take it at the end of the body instead.
+ */
+function insertCtaSlot(html: string): string {
+  const h2s = [...html.matchAll(/<h2[^>]*>/g)]
+  if (h2s.length < 2) return html + CTA_SLOT
+  const at = h2s[1].index!
+  return html.slice(0, at) + CTA_SLOT + html.slice(at)
 }
 
 /** Internal links must stay relative so they do not force a full page reload. */
@@ -92,7 +108,7 @@ export function buildGuides(): Guide[] {
     }
 
     const markdown = stripLeadingH1(body)
-    const html = relativizeInternalLinks(marked.parse(markdown, { async: false }) as string)
+    const html = insertCtaSlot(relativizeInternalLinks(marked.parse(markdown, { async: false }) as string))
     const words = markdown.split(/\s+/).filter(Boolean).length
 
     guides.push({
@@ -105,6 +121,7 @@ export function buildGuides(): Guide[] {
       html,
       words,
       readMinutes: Math.max(1, Math.round(words / 225)),
+      ctas: pickCtas(data.title, markdown),
     })
   }
 

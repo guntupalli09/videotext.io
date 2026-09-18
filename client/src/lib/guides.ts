@@ -16,6 +16,15 @@ export interface Guide {
   source_path?: string
   words: number
   readMinutes: number
+  /** Two core-tool CTAs: [mid-article, end-of-article]. */
+  ctas: [GuideCta, GuideCta]
+}
+
+export interface GuideCta {
+  path: string
+  name: string
+  blurb: string
+  action: string
 }
 
 const GUIDES = guidesIndex as Guide[]
