@@ -16,6 +16,7 @@ import { JOB_POLL_INTERVAL_MS, POLL_STOP_AFTER_CONSECUTIVE_NETWORK_ERRORS, URLS 
 import { SessionExpiredError, VideoTextApiError, getUserFacingMessage, isNetworkError } from './lib/errors.js';
 import { AUTO_DETECT_LABEL, AUTO_DETECT_VALUE, LANGUAGES } from './lib/languages.js';
 import { clearActiveJob, clearSession, getActiveJob, getSession, setActiveJob, updateSessionDetails, } from './lib/session.js';
+import { acceptAsk, dismissAsk, getReviewPromptState, recordCompletedJob, reviewsUrl, setReviewPromptState, shouldShowReviewPrompt, } from './lib/reviewPrompt.js';
 import { segmentsToText, transcriptFileName, wordCount } from './lib/transcript.js';
 import { FILE_INPUT_ACCEPT, formatBytes, formatDuration, isAudioFile, preflight, readMediaDurationSeconds, } from './lib/validation.js';
 const VIEW_IDS = {
@@ -284,6 +285,42 @@ async function showResult(status, fileName) {
         ? `${words.toLocaleString()} words · ${segments.toLocaleString()} segments`
         : `${words.toLocaleString()} words`;
     showView('result');
+    // A real transcript is on screen, so the user now has something to review.
+    void maybeAskForReview();
+}
+/**
+ * Count this success and, if the cadence in lib/reviewPrompt.ts allows, show
+ * the review ask. Never blocks or alters the result itself.
+ */
+async function maybeAskForReview() {
+    const prompt = el('review-prompt');
+    prompt.hidden = true;
+    try {
+        const state = recordCompletedJob(await getReviewPromptState());
+        await setReviewPromptState(state);
+        if (shouldShowReviewPrompt(state))
+            prompt.hidden = false;
+    }
+    catch {
+        // The transcript matters; the review ask does not.
+    }
+}
+/** Retire or defer the ask, then hide it for this result. */
+async function resolveReviewAsk(action) {
+    el('review-prompt').hidden = true;
+    try {
+        const state = await getReviewPromptState();
+        if (action === 'leave') {
+            await setReviewPromptState(acceptAsk(state));
+            await chrome.tabs.create({ url: reviewsUrl() });
+        }
+        else {
+            await setReviewPromptState(dismissAsk(state));
+        }
+    }
+    catch {
+        // ignore
+    }
 }
 /** Map a thrown value to the right screen, using the backend's own message wherever there is one. */
 function handleFailure(error) {
@@ -361,6 +398,7 @@ async function resetToIdle() {
     stopPolling();
     await clearActiveJob();
     transcriptText = '';
+    el('review-prompt').hidden = true;
     clearSelectedFile();
     showView('idle');
     await refreshUsage();
@@ -449,6 +487,8 @@ function wireEvents() {
     el('copy').addEventListener('click', () => void copyTranscript());
     el('download').addEventListener('click', downloadTranscript);
     el('new-transcription').addEventListener('click', () => void resetToIdle());
+    el('review-leave').addEventListener('click', () => void resolveReviewAsk('leave'));
+    el('review-dismiss').addEventListener('click', () => void resolveReviewAsk('dismiss'));
     el('error-retry').addEventListener('click', () => void resetToIdle());
     el('sign-in').addEventListener('click', () => {
         void chrome.tabs.create({ url: URLS.extensionAuth });

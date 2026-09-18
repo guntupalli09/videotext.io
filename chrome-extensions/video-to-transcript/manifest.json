@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Video to Transcript — VideoText",
-  "version": "1.0.0",
+  "name": "Video to Transcript \u2014 VideoText",
+  "version": "1.1.0",
   "description": "Turn audio or video into an accurate, editable transcript with VideoText. Copy it or download it as a .TXT file.",
   "icons": {
     "16": "icons/icon-16.png",
@@ -10,7 +10,7 @@
     "128": "icons/icon-128.png"
   },
   "action": {
-    "default_title": "Video to Transcript — VideoText",
+    "default_title": "Video to Transcript \u2014 VideoText",
     "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon-16.png",
@@ -19,12 +19,20 @@
       "128": "icons/icon-128.png"
     }
   },
-  "permissions": ["storage"],
-  "host_permissions": ["https://api.videotext.io/*"],
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://api.videotext.io/*"
+  ],
   "content_scripts": [
     {
-      "matches": ["https://videotext.io/extension-auth*"],
-      "js": ["content-auth.js"],
+      "matches": [
+        "https://videotext.io/extension-auth*"
+      ],
+      "js": [
+        "content-auth.js"
+      ],
       "run_at": "document_idle"
     }
   ],

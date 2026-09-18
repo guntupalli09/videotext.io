@@ -17,6 +17,18 @@ export const API_ORIGIN = 'https://api.videotext.io'
 /** Canonical VideoText website. */
 export const SITE_ORIGIN = 'https://videotext.io'
 
+/** This extension's published Chrome Web Store id. */
+export const EXTENSION_ID = 'bopfkcfiihgcdepcdijedbelcejceakg'
+
+/**
+ * Direct link to this item's Chrome Web Store reviews page.
+ *
+ * Google's documented format is "add /reviews at the end of your item's URL"
+ * (Chrome Web Store user-support docs). This redirects to the current
+ * chromewebstore.google.com listing, so it keeps working as the Store changes.
+ */
+export const REVIEWS_URL = `https://chrome.google.com/webstore/detail/${EXTENSION_ID}/reviews`
+
 /** Backend toolType for this extension's single purpose. Must match BACKEND_TOOL_TYPES in client/src/lib/api.ts. */
 export const TOOL_TYPE = 'video-to-transcript'
 
@@ -38,6 +50,8 @@ export const STORAGE_KEYS = {
   email: 'videotext:email',
   /** In-flight or last-finished job, so reopening the popup resumes it. */
   activeJob: 'videotext:activeJob',
+  /** Completed-job count and whether the one-time review ask has been retired. */
+  reviewPrompt: 'videotext:reviewPrompt',
 } as const
 
 /** Job polling interval. Mirrors JOB_POLL_INTERVAL_MS in client/src/lib/jobPolling.ts. */

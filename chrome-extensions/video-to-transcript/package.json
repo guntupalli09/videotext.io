@@ -1,6 +1,6 @@
 {
   "name": "videotext-chrome-video-to-transcript",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "Chrome MV3 extension: upload audio/video and create a transcript with VideoText.",
   "type": "module",
