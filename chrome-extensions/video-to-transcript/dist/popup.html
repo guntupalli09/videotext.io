@@ -93,6 +93,23 @@
           <button id="download" class="btn btn-secondary">Download .TXT</button>
         </div>
         <button id="new-transcription" class="btn btn-primary">New Transcription</button>
+
+        <!--
+          Repeating but self-limiting review ask. No rating is suggested, nothing
+          is offered in exchange, and there is no happy/unhappy fork — everyone who
+          finishes a job sees the same prompt. See src/lib/reviewPrompt.ts.
+        -->
+        <aside id="review-prompt" class="review-prompt" hidden>
+          <p class="review-prompt-title">Finding VideoText useful?</p>
+          <p class="muted small">
+            Share your experience on the Chrome Web Store. An honest review helps other
+            people find the extension.
+          </p>
+          <div class="review-prompt-actions">
+            <button id="review-leave" class="btn btn-secondary">Leave a review</button>
+            <button id="review-dismiss" class="btn btn-link">Not now</button>
+          </div>
+        </aside>
       </section>
 
       <!-- Error -->

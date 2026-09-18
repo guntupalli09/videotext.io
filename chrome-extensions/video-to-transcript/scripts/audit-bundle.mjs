@@ -47,8 +47,19 @@ const URL_PATTERNS = [
   { name: 'vercel preview URL', re: /\bhttps?:\/\/[A-Za-z0-9-]+\.vercel\.app/ },
 ]
 
-/** Origins the shipped code is allowed to reference. */
-const ALLOWED_ORIGINS = ['https://api.videotext.io', 'https://videotext.io']
+/**
+ * Origins the shipped code is allowed to reference.
+ *
+ * chrome.google.com is here for exactly one reason: the review prompt links to
+ * this item's own Chrome Web Store reviews page, in the format Google's
+ * user-support docs specify. No request is ever made to it — the URL is only
+ * ever opened in a tab by the user's own click.
+ */
+const ALLOWED_ORIGINS = [
+  'https://api.videotext.io',
+  'https://videotext.io',
+  'https://chrome.google.com',
+]
 
 const TEXT_EXTENSIONS = new Set(['.js', '.mjs', '.html', '.css', '.json', '.map', '.txt', '.md'])
 

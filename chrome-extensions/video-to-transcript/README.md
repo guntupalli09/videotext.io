@@ -20,6 +20,7 @@ src/
     session.ts          chrome.storage.local: session token + in-flight job
     validation.ts       advisory pre-flight (type, size, duration)
     transcript.ts       segments → text, download filename
+    reviewPrompt.ts     bounded, policy-safe Chrome Web Store review ask
     languages.ts        the production language list
     errors.ts           API/network error model
 public/                 popup.html, popup.css
@@ -35,13 +36,13 @@ From the repository root:
 
 ```bash
 npm run chrome:transcript:build   # type-check, compile, package, audit
-npm run chrome:transcript:test    # 44 tests
+npm run chrome:transcript:test    # 65 tests
 ```
 
 Or from this directory: `npm run build`, `npm test`, `npm run typecheck`, `npm run audit`,
 `npm run icons`.
 
-Output: `dist/` (load unpacked) and `artifacts/videotext-video-to-transcript-v1.0.0.zip`
+Output: `dist/` (load unpacked) and `artifacts/videotext-video-to-transcript-v1.1.0.zip`
 (Web Store upload, `manifest.json` at the archive root).
 
 ## Design decisions worth knowing
@@ -57,6 +58,12 @@ Output: `dist/` (load unpacked) and `artifacts/videotext-video-to-transcript-v1.
   from `GET /api/usage/current` at runtime; quota, rate-limit, size, duration and subscription checks
   all happen in `runTranscriptionIntake()` before a job exists. Backend refusals are rendered with
   the server's own message.
+* **The review ask is bounded and honest.** After a completed job the popup may ask for a Chrome
+  Web Store review — at most three times ever (job milestones 1/5/15, each also behind a 7-day
+  cooldown), retired permanently the moment the user opens the Store. It asks for an *honest*
+  review, offers nothing in exchange, and shows the same prompt to everyone regardless of how the
+  job went — no happy/unhappy fork, which would be review-gating. See `src/lib/reviewPrompt.ts`;
+  `tests/reviewPrompt.test.mjs` pins all of it.
 * **Progress is never invented.** Percentages come from chunks the server accepted or from the
   worker's own `progress`; the queue line comes from `queuePosition`. A single-request upload shows
   an indeterminate state rather than a fake bar.

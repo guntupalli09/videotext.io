@@ -5,9 +5,27 @@ Everything to enter in the Developer Dashboard, in the order the dashboard asks 
 Values marked **MANUAL INPUT REQUIRED** depend on information that does not exist in this
 repository (support inbox, developer account, graphics) — decide those yourself.
 
-Package to upload: **`artifacts/videotext-video-to-transcript-v1.0.0.zip`**
+Package to upload: **`artifacts/videotext-video-to-transcript-v1.1.0.zip`**
 (`manifest.json` is at the root of the archive — verified by the build and by
 `tests/bundle.test.mjs`.)
+
+---
+
+## v1.1.0 — what changed and why it needs a resubmit
+
+v1.1.0 adds the in-extension review engine: after a completed transcription the popup may ask for a
+Chrome Web Store review. **This changes the shipped package**, so unlike a listing-copy edit it
+needs a new ZIP uploaded and a new review.
+
+Nothing in the listing copy changed, so the keyword-spam history below still applies unchanged —
+**do not touch the Description field when resubmitting.**
+
+If a reviewer asks about the prompt, the short answer: it asks for an honest review, offers nothing
+in exchange, shows the same prompt to every user regardless of how the job went (no review-gating
+fork), appears at most three times ever behind both a job-count milestone and a 7-day cooldown, and
+retires permanently once the user opens the Store. It links only to this item's own reviews page,
+in the format Google's user-support docs specify. `tests/reviewPrompt.test.mjs` pins every one of
+those properties.
 
 ---
 
@@ -47,7 +65,7 @@ for long comma runs, format names, language names, audience roll-calls, divider 
       the extension will 404.
 - [ ] **Build fresh:** `npm run chrome:transcript:build` from the repo root. It type-checks,
       compiles, packages, and runs the bundle security audit; any finding fails the build.
-- [ ] **Tests green:** `npm run chrome:transcript:test` (44 tests).
+- [ ] **Tests green:** `npm run chrome:transcript:test` (65 tests).
 - [ ] **Smoke-test unpacked** using `TESTING.md` — at minimum: sign in, transcribe a short clip,
       copy, download.
 - [ ] One-time: register a Chrome Web Store developer account and pay the one-off registration fee.
@@ -59,9 +77,9 @@ for long comma runs, format names, language names, audience roll-calls, divider 
 
 | Field | Value |
 | --- | --- |
-| Upload | `artifacts/videotext-video-to-transcript-v1.0.0.zip` |
+| Upload | `artifacts/videotext-video-to-transcript-v1.1.0.zip` |
 | Manifest version | 3 (set in the package) |
-| Extension version | `1.0.0` (set in the package) |
+| Extension version | `1.1.0` (set in the package) |
 
 ## 2 — Store listing
 

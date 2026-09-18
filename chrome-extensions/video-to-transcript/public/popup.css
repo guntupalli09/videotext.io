@@ -253,6 +253,26 @@ select:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
 .transcript:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
 .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
+/* One-time review ask (see src/lib/reviewPrompt.ts) */
+.review-prompt {
+  margin-top: 2px;
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.review-prompt-title { font-weight: 600; }
+.review-prompt-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+.review-prompt-actions .btn-secondary { padding: 7px 12px; }
+
 /* Footer */
 .footer {
   padding: 10px 16px 12px;
