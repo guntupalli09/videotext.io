@@ -60,7 +60,9 @@ Disallow: /site-index
 
 # Training-only / bulk scrapers (cite-no-train policy)
 User-agent: Google-Extended
-Disallow: /
+Allow: /
+Disallow: /founder
+Disallow: /site-index
 
 User-agent: Applebot-Extended
 Disallow: /
@@ -69,7 +71,9 @@ User-agent: Bytespider
 Disallow: /
 
 User-agent: CCBot
-Disallow: /
+Allow: /
+Disallow: /founder
+Disallow: /site-index
 
 # /founder is a private, login-gated internal analytics dashboard.
 # /site-index is a large internal directory; keep it out of the index.
