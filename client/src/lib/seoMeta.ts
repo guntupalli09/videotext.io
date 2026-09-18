@@ -490,7 +490,7 @@ const STATIC_ROUTE_SEO: Record<string, { title: string; description: string }> =
       'Netflix or broadcast delivered TTML/DFXP? Convert to SRT in the browser — timecodes and dialogue preserved. Import into Premiere or run QC.',
   },
   '/subtitle-tools': {
-    title: 'Subtitletools Alternative — Free SRT Convert & Validate | VideoText',
+    title: 'Free Subtitle Tools — Convert, Fix & Validate SRT/VTT | VideoText',
     description: 'Free browser subtitle tools like Subtitletools: convert SRT↔VTT, validate CPL/CPS, shift timing — plus AI SRT generation when you need a new file. Nothing uploaded.',
   },
   '/subtitle-resources': {
