@@ -690,7 +690,7 @@ function App() {
             <Route path="/youtube-video-to-transcript" element={<Navigate to="/video-to-transcript" replace />} />
             <Route path="/google-meet-transcript" element={<Navigate to="/video-to-transcript" replace />} />
             <Route path="/srt-generator" element={<Navigate to="/video-to-srt" replace />} />
-            <Route path="/srt-to-word" element={<Navigate to="/tools/srt-to-text" replace />} />
+            <Route path="/srt-to-word" element={<SeoToolPage />} />
             <Route path="/netflix-ttsc-checklist" element={<NetflixTtscChecklistPage />} />
             <Route path="/otter-vs-videotext" element={<OtterVsVideoText />} />
             <Route path="/descript-vs-videotext" element={<DescriptVsVideoText />} />
