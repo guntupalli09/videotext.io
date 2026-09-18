@@ -66,7 +66,6 @@ export const SLUG_TO_PRIMARY: Record<string, string> = {
   'how-to-transcript-youtube': '/video-to-transcript',
   'youtube-transcript-editor': '/video-to-transcript',
   'youtube-video-to-transcript': '/video-to-transcript',
-  'srt-to-word': '/tools/srt-to-text',
   'mov-to-text': '/video-to-transcript',
   'webm-to-text': '/video-to-transcript',
   'automatic-subtitles': '/video-to-subtitles',
