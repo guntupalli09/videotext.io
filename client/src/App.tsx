@@ -671,9 +671,9 @@ function App() {
                   { title: 'Freelance transcription work', body: 'Use the initial transcript as the source for clean-verbatim editing and client-guideline formatting instead of retyping from the video.' }
                 ],
                 technicalExplanation: [
-                  'A transcript is the text of what is spoken. A subtitle file adds timed cues so dialogue can appear in sync with the video. SRT and VTT are the common subtitle delivery formats.',
-                  'Caption quality is more than correct words. Long lines, fast cues, gaps, overlaps, and timing drift make subtitles difficult to read even when the transcript itself is accurate.',
-                  'Use the transcript as the editable source of truth, then export the file format needed for editing, publishing, accessibility, or client delivery.'
+                  { title: 'Transcript versus subtitle file', body: 'A transcript is the text of what is spoken. A subtitle file adds timed cues so dialogue can appear in sync with the video. SRT and VTT are the common subtitle delivery formats.' },
+                  { title: 'Caption quality is more than accuracy', body: 'Long lines, fast cues, gaps, overlaps, and timing drift make subtitles difficult to read even when the transcript itself is accurate.' },
+                  { title: 'One source, many export formats', body: 'Use the transcript as the editable source of truth, then export the file format needed for editing, publishing, accessibility, or client delivery.' }
                 ],
                 ctaText: 'Create YouTube transcript',
                 ctaPath: '/video-to-transcript'
