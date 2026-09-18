@@ -4,6 +4,17 @@ Generated: local-dist-snapshot
 
 Important routes are evaluated against obvious user-intent subtopics for their route family. Missing items are not keyword-density failures; they are opportunities to add useful, specific information.
 
+## /glossary/localization
+
+- **Missing subtopics:** timing and synchronization, line length and reading speed, platform export compatibility, accessibility considerations
+- **Weak sections:** Several paragraphs are too short to add standalone informational value
+- **Expansion opportunities:**
+  - Add timing/sync guidance with common subtitle edge cases.
+  - Discuss line length, reading speed, and accessibility constraints.
+  - Add platform-specific export and compatibility notes.
+  - Add accessibility and SDH/closed-caption considerations.
+  - Replace the templated intro with a page-specific problem, audience, and workflow description.
+
 ## /happy-scribe-transcription-guidelines
 
 - **Missing subtopics:** timestamps, speaker labels, QA rejection criteria, timing preservation
@@ -25,6 +36,75 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Discuss line length, reading speed, and accessibility constraints.
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
   - Replace generic AI-style transitions with concrete examples and constraints.
+
+## /glossary/closed-captions
+
+- **Missing subtopics:** timing and synchronization, line length and reading speed, platform export compatibility
+- **Weak sections:** Several paragraphs are too short to add standalone informational value
+- **Expansion opportunities:**
+  - Add timing/sync guidance with common subtitle edge cases.
+  - Discuss line length, reading speed, and accessibility constraints.
+  - Add platform-specific export and compatibility notes.
+  - Replace the templated intro with a page-specific problem, audience, and workflow description.
+
+## /glossary/scc
+
+- **Missing subtopics:** timing and synchronization, line length and reading speed, platform export compatibility
+- **Weak sections:** Several paragraphs are too short to add standalone informational value
+- **Expansion opportunities:**
+  - Add timing/sync guidance with common subtitle edge cases.
+  - Discuss line length, reading speed, and accessibility constraints.
+  - Add platform-specific export and compatibility notes.
+  - Replace the templated intro with a page-specific problem, audience, and workflow description.
+
+## /glossary/sdh
+
+- **Missing subtopics:** timing and synchronization, line length and reading speed, platform export compatibility
+- **Weak sections:** Several paragraphs are too short to add standalone informational value
+- **Expansion opportunities:**
+  - Add timing/sync guidance with common subtitle edge cases.
+  - Discuss line length, reading speed, and accessibility constraints.
+  - Add platform-specific export and compatibility notes.
+  - Replace the templated intro with a page-specific problem, audience, and workflow description.
+
+## /glossary/srt-file
+
+- **Missing subtopics:** line length and reading speed, accessibility considerations
+- **Weak sections:** Generic H2s such as “How it works”, “Features”, or “Use cases” need route-specific framing; Several paragraphs are too short to add standalone informational value
+- **Expansion opportunities:**
+  - Discuss line length, reading speed, and accessibility constraints.
+  - Add accessibility and SDH/closed-caption considerations.
+  - Replace the templated intro with a page-specific problem, audience, and workflow description.
+
+## /glossary/subtitle-synchronization
+
+- **Missing subtopics:** line length and reading speed, platform export compatibility, accessibility considerations
+- **Weak sections:** Several paragraphs are too short to add standalone informational value
+- **Expansion opportunities:**
+  - Discuss line length, reading speed, and accessibility constraints.
+  - Add platform-specific export and compatibility notes.
+  - Add accessibility and SDH/closed-caption considerations.
+  - Replace the templated intro with a page-specific problem, audience, and workflow description.
+
+## /glossary/subtitles
+
+- **Missing subtopics:** feature-by-feature comparison, pricing or plan limits, migration guidance
+- **Weak sections:** Several paragraphs are too short to add standalone informational value
+- **Expansion opportunities:**
+  - Add a feature-by-feature comparison with tradeoffs.
+  - Discuss pricing, plan limits, or usage constraints.
+  - Add switching/migration guidance and data export considerations.
+  - Replace the templated intro with a page-specific problem, audience, and workflow description.
+
+## /glossary/timecode
+
+- **Missing subtopics:** feature-by-feature comparison, pricing or plan limits, migration guidance
+- **Weak sections:** Several paragraphs are too short to add standalone informational value
+- **Expansion opportunities:**
+  - Add a feature-by-feature comparison with tradeoffs.
+  - Discuss pricing, plan limits, or usage constraints.
+  - Add switching/migration guidance and data export considerations.
+  - Replace the templated intro with a page-specific problem, audience, and workflow description.
 
 ## /gmr-transcription-guidelines
 
@@ -96,6 +176,94 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Add guidance for long recordings, large files, and batching.
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
   - Replace generic AI-style transitions with concrete examples and constraints.
+
+## /glossary
+
+- **Missing subtopics:** line length and reading speed, platform export compatibility
+- **Weak sections:** Several paragraphs are too short to add standalone informational value
+- **Expansion opportunities:**
+  - Discuss line length, reading speed, and accessibility constraints.
+  - Add platform-specific export and compatibility notes.
+
+## /glossary/automatic-speech-recognition
+
+- **Missing subtopics:** privacy and storage
+- **Weak sections:** Generic H2s such as “How it works”, “Features”, or “Use cases” need route-specific framing; Several paragraphs are too short to add standalone informational value
+- **Expansion opportunities:**
+  - Clarify recording privacy, storage, and retention behavior.
+  - Replace the templated intro with a page-specific problem, audience, and workflow description.
+
+## /glossary/caption-accessibility
+
+- **Missing subtopics:** line length and reading speed, platform export compatibility
+- **Weak sections:** Several paragraphs are too short to add standalone informational value
+- **Expansion opportunities:**
+  - Discuss line length, reading speed, and accessibility constraints.
+  - Add platform-specific export and compatibility notes.
+  - Replace the templated intro with a page-specific problem, audience, and workflow description.
+
+## /glossary/confidence-score
+
+- **Missing subtopics:** microphone and audio quality, privacy and storage
+- **Weak sections:** Several paragraphs are too short to add standalone informational value
+- **Expansion opportunities:**
+  - Add microphone, noise, and recording quality guidance.
+  - Clarify recording privacy, storage, and retention behavior.
+  - Replace the templated intro with a page-specific problem, audience, and workflow description.
+
+## /glossary/forced-subtitles
+
+- **Missing subtopics:** timing and synchronization, line length and reading speed
+- **Weak sections:** Several paragraphs are too short to add standalone informational value
+- **Expansion opportunities:**
+  - Add timing/sync guidance with common subtitle edge cases.
+  - Discuss line length, reading speed, and accessibility constraints.
+  - Replace the templated intro with a page-specific problem, audience, and workflow description.
+
+## /glossary/frame-rate
+
+- **Missing subtopics:** line length and reading speed, platform export compatibility
+- **Weak sections:** Several paragraphs are too short to add standalone informational value
+- **Expansion opportunities:**
+  - Discuss line length, reading speed, and accessibility constraints.
+  - Add platform-specific export and compatibility notes.
+  - Replace the templated intro with a page-specific problem, audience, and workflow description.
+
+## /glossary/open-captions
+
+- **Missing subtopics:** timing and synchronization, line length and reading speed
+- **Weak sections:** Several paragraphs are too short to add standalone informational value
+- **Expansion opportunities:**
+  - Add timing/sync guidance with common subtitle edge cases.
+  - Discuss line length, reading speed, and accessibility constraints.
+  - Replace the templated intro with a page-specific problem, audience, and workflow description.
+
+## /glossary/speech-recognition-model
+
+- **Missing subtopics:** microphone and audio quality, privacy and storage
+- **Weak sections:** Several paragraphs are too short to add standalone informational value
+- **Expansion opportunities:**
+  - Add microphone, noise, and recording quality guidance.
+  - Clarify recording privacy, storage, and retention behavior.
+  - Replace the templated intro with a page-specific problem, audience, and workflow description.
+
+## /glossary/wcag
+
+- **Missing subtopics:** line length and reading speed, platform export compatibility
+- **Weak sections:** Several paragraphs are too short to add standalone informational value
+- **Expansion opportunities:**
+  - Discuss line length, reading speed, and accessibility constraints.
+  - Add platform-specific export and compatibility notes.
+  - Replace the templated intro with a page-specific problem, audience, and workflow description.
+
+## /glossary/webvtt
+
+- **Missing subtopics:** line length and reading speed, platform export compatibility
+- **Weak sections:** Several paragraphs are too short to add standalone informational value
+- **Expansion opportunities:**
+  - Discuss line length, reading speed, and accessibility constraints.
+  - Add platform-specific export and compatibility notes.
+  - Replace the templated intro with a page-specific problem, audience, and workflow description.
 
 ## /netflix-ttsc-checklist
 
@@ -243,6 +411,22 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Add guidance for long recordings, large files, and batching.
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
   - Replace generic AI-style transitions with concrete examples and constraints.
+
+## /glossary/overlapping-speech
+
+- **Missing subtopics:** privacy and storage
+- **Weak sections:** Several paragraphs are too short to add standalone informational value
+- **Expansion opportunities:**
+  - Clarify recording privacy, storage, and retention behavior.
+  - Replace the templated intro with a page-specific problem, audience, and workflow description.
+
+## /glossary/ttml
+
+- **Missing subtopics:** timing preservation
+- **Weak sections:** Several paragraphs are too short to add standalone informational value
+- **Expansion opportunities:**
+  - Explain how subtitle timing is preserved during translation.
+  - Replace the templated intro with a page-specific problem, audience, and workflow description.
 
 ## /hindi-transcription
 
@@ -528,6 +712,13 @@ Important routes are evaluated against obvious user-intent subtopics for their r
 - **Weak sections:** Several paragraphs are too short to add standalone informational value
 - **Expansion opportunities:**
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /glossary/caption-file
+
+- **Missing subtopics:** None detected
+- **Weak sections:** Several paragraphs are too short to add standalone informational value
+- **Expansion opportunities:**
+  - Replace the templated intro with a page-specific problem, audience, and workflow description.
 
 ## /granola-alternative
 
@@ -1131,6 +1322,13 @@ Important routes are evaluated against obvious user-intent subtopics for their r
   - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
 
 ## /sonix-alternative
+
+- **Missing subtopics:** None detected
+- **Weak sections:** None detected
+- **Expansion opportunities:**
+  - Rewrite duplicated paragraphs with route-specific examples and differentiated insights.
+
+## /srt-to-word
 
 - **Missing subtopics:** None detected
 - **Weak sections:** None detected

@@ -6,11 +6,11 @@ Generated: local-dist-snapshot
 
 | Metric | Count |
 | --- | --- |
-| Total pages audited | 265 |
+| Total pages audited | 309 |
 | Missing local /dist HTML | 1 |
 | Pages with banned phrases | 0 |
-| Pages flagged thin | 2 |
-| Pages with high duplication | 251 |
+| Pages flagged thin | 38 |
+| Pages with high duplication | 292 |
 | High thin-content risk pages | 0 |
 | Critical thin-content risk pages | 1 |
 
@@ -25,46 +25,82 @@ _None._
 | Path | Words | Paragraphs | H2s | FAQs | Thin risk |
 | --- | --- | --- | --- | --- | --- |
 | /blog | 0 | 0 | 0 | 0 | 100 (CRITICAL THIN-CONTENT RISK) |
-| /research/transcription-accuracy-benchmark-2026 | 268 | 6 | 4 | 4 | 8 (HEALTHY) |
+| /glossary/localization | 169 | 4 | 6 | 0 | 37 (MODERATE RISK) |
+| /glossary/scc | 176 | 4 | 6 | 0 | 37 (MODERATE RISK) |
+| /glossary/subtitle-synchronization | 190 | 4 | 6 | 0 | 37 (MODERATE RISK) |
+| /glossary/subtitles | 182 | 4 | 6 | 0 | 37 (MODERATE RISK) |
+| /glossary/timecode | 182 | 4 | 6 | 0 | 37 (MODERATE RISK) |
+| /glossary/sdh | 182 | 4 | 6 | 0 | 36 (MODERATE RISK) |
+| /glossary/speech-recognition-model | 186 | 4 | 6 | 0 | 34 (MODERATE RISK) |
+| /glossary/closed-captions | 249 | 5 | 7 | 0 | 32 (MODERATE RISK) |
+| /glossary/caption-accessibility | 195 | 4 | 6 | 0 | 31 (MODERATE RISK) |
+| /glossary/forced-subtitles | 163 | 4 | 6 | 0 | 31 (MODERATE RISK) |
+| /glossary/open-captions | 170 | 4 | 6 | 0 | 31 (MODERATE RISK) |
+| /glossary/confidence-score | 203 | 5 | 7 | 0 | 30 (MODERATE RISK) |
+| /glossary/frame-rate | 178 | 4 | 6 | 0 | 30 (MODERATE RISK) |
+| /glossary/overlapping-speech | 174 | 4 | 6 | 0 | 30 (MODERATE RISK) |
+| /glossary/ttml | 170 | 4 | 6 | 0 | 30 (MODERATE RISK) |
+| /glossary/wcag | 199 | 4 | 6 | 0 | 30 (MODERATE RISK) |
+| /glossary/webvtt | 192 | 5 | 7 | 0 | 28 (HEALTHY) |
+| /glossary/srt-file | 286 | 6 | 9 | 1 | 27 (HEALTHY) |
+| /glossary/speaker-identification | 162 | 4 | 6 | 0 | 26 (HEALTHY) |
+| /glossary/audio-description | 183 | 4 | 6 | 0 | 24 (HEALTHY) |
+| /glossary/audio-extraction | 176 | 4 | 6 | 0 | 24 (HEALTHY) |
+| /glossary/caption-file | 176 | 4 | 6 | 0 | 24 (HEALTHY) |
+| /glossary/character-error-rate | 173 | 4 | 6 | 0 | 24 (HEALTHY) |
+| /glossary/drop-frame-timecode | 169 | 4 | 6 | 0 | 24 (HEALTHY) |
+| /glossary/hallucination | 172 | 4 | 6 | 0 | 24 (HEALTHY) |
+| /glossary/punctuation-restoration | 156 | 4 | 6 | 0 | 24 (HEALTHY) |
+| /glossary/smpte-timecode | 164 | 4 | 6 | 0 | 24 (HEALTHY) |
+| /glossary/speaker-labels | 161 | 4 | 6 | 0 | 24 (HEALTHY) |
+| /glossary/timestamp | 151 | 4 | 6 | 0 | 24 (HEALTHY) |
+| /glossary/transcription-qa | 178 | 4 | 6 | 0 | 24 (HEALTHY) |
+| /glossary/multilingual-transcription | 166 | 4 | 6 | 0 | 23 (HEALTHY) |
+| /glossary/full-verbatim | 198 | 5 | 7 | 0 | 21 (HEALTHY) |
+| /glossary/transcription-accuracy | 228 | 5 | 7 | 0 | 21 (HEALTHY) |
+| /glossary/verbatim-transcription | 231 | 6 | 8 | 0 | 21 (HEALTHY) |
+| /glossary/speaker-diarization | 249 | 6 | 8 | 0 | 20 (HEALTHY) |
+| /glossary/clean-verbatim | 249 | 6 | 8 | 0 | 19 (HEALTHY) |
+| /research/transcription-accuracy-benchmark-2026 | 272 | 6 | 4 | 4 | 8 (HEALTHY) |
 
 
 ## Pages with high duplication
 
 | Path | Unique paragraph ratio | Reused content | Max paragraph reuse | Max FAQ reuse |
 | --- | --- | --- | --- | --- |
-| /subtitle-character-checker | 100% | 100% | 46 | 24 |
-| /subtitle-word-counter | 100% | 100% | 46 | 24 |
-| /tools/subtitle-character-checker | 100% | 100% | 46 | 24 |
-| /tools/subtitle-word-counter | 100% | 100% | 46 | 24 |
-| /burn-subtitles | 100% | 96% | 46 | 24 |
-| /fix-subtitles | 100% | 96% | 46 | 24 |
-| /free-captions-and-subtitles | 100% | 96% | 46 | 24 |
-| /subtitle-reading-speed | 100% | 96% | 46 | 24 |
-| /subtitle-tools | 100% | 96% | 46 | 24 |
-| /subtitle-validator | 100% | 96% | 46 | 24 |
-| /tools/ass-to-srt | 100% | 96% | 46 | 24 |
-| /tools/html-to-srt | 100% | 96% | 46 | 24 |
-| /tools/merge-srt-files | 100% | 96% | 46 | 24 |
-| /tools/sbv-to-srt | 100% | 96% | 46 | 24 |
-| /tools/shift-subtitle-timing | 100% | 96% | 46 | 24 |
-| /tools/srt-to-sbv | 100% | 96% | 46 | 24 |
-| /tools/srt-to-text | 100% | 96% | 46 | 24 |
-| /tools/srt-to-vtt | 100% | 96% | 46 | 24 |
-| /tools/subtitle-reading-speed | 100% | 96% | 46 | 24 |
-| /tools/subtitle-validator | 100% | 96% | 46 | 24 |
-| /tools/ttml-to-srt | 100% | 96% | 46 | 24 |
-| /tools/vtt-to-srt | 100% | 96% | 46 | 24 |
-| /translate-subtitles | 100% | 96% | 46 | 24 |
-| /video-to-subtitles | 100% | 96% | 46 | 24 |
+| /subtitle-character-checker | 100% | 100% | 47 | 24 |
+| /subtitle-word-counter | 100% | 100% | 47 | 24 |
+| /tools/subtitle-character-checker | 100% | 100% | 47 | 24 |
+| /tools/subtitle-word-counter | 100% | 100% | 47 | 24 |
+| /burn-subtitles | 100% | 96% | 47 | 24 |
+| /fix-subtitles | 100% | 96% | 47 | 24 |
+| /free-captions-and-subtitles | 100% | 96% | 47 | 24 |
+| /subtitle-reading-speed | 100% | 96% | 47 | 24 |
+| /subtitle-tools | 100% | 96% | 47 | 24 |
+| /subtitle-validator | 100% | 96% | 47 | 24 |
+| /tools/ass-to-srt | 100% | 96% | 47 | 24 |
+| /tools/html-to-srt | 100% | 96% | 47 | 24 |
+| /tools/merge-srt-files | 100% | 96% | 47 | 24 |
+| /tools/sbv-to-srt | 100% | 96% | 47 | 24 |
+| /tools/shift-subtitle-timing | 100% | 96% | 47 | 24 |
+| /tools/srt-to-sbv | 100% | 96% | 47 | 24 |
+| /tools/srt-to-text | 100% | 96% | 47 | 24 |
+| /tools/srt-to-vtt | 100% | 96% | 47 | 24 |
+| /tools/subtitle-reading-speed | 100% | 96% | 47 | 24 |
+| /tools/subtitle-validator | 100% | 96% | 47 | 24 |
+| /tools/ttml-to-srt | 100% | 96% | 47 | 24 |
+| /tools/vtt-to-srt | 100% | 96% | 47 | 24 |
+| /translate-subtitles | 100% | 96% | 47 | 24 |
+| /video-to-subtitles | 100% | 96% | 47 | 24 |
 | /accuracy-test | 100% | 96% | 5 | 3 |
 | /fastest-transcription-software | 100% | 96% | 5 | 3 |
 | /transcription-benchmark | 100% | 96% | 5 | 3 |
 | /audio-to-text-converter | 100% | 91% | 25 | 0 |
 | /best-podcast-transcription-tool | 100% | 91% | 16 | 0 |
-| /add-subtitles-to-video | 100% | 90% | 46 | 0 |
-| /auto-subtitle-generator | 100% | 90% | 46 | 0 |
-| /caption-video-online | 100% | 90% | 46 | 0 |
-| /video-caption-generator | 100% | 90% | 46 | 0 |
+| /add-subtitles-to-video | 100% | 90% | 47 | 0 |
+| /auto-subtitle-generator | 100% | 90% | 47 | 0 |
+| /caption-video-online | 100% | 90% | 47 | 0 |
+| /video-caption-generator | 100% | 90% | 47 | 0 |
 | /movavi-alternative | 100% | 86% | 59 | 33 |
 | /notability-alternative | 100% | 86% | 59 | 2 |
 | /submagic-alternative | 100% | 86% | 59 | 33 |
@@ -79,7 +115,7 @@ _None._
 | /zubtitle-alternative | 100% | 86% | 59 | 33 |
 | /dictation-io-alternative | 100% | 86% | 59 | 0 |
 | /elevenlabs-alternative | 100% | 86% | 59 | 0 |
-| /generate-subtitles-from-video | 100% | 86% | 46 | 2 |
+| /generate-subtitles-from-video | 100% | 86% | 47 | 2 |
 | /speechmatics-alternative | 100% | 86% | 59 | 0 |
 | /speechtexter-alternative | 100% | 86% | 59 | 0 |
 | /whispertype-alternative | 100% | 86% | 59 | 0 |
@@ -87,22 +123,22 @@ _None._
 | /adobe-premiere-captions-alternative | 100% | 83% | 59 | 5 |
 | /assembly-ai-alternative | 100% | 83% | 59 | 33 |
 | /castmagic-alternative | 100% | 83% | 59 | 33 |
-| /daily-transcripts-format-guide | 100% | 83% | 29 | 0 |
-| /daily-transcripts-style-guide | 100% | 83% | 29 | 0 |
+| /daily-transcripts-format-guide | 100% | 83% | 30 | 0 |
+| /daily-transcripts-style-guide | 100% | 83% | 30 | 0 |
 | /free-voice-to-text | 100% | 83% | 16 | 0 |
-| /happy-scribe-format-guide | 100% | 83% | 29 | 0 |
+| /happy-scribe-format-guide | 100% | 83% | 30 | 0 |
 | /kapwing-alternative | 100% | 83% | 59 | 33 |
 | /riverside-alternative | 100% | 83% | 59 | 33 |
-| /speechpad-format-guide | 100% | 83% | 29 | 0 |
-| /transcribio-format-guide | 100% | 83% | 29 | 0 |
-| /transcribio-style-guide | 100% | 83% | 29 | 0 |
-| /verbit-format-guide | 100% | 83% | 29 | 0 |
+| /speechpad-format-guide | 100% | 83% | 30 | 0 |
+| /transcribio-format-guide | 100% | 83% | 30 | 0 |
+| /transcribio-style-guide | 100% | 83% | 30 | 0 |
+| /verbit-format-guide | 100% | 83% | 30 | 0 |
 | /voice-to-text-online | 100% | 83% | 16 | 0 |
 | /youtube-auto-captions-alternative | 100% | 83% | 19 | 33 |
-| /best-caption-generator | 100% | 82% | 46 | 0 |
+| /best-caption-generator | 100% | 82% | 47 | 0 |
 | /best-transcription-tool-for-journalists | 100% | 82% | 5 | 0 |
 | /best-transcription-tool-for-students | 100% | 82% | 5 | 0 |
-| /caption-maker | 100% | 82% | 46 | 0 |
+| /caption-maker | 100% | 82% | 47 | 0 |
 | /deepgram-alternative | 100% | 82% | 59 | 0 |
 | /ditto-transcripts-alternative | 100% | 82% | 59 | 33 |
 | /google-docs-voice-typing-alternative | 100% | 82% | 59 | 0 |
@@ -110,25 +146,25 @@ _None._
 | /krisp-alternative | 100% | 82% | 59 | 33 |
 | /maestra-alternative | 100% | 82% | 59 | 33 |
 | /microsoft-word-transcription-alternative | 100% | 82% | 59 | 0 |
-| /online-subtitle-editor | 100% | 82% | 46 | 0 |
-| /shorts-captions | 100% | 82% | 46 | 5 |
+| /online-subtitle-editor | 100% | 82% | 47 | 0 |
+| /shorts-captions | 100% | 82% | 47 | 5 |
 | /speechify-alternative | 100% | 82% | 59 | 0 |
 | /speechnotes-alternative | 100% | 82% | 59 | 0 |
 | /subtitle-edit-alternative | 100% | 82% | 59 | 0 |
 | /tactiq-alternative | 100% | 82% | 59 | 0 |
-| /video-captions | 100% | 82% | 46 | 2 |
+| /video-captions | 100% | 82% | 47 | 2 |
 | /webex-alternative | 100% | 82% | 59 | 0 |
 | /instagram-reel-transcript | 100% | 80% | 25 | 5 |
 | /screen-recording-transcript | 100% | 80% | 16 | 0 |
 | /tiktok-to-transcript | 100% | 80% | 16 | 0 |
-| /3play-media-format-guide | 100% | 79% | 29 | 0 |
+| /3play-media-format-guide | 100% | 79% | 30 | 0 |
 | /allscribe-alternative | 100% | 79% | 59 | 33 |
 | /daily-transcripts-guidelines | 100% | 79% | 16 | 0 |
 | /fliki-alternative | 100% | 79% | 59 | 33 |
 | /free-speech-to-text | 100% | 79% | 16 | 0 |
 | /genio-alternative | 100% | 79% | 59 | 33 |
-| /gmr-transcript-format-guide | 100% | 79% | 29 | 0 |
-| /gotranscript-transcription-rules | 100% | 79% | 29 | 0 |
+| /gmr-transcript-format-guide | 100% | 79% | 30 | 0 |
+| /gotranscript-transcription-rules | 100% | 79% | 30 | 0 |
 | /headliner-alternative | 100% | 79% | 59 | 33 |
 | /hedy-ai-alternative | 100% | 79% | 59 | 33 |
 | /mem-ai-alternative | 100% | 79% | 59 | 33 |
@@ -180,12 +216,12 @@ _None._
    - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, /easyscribe-alternative, /elevenlabs-alternative, +47 more
 22. **59 pages** — switch to videotext when your current tool caps recordings at 30 or 60 minutes and requires manual file splitting for longer interviews webinars and podcast recordings
    - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, /easyscribe-alternative, /elevenlabs-alternative, +47 more
-23. **46 pages** — permanently embedded caption text rendered directly into the video frame cannot be toggled off by the viewer required for platforms that strip external caption tracks font rendering shadow depth and vertical position al…
-   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +34 more
-24. **46 pages** — instagram does not display soft subtitle tracks during autoplay in feed or reels burned captions are the only reliable method for ensuring captions appear for silent autoplay viewers instagram s built in auto caption fe…
-   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +34 more
-25. **46 pages** — export srt for youtube vimeo and video editors export vtt for html5 web players and streaming platforms that support caption positioning choose burned caption output for instagram reels tiktok clips and any social conte…
-   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +34 more
+23. **47 pages** — permanently embedded caption text rendered directly into the video frame cannot be toggled off by the viewer required for platforms that strip external caption tracks font rendering shadow depth and vertical position al…
+   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +35 more
+24. **47 pages** — instagram does not display soft subtitle tracks during autoplay in feed or reels burned captions are the only reliable method for ensuring captions appear for silent autoplay viewers instagram s built in auto caption fe…
+   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +35 more
+25. **47 pages** — export srt for youtube vimeo and video editors export vtt for html5 web players and streaming platforms that support caption positioning choose burned caption output for instagram reels tiktok clips and any social conte…
+   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +35 more
 
 
 ## Top repeated FAQs
@@ -244,16 +280,16 @@ _None._
 
 ## Top repeated H2s
 
-1. **77 pages** — outputs you can use immediately
+1. **79 pages** — frequently asked questions
+   - Pages: /, /3play-media-transcription-guidelines, /aac-to-text, /about, /academic-transcription, /ai-captioning, /ai-transcription-tools, /ai-transcription-workflow, /arabic-transcription, /avi-to-text, /best-video-transcription-tool, /changelog, +67 more
+2. **77 pages** — outputs you can use immediately
    - Pages: /, /3play-media-transcription-guidelines, /aac-to-text, /about, /academic-transcription, /ai-captioning, /ai-transcription-tools, /ai-transcription-workflow, /alternatives, /arabic-transcription, /avi-to-text, /best-video-transcription-tool, +65 more
-2. **77 pages** — why teams use this workflow
+3. **77 pages** — why teams use this workflow
    - Pages: /, /3play-media-transcription-guidelines, /aac-to-text, /about, /academic-transcription, /ai-captioning, /ai-transcription-tools, /ai-transcription-workflow, /alternatives, /arabic-transcription, /avi-to-text, /best-video-transcription-tool, +65 more
-3. **77 pages** — related videotext workflows
+4. **77 pages** — related videotext workflows
    - Pages: /, /3play-media-transcription-guidelines, /aac-to-text, /about, /academic-transcription, /ai-captioning, /ai-transcription-tools, /ai-transcription-workflow, /alternatives, /arabic-transcription, /avi-to-text, /best-video-transcription-tool, +65 more
-4. **77 pages** — how it works
+5. **77 pages** — how it works
    - Pages: /, /3play-media-transcription-guidelines, /aac-to-text, /about, /academic-transcription, /ai-captioning, /ai-transcription-tools, /ai-transcription-workflow, /alternatives, /arabic-transcription, /avi-to-text, /best-video-transcription-tool, +65 more
-5. **75 pages** — frequently asked questions
-   - Pages: /, /3play-media-transcription-guidelines, /aac-to-text, /about, /academic-transcription, /ai-captioning, /ai-transcription-tools, /ai-transcription-workflow, /arabic-transcription, /avi-to-text, /best-video-transcription-tool, /changelog, +63 more
 6. **66 pages** — where videotext differs from this tool operationally
    - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /buzz-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /descript-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, +54 more
 7. **66 pages** — other videotext comparisons and alternatives
@@ -270,28 +306,28 @@ _None._
    - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, /easyscribe-alternative, /elevenlabs-alternative, +47 more
 13. **59 pages** — export format and integration differences
    - Pages: /adobe-premiere-captions-alternative, /allscribe-alternative, /assembly-ai-alternative, /capcut-alternative, /castmagic-alternative, /compare, /deepgram-alternative, /dictation-io-alternative, /ditto-transcripts-alternative, /dragon-dictate-alternative, /easyscribe-alternative, /elevenlabs-alternative, +47 more
-14. **46 pages** — where subtitle workflows break in real production
-   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +34 more
-15. **46 pages** — creators and teams running subtitle workflows
-   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +34 more
-16. **46 pages** — from raw video to export ready subtitle file
-   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +34 more
-17. **46 pages** — subtitle edge cases that cause qa failure
-   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +34 more
-18. **46 pages** — platform specific subtitle requirements
-   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +34 more
-19. **46 pages** — subtitle workflow questions answered
-   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +34 more
-20. **46 pages** — srt vtt and burned caption outputs
-   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +34 more
-21. **46 pages** — related caption and subtitle tools
-   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +34 more
-22. **30 pages** — transcriptionists and editors running formatting workflows
-   - Pages: /3play-media-format-guide, /daily-transcripts-format-guide, /daily-transcripts-style-guide, /gmr-transcript-format-guide, /gotranscript-guidelines, /gotranscript-style-guide, /gotranscript-test-guide, /gotranscript-transcription-format, /gotranscript-transcription-rules, /guideline-format, /happy-scribe-format-guide, /rev-ai-transcription-guide, +18 more
-23. **30 pages** — clean verbatim and platform ready transcript outputs
-   - Pages: /3play-media-format-guide, /daily-transcripts-format-guide, /daily-transcripts-style-guide, /gmr-transcript-format-guide, /gotranscript-guidelines, /gotranscript-style-guide, /gotranscript-test-guide, /gotranscript-transcription-format, /gotranscript-transcription-rules, /guideline-format, /happy-scribe-format-guide, /rev-ai-transcription-guide, +18 more
-24. **30 pages** — from raw transcript to client ready formatted file
-   - Pages: /3play-media-format-guide, /daily-transcripts-format-guide, /daily-transcripts-style-guide, /gmr-transcript-format-guide, /gotranscript-guidelines, /gotranscript-style-guide, /gotranscript-test-guide, /gotranscript-transcription-format, /gotranscript-transcription-rules, /guideline-format, /happy-scribe-format-guide, /rev-ai-transcription-guide, +18 more
-25. **30 pages** — why transcript formatting affects qa acceptance
-   - Pages: /3play-media-format-guide, /daily-transcripts-format-guide, /daily-transcripts-style-guide, /gmr-transcript-format-guide, /gotranscript-guidelines, /gotranscript-style-guide, /gotranscript-test-guide, /gotranscript-transcription-format, /gotranscript-transcription-rules, /guideline-format, /happy-scribe-format-guide, /rev-ai-transcription-guide, +18 more
+14. **47 pages** — where subtitle workflows break in real production
+   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +35 more
+15. **47 pages** — creators and teams running subtitle workflows
+   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +35 more
+16. **47 pages** — from raw video to export ready subtitle file
+   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +35 more
+17. **47 pages** — subtitle edge cases that cause qa failure
+   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +35 more
+18. **47 pages** — platform specific subtitle requirements
+   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +35 more
+19. **47 pages** — subtitle workflow questions answered
+   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +35 more
+20. **47 pages** — srt vtt and burned caption outputs
+   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +35 more
+21. **47 pages** — related caption and subtitle tools
+   - Pages: /ada-video-captions, /add-captions-to-video, /add-subtitles-to-video, /auto-captions, /auto-subtitle-generator, /best-caption-generator, /burn-subtitles, /capcut-captions, /caption-maker, /caption-video-online, /fix-subtitles, /free-captions-and-subtitles, +35 more
+22. **39 pages** — related videotext workflow
+   - Pages: /glossary/audio-description, /glossary/audio-extraction, /glossary/automatic-speech-recognition, /glossary/caption-accessibility, /glossary/caption-file, /glossary/character-error-rate, /glossary/clean-verbatim, /glossary/closed-captions, /glossary/confidence-score, /glossary/drop-frame-timecode, /glossary/forced-subtitles, /glossary/frame-rate, +27 more
+23. **31 pages** — transcriptionists and editors running formatting workflows
+   - Pages: /3play-media-format-guide, /daily-transcripts-format-guide, /daily-transcripts-style-guide, /gmr-transcript-format-guide, /gotranscript-guidelines, /gotranscript-inaudible-tags, /gotranscript-style-guide, /gotranscript-test-guide, /gotranscript-transcription-format, /gotranscript-transcription-rules, /guideline-format, /happy-scribe-format-guide, +19 more
+24. **31 pages** — clean verbatim and platform ready transcript outputs
+   - Pages: /3play-media-format-guide, /daily-transcripts-format-guide, /daily-transcripts-style-guide, /gmr-transcript-format-guide, /gotranscript-guidelines, /gotranscript-inaudible-tags, /gotranscript-style-guide, /gotranscript-test-guide, /gotranscript-transcription-format, /gotranscript-transcription-rules, /guideline-format, /happy-scribe-format-guide, +19 more
+25. **31 pages** — from raw transcript to client ready formatted file
+   - Pages: /3play-media-format-guide, /daily-transcripts-format-guide, /daily-transcripts-style-guide, /gmr-transcript-format-guide, /gotranscript-guidelines, /gotranscript-inaudible-tags, /gotranscript-style-guide, /gotranscript-test-guide, /gotranscript-transcription-format, /gotranscript-transcription-rules, /guideline-format, /happy-scribe-format-guide, +19 more
 

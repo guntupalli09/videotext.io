@@ -260,3 +260,119 @@
   border: 2px solid #0A0A0B;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
 }
+
+/* Long-form guide bodies (/guides/*). The HTML is generated from markdown at
+   build time, so it carries no utility classes and is styled by element here. */
+.guide-body {
+  color: #374151;
+  line-height: 1.75;
+}
+.dark .guide-body {
+  color: #d1d5db;
+}
+.guide-body > * + * {
+  margin-top: 1.25rem;
+}
+.guide-body h2 {
+  margin-top: 2.5rem;
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1.3;
+  color: #111827;
+}
+.guide-body h3 {
+  margin-top: 2rem;
+  font-size: 1.175rem;
+  font-weight: 500;
+  color: #111827;
+}
+.dark .guide-body h2,
+.dark .guide-body h3 {
+  color: #ffffff;
+}
+.guide-body a {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+.dark .guide-body a {
+  color: #60a5fa;
+}
+.guide-body ul,
+.guide-body ol {
+  padding-left: 1.5rem;
+}
+.guide-body ul {
+  list-style: disc;
+}
+.guide-body ol {
+  list-style: decimal;
+}
+.guide-body li + li {
+  margin-top: 0.5rem;
+}
+.guide-body strong {
+  font-weight: 600;
+  color: #111827;
+}
+.dark .guide-body strong {
+  color: #f3f4f6;
+}
+.guide-body blockquote {
+  border-left: 3px solid #d1d5db;
+  padding-left: 1rem;
+  font-style: italic;
+  color: #4b5563;
+}
+.dark .guide-body blockquote {
+  border-left-color: #374151;
+  color: #9ca3af;
+}
+.guide-body table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 0.925rem;
+}
+.guide-body th,
+.guide-body td {
+  border: 1px solid #e5e7eb;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  vertical-align: top;
+}
+.dark .guide-body th,
+.dark .guide-body td {
+  border-color: #374151;
+}
+.guide-body th {
+  background: #f9fafb;
+  font-weight: 600;
+  color: #111827;
+}
+.dark .guide-body th {
+  background: #111827;
+  color: #f3f4f6;
+}
+.guide-body code {
+  background: #f3f4f6;
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.35rem;
+  font-size: 0.9em;
+}
+.dark .guide-body code {
+  background: #1f2937;
+}
+.guide-body hr {
+  border: 0;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 2rem;
+}
+.dark .guide-body hr {
+  border-top-color: #374151;
+}
+.guide-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+}

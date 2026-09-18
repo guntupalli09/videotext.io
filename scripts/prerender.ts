@@ -30,6 +30,9 @@ import { renderPageToHtml } from '../client/src/ssr-render'
 import { getReferenceLayerJsonLd, getReferenceLayerPrerenderMeta, isReferenceLayerPath } from '../client/src/lib/referenceLayer'
 import { getContextualCta, getRouteFamily } from '../client/src/lib/routeFamilyTemplates'
 import slugMapJson from '../client/src/data/hashnode-slug-map.json'
+import { getAllGuides } from '../client/src/lib/guides'
+import { primeGuideHtml } from '../client/src/lib/guideHtml'
+import { buildGuides } from './guides/build-guides'
 
 const REPO_ROOT = path.resolve(__dirname, '..')
 // Vercel outputDirectory is the root-level dist/ (build copies client/dist → dist/).
@@ -1174,6 +1177,57 @@ function dedupeSchemas(schemas: object[]): object[] {
   return unique
 }
 
+
+// ── Long-form guides (/guides) ────────────────────────────────────────────────
+
+/** RouteMeta for the guides hub and every guide article. */
+function getGuidePrerenderMeta(): RouteMeta[] {
+  const guides = getAllGuides()
+  return [
+    {
+      path: '/guides',
+      title: 'Transcription and Subtitle Guides | VideoText',
+      description: `${guides.length} in-depth guides on transcription accuracy, subtitle formatting, tool comparisons, and client-ready caption workflows.`,
+      h1: 'Transcription and subtitle guides',
+      breadcrumbLabel: 'Guides',
+    },
+    ...guides.map((guide) => ({
+      path: `/guides/${guide.slug}`,
+      title: guide.title.length > 60 ? guide.title : `${guide.title} | VideoText`,
+      description: guide.description,
+      h1: guide.title,
+      breadcrumbLabel: guide.title,
+    })),
+  ]
+}
+
+/** Article schema so guides are eligible for article-level rich results. */
+function buildGuideArticleJsonLd(routePath: string): object | null {
+  const slug = routePath.match(/^\/guides\/([^/]+)$/)?.[1]
+  if (!slug) return null
+  const guide = getAllGuides().find((g) => g.slug === slug)
+  if (!guide) return null
+  const url = `${SITE_URL}${routePath}`
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: guide.title,
+    description: guide.description,
+    url,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+    wordCount: guide.words,
+    ...(guide.image ? { image: guide.image } : {}),
+    ...(guide.date ? { datePublished: guide.date, dateModified: guide.date } : {}),
+    author: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+    publisher: {
+      '@type': 'Organization',
+      name: SITE_NAME,
+      url: SITE_URL,
+      logo: { '@type': 'ImageObject', url: DEFAULT_OG_IMAGE },
+    },
+  }
+}
+
 function injectStructuredData(template: string, routePath: string, meta: RouteMeta, rating: PublicRating | null): string {
   const html = stripTopLevelSoftwareApplicationScripts(template)
   const schemas: object[] = []
@@ -1191,6 +1245,8 @@ function injectStructuredData(template: string, routePath: string, meta: RouteMe
   if (product) schemas.push(product)
   const referenceLayer = getReferenceLayerJsonLd(routePath)
   if (referenceLayer) schemas.push(...referenceLayer)
+  const guideArticle = buildGuideArticleJsonLd(routePath)
+  if (guideArticle) schemas.push(guideArticle)
   if (!schemas.length) return html
   const scripts = dedupeSchemas(schemas)
     .map((schema) => `<script type="application/ld+json">${JSON.stringify(schema)}</script>`)
@@ -1880,6 +1936,9 @@ async function main() {
     console.error(`[prerender] ${templateSource} does not contain an empty #root. Re-run the Vite build before prerender so route HTML is not copied from a previous homepage snapshot.`)
     process.exit(1)
   }
+  // SSR renders guide bodies synchronously, so load them before the render pass.
+  primeGuideHtml(buildGuides())
+
   const publicRating = await fetchPublicRatingForPrerender()
   if (publicRating) {
     console.log(`[prerender] public rating ${publicRating.averageRating.toFixed(1)} from ${publicRating.ratingCount} ratings`)
@@ -1920,6 +1979,7 @@ async function main() {
     ...STATIC_META,
     // Reference-layer pages last so citation-hub and glossary meta win any conflict.
     ...getReferenceLayerPrerenderMeta(),
+    ...getGuidePrerenderMeta(),
   ])
 
   let count = 0

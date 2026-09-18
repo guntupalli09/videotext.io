@@ -9,6 +9,7 @@ import { CORE_PATHS, getSitemap2Paths, getHashnodeBlogPaths } from './registry'
 import { getCanonicalPathForRoute } from '../../client/src/lib/primaryUrls'
 import { getHashnodePostUrl } from '../../client/src/lib/blogSlugMap'
 import { maxLastmodForPaths, resolveLastmodForPath } from './resolve-lastmod'
+import { getAllGuides } from '../../client/src/lib/guides'
 
 const SITE_URL = (process.env.SITE_URL || 'https://videotext.io').replace('https://www.', 'https://').replace(/\/+$/, '')
 const BLOG_URL = (process.env.BLOG_URL || 'https://blog.videotext.io').replace('https://www.', 'https://').replace(/\/+$/, '')
@@ -144,16 +145,44 @@ ${blogUrls.join('\n')}
   const blogWritten = writeSitemapFiles('sitemap-blog.xml', blogXml)
   console.log('[SEO] Sitemap 3 (blog):', blogWritten[0], `(${blogPaths.length} URLs)`)
 
-  // Sitemap index — references all three
+  // Sitemap 4 — Long-form guides at /guides (own file: one content set, one lastmod)
+  const guides = getAllGuides()
+  const guideUrls = [
+    `  <url>
+    <loc>${escapeXml(normalizeUrl(`${SITE_URL}/guides`))}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`,
+    ...guides.map((guide) => {
+      const loc = normalizeUrl(`${SITE_URL}/guides/${guide.slug}`)
+      const lastmod = guide.date ? `\n    <lastmod>${guide.date}</lastmod>` : ''
+      return `  <url>
+    <loc>${escapeXml(loc)}</loc>${lastmod}
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>`
+    }),
+  ]
+  const guidesXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${guideUrls.join('\n')}
+</urlset>
+`
+  const guidesWritten = writeSitemapFiles('sitemap-guides.xml', guidesXml)
+  console.log('[SEO] Sitemap 4 (guides):', guidesWritten[0], `(${guideUrls.length} URLs)`)
+
+  // Sitemap index — references all four
   const indexLocs = [
     `${SITE_URL}/sitemap-core.xml`,
     `${SITE_URL}/sitemap-programmatic.xml`,
     `${SITE_URL}/sitemap-blog.xml`,
+    `${SITE_URL}/sitemap-guides.xml`,
   ].map(normalizeUrl)
   assertNoMixedDomains(indexLocs)
   const coreLastmod = maxLastmodForPaths(corePaths.map((p) => getCanonicalPathForRoute(p)))
   const programmaticLastmod = maxLastmodForPaths(sitemap2Paths.map((p) => getCanonicalPathForRoute(p)))
   const blogLastmod = maxLastmodForPaths(blogPaths)
+  const guidesLastmod = guides.map((g) => g.date).filter(Boolean).sort().pop() || null
   const indexLastmodTag = (date: string | null) => (date ? `\n    <lastmod>${date}</lastmod>` : '')
 
   const indexXml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -166,6 +195,9 @@ ${blogUrls.join('\n')}
   </sitemap>
   <sitemap>
     <loc>${indexLocs[2]}</loc>${indexLastmodTag(blogLastmod)}
+  </sitemap>
+  <sitemap>
+    <loc>${indexLocs[3]}</loc>${indexLastmodTag(guidesLastmod)}
   </sitemap>
 </sitemapindex>
 `

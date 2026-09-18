@@ -24,9 +24,12 @@ import BestDescriptAlternatives from './pages/BestDescriptAlternatives'
 import ApiDocs from './pages/ApiDocs'
 import ZapierIntegration from './pages/ZapierIntegration'
 import TranscriptionStatistics from './pages/TranscriptionStatistics'
+import GuidesHub from './pages/guides/GuidesHub'
+import GuideArticle from './pages/guides/GuideArticle'
 import GlossaryHub from './pages/glossary/GlossaryHub'
 import GlossaryTermPage from './pages/glossary/GlossaryTermPage'
 import { getPublishedGlossaryPaths, isReferenceLayerPath } from './lib/referenceLayer'
+import { getGuidePaths } from './lib/guides'
 import { ROUTE_SEO } from './lib/seoMeta'
 import { getAllSeoEntries, getPageLabel, getRelatedSuggestionsForEntry, getSeoEntry, type FaqItem, type SeoDeepContent, type SeoRegistryEntry, type SeoTutorialContent } from './lib/seoRegistry'
 import { getCanonicalPathForRoute, resolveInternalLinkPath } from './lib/primaryUrls'
@@ -75,6 +78,10 @@ const SSR_PAGES: Record<string, React.ComponentType> = {
   '/transcription-statistics': TranscriptionStatistics,
   '/glossary': GlossaryHub,
   ...Object.fromEntries(getPublishedGlossaryPaths().map((path) => [path, GlossaryTermPage])),
+  // Long-form guides: markdown-derived content pages, rendered directly so the
+  // full article body is in the HTML for crawlers that do not execute JS.
+  '/guides': GuidesHub,
+  ...Object.fromEntries(getGuidePaths().map((path) => [path, GuideArticle])),
 }
 
 const CORE_STATIC_CONTENT: Record<string, Omit<StaticRouteContent, 'path' | 'title' | 'description'>> = {
