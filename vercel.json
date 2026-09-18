@@ -41,6 +41,101 @@
   ],
   "routes": [
     {
+      "src": "/blog/how-to-transcribe-zoom-recording",
+      "dest": "https://blog.videotext.io/how-to-transcribe-zoom-recording",
+      "status": 301
+    },
+    {
+      "src": "/srt-translator",
+      "dest": "/translate-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/subtitle-converter",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/lecture-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/online-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/webm-to-text",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/mov-to-text",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/subtitle-generator",
+      "dest": "/video-to-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/transcribe-youtube-video",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/meeting-recording-to-transcript",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/subtitle-line-break-fixer",
+      "dest": "/fix-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/subtitle-timing-fixer",
+      "dest": "/fix-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/interview-transcription",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/subtitle-grammar-fixer",
+      "dest": "/fix-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/meeting-transcription-tool",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/subtitle-translator",
+      "dest": "/translate-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/best-youtube-transcription-tool",
+      "dest": "/video-to-transcript",
+      "status": 301
+    },
+    {
+      "src": "/video-translation",
+      "dest": "/translate-subtitles",
+      "status": 301
+    },
+    {
+      "src": "/multilingual-subtitles",
+      "dest": "/translate-subtitles",
+      "status": 301
+    },
+    {
       "src": "/tools/videotext\\.io/tools/video-metadata-viewer",
       "dest": "/tools/video-metadata-viewer",
       "status": 301
