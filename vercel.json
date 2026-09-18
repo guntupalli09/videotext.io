@@ -41,6 +41,11 @@
   ],
   "routes": [
     {
+      "src": "/tools/videotext\\.io/tools/video-metadata-viewer",
+      "dest": "/tools/video-metadata-viewer",
+      "status": 301
+    },
+    {
       "src": "/podcast-transcript",
       "dest": "/podcast-transcription",
       "status": 301
