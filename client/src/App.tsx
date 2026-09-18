@@ -632,7 +632,53 @@ function App() {
             <Route path="/ai-transcription-workflow" element={<AiTranscriptionWorkflow />} />
             <Route path="/podcast-transcription-tool" element={<PodcastTranscriptionTool />} />
             <Route path="/interview-transcription-tool" element={<Navigate to="/video-to-transcript" replace />} />
-            <Route path="/youtube-transcript-generator" element={<Navigate to="/video-to-transcript" replace />} />
+            <Route path="/youtube-transcript-generator" element={<VideoToTranscript
+              seoH1="YouTube Transcript Generator — Convert a Video URL to Text"
+              seoIntro="Paste a public YouTube URL to create a transcript with timestamps, SRT/VTT subtitles, a summary, and chapters. Review the text, fix subtitle timing or line breaks, then export the format your workflow needs."
+              defaultInputMode="youtube"
+              faq={[
+                { q: 'How do I get a transcript from a YouTube video?', a: 'Copy the URL of a public YouTube video, paste it into VideoText, and start transcription. When processing is complete, review the timed transcript and export TXT, SRT, VTT, DOCX, PDF, JSON, or CSV.' },
+                { q: 'Can I make subtitles from a YouTube video?', a: 'Yes. Create the transcript, then export SRT or VTT subtitle files. Use the subtitle editor to check timing, reading speed, characters per line, gaps, and line breaks before delivery.' },
+                { q: 'Can I clean up a YouTube transcript?', a: 'Yes. Edit the transcript in the browser, label speakers, remove filler words where needed, and apply client formatting rules before exporting.' },
+                { q: 'Can I translate YouTube subtitles?', a: 'Yes. Export or create an SRT or VTT file, translate the subtitle text while preserving cue timing, then review reading speed and line breaks for the target language.' },
+                { q: 'What can I export after transcription?', a: 'VideoText supports transcript exports including TXT, PDF, DOCX, JSON, and CSV, plus SRT and VTT subtitle files.' }
+              ]}
+              seoDeepContent={{
+                proofPoints: [
+                  'Start from a public YouTube URL rather than manually copying captions or rebuilding the text from scratch.',
+                  'Keep timestamps with the transcript so the same source can become SRT or VTT subtitles, a summary, chapters, and searchable notes.',
+                  'Use one review step for transcript edits and subtitle QA before exporting files to a client, editor, or publishing workflow.'
+                ],
+                workflowSteps: [
+                  { title: 'Paste the YouTube URL', detail: 'Copy the URL for a public video and paste it into the YouTube input. The URL starts the same timed transcription workflow used for uploaded media.' },
+                  { title: 'Review the timed transcript', detail: 'Check names, terminology, speaker labels, and wording in the transcript editor. Search within the text and jump through timestamped segments when a correction needs video context.' },
+                  { title: 'Prepare captions if needed', detail: 'Create SRT or VTT subtitles from the transcript. Review characters per line, reading speed, overlaps, gaps, timing drift, and line breaks before delivery.' },
+                  { title: 'Export the finished file', detail: 'Download a transcript in the format the job requires, or export SRT/VTT for captions. A summary and timestamped chapters can support publishing and repurposing work.' }
+                ],
+                outputExamples: [
+                  { title: 'Client-ready transcript', body: 'Use the timed source text to correct names, label speakers, apply clean-verbatim or client rules, and export a document format for review.' },
+                  { title: 'SRT or VTT captions', body: 'Turn the transcript into subtitle cues, check readable line length and timing, then export a file for YouTube or another video platform.' },
+                  { title: 'Summary and chapters', body: 'Create a compact summary, action items, and timestamped chapters from the same video without manually rewatching it for every section.' }
+                ],
+                comparisonRows: [
+                  { feature: 'Timed transcript', videotext: 'Transcript segments keep timestamps for review and navigation.', alternatives: 'Copied caption text may lose timing or need manual cleanup.' },
+                  { feature: 'Subtitle review', videotext: 'Check line length, reading speed, gaps, overlaps, and timing before export.', alternatives: 'Basic caption downloads may need separate QA work.' },
+                  { feature: 'Delivery formats', videotext: 'Export transcript documents, data files, and SRT/VTT subtitles from one workflow.', alternatives: 'Different outputs can require separate conversion steps.' }
+                ],
+                useCases: [
+                  { title: 'Subtitle editors', body: 'Start with a timed transcript, then correct dialogue and run subtitle QA before sending SRT or VTT files to a client.' },
+                  { title: 'Podcast and interview teams', body: 'Turn long-form YouTube conversations into speaker-labelled transcripts, chapters, summaries, and searchable source material.' },
+                  { title: 'Freelance transcription work', body: 'Use the initial transcript as the source for clean-verbatim editing and client-guideline formatting instead of retyping from the video.' }
+                ],
+                technicalExplanation: [
+                  'A transcript is the text of what is spoken. A subtitle file adds timed cues so dialogue can appear in sync with the video. SRT and VTT are the common subtitle delivery formats.',
+                  'Caption quality is more than correct words. Long lines, fast cues, gaps, overlaps, and timing drift make subtitles difficult to read even when the transcript itself is accurate.',
+                  'Use the transcript as the editable source of truth, then export the file format needed for editing, publishing, accessibility, or client delivery.'
+                ],
+                ctaText: 'Create YouTube transcript',
+                ctaPath: '/video-to-transcript'
+              }}
+            />} />
             <Route path="/youtube-transcript" element={<Navigate to="/video-to-transcript" replace />} />
             <Route path="/youtube-transcript-transcription" element={<Navigate to="/video-to-transcript" replace />} />
             <Route path="/youtube-to-text" element={<Navigate to="/video-to-transcript" replace />} />
