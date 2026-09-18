@@ -290,6 +290,16 @@
   ],
   "redirects": [
     {
+      "source": "/subtitle-translator",
+      "destination": "/translate-subtitles",
+      "permanent": true
+    },
+    {
+      "source": "/srt-translator",
+      "destination": "/translate-subtitles",
+      "permanent": true
+    },
+    {
       "source": "/blog",
       "destination": "https://blog.videotext.io/",
       "permanent": true
