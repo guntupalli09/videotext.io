@@ -93,6 +93,8 @@ const TranscriptionBenchmark = lazy(() => import('./pages/TranscriptionBenchmark
 const AccuracyTest = lazy(() => import('./pages/AccuracyTest'))
 const TranscriptionAccuracyBenchmark2026 = lazy(() => import('./pages/TranscriptionAccuracyBenchmark2026'))
 const TranscriptionStatistics = lazy(() => import('./pages/TranscriptionStatistics'))
+const GuidesHub = lazy(() => import('./pages/guides/GuidesHub'))
+const GuideArticle = lazy(() => import('./pages/guides/GuideArticle'))
 const GlossaryHub = lazy(() => import('./pages/glossary/GlossaryHub'))
 const GlossaryTermPage = lazy(() => import('./pages/glossary/GlossaryTermPage'))
 const BestTranscriptionTool = lazy(() => import('./pages/BestTranscriptionTool'))
@@ -614,6 +616,8 @@ function App() {
             <Route path="/accuracy-test" element={<AccuracyTest />} />
             <Route path="/research/transcription-accuracy-benchmark-2026" element={<TranscriptionAccuracyBenchmark2026 />} />
             <Route path="/transcription-statistics" element={<TranscriptionStatistics />} />
+            <Route path="/guides" element={<GuidesHub />} />
+            <Route path="/guides/:slug" element={<GuideArticle />} />
             <Route path="/glossary" element={<GlossaryHub />} />
             <Route path="/glossary/:slug" element={<GlossaryTermPage />} />
             <Route path="/best-transcription-tool" element={<BestTranscriptionTool />} />

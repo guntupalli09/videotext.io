@@ -2,7 +2,7 @@
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
     <loc>https://videotext.io/sitemap-core.xml</loc>
-    <lastmod>2026-09-13</lastmod>
+    <lastmod>2026-09-17</lastmod>
   </sitemap>
   <sitemap>
     <loc>https://videotext.io/sitemap-programmatic.xml</loc>
@@ -11,5 +11,9 @@
   <sitemap>
     <loc>https://videotext.io/sitemap-blog.xml</loc>
     <lastmod>2026-09-12</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://videotext.io/sitemap-guides.xml</loc>
+    <lastmod>2026-09-18</lastmod>
   </sitemap>
 </sitemapindex>

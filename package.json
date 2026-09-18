@@ -2,7 +2,7 @@
   "name": "videotext-root",
   "private": true,
   "scripts": {
-    "build": "cd client && npm ci && npm run build && node -e \"require('fs').cpSync('dist','../dist',{recursive:true})\" && npx tsx ../scripts/prerender.ts && cd .. && npm run seo:sitemap && npm run seo:indexnow-key && CITATION_HUB_SKIP_NETWORK=1 npm run seo:validate-citation-hub && npm run seo:validate-reference-layer && npm run seo:content-audit",
+    "build": "npm run guides:build && cd client && npm ci && npm run build && node -e \"require('fs').cpSync('dist','../dist',{recursive:true})\" && npx tsx ../scripts/prerender.ts && cd .. && npm run seo:sitemap && npm run seo:indexnow-key && CITATION_HUB_SKIP_NETWORK=1 npm run seo:validate-citation-hub && npm run seo:validate-reference-layer && npm run seo:content-audit",
     "chrome:transcript:build": "cd chrome-extensions/video-to-transcript && npm ci && npm run build",
     "chrome:transcript:test": "cd chrome-extensions/video-to-transcript && npm test",
     "provision-zapier-reviewer": "cd server && npx tsx scripts/provision-zapier-reviewer.ts",
@@ -35,11 +35,13 @@
     "seo:content-audit": "tsx scripts/seo/content-audit.ts",
     "seo:validate-prerender-gaps": "tsx scripts/seo/validate-prerender-gaps.ts",
     "seo:validate-citation-hub": "tsx scripts/validate-citation-hub.ts",
-    "seo:validate-reference-layer": "tsx scripts/seo/validate-reference-layer.ts"
+    "seo:validate-reference-layer": "tsx scripts/seo/validate-reference-layer.ts",
+    "guides:build": "tsx scripts/guides/build-guides.ts"
   },
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
     "googleapis": "^144.0.0",
+    "marked": "^18.0.13",
     "tsx": "^4.7.0"
   }
 }
