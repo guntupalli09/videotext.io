@@ -33,7 +33,26 @@ export interface SeoComparisonRow {
   alternatives: string
 }
 
+/**
+ * Per-page overrides for the H2 titles that the route-family template supplies.
+ *
+ * Pages that ship their own `deepContent` usually cover a narrower topic than
+ * their family (a timestamp reference inside the `formatting` family, say), so
+ * the family heading set reads as boilerplate on them. Any key left out falls
+ * back to the family title.
+ */
+export interface SeoSectionTitles {
+  proofPoints?: string
+  workflowSteps?: string
+  outputExamples?: string
+  comparisonRows?: string
+  useCases?: string
+  edgeCases?: string
+  platformGuidance?: string
+}
+
 export interface SeoDeepContent {
+  sectionTitles?: SeoSectionTitles
   proofPoints?: string[]
   workflowSteps?: SeoWorkflowStep[]
   outputExamples?: SeoOutputExample[]
@@ -5218,6 +5237,37 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     indexable: true,
     intentKey: 'gotranscript-guidelines',
     keywords: ['gotranscript guidelines', 'gotranscript transcription style guide', 'gotranscript formatting rules', 'gotranscript verbatim rules', 'gotranscript transcriber guide', 'how to format transcription for gotranscript'],
+    deepContent: {
+      sectionTitles: {
+        proofPoints: 'What GoTranscript editors check before they rate a file',
+        workflowSteps: 'Applying the guidelines in the order that matters',
+        outputExamples: 'The rule groups that decide a GoTranscript rating',
+        platformGuidance: 'GoTranscript rules that do not match other platforms',
+      },
+      proofPoints: [
+        'GoTranscript maintains one transcriber guideline page with a dated update log at the top, and the rules there have changed: the [sic] tag was dropped in 2019, number handling was simplified the same year, "Oh" is kept regardless of verbatim level since 2020, and the ? prefix for an uncertain speaker was added in March 2022. A transcriber working from an older summary is formatting to rules that no longer apply.',
+        'Three requirements carry most of the QA risk because they fail silently: speaker labels, timestamps and time-stamped tags all have to be bold, and a draft written or exported as plain text loses that formatting without any warning in the editor.',
+        'Accuracy is rated 1 to 5 by an editor rather than measured against a published percentage floor — 96 to 100% accuracy corresponds to a score of 5. Because the rating governs continued access to jobs, formatting compliance counts for as much as word accuracy.',
+      ],
+      workflowSteps: [
+        { title: '1. Settle the verbatim level first', detail: 'Clean verbatim is the common case: remove speech errors, stutters, repetitions and false starts that add no information, but keep repetitions used for emphasis. Expand slang — gonna becomes going to, yeah and yep become yes — and write Okay in full, never OK or Ok. Full verbatim keeps those features as spoken. Getting this wrong means reworking the whole file, so read the job type before the first line.' },
+        { title: '2. Label every speaker, including in single-speaker files', detail: 'A bold label, a colon and one single space — never a tab: Mark:, Speaker 1:, Interviewer:. Use real names or descriptive roles where they are known, and prefix a question mark where you are not certain who is talking (?David:). A recording with one speaker still gets a label.' },
+        { title: '3. Apply the timestamp type the job asks for', detail: 'Timestamping is decided per job. Where it applies, the format is a bold [00:00:00] in full hours, minutes and seconds, placed either every 2 minutes or at every speaker change — one type per file, never both. On a segment of a longer recording the time is file-relative, so minutes 20 to 30 open at [00:20:00]. The qualification test asks for no timestamps at all.' },
+        { title: '4. Mark unclear audio rather than guessing', detail: 'Use [inaudible 00:00:00] where speech cannot be heard and [unintelligible 00:00:00] where it is heard but cannot be understood. Overlapping speech is [crosstalk], a separate tag rather than a kind of inaudible. Do not invent notation the guidelines do not list.' },
+      ],
+      outputExamples: [
+        { title: 'Verbatim and word choice', body: 'Clean verbatim strips fillers, stutters and uninformative false starts and expands slang into standard English. "Oh" stays in at either verbatim level. Spoken contractions are kept as spoken, and a speaker\'s grammar is never corrected — though a misspoken word is still spelled correctly.' },
+        { title: 'Numbers', body: 'Spell out zero through nine and use numerals from 10 up, with money, years and percentages taking numerals at any size. This one is worth checking deliberately: once the habit is wrong it repeats through the whole file.' },
+        { title: 'Punctuation limits', body: 'Exclamation marks are not used, and the [sic] tag has not been part of the guidelines since 2019. A double dash (--) closes a false start or an incomplete sentence, while a single dash marks an interruption.' },
+        { title: 'Paragraphing', body: 'Keep a paragraph under roughly 500 symbols — about 100 words — and break on a topic shift inside a long turn rather than at a fixed interval.' },
+      ],
+      technicalExplanation: [
+        { title: 'Bold is a graded rule, not a preference', body: 'Speaker labels, timestamps and every time-stamped tag must be bold. Most platforms treat transcript formatting as cosmetic, so draft in an editor that preserves bold and confirm it survived the export.' },
+        { title: 'Two unclear-audio tags, not one', body: 'The split between [inaudible] for speech that cannot be heard and [unintelligible] for speech heard but not understood is unusual — most services use a single unclear-audio tag, and transcribers arriving from them tend to collapse the two.' },
+        { title: 'Timestamping is per job, not per platform', body: 'Periodic stamps and per-turn stamps are house defaults elsewhere. GoTranscript picks between them job by job, so the same transcriber can owe stamps on one file and none on the next.' },
+        { title: 'Sound events have a fixed shape', body: 'Notes go in square brackets, lowercase, present tense, two words at most: [crosstalk], [silence], [background noise], [laughs]. Only time-stamped marks such as [pause 00:00:00] carry a time.' },
+      ],
+    },
     faq: [
       { q: 'Does GoTranscript require timestamps?', a: 'It depends on the job. When timestamping is required, use bold [00:00:00] (full hours:minutes:seconds) either every 2 minutes or at every speaker change — check the job instructions. The qualification test is clean verbatim with no timestamping. Missing timestamps on a job that requires them will cause QA failures.' },
       { q: 'What verbatim level does GoTranscript use?', a: 'Most jobs use clean verbatim: remove filler words (um, uh, you know, like), false starts, and repetitions (keep emphasis repetitions). Expand slang (gonna → going to). Keep "Oh" expressions and spoken contractions. Some jobs use full verbatim — check the job type before you start.' },
@@ -5238,6 +5288,37 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     indexable: true,
     intentKey: 'gotranscript-timestamp-format',
     keywords: ['gotranscript timestamp format', 'gotranscript timestamps', 'gotranscript [00:00:00]', 'gotranscript every 2 minutes', 'gotranscript speaker change timestamp', 'gotranscript timestamp rules'],
+    deepContent: {
+      sectionTitles: {
+        proofPoints: 'When timestamps are required — and when adding them fails the job',
+        outputExamples: 'The [00:00:00] syntax, field by field',
+        edgeCases: 'Timestamp mistakes that fail QA',
+        platformGuidance: 'How the syntax compares with other platforms',
+      },
+      proofPoints: [
+        'Timestamping is decided per job rather than per platform. Two types exist — every 2 minutes, or at every speaker change — and exactly one applies to a given file. Using the other type is a QA failure even when the format itself is perfect.',
+        'The qualification test is defined as clean verbatim with no timestamping needed. Adding stamps to a test transcript is one of the most common ways a candidate fails a submission whose words were accurate.',
+        'Time is file-relative, not segment-relative. Transcribing minutes 20 to 30 of a recording means the first stamp is [00:20:00], not [00:00:00] — the rule that catches transcribers who work on split segments.',
+      ],
+      outputExamples: [
+        { title: 'Field width', body: 'Full hours, minutes and seconds inside square brackets: [00:04:37]. Two digits in every field, including the hours on a short file. Shortened forms such as [4:37] or [00:04] are not accepted.' },
+        { title: 'Bold, always', body: 'The stamp itself is bold, as are speaker labels and every time-stamped tag. A stamp with the right digits in plain text still reads as unformatted to an editor.' },
+        { title: 'Placement on periodic jobs', body: 'Where the job asks for stamps every 2 minutes, place each one at the 2-minute mark at the nearest sentence boundary rather than mid-sentence.' },
+        { title: 'Placement on speaker-change jobs', body: 'Where the job asks for a stamp at every speaker change, the stamp sits with the label at the start of each turn, so every turn opens with a bold label and a bold time.' },
+        { title: 'Speaker label syntax', body: 'A bold name or role, a colon and one single space — Interviewer: — never a tab. Where you are fairly but not certainly sure who is speaking, prefix a question mark: ?David:.' },
+      ],
+      visualProof: [
+        { title: 'Both timestamp types in one file', body: 'Periodic stamps running through the file while speaker-change stamps are also inserted at every turn. Only one type is correct per job, and mixing them reads as a transcriber who did not check the instructions.' },
+        { title: 'Segment time reset to zero', body: 'A transcriber picking up minutes 30 to 60 restarts at [00:00:00]. The merged file then carries two overlapping timelines, and every stamp in the second half is wrong by half an hour.' },
+        { title: 'Bold lost on export', body: 'A draft written with bold labels and stamps is pasted into a plain-text field before submission. Every formatting rule in the file disappears at once, with nothing in the output to flag it.' },
+        { title: 'Stamps on a test job', body: 'Correctly formatted timestamps applied to the qualification test, which asks for none. The formatting is right and the judgement is wrong, which still costs the submission.' },
+      ],
+      technicalExplanation: [
+        { title: 'Against Rev-style conventions', body: 'Rev-style workflows commonly stamp at fixed intervals or at speaker changes as a house default, and do not require bold. GoTranscript inherits neither: the type comes from the job instructions and the bold is mandatory.' },
+        { title: 'Against per-turn conventions', body: 'Services that stamp every speaker turn as standard train a habit that only fits half of GoTranscript jobs. Applying it to a periodic job produces a file full of stamps the client did not ask for.' },
+        { title: 'Against subtitle timecodes', body: 'Subtitle formats carry a start and end pair per cue (00:00:00,000 to 00:00:02,400) with milliseconds. A GoTranscript stamp is a single point in time inside a text transcript — no end value, no milliseconds, no cue numbering.' },
+      ],
+    },
     faq: [
       { q: 'What is the exact timestamp format for GoTranscript?', a: '[00:00:00] — full hours:minutes:seconds in square brackets, always bold. When the job requires timestamping, insert stamps every 2 minutes OR at every speaker change (per job instructions). Time is file-relative: a 20–30 minute segment starts at 20:00:00, not 00:00:00.' },
       { q: 'Does the GoTranscript test require timestamps?', a: 'No. The official qualification test is clean verbatim with no timestamping. Adding timestamps to the test transcript is a common failure — only add them when the job instructions require it.' },
@@ -5258,6 +5339,36 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     indexable: true,
     intentKey: 'gotranscript-inaudible-tags',
     keywords: ['gotranscript inaudible format', 'gotranscript inaudible tag', 'gotranscript unintelligible', 'gotranscript crosstalk', 'gotranscript [inaudible 00:00:00]', 'gotranscript unclear audio'],
+    deepContent: {
+      sectionTitles: {
+        proofPoints: 'Three tags for three different situations',
+        outputExamples: 'Tag reference',
+        edgeCases: 'Tag mistakes editors look for',
+        platformGuidance: 'Sound-event notation rules',
+      },
+      proofPoints: [
+        'GoTranscript splits unclear audio across two tags where most services use one. [inaudible 00:00:00] covers speech that cannot be heard — noise, a poor recording, a dropped line. [unintelligible 00:00:00] covers speech that comes through clearly but cannot be made out, usually accent or delivery.',
+        'Overlapping speech is neither of those. [crosstalk] is its own tag, and reaching for [inaudible] because two people talking at once could not be separated is a distinct QA failure.',
+        'Both unclear-audio tags carry the full hours, minutes and seconds, and both are bold. [inaudible 3:45] has the right tag with the wrong time format, and is rejected on the format alone.',
+      ],
+      outputExamples: [
+        { title: '[inaudible 00:00:00]', body: 'Speech that cannot be heard at all. Place it at the exact point in the text where the audio fails rather than at the end of the sentence, so the editor can find the moment in the recording.' },
+        { title: '[unintelligible 00:00:00]', body: 'Speech that is audible but cannot be understood. Choosing this over [inaudible] tells the editor the recording itself was fine and the delivery was not — which is information they act on differently.' },
+        { title: '[crosstalk]', body: 'Two or more speakers talking over each other. No timestamp on this one. Place it inline or on its own line at the point where the overlap happens.' },
+        { title: 'Pauses and silence', body: '[silence] marks a gap of roughly 4 to 10 seconds. Anything longer takes [pause 00:00:00], bold and on its own line, with the time at which the pause begins.' },
+      ],
+      visualProof: [
+        { title: 'Guessing the word', body: 'A plausible word typed in where the audio could not be heard. This is worse than any tag: an editor checking the file cannot tell that it is wrong, so it passes review and reaches the client as an error.' },
+        { title: 'Short-form time', body: '[inaudible 3:45] rather than [inaudible 00:03:45]. The full hours, minutes and seconds are required on every time-stamped tag, on short files as much as long ones.' },
+        { title: 'One tag doing every job', body: 'Every unclear moment marked [inaudible], including audible-but-unclear speech and passages where speakers overlap. It collapses three distinctions the guidelines deliberately keep apart.' },
+        { title: 'Invented notation', body: '[unclear], [mumbles], [??] and similar improvisations. The guidelines list the tags that exist, and anything outside the list is treated as an error rather than a judgement call.' },
+      ],
+      technicalExplanation: [
+        { title: 'The shape of a sound note', body: 'Square brackets, lowercase, present tense, two words at most: [background noise], [laughs], [laughter], [foreign language]. The constraint is on the notation, not just the vocabulary.' },
+        { title: 'Which notes carry a time', body: 'Only the time-stamped marks: [inaudible 00:00:00], [unintelligible 00:00:00] and [pause 00:00:00]. [crosstalk], [silence] and [laughs] take no time and should not be given one.' },
+        { title: 'What bold covers', body: 'Bold applies to speaker labels, timestamps and time-stamped tags. A tag that loses its bold on export has lost a graded rule, even though the text still reads correctly.' },
+      ],
+    },
     faq: [
       { q: 'What is the difference between inaudible and unintelligible on GoTranscript?', a: '[inaudible 00:00:00] — speech cannot be heard (noise, poor recording). [unintelligible 00:00:00] — speech is heard but not understood (accent, manner). Both require full HH:MM:SS and must be bold.' },
       { q: 'How do I mark crosstalk on GoTranscript?', a: 'Use [crosstalk] when speakers talk over each other. Place it inline or on its own line where the overlap occurs. Do not use [inaudible] for simultaneous speech — editors treat these as different tags.' },
@@ -5278,6 +5389,36 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     indexable: true,
     intentKey: 'gotranscript-style-guide',
     keywords: ['gotranscript style guide', 'gotranscript transcription style guide', 'gotranscript format guide', 'gotranscript punctuation guide', 'gotranscript verbatim guide', 'gotranscript complete reference'],
+    deepContent: {
+      sectionTitles: {
+        proofPoints: 'The punctuation and notation rules that get files sent back',
+        outputExamples: 'Notation reference: what to write, and when',
+        edgeCases: 'Wording decisions that look careful and are not',
+        platformGuidance: 'Spelling, grammar and attribution policy',
+      },
+      proofPoints: [
+        'Exclamation marks are not used in a GoTranscript transcript at all, however emphatic the speaker. Emphasis is carried by the words themselves and, where one genuinely applies, by a sound note such as [laughs].',
+        'The [sic] tag was removed from the guidelines in November 2019. Flagging a speaker\'s error is no longer the transcriber\'s job: write what was said, spell it correctly, and leave the grammar alone.',
+        'Dash length carries meaning. A double dash (--) closes a false start or an incomplete sentence; a single dash marks an interruption. Swapping them changes how an editor reads the exchange on the page.',
+      ],
+      outputExamples: [
+        { title: 'Slang expansion', body: 'Clean verbatim writes slang out in standard English: gonna becomes going to, wanna becomes want to, yeah and yep become yes. Okay is always spelled in full, never OK or Ok. Spoken contractions such as don\'t and y\'all stay exactly as spoken.' },
+        { title: 'Numbers', body: 'Zero through nine are spelled out and 10 upwards takes numerals, while money, years and percentages use numerals at any size.' },
+        { title: 'Sound notes', body: 'Square brackets, lowercase, present tense, two words at most: [laughs], [laughter], [crosstalk], [silence], [background noise]. A pause beyond about 10 seconds becomes [pause 00:00:00], bold and on its own line.' },
+        { title: 'Lists and commas', body: 'Standard English punctuation throughout, including the serial comma in a list of three or more items.' },
+      ],
+      visualProof: [
+        { title: 'Tidying the speaker up', body: 'Smoothing a speaker\'s grammar into something more fluent than what they said. A misspoken word is spelled correctly, but the grammar of the utterance stays as it was spoken.' },
+        { title: 'Phonetic dialect', body: 'Writing an accent out phonetically to be faithful to the recording. Standard English spelling applies regardless of accent or dialect — the meaning is transcribed, not the sound.' },
+        { title: 'Emphasis repetition removed', body: 'Clean verbatim strips repetitions, so "no, no, no" gets cut to one. Repetition used for emphasis is the exception and should stay: removing it flattens what the speaker meant.' },
+        { title: 'Notation invented on the spot', body: 'A bracketed note that is not in the guidelines — [unclear], [mumbles], [pause] without a time. Unlisted tags read as errors, not as initiative.' },
+      ],
+      technicalExplanation: [
+        { title: 'Spelling over sound', body: 'Correct standard spelling is required even where the speaker mispronounces a word. The rule sits alongside the instruction not to correct grammar, and the two are easy to confuse: fix the spelling, keep the sentence.' },
+        { title: 'Paragraph length', body: 'Hold paragraphs to roughly 500 symbols, about 100 words, and break at a topic shift inside a long turn. Fixed-interval breaking produces paragraphs that cut across a thought.' },
+        { title: 'Uncertain attribution', body: 'A question-mark prefix on the label — ?David: — is the sanctioned way to record doubt about who is speaking, added to the guidelines in March 2022. It is a labelling rule rather than a punctuation choice, and there is no other approved way to express the doubt.' },
+      ],
+    },
     faq: [
       { q: 'Does GoTranscript use Oxford comma?', a: 'Yes. GoTranscript follows standard English punctuation which includes the Oxford (serial) comma in lists of three or more items. Example: "We discussed marketing, operations, and finance."' },
       { q: 'How should I handle technical jargon in GoTranscript?', a: 'Transcribe technical terms as accurately as possible. If you are unsure of the spelling, use your best judgment and note it. For industry-specific terms, research the correct spelling rather than guessing. GoTranscript clients often specify the domain in job instructions.' },
@@ -5298,6 +5439,38 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     indexable: true,
     intentKey: 'gotranscript-transcription-rules',
     keywords: ['gotranscript transcription rules', 'gotranscript rules for transcribers', 'gotranscript formatting rules', 'gotranscript QA rules', 'gotranscript freelancer rules', 'gotranscript do and dont'],
+    deepContent: {
+      sectionTitles: {
+        proofPoints: 'The rules behind most GoTranscript rejections',
+        outputExamples: 'Rule reference by area',
+        edgeCases: 'The five failures editors see most often',
+        platformGuidance: 'Carrying rules between GoTranscript and other services',
+      },
+      proofPoints: [
+        'A small set of failures accounts for most rejected files: missing or non-bold timestamps on a job that requires them, an inaudible tag without its full [00:00:00], filler words left in a clean-verbatim file, speaker labels that are not bold, and single-digit numbers written as numerals.',
+        'The rules are versioned, and the update log sits at the top of the guidelines page. A transcriber who has not re-read it since 2022 is missing the ? prefix for uncertain speakers; one who has not read it since 2019 may still be adding [sic].',
+        'Verbatim level is set per job rather than per account. The same transcriber can owe clean verbatim on one file and full verbatim on the next, and the two differ on fillers, stutters and false starts in every paragraph.',
+      ],
+      outputExamples: [
+        { title: 'Clean verbatim', body: 'Remove speech errors, stutters, repetitions and false starts that add no information, but keep a repetition used for emphasis. Expand slang into standard English. Keep "Oh". Filler words come out according to context rather than by blanket search-and-delete.' },
+        { title: 'Full verbatim', body: 'Speech errors, false starts, fillers, slang, stutters and repetitions are all kept as spoken, with the listed exceptions covering mm-hmm and uh-huh.' },
+        { title: 'Labels and attribution', body: 'A bold label, a colon and one single space. Names or descriptive roles where they are known, ?Name: where the attribution is uncertain, and a label even on a file with a single speaker.' },
+        { title: 'Unclear audio and overlap', body: '[inaudible 00:00:00] for speech that cannot be heard, [unintelligible 00:00:00] for speech heard but not understood, [crosstalk] where people talk over one another. Time-stamped tags are bold and carry full hours, minutes and seconds. Never guess a word and never invent a tag.' },
+        { title: 'Numbers, punctuation and paragraphs', body: 'Zero through nine spelled out and 10 upwards in numerals, with money, years and percentages always numeric. No exclamation marks and no [sic]. Double dash for a false start, single dash for an interruption. Paragraphs under roughly 500 symbols.' },
+      ],
+      visualProof: [
+        { title: 'Fillers left in a clean-verbatim file', body: 'Um, uh and you know kept on the reasoning that they were spoken. On a clean-verbatim job, keeping them is the error — and it appears on every page rather than once.' },
+        { title: 'Short-form inaudible', body: '[inaudible 3:45] instead of [inaudible 00:03:45]. The right tag with the wrong time format is still a rejection.' },
+        { title: 'Crosstalk filed as inaudible', body: 'Overlapping speech marked [inaudible] because it could not be made out. The guidelines separate the two, and editors specifically check for [crosstalk] where speakers collide.' },
+        { title: 'Numerals for single digits', body: 'Writing 3 where the rule asks for three. Because it is a habit rather than a slip, it repeats through the file and reads to an editor as a rule not learned.' },
+        { title: 'Labels that lost their bold', body: 'A correctly structured file drafted or exported as plain text. Labels, stamps and time-stamped tags all fail the formatting rules at once, with nothing in the text itself to show it.' },
+      ],
+      technicalExplanation: [
+        { title: 'Against strict-verbatim services', body: 'Services that require full or strict verbatim keep every filler, repetition and stutter. A GoTranscript clean-verbatim file judged by that standard reads as over-edited, so the two cannot share a mental default — decide which set of rules you are in before you start typing.' },
+        { title: 'Against Rev-style conventions', body: 'Rev-style work uses its own speaker-label shape and treats timestamps as an option the client sets. The bold Speaker N: label and job-dependent stamps here do not carry over in either direction.' },
+        { title: 'Ratings rather than thresholds', body: 'Editors score accuracy from 1 to 5, with 96 to 100% corresponding to a 5. The guidelines page publishes no pass mark, so it is the rating record over time, not a single number, that governs access to work.' },
+      ],
+    },
     faq: [
       { q: 'What are the most common GoTranscript QA failures?', a: 'The most common GoTranscript QA failures are: (1) missing or non-bold timestamps on jobs that require them; (2) wrong inaudible tags — using [inaudible] without full [00:00:00] or confusing inaudible with [crosstalk]; (3) keeping filler words that should be removed in clean verbatim; (4) non-bold speaker labels; (5) number formatting errors (0–9 spelled out).' },
       { q: 'Can I work for GoTranscript and other platforms simultaneously?', a: 'Yes. Most transcription platforms allow you to work for multiple services simultaneously. The key is to switch your mental "style guide" when moving between platforms — GoTranscript\'s job-dependent timestamping and bold Speaker N: labels differ significantly from Rev\'s optional timestamps and [Name]: format.' },
@@ -5317,6 +5490,36 @@ const MANUAL_REGISTRY: SeoRegistryEntry[] = [
     indexable: true,
     intentKey: 'gotranscript-test-guide',
     keywords: ['gotranscript transcription test', 'how to pass gotranscript test', 'gotranscript exam guide', 'gotranscript test tips', 'gotranscript qualification test answers', 'gotranscript test format'],
+    deepContent: {
+      sectionTitles: {
+        proofPoints: 'What the qualification test actually evaluates',
+        workflowSteps: 'Working through a test submission',
+        useCases: 'Where to practise before you submit',
+        edgeCases: 'How candidates fail a test they could have passed',
+      },
+      proofPoints: [
+        'The test job is described on GoTranscript\'s own guidelines page as clean verbatim with no timestamping needed. Everything it grades is therefore accuracy and formatting — not timing.',
+        'Over-formatting is the characteristic test failure. Timestamps added out of caution, a [sic] tag, an exclamation mark or an invented bracket note all cost marks on a transcript whose words were correct.',
+        'No pass mark for the test is published on the guidelines page. Submissions are reviewed by the GoTranscript team, and work after approval is rated 1 to 5, with 96 to 100% accuracy scoring a 5.',
+      ],
+      workflowSteps: [
+        { title: '1. Read the update log before you open the audio', detail: 'The guidelines page carries dated changes at the top. The ? prefix for an uncertain speaker (March 2022) and the removal of [sic] (November 2019) are both live rules that older tutorials and forum posts still get wrong.' },
+        { title: '2. Transcribe for accuracy first, format second', detail: 'Get the words down, then make a separate clean-verbatim pass: fillers and stutters out, uninformative false starts out, emphasis repetitions kept, slang expanded, "Oh" kept. Trying to do both at once is where words get dropped.' },
+        { title: '3. Fix labels and unclear audio', detail: 'A bold label, colon and single space on every turn, including in a single-speaker file. [inaudible 00:00:00] or [unintelligible 00:00:00] with full hours, minutes and seconds at the exact point, and [crosstalk] where speakers overlap.' },
+        { title: '4. Delete everything the test did not ask for', detail: 'No timestamps. No [sic]. No exclamation marks. No bracket note outside the listed set. Then check single-digit numbers are spelled out, and that nothing has been added to demonstrate thoroughness.' },
+      ],
+      useCases: [
+        { title: 'Before a first submission', body: 'Run a practice recording through the GoTranscript preset in the Guideline Format tool and compare the output against your own draft. The differences are the rules you have not internalised yet, which is more useful than re-reading the guidelines a third time.' },
+        { title: 'After a rejection', body: 'Re-read the update log, then check the rejected file against the four deletions above before assuming the problem was accuracy. Over-formatting is the more common cause and the easier one to fix.' },
+        { title: 'Coming from a full-verbatim service', body: 'If you already transcribe where every filler is kept, practise the clean-verbatim pass deliberately. The habit of preserving everything spoken is the hardest one to switch off under test conditions.' },
+      ],
+      visualProof: [
+        { title: 'Timestamps added anyway', body: 'Correctly formatted [00:00:00] stamps on a test that asks for none — the single most cited reason a competent submission fails.' },
+        { title: 'Fillers preserved for accuracy', body: 'Um, uh and you know kept because the speaker said them. On a clean-verbatim test that is not faithfulness, it is the error being tested for.' },
+        { title: 'Plain [inaudible]', body: 'The tag without its full HH:MM:SS time. The test checks the shape of the tag as much as the fact that the audio was unclear.' },
+        { title: 'An unlabelled single speaker', body: 'A monologue submitted with no speaker label, on the reasoning that there is nobody to distinguish them from. The labelling rule applies regardless.' },
+      ],
+    },
     faq: [
       { q: 'What does the GoTranscript qualification test include?', a: 'The GoTranscript qualification test is clean verbatim with no timestamping required (per their official guidelines). It tests accurate transcription, speaker separation, speaker label format, inaudible/unintelligible notation, and clean-verbatim rules (fillers removed, slang expanded).' },
       { q: 'How long does the GoTranscript test take?', a: 'Allow enough time to transcribe carefully and review your work. Focus on clean verbatim accuracy, bold speaker labels, correct inaudible tags, and removing fillers — not on adding timestamps (the test does not require them).' },
