@@ -85,6 +85,70 @@ const SSR_PAGES: Record<string, React.ComponentType> = {
 }
 
 const CORE_STATIC_CONTENT: Record<string, Omit<StaticRouteContent, 'path' | 'title' | 'description'>> = {
+  '/tools/subtitle-validator': {
+    h1: 'Subtitle Validator',
+    intro:
+      'Validate SRT and VTT files for overlapping timestamps, empty cues, long lines, and reading speed errors. Instant report, free, no upload needed.',
+    primaryCta: { text: 'Validate an SRT or VTT file', path: '/tools/subtitle-validator' },
+    deepContent: {
+      sectionTitles: {
+        proofPoints: 'What the validator checks in every cue',
+        workflowSteps: 'Reading the validation report',
+        outputExamples: 'What each check means, and what triggers it',
+        edgeCases: 'Files that pass this scan and still fail delivery',
+        platformGuidance: 'The thresholds this tool uses, and where platforms differ',
+      },
+      proofPoints: [
+        'The scan runs in the browser. The file is read locally and never uploaded, so a client deliverable under NDA can be checked without it leaving your machine.',
+        'The two severities mean different things. Errors are structural — an overlap, an end time at or before its start, an empty cue — and they cause visible failures in players and automated ingest. Warnings are readability thresholds: a line over 42 characters, a cue above 21 CPS. A file with fifty warnings and no errors is usable.',
+        'A clean report is a structural clean bill, not a certification. Character encoding, language-specific style rules, and individual platform delivery specifications are outside what a structural scan can see.',
+      ],
+      workflowSteps: [
+        { title: '1. Check the cue count first', detail: 'The report header states how many cues were parsed. If that number is well below what the file should contain, parsing stopped early — usually a malformed timestamp line or the wrong separator for the detected format — and everything below it describes only the part that parsed.' },
+        { title: '2. Clear errors before warnings', detail: 'Each issue is listed against its cue number. Overlaps and reversed timings break playback and ingest, so they come first; long lines and fast reading speed are quality problems that will not stop a file being accepted.' },
+        { title: '3. Work overlaps from the earliest cue down', detail: 'Overlaps cascade. One cue extended too far runs into the next, which then runs into the one after it. Fixing the earliest overlap often clears several later reports in one edit, so re-check before working through the list individually.' },
+        { title: '4. Re-validate after every fix', detail: 'Timing edits introduce new problems: pulling one cue back can leave the next one too short, and shifting a block can create an overlap further down. Run the scan again on the corrected file rather than assuming the edit was clean.' },
+      ],
+      outputExamples: [
+        { title: 'Overlapping cues', body: 'One cue ends after the next one starts, so both are on screen at once. Players resolve this inconsistently — some truncate the first cue, some stack both, some drop one — which is why it is reported as an error rather than a warning.' },
+        { title: 'Reversed and zero-duration timings', body: 'An end time earlier than its start, or identical to it. Both are reported together: a zero-duration cue displays for no time at all and is invisible to viewers while still occupying a numbered block in the file.' },
+        { title: 'Empty cues', body: 'A numbered block with a valid timestamp pair and no text. These are usually left behind when a line is deleted during editing without removing the block around it.' },
+        { title: 'Lines over 42 characters', body: 'Reported as a warning, measured on the longest line in the cue. 42 characters per line is the figure commonly published in Netflix TTSC guidance; the BBC specifies 37, and YouTube publishes no official limit.' },
+        { title: 'Reading speed over 21 CPS', body: 'Characters per second across the display window of the cue. 21 CPS is this tool\'s EBU-style readability threshold. Netflix TTSC specifies 20 CPS for adult and 17 CPS for children\'s programming, so a cue can clear this scan and still miss a platform target.' },
+      ],
+      visualProof: [
+        { title: 'Correct structure, wrong reading speed for the platform', body: 'Every cue sits under 21 CPS and the title is a children\'s programme with a 17 CPS target. The scan is clean and the delivery specification is still not met — run the reading-speed checker against the platform preset before handing the file over.' },
+        { title: 'Timing that drifts rather than overlaps', body: 'Cues that are individually valid but fall progressively further behind the video. A structural scan has no reference audio, so drift is invisible to it. Check sync by eye at a known point early in the file and again near the end.' },
+        { title: 'Valid structure, broken encoding', body: 'A file that parses cleanly but was saved in a non-UTF-8 encoding renders accented and non-Latin characters as garbage after upload. The characters count correctly toward line length, and the structure is valid, so nothing here flags it.' },
+        { title: 'Minimum duration and gaps', body: 'This scan does not check for cues that are too brief to read or for sub-frame gaps between adjacent cues. Both matter for broadcast delivery and both need a separate pass — worth knowing before treating a clean report as a full QA.' },
+      ],
+      technicalExplanation: [
+        { title: '42 characters per line', body: 'The warning threshold here, matching the characters-per-line figure commonly cited from Netflix TTSC. BBC subtitle guidance specifies 37. Lower your working target if the house style you deliver to is stricter — the validator will not know about it.' },
+        { title: '21 characters per second', body: 'The readability threshold used for the fast-reading warning, in line with EBU practice. Netflix TTSC is stricter at 20 CPS for adult programming and 17 CPS for children\'s. The character count includes spaces and punctuation, measured over the full display duration of the cue.' },
+        { title: 'How the format is detected', body: 'Format is detected from the file contents rather than the extension. SRT expects a sequence number, a comma-separated timestamp pair and one or more text lines per block; VTT expects a WEBVTT header line and period-separated timestamps. A mismatch between the two usually shows up as an unexpectedly low cue count.' },
+        { title: 'What a clean report does not cover', body: 'Structural validity says nothing about whether the text is accurate, whether line breaks fall at sensible phrase boundaries, whether positioning metadata survived a conversion, or whether the file meets a specific vendor specification. Treat it as the first gate, not the last.' },
+      ],
+    },
+    faq: [
+      { q: 'What errors does the validator check for?', a: 'Overlapping timestamps, end time at or before start time, empty cue text, lines over 42 characters (Netflix TTSC CPL), and reading speed over 21 CPS — the tool\'s EBU-style warning threshold, not a Netflix delivery limit.' },
+      { q: 'What is 21 CPS and why does it matter?', a: 'CPS stands for Characters Per Second — how fast a viewer must read a subtitle. This validator flags cues above 21 CPS as a readability warning (aligned with EBU R37). Netflix TTSC specifies 20 CPS for adult programming and 17 CPS for children\'s content — stricter than this scan. Run the reading-speed checker against your platform preset before delivery.' },
+      { q: 'What is the maximum line length for subtitles?', a: 'Netflix-published TTSC guidelines commonly specify 42 characters per line (CPL). BBC specifies 37 characters. YouTube does not publish an official CPL limit. This tool flags lines over 42 characters as warnings — not official Netflix certification.' },
+      { q: 'What is an overlapping subtitle?', a: 'An overlap occurs when one subtitle\'s end time is later than the next subtitle\'s start time. Both would show simultaneously, which most players handle by cutting one off or displaying both stacked.' },
+      { q: 'What is a zero-duration cue?', a: 'A zero-duration cue has the same start and end time (for example 00:00:01,000 --> 00:00:01,000). It displays for zero seconds and is invisible to viewers. It is usually a transcription or editing error, and it is reported alongside reversed timings.' },
+      { q: 'I have 50 warnings but no errors — is my file usable?', a: 'Yes. Warnings indicate best-practice violations (like slightly long lines) but will not cause playback failures. Errors (overlapping timestamps, bad timing) may cause visible issues. Fix errors first; address warnings if the file is for broadcast delivery.' },
+      { q: 'Does a clean validator report mean Netflix will accept my file?', a: 'No. A clean report here means common structural issues (overlaps, line lengths, CPS warnings) were not flagged. Netflix and its vendors also check language-specific style guides, encoding, and requirements this tool does not evaluate. VideoText is not affiliated with Netflix.' },
+      { q: 'Is my subtitle file uploaded anywhere?', a: 'No. Parsing and validation run entirely in your browser. The file is never sent to a server, which makes the tool usable on client material that cannot leave your machine.' },
+      { q: 'How do I fix the issues found?', a: 'Use the free Shift Subtitle Timing tool to adjust timestamps in bulk, or the AI-powered Fix Subtitles tool to automatically correct overlaps, long lines, and timing.' },
+    ],
+    related: [
+      { path: '/fix-subtitles', title: 'Fix Subtitles' },
+      { path: '/tools/subtitle-character-checker', title: 'Subtitle Character Limit Checker' },
+      { path: '/tools/subtitle-reading-speed', title: 'Subtitle Reading Speed Checker' },
+      { path: '/netflix-ttsc-checklist', title: 'Netflix TTSC Checklist' },
+      { path: '/tools/shift-subtitle-timing', title: 'Shift Subtitle Timing' },
+      { path: '/video-to-subtitles', title: 'Video to Subtitles' },
+    ],
+  },
   '/site-index': {
     h1: 'All VideoText Pages',
     intro: 'Browse VideoText transcription workflows, subtitle utilities, comparison pages, alternatives, style-guide resources, and export helpers from one organized index.',
@@ -319,7 +383,12 @@ function StaticSeoDocument({ content }: { content: StaticRouteContent }) {
   const tutorial = content.tutorialContent
   const related = content.related || []
   const primaryCta = content.primaryCta || getFamilyPrimaryCta(content.routeFamily ?? 'generic', content.path)
-  const titles = getFamilySectionTitles(content.routeFamily ?? 'generic')
+  const titles = {
+    ...getFamilySectionTitles(content.routeFamily ?? 'generic'),
+    // Pages with their own deepContent may cover a narrower topic than their
+    // family; a per-page override keeps the H2s from reading as boilerplate.
+    ...Object.fromEntries(Object.entries(deep?.sectionTitles ?? {}).filter(([, value]) => Boolean(value))),
+  }
 
   return (
     <main className="vt-workflow-document">

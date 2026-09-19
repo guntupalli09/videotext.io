@@ -536,7 +536,7 @@ export function buildFamilyDeepContent(
           },
           {
             title: '4. Apply timestamp rules and paragraph breaks',
-            detail: 'Rev-style: timestamps every 2 minutes or at each speaker change. GoTranscript: no timestamp requirement by default. TranscribeMe: per-speaker-turn timestamps. Paragraph length limits range from 8 lines (Rev) to no limit (some custom clients).',
+            detail: 'Rev-style: timestamps every 2 minutes or at each speaker change. GoTranscript: job-dependent — bold [00:00:00] either every 2 minutes or at every speaker change, with no timestamping on the qualification test. TranscribeMe: per-speaker-turn timestamps. Paragraph limits range from 8 lines (Rev) to roughly 500 symbols (GoTranscript).',
           },
           {
             title: '5. Run pre-delivery QA check',
@@ -550,7 +550,7 @@ export function buildFamilyDeepContent(
           },
           {
             title: 'GoTranscript QA-ready file',
-            body: 'Optional full or clean verbatim per client request. Speaker labels in "Speaker Name:" format with consistent capitalization. [inaudible] notation for unclear audio. No timestamp requirement unless client specifies. Paragraph breaks at topic shifts rather than fixed intervals.',
+            body: 'Clean verbatim on most jobs, full verbatim where the job says so. Bold speaker labels followed by a colon and a single space. [inaudible 00:00:00] and [unintelligible 00:00:00] for unclear audio, [crosstalk] for overlapping speech. Timestamps only where the job calls for them, in bold [00:00:00]. Paragraph breaks at topic shifts, under roughly 500 symbols.',
           },
           {
             title: 'Client-ready DOCX handoff',
@@ -582,7 +582,7 @@ export function buildFamilyDeepContent(
           },
           {
             title: 'Inaudible notation mismatch',
-            body: '"[inaudible]", "[INAUDIBLE]", "[unclear]", and "[crosstalk]" appearing in the same file for the same type of audio problem. Rev requires "[inaudible]" in lowercase brackets. GoTranscript uses a different notation. Neither accepts a mix of styles.',
+            body: '"[inaudible]", "[INAUDIBLE]", "[unclear]", and "[crosstalk]" appearing in the same file for the same type of audio problem. Rev requires "[inaudible]" in lowercase brackets; GoTranscript requires a full timestamp inside the tag and keeps [crosstalk] separate. Neither accepts a mix of styles.',
           },
           {
             title: 'Verbatim level inconsistency',
@@ -596,7 +596,7 @@ export function buildFamilyDeepContent(
           },
           {
             title: 'GoTranscript style guide rules',
-            body: 'Clean or full verbatim per client request. Speaker format "Speaker Name:" with title case. [inaudible] for unclear audio. No timestamp requirement by default (client can request). No strict paragraph length limit. Crosstalk marked with [crosstalk].',
+            body: 'Clean verbatim by default, full verbatim where the job specifies it. Bold speaker label, colon, single space (Speaker 1:, Interviewer:), with a ? prefix when the speaker is uncertain. [inaudible 00:00:00] for speech that cannot be heard and [unintelligible 00:00:00] for speech heard but not understood; [crosstalk] for overlap. Timestamps are job-dependent: bold [00:00:00] every 2 minutes or at every speaker change. Paragraphs under roughly 500 symbols. Spell out zero through nine.',
           },
           {
             title: 'TranscribeMe style guide rules',
@@ -604,7 +604,7 @@ export function buildFamilyDeepContent(
           },
           {
             title: 'Custom client formatting conflicts',
-            body: 'Many agencies specify hybrid rules that don\'t map cleanly to any standard guide — for example, Rev-style speaker labels but GoTranscript-style verbatim and no timestamps. These combinations must be documented explicitly because the formatter cannot infer them.',
+            body: 'Many agencies specify hybrid rules that don\'t map cleanly to any standard guide — for example, Rev-style speaker labels with GoTranscript-style clean verbatim and no timestamps at all. These combinations must be documented explicitly because the formatter cannot infer them.',
           },
         ],
         ctaText: footerCta.text,
