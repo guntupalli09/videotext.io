@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express'
 import { getJobById, type JobData } from '../workers/videoProcessor'
 import { getAuthFromRequest, getEffectiveUserId } from '../utils/auth'
+import { resolveJobAccess, resolveClaimDecision } from '../utils/jobAccess'
 import { getUser, incrementUserUsage, saveUser } from '../models/User'
 import { recordFreePlanImport } from '../utils/importQuota'
 import { getJobPartial, trimPartialPayloadForResponse, segmentsToPartialTranscript } from '../utils/jobPartial'
@@ -161,11 +162,14 @@ router.get('/:jobId/stream', async (req: Request, res: Response) => {
     if (!job) {
       return res.status(404).json({ message: 'Job not found' })
     }
-    const jobUserId = (job.data as JobData)?.userId
-    const jobToken = (job.data as JobData)?.jobToken
-    const allowedByUser = userId != null && jobUserId != null && userId === jobUserId
-    const allowedByToken = clientJobToken && jobToken && clientJobToken === jobToken
-    if (!allowedByUser && !allowedByToken) {
+    const access = resolveJobAccess({
+      requestUserId: userId,
+      jobUserId: (job.data as JobData)?.userId,
+      clientJobToken,
+      jobToken: (job.data as JobData)?.jobToken,
+    })
+    const allowedByUser = access.allowedByUser
+    if (!access.allowed) {
       return res.status(403).json({ message: 'Access denied. Provide Authorization, API key, or jobToken (query or x-job-token header).' })
     }
 
@@ -246,16 +250,20 @@ router.get('/:jobId', async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Job not found' })
     }
 
-    const jobUserId = (job.data as JobData)?.userId
-    const jobToken = (job.data as JobData)?.jobToken
-    const allowedByUser = userId != null && jobUserId != null && userId === jobUserId
-    const allowedByToken = clientJobToken && jobToken && clientJobToken === jobToken
-    if (!allowedByUser && !allowedByToken) {
+    const access = resolveJobAccess({
+      requestUserId: userId,
+      jobUserId: (job.data as JobData)?.userId,
+      clientJobToken,
+      jobToken: (job.data as JobData)?.jobToken,
+    })
+    if (!access.allowed) {
       return res.status(403).json({ message: 'Access denied. Provide Authorization, API key, or jobToken (query or x-job-token header).' })
     }
 
+    // Owner-only disclosure: a job token authorizes observation, never the
+    // result payload. See utils/jobAccess.ts.
     const payload = await buildJobStatusPayload(job, {
-      revealResults: allowedByUser,
+      revealResults: access.revealResults,
     })
 
     res.set({
@@ -296,13 +304,22 @@ router.post('/:jobId/claim', async (req: Request, res: Response) => {
     const jobUserId = (job.data as JobData)?.userId
     const jobToken = (job.data as JobData)?.jobToken
 
-    if (!clientJobToken || !jobToken || clientJobToken !== jobToken) {
+    // Both proofs are required: an authenticated non-guest identity AND the job
+    // token. Neither alone may transfer ownership. See utils/jobAccess.ts.
+    const decision = resolveClaimDecision({
+      requestUserId: userId,
+      jobUserId,
+      clientJobToken,
+      jobToken,
+    })
+    if (decision.kind === 'invalid-token') {
       return res.status(403).json({ message: 'Invalid job token.' })
     }
-
-    // Only claim jobs that were run by a guest (not already owned by a real user)
-    if (jobUserId && !jobUserId.startsWith('guest_')) {
+    if (decision.kind === 'already-claimed') {
       return res.status(409).json({ message: 'Job already claimed.' })
+    }
+    if (decision.kind !== 'allow') {
+      return res.status(401).json({ message: 'Authentication required.' })
     }
 
     // Persist new owner on the queue job (required for share, billing attribution, etc.)
