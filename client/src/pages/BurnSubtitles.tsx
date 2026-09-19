@@ -27,8 +27,16 @@ import { Select } from '../components/figma/FormControls'
 import { getFilePreview, formatDuration, type FilePreviewData } from '../lib/filePreview'
 import { incrementUsage } from '../lib/usage'
 import { incrementJobCompletedCount } from '../lib/jobCount'
-import { uploadDualFilesWithProgress, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError, claimGuestJob } from '../lib/api'
+import { uploadDualFilesWithProgress, getJobStatus, getCurrentUsage, BACKEND_TOOL_TYPES, SessionExpiredError, ensureGuestJobClaimed } from '../lib/api'
 import { resolveCompletedJobResult } from '../lib/resolveCompletedJob'
+import {
+  canDownloadResult,
+  hasDownloadableResult,
+  needsResultRefetchAfterClaim,
+  phaseForResolvedJob,
+  phaseRecoveryCopy,
+  type JobResultPhase,
+} from '../lib/jobResultState'
 import { getJobLifecycleTransition, JOB_POLL_INTERVAL_MS } from '../lib/jobPolling'
 import { downloadAuthedUrl, downloadErrorMessage, resolveResultDownloadUrl, trackDownloadFailure } from '../lib/downloadResult'
 import { persistJobId, clearPersistedJobId, getPersistedJobId, getPersistedJobToken } from '../lib/jobSession'
@@ -58,7 +66,13 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
   const [subtitleFile, setSubtitleFile] = useState<File | null>(null)
   const [videoFromWorkflow, setVideoFromWorkflow] = useState(false)
   const [srtFromWorkflow, setSrtFromWorkflow] = useState(false)
-  const [status, setStatus] = useState<'idle' | 'processing' | 'completed' | 'failed'>('idle')
+  /**
+   * A finished worker job is not the same as a downloadable result. 'ready'
+   * means and only means "a usable downloadUrl is in memory"; the two terminal
+   * states that are NOT downloadable get their own values so the recovery UI can
+   * render without the success panel ever claiming the video is ready.
+   */
+  const [status, setStatus] = useState<JobResultPhase>('idle')
 
   // useEffect(() => {
   //   const state = location.state as { useWorkflowVideo?: boolean; useWorkflowSrt?: boolean } | undefined
@@ -75,7 +89,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
 
   // Keep workflow in sync when result is shown so "Next step" links pre-fill video on the next tool
   // useEffect(() => {
-  //   if (status === 'completed' && videoFile) workflow.setVideo(videoFile)
+  //   if (status === 'ready' && videoFile) workflow.setVideo(videoFile)
   // }, [status, videoFile])
 
   const [trimStart, setTrimStart] = useState<number | null>(null)
@@ -99,6 +113,14 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [authModalMode, setAuthModalMode] = useState<'signup-combo' | 'login'>('signup-combo')
   const pendingDownloadRef = useRef<(() => void) | null>(null)
+  const [isRefreshingResult, setIsRefreshingResult] = useState(false)
+  /**
+   * Mirrors `result` but is written synchronously. The download actions are
+   * closures created during render; replaying one right after a refresh would
+   * otherwise read the blank result captured before the refetch. Every write to
+   * `result` goes through applyResult so the two can never diverge.
+   */
+  const resultRef = useRef<{ downloadUrl: string; fileName?: string } | null>(null)
 
   const plan = (localStorage.getItem('plan') || 'free').toLowerCase()
   const hasPaidPlan = isPaidPlan(plan)
@@ -112,8 +134,42 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
     if (result?.downloadUrl) setFreeExportsUsed(0)
   }, [result?.downloadUrl])
 
+  /**
+   * Recover a completed job after a reload.
+   *
+   * persistJobId() stores the job id and token for this path, but nothing read
+   * them back, so refreshing dropped the result entirely and returned the page
+   * to 'idle' — while the download-failure copy was telling users to refresh.
+   * Resolve the persisted job on mount instead, so the advice is true and a
+   * finished render is never stranded behind a reload.
+   */
   useEffect(() => {
-    if (status === 'completed' && !isLoggedIn()) {
+    const jobId = getPersistedJobId(location.pathname)
+    if (!jobId) return
+    const jobToken = getPersistedJobToken(location.pathname)
+    let cancelled = false
+    ;(async () => {
+      try {
+        const jobStatus = await getJobStatus(jobId, jobToken ? { jobToken } : undefined)
+        if (cancelled) return
+        if (getJobLifecycleTransition(jobStatus) !== 'completed') return
+        const resolved = await resolveCompletedJobResult(jobId, jobToken ?? undefined, jobStatus)
+        if (cancelled) return
+        const phase = phaseForResolvedJob(resolved)
+        applyResult(hasDownloadableResult(resolved.status?.result) ? resolved.status!.result! : null)
+        setStatus(phase)
+      } catch {
+        // Non-blocking: a stale or expired job simply leaves the page idle.
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    if (status === 'authentication-required' && !isLoggedIn()) {
       setShowAuthModal(true)
     }
   }, [status])
@@ -244,16 +300,13 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
             const processingMs = Date.now() - started
             setLastProcessingMs(processingMs)
             const resolved = await resolveCompletedJobResult(response.jobId, response.jobToken, jobStatus)
-            if (resolved.kind === 'ready' && resolved.status.result) {
-              setResult(resolved.status.result)
-            } else if (resolved.kind === 'auth-gate') {
-              setResult(resolved.status?.result ?? { downloadUrl: '' })
-              setShowAuthModal(true)
-            } else {
-              setResult({ downloadUrl: '' })
-              toast.error('Video is ready, but the download is still loading. Refresh to see it.')
-            }
-            setStatus('completed')
+            const phase = phaseForResolvedJob(resolved)
+            // Only a resolution that actually carries a downloadUrl may set a
+            // result; the auth-gate placeholder is truthy and would otherwise
+            // be mistaken for a loaded result everywhere downstream.
+            applyResult(hasDownloadableResult(resolved.status?.result) ? resolved.status!.result! : null)
+            if (phase === 'authentication-required') setShowAuthModal(true)
+            setStatus(phase)
             trackAppEvent('transcription_completed', { toolId: 'burn-subtitles' })
             // emitToolCompleted({ toolId: 'burn-subtitles', pathname: '/burn-subtitles', processingMs })
             incrementUsage('burn-subtitles')
@@ -303,10 +356,41 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
     setUploadPhase('processing')
     setUploadProgress(0)
     setProgress(0)
-    setResult(null)
+    applyResult(null)
   }
 
-  const getDownloadUrl = () => resolveResultDownloadUrl(result?.downloadUrl)
+  /** Single writer for the result, keeping state and the synchronous ref in step. */
+  const applyResult = (next: { downloadUrl: string; fileName?: string } | null) => {
+    resultRef.current = next
+    setResult(next)
+  }
+
+  /**
+   * Re-resolve a completed job and move the page to the phase it earns.
+   *
+   * Used after claiming and by the retry control. Returns the phase so callers
+   * can react without re-reading state that React has not committed yet.
+   */
+  const refreshCompletedResult = async (
+    jobId: string,
+    jobToken?: string,
+  ): Promise<JobResultPhase> => {
+    setIsRefreshingResult(true)
+    try {
+      const resolved = await resolveCompletedJobResult(jobId, jobToken)
+      const phase = phaseForResolvedJob(resolved)
+      applyResult(hasDownloadableResult(resolved.status?.result) ? resolved.status!.result! : null)
+      setStatus(phase)
+      return phase
+    } catch {
+      setStatus('completed-awaiting-result')
+      return 'completed-awaiting-result'
+    } finally {
+      setIsRefreshingResult(false)
+    }
+  }
+
+  const getDownloadUrl = () => resolveResultDownloadUrl(resultRef.current?.downloadUrl)
 
   function requireAuthForDownload(action: () => void) {
     if (isLoggedIn()) {
@@ -328,7 +412,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
     compactToolHeader: true,
     coreToolPath: '/burn-subtitles',
     currentStepLabel:
-      status === 'completed'
+      status === 'ready'
         ? 'Video ready'
         : videoFile
           ? 'Upload configured'
@@ -489,7 +573,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
           </ProcessingStateShell>
         )}
 
-        {status === 'completed' && result && !isLoggedIn() && (
+        {status === 'authentication-required' && (
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -518,7 +602,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
           </motion.div>
         )}
 
-        {status === 'completed' && result && isLoggedIn() && (
+        {status === 'ready' && result && canDownloadResult(status, result) && isLoggedIn() && (
           <div className="space-y-component">
             <TranslateResult
               title="Video with burned subtitles ready!"
@@ -565,7 +649,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
                               return
                             }
                             try {
-                              await downloadAuthedUrl(getDownloadUrl(), result?.fileName || fallbackBurnName)
+                              await downloadAuthedUrl(getDownloadUrl(), resultRef.current?.fileName || fallbackBurnName)
                               try { trackEvent('result_downloaded', { tool: 'burn-subtitles', plan: 'free' }) } catch { /* non-blocking */ }
                               setFreeExportsUsed((prev) => prev + 1)
                               toast.success('Download started')
@@ -576,7 +660,7 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
                           }
                         : async () => {
                             try {
-                              await downloadAuthedUrl(getDownloadUrl(), result?.fileName || fallbackBurnName)
+                              await downloadAuthedUrl(getDownloadUrl(), resultRef.current?.fileName || fallbackBurnName)
                               try { trackEvent('result_downloaded', { tool: 'burn-subtitles', plan: 'paid' }) } catch { /* non-blocking */ }
                             } catch (err) {
                               trackDownloadFailure(err, { tool: 'burn-subtitles', plan: 'paid' })
@@ -594,6 +678,33 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
             </div>
           </div>
         )}
+
+        {status === 'completed-awaiting-result' && (() => {
+          const copy = phaseRecoveryCopy(status)
+          if (!copy) return null
+          return (
+            <div className="rounded-xl border border-amber-300/60 bg-amber-50 p-6 text-center dark:border-amber-700/50 dark:bg-amber-950/30">
+              <h3 className="text-base font-semibold text-gray-900 dark:text-white">{copy.title}</h3>
+              <p className="mx-auto mt-2 max-w-md text-sm text-gray-600 dark:text-gray-400">{copy.detail}</p>
+              <button
+                type="button"
+                disabled={isRefreshingResult}
+                onClick={() => {
+                  const jobId = getPersistedJobId(location.pathname)
+                  const jobToken = getPersistedJobToken(location.pathname)
+                  if (!jobId) {
+                    toast.error('This session no longer has the job. Please run it again.')
+                    return
+                  }
+                  void refreshCompletedResult(jobId, jobToken ?? undefined)
+                }}
+                className="mt-4 rounded-lg border border-amber-500/60 px-4 py-2 text-sm font-semibold text-amber-700 transition-colors hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-60 dark:text-amber-300 dark:hover:bg-amber-900/40"
+              >
+                {isRefreshingResult ? 'Checking…' : 'Retry'}
+              </button>
+            </div>
+          )
+        })()}
 
         {status === 'failed' && (
           <FailedState onTryAgain={handleProcessAnother} />
@@ -620,25 +731,35 @@ export default function BurnSubtitles(props: BurnSubtitlesSeoProps = {}) {
         onAuthSuccess={async () => {
           const jobId = getPersistedJobId(location.pathname)
           const jobToken = getPersistedJobToken(location.pathname)
+          let claimed = true
           if (jobId && jobToken) {
             try {
-              await claimGuestJob(jobId, jobToken)
-            } catch (err) {
-              console.error('Failed to claim guest job:', err)
+              // ensureGuestJobClaimed (not claimGuestJob) so a job this account
+              // already owns — a second sign-in, a retry — returns 409 and is
+              // treated as success instead of a spurious error toast.
+              await ensureGuestJobClaimed(jobId, jobToken)
+            } catch {
+              claimed = false
               toast.error('Could not link this job to your account. Please try again.')
             }
           }
           setShowAuthModal(false)
-          if (pendingDownloadRef.current) {
-            const action = pendingDownloadRef.current
-            pendingDownloadRef.current = null
-            action()
-          } else if (result) {
-            // Result is already in memory — just close the modal.
-            // The download panel becomes visible on the next render since isLoggedIn() is now true.
-          } else {
-            window.location.reload()
+
+          // Claiming changed server-side authorization, so the payload the API
+          // withheld from the guest is now fetchable. The auth-gate placeholder
+          // is TRUTHY, so the old `else if (result)` check reported "already in
+          // memory" and skipped this — leaving an enabled Download button over a
+          // blank URL, which threw DownloadNotReadyError without ever issuing a
+          // request. Gate on a usable downloadUrl, never on the object.
+          const pending = pendingDownloadRef.current
+          pendingDownloadRef.current = null
+
+          if (claimed && jobId && needsResultRefetchAfterClaim(result)) {
+            const phase = await refreshCompletedResult(jobId, jobToken ?? undefined)
+            if (phase === 'ready' && pending) pending()
+            return
           }
+          if (pending) pending()
         }}
       />
 
